@@ -1,0 +1,1340 @@
+{
+  "exercises": [
+    {
+      "id": "cppb01_declarations",
+      "package": "drill_cppb01_declarations",
+      "level": "C++入門編",
+      "level_note": "docs/cpp-basics/ の講習に対応。ROS 2 は使いません",
+      "title": "宣言を読む",
+      "kind": "gtest",
+      "sources": [
+        "src/reader.cpp"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: Pointer declaration",
+          "url": "https://en.cppreference.com/w/cpp/language/pointer"
+        }
+      ],
+      "hints": [
+        "宣言は右から左に読みます。const int * は「const int へのポインタ」。",
+        "int read_value(const int * p) { return *p; }  // read-only",
+        "void modify(int * p) { *p = 42; }  // can write"
+      ],
+      "lecture": [
+        {
+          "title": "1. 宣言を読む",
+          "path": "docs/cpp-basics/01_宣言を読む.md"
+        }
+      ],
+      "chapter": "入門 1章"
+    },
+    {
+      "id": "cppb02_scope",
+      "package": "drill_cppb02_scope",
+      "level": "C++入門編",
+      "level_note": "docs/cpp-basics/ の講習に対応。ROS 2 は使いません",
+      "title": "スコープと寿命",
+      "kind": "gtest",
+      "sources": [
+        "src/scope.cpp"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: Scope",
+          "url": "https://en.cppreference.com/w/cpp/language/scope"
+        }
+      ],
+      "hints": [
+        "Tracer クラスは構築・破棄で global log に追記",
+        "スコープを抜けるとき逆順に破棄される"
+      ],
+      "lecture": [
+        {
+          "title": "2. スコープと寿命",
+          "path": "docs/cpp-basics/02_スコープと寿命.md"
+        }
+      ],
+      "chapter": "入門 2章"
+    },
+    {
+      "id": "cppb03_reference",
+      "package": "drill_cppb03_reference",
+      "level": "C++入門編",
+      "level_note": "docs/cpp-basics/ の講習に対応。ROS 2 は使いません",
+      "title": "参照で受け取る",
+      "kind": "gtest",
+      "sources": [
+        "src/swapper.cpp"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: Reference declaration",
+          "url": "https://en.cppreference.com/w/cpp/language/reference"
+        }
+      ],
+      "hints": [
+        "void swap_values(int & a, int & b) の & は参照です。a も b も呼び出し元の変数の別名なので、そのまま入れ替えれば呼び出し元が変わります。",
+        "int & largest(...) は参照を返します。ローカル変数を返してはいけません（ダングリング参照になります）。引数はどちらも呼び出し元のものなので、返して安全です。",
+        "a == b のときは a を返す仕様です。(a > b) ? a : b では b が返ってしまいます。"
+      ],
+      "lecture": [
+        {
+          "title": "3. 参照",
+          "path": "docs/cpp-basics/03_参照.md"
+        }
+      ],
+      "chapter": "入門 3章"
+    },
+    {
+      "id": "cppb04_pointer",
+      "package": "drill_cppb04_pointer",
+      "level": "C++入門編",
+      "level_note": "docs/cpp-basics/ の講習に対応。ROS 2 は使いません",
+      "title": "ポインタを使う",
+      "kind": "gtest",
+      "sources": [
+        "src/checker.cpp"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: Pointer declaration",
+          "url": "https://en.cppreference.com/w/cpp/language/pointer"
+        }
+      ],
+      "hints": [
+        "nullptr チェック",
+        "bool try_read(const int * p, int * out);"
+      ],
+      "lecture": [
+        {
+          "title": "4. ポインタ1",
+          "path": "docs/cpp-basics/04_ポインタ1.md"
+        }
+      ],
+      "chapter": "入門 4章"
+    },
+    {
+      "id": "cppb05_pointer_array",
+      "package": "drill_cppb05_pointer_array",
+      "level": "C++入門編",
+      "level_note": "docs/cpp-basics/ の講習に対応。ROS 2 は使いません",
+      "title": "配列とポインタ",
+      "kind": "gtest",
+      "sources": [
+        "src/array_util.cpp"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: Array declaration",
+          "url": "https://en.cppreference.com/w/cpp/language/array"
+        }
+      ],
+      "hints": [
+        "配列は関数引数でポインタに decay",
+        "int sum(const int * data, std::size_t count);"
+      ],
+      "lecture": [
+        {
+          "title": "5. ポインタ2",
+          "path": "docs/cpp-basics/05_ポインタ2.md"
+        }
+      ],
+      "chapter": "入門 5章"
+    },
+    {
+      "id": "cppb06_const",
+      "package": "drill_cppb06_const",
+      "level": "C++入門編",
+      "level_note": "docs/cpp-basics/ の講習に対応。ROS 2 は使いません",
+      "title": "const を宣言と定義で合わせる",
+      "kind": "gtest",
+      "sources": [
+        "src/config.cpp"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: const / volatile 修飾子",
+          "url": "https://en.cppreference.com/w/cpp/language/cv"
+        }
+      ],
+      "hints": [
+        "末尾 const は関数の型の一部です。宣言と定義の両方に必要です。",
+        "no declaration matches ‘int Config::get_limit()’ は「その名前の宣言が無い」ではなく「型が一致する宣言が無い」という意味です。",
+        "ヘッダ側（引数の const、メンバの const）は既に書いてあります。付け足すのは src/config.cpp の 2 か所だけです。"
+      ],
+      "lecture": [
+        {
+          "title": "6. const",
+          "path": "docs/cpp-basics/06_const.md"
+        }
+      ],
+      "chapter": "入門 6章"
+    },
+    {
+      "id": "cppb07_static",
+      "package": "drill_cppb07_static",
+      "level": "C++入門編",
+      "level_note": "docs/cpp-basics/ の講習に対応。ROS 2 は使いません",
+      "title": "static の3つの意味",
+      "kind": "gtest",
+      "sources": [
+        "src/counter.cpp"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: static",
+          "url": "https://en.cppreference.com/w/cpp/language/static"
+        }
+      ],
+      "hints": [
+        "関数内 static: static int id = 0; は初回の呼び出しでだけ初期化されます。",
+        "クラス static メンバは、ヘッダの宣言だけではリンクできません。.cpp に int IdGenerator::count_ = 0; という定義が必要です。",
+        "id() は非 static メンバ関数ですが、触る先は共有の count_ です。だから gen1 と gen2 で番号が続きます。",
+        "reset() で next_id() の関数内 static は戻せません。戻せないのが正解です。"
+      ],
+      "lecture": [
+        {
+          "title": "7. static",
+          "path": "docs/cpp-basics/07_static.md"
+        }
+      ],
+      "chapter": "入門 7章"
+    },
+    {
+      "id": "cppb08_qualifiers",
+      "package": "drill_cppb08_qualifiers",
+      "level": "C++入門編",
+      "level_note": "docs/cpp-basics/ の講習に対応。ROS 2 は使いません",
+      "title": "修飾子を正しい位置に付ける",
+      "kind": "gtest",
+      "sources": [
+        "include/drill/qualifiers.hpp"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: constexpr",
+          "url": "https://en.cppreference.com/w/cpp/language/constexpr"
+        }
+      ],
+      "hints": [
+        "この課題だけ編集対象はヘッダです。inline / explicit / constexpr / 末尾 const は宣言に付く修飾子なので、.cpp 側に後付けできません。",
+        "explicit Pair::Pair(int, int) {} と書くと error: ‘explicit’ outside class declaration になります。",
+        "constexpr は inline を含みます。だから square に constexpr を付ければ多重定義にはならず、inline が別に必要なのは twice だけです。",
+        "multiple definition はリンク時のエラーです。先に他の 3 つを直さないと見えません。"
+      ],
+      "lecture": [
+        {
+          "title": "8. その他の修飾子",
+          "path": "docs/cpp-basics/08_その他の修飾子.md"
+        }
+      ],
+      "chapter": "入門 8章"
+    },
+    {
+      "id": "cppb09_value_semantics",
+      "package": "drill_cppb09_value_semantics",
+      "level": "C++入門編",
+      "level_note": "docs/cpp-basics/ の講習に対応。ROS 2 は使いません",
+      "title": "コピーを数える",
+      "kind": "gtest",
+      "sources": [
+        "src/data.cpp"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: Copy constructor",
+          "url": "https://en.cppreference.com/w/cpp/language/copy_constructor"
+        }
+      ],
+      "hints": [
+        "コピーコンストラクタは「まだ無いオブジェクトを作る」、コピー代入は「既にあるオブジェクトに入れる」。Data d2(d1); と d2 = d1; の違いです。",
+        "process_by_const_ref は const Data & で受けるので、引数のコピーが起きません。",
+        "戻り値のコピーは NRVO で消えます。だから const& 版のコピー回数は 1 ではなく 0 です。"
+      ],
+      "lecture": [
+        {
+          "title": "9. 値のセマンティクス",
+          "path": "docs/cpp-basics/09_値のセマンティクス.md"
+        }
+      ],
+      "chapter": "入門 9章"
+    },
+    {
+      "id": "cppb10_headers",
+      "package": "drill_cppb10_headers",
+      "level": "C++入門編",
+      "level_note": "docs/cpp-basics/ の講習に対応。ROS 2 は使いません",
+      "title": "ヘッダに分ける",
+      "kind": "gtest",
+      "sources": [
+        "src/math.cpp",
+        "src/util.cpp"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: Declarations",
+          "url": "https://en.cppreference.com/w/cpp/language/declarations"
+        }
+      ],
+      "hints": [
+        "宣言と定義を分けて 2 つの .cpp をリンク"
+      ],
+      "lecture": [
+        {
+          "title": "10. ヘッダとプロジェクト構成",
+          "path": "docs/cpp-basics/10_ヘッダとプロジェクト構成.md"
+        }
+      ],
+      "chapter": "入門 10章"
+    },
+    {
+      "id": "cpp01_build_and_link",
+      "package": "drill_cpp01_build_and_link",
+      "level": "C++編",
+      "level_note": "docs/cpp/ の講習に対応。ROS 2 は使いません",
+      "title": "ビルドとリンクを通す",
+      "kind": "gtest",
+      "sources": [
+        "include/drill/counter.hpp",
+        "src/counter.cpp"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: inline specifier",
+          "url": "https://en.cppreference.com/w/cpp/language/inline"
+        }
+      ],
+      "hints": [
+        "直すところは 2 つあります。1 つはヘッダ、1 つは .cpp です。",
+        "",
+        "TODO(1) include/drill/counter.hpp:",
+        "  int add_one(int x) { ... }  →  inline int add_one(int x) { ... }",
+        "  （中身を src/counter.cpp に移して、ヘッダに宣言だけ残す形でも合格します）",
+        "",
+        "TODO(2) src/counter.cpp:",
+        "  int next_id()",
+        "  {",
+        "    static int id = 0;",
+        "    return ++id;",
+        "  }",
+        "",
+        "static ローカル変数は最初の呼び出しで 1 度だけ初期化され、関数を抜けても残ります。",
+        "返すのは ++id です。id++ にすると初回に 0 が返ります。"
+      ],
+      "lecture": [
+        {
+          "title": "1. ビルドとリンクの仕組み",
+          "path": "docs/cpp/01_ビルドとリンクの仕組み.md"
+        }
+      ],
+      "chapter": "C++ 1章"
+    },
+    {
+      "id": "cpp02_class_init",
+      "package": "drill_cpp02_class_init",
+      "level": "C++編",
+      "level_note": "docs/cpp/ の講習に対応。ROS 2 は使いません",
+      "title": "クラスを初期化する",
+      "kind": "gtest",
+      "sources": [
+        "src/stopwatch.cpp"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: Constructors and member initializer lists",
+          "url": "https://en.cppreference.com/w/cpp/language/constructor"
+        }
+      ],
+      "hints": [
+        "const メンバは「代入」できません。「初期化」だけができます。",
+        "だからコンストラクタ本体で = するのではなく、初期化子リストに書きます。",
+        "",
+        "  Stopwatch::Stopwatch(...)",
+        "  : メンバ1(引数1), メンバ2(引数2)",
+        "  {",
+        "  }",
+        "",
+        "書く順番は、クラス定義でメンバを宣言した順に揃えてください。",
+        "揃えないと -Wreorder で警告が出ます（実際の初期化順は宣言順です）。"
+      ],
+      "lecture": [
+        {
+          "title": "2. クラスと初期化",
+          "path": "docs/cpp/02_クラスと初期化.md"
+        }
+      ],
+      "chapter": "C++ 2章"
+    },
+    {
+      "id": "cpp03_inheritance",
+      "package": "drill_cpp03_inheritance",
+      "level": "C++編",
+      "level_note": "docs/cpp/ の講習に対応。ROS 2 は使いません",
+      "title": "継承して仮想関数を実装する",
+      "kind": "gtest",
+      "sources": [
+        "src/sensor.cpp"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: virtual function specifier",
+          "url": "https://en.cppreference.com/w/cpp/language/virtual"
+        }
+      ],
+      "hints": [
+        "基底クラスの純粋仮想関数（= 0 が付いているもの）は、派生クラスが必ず実装します。",
+        "実装するときは override を付けてください。",
+        "",
+        "  double read() const override { return ...; }",
+        "",
+        "override を付けると、シグネチャが基底と違うときにコンパイルエラーになります。",
+        "付けないと「別の新しい関数」として黙って通り、基底の実装が呼ばれ続けます。",
+        "const の付け忘れが典型的な失敗です。基底の宣言をコピーしてくるのが確実です。",
+        "",
+        "既定の実装がある仮想関数は、override しなければ基底のものが使われます。"
+      ],
+      "lecture": [
+        {
+          "title": "3. 継承",
+          "path": "docs/cpp/03_継承.md"
+        }
+      ],
+      "chapter": "C++ 3章"
+    },
+    {
+      "id": "cpp04_reference_const",
+      "package": "drill_cpp04_reference_const",
+      "level": "C++編",
+      "level_note": "docs/cpp/ の講習に対応。ROS 2 は使いません",
+      "title": "参照と const で受け取る",
+      "kind": "gtest",
+      "sources": [
+        "src/copycounter.cpp"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: Reference declaration",
+          "url": "https://en.cppreference.com/w/cpp/language/reference"
+        }
+      ],
+      "hints": [
+        "この課題のテストは「コピーが何回起きたか」を数えています。",
+        "",
+        "const T & で受け取ればコピーは 0 回、T で受け取れば 1 回です。",
+        "宣言は右から左に読みます: const Payload & p は",
+        "「p は 変更できない Payload への参照」。",
+        "",
+        "メンバ関数の末尾に付く const は別物で、「このオブジェクトを変更しない」という意味です。",
+        "メンバを書き換えない関数には付けてください。"
+      ],
+      "lecture": [
+        {
+          "title": "4. 参照と const",
+          "path": "docs/cpp/04_参照とconst.md"
+        }
+      ],
+      "chapter": "C++ 4章"
+    },
+    {
+      "id": "cpp05_move",
+      "package": "drill_cpp05_move",
+      "level": "C++編",
+      "level_note": "docs/cpp/ の講習に対応。ROS 2 は使いません",
+      "title": "所有権をムーブする",
+      "kind": "gtest",
+      "sources": [
+        "src/buffer.cpp"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: std::move",
+          "url": "https://en.cppreference.com/w/cpp/utility/move"
+        }
+      ],
+      "hints": [
+        "ムーブコンストラクタは「盗む」処理です。コピーせず、ポインタを付け替えます。",
+        "",
+        "  Buffer::Buffer(Buffer && other) noexcept",
+        "  : size_(other.size_), data_(std::move(other.data_))",
+        "  {",
+        "    other.size_ = 0;      // ← ムーブ元を空にする",
+        "  }",
+        "",
+        "ムーブ元を空にするのを忘れないでください。2 つのオブジェクトが同じメモリを",
+        "所有していると、二重解放になります。",
+        "",
+        "noexcept を付けてください。付けないと std::vector の再確保がコピーを選びます。",
+        "テストはバッファのアドレスを比較して、コピーが起きていないことを確認しています。"
+      ],
+      "lecture": [
+        {
+          "title": "5. ムーブと所有権",
+          "path": "docs/cpp/05_ムーブと所有権.md"
+        }
+      ],
+      "chapter": "C++ 5章"
+    },
+    {
+      "id": "cpp06_smart_pointers",
+      "package": "drill_cpp06_smart_pointers",
+      "level": "C++編",
+      "level_note": "docs/cpp/ の講習に対応。ROS 2 は使いません",
+      "title": "スマートポインタで所有権を表す",
+      "kind": "gtest",
+      "sources": [
+        "src/registry.cpp"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: std::weak_ptr",
+          "url": "https://en.cppreference.com/w/cpp/memory/weak_ptr"
+        }
+      ],
+      "hints": [
+        "これは rclcpp が内部でやっていることの再現です。",
+        "登録されたものを weak_ptr で保持し、使うときに lock() で生死を確かめます。",
+        "",
+        "  for (const auto & w : items_) {",
+        "    if (auto p = w.lock()) {",
+        "      // ここでは p は絶対に生きている",
+        "    }",
+        "  }",
+        "",
+        "expired() で確認してから使うのではなく、lock() の結果で分岐してください。",
+        "lock() は確認と取得を同時に行うので競合しません。",
+        "",
+        "この仕組みが「create_publisher の戻り値をメンバに持たないと動かない」の正体です。"
+      ],
+      "lecture": [
+        {
+          "title": "6. スマートポインタ",
+          "path": "docs/cpp/06_スマートポインタ.md"
+        }
+      ],
+      "chapter": "C++ 6章"
+    },
+    {
+      "id": "cpp07_lambda",
+      "package": "drill_cpp07_lambda",
+      "level": "C++編",
+      "level_note": "docs/cpp/ の講習に対応。ROS 2 は使いません",
+      "title": "ラムダとコールバックを登録する",
+      "kind": "gtest",
+      "sources": [
+        "src/callbackmanager.cpp"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: Lambda expressions",
+          "url": "https://en.cppreference.com/w/cpp/language/lambda"
+        }
+      ],
+      "hints": [
+        "キャプチャの [ ] に何を書くかで意味が変わります。",
+        "",
+        "  [x]     x をコピー（ラムダを作った時点の値を覚える）",
+        "  [&x]    x を参照（呼ばれた時点の値を見る）",
+        "  [this]  自分自身へのポインタ。メンバに触るときに必要",
+        "",
+        "メンバ関数を std::bind で渡す形はこれです。",
+        "",
+        "  std::bind(&Manager::on_event, this, std::placeholders::_1)",
+        "",
+        "& を忘れると invalid use of non-static member function になります。",
+        "_1 の数は、呼ばれるときに渡される引数の数に合わせてください。"
+      ],
+      "lecture": [
+        {
+          "title": "7. ラムダと std::bind",
+          "path": "docs/cpp/07_ラムダとstd_bind.md"
+        }
+      ],
+      "chapter": "C++ 7章"
+    },
+    {
+      "id": "cpp10_operators",
+      "package": "drill_cpp10_operators",
+      "level": "C++編",
+      "level_note": "docs/cpp/ の講習に対応。ROS 2 は使いません",
+      "title": "演算子をオーバーロードする",
+      "kind": "gtest",
+      "sources": [
+        "src/vec2.cpp"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: Operator overloading",
+          "url": "https://en.cppreference.com/w/cpp/language/operators"
+        }
+      ],
+      "hints": [
+        "演算子はただの関数です。名前が記号なだけです。",
+        "",
+        "  Vec2 operator+(const Vec2 & a, const Vec2 & b)",
+        "  {",
+        "    return Vec2{a.x + b.x, a.y + b.y};",
+        "  }",
+        "",
+        "気をつけるところが 4 つあります。",
+        "",
+        "1. operator* は 2 つ必要です。Vec2 * double と double * Vec2 は別の関数です。",
+        "   後者は前者に委譲すれば 1 行で書けます: return v * s;",
+        "2. operator< は < を使ってください。<= にすると a < a が true になり、",
+        "   厳密弱順序が壊れて std::sort が未定義動作になります。",
+        "3. operator<< は std::ostream & を返し、最後に return os; を書いてください。",
+        "   これがないと << を繋げられません。",
+        "4. operator+= は Vec2 &（参照）を返し、return *this; で終わります。"
+      ],
+      "lecture": [
+        {
+          "title": "10. 演算子オーバーロード",
+          "path": "docs/cpp/10_演算子オーバーロード.md"
+        }
+      ],
+      "chapter": "C++ 10章"
+    },
+    {
+      "id": "cpp11_stl",
+      "package": "drill_cpp11_stl",
+      "level": "C++編",
+      "level_note": "docs/cpp/ の講習に対応。ROS 2 は使いません",
+      "title": "標準ライブラリを使う",
+      "kind": "gtest",
+      "sources": [
+        "src/limiter.cpp"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: std::clamp",
+          "url": "https://en.cppreference.com/w/cpp/algorithm/clamp"
+        }
+      ],
+      "hints": [
+        "std::clamp(値, 下限, 上限) は値を範囲に収めます。#include <algorithm> が必要です。",
+        "",
+        "  const double limited = std::clamp(v, -max, max);",
+        "",
+        "std::optional は「値が無いかもしれない」を型で表します。",
+        "",
+        "  std::optional<int> find(...) {",
+        "    auto it = table.find(key);",
+        "    if (it == table.end()) { return std::nullopt; }",
+        "    return it->second;",
+        "  }",
+        "",
+        "std::map の operator[] は、キーが無いと既定値の要素を挿入してしまいます。",
+        "探すだけなら find() か count() を使ってください。"
+      ],
+      "lecture": [
+        {
+          "title": "11. 標準ライブラリの道具箱",
+          "path": "docs/cpp/11_標準ライブラリの道具箱.md"
+        }
+      ],
+      "chapter": "C++ 11章"
+    },
+    {
+      "id": "cpp12_chrono",
+      "package": "drill_cpp12_chrono",
+      "level": "C++編",
+      "level_note": "docs/cpp/ の講習に対応。ROS 2 は使いません",
+      "title": "時間を型で扱う",
+      "kind": "gtest",
+      "sources": [
+        "src/timer.cpp"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: std::chrono::duration",
+          "url": "https://en.cppreference.com/w/cpp/chrono/duration"
+        }
+      ],
+      "hints": [
+        "std::chrono の duration は「型が違えば別の単位」です。",
+        "milliseconds と seconds は互換ではありません。",
+        "",
+        "情報が失われない方向（seconds → milliseconds）は自動で変換されます。",
+        "失われる方向（milliseconds → seconds）は duration_cast が必要で、切り捨てられます。",
+        "",
+        "  const auto s = std::chrono::duration_cast<std::chrono::seconds>(ms);",
+        "",
+        "duration_cast は四捨五入ではなく切り捨てです。500ms → 0s になります。",
+        "",
+        "double の秒から milliseconds を作るときは、",
+        "  std::chrono::milliseconds(static_cast<int64_t>(seconds * 1000))",
+        "のように整数へ落としてから構築します。"
+      ],
+      "lecture": [
+        {
+          "title": "12. std::chrono と時間",
+          "path": "docs/cpp/12_chronoと時間.md"
+        }
+      ],
+      "chapter": "C++ 12章"
+    },
+    {
+      "id": "01_publisher",
+      "package": "drill_01_publisher",
+      "level": "初級",
+      "level_note": "講習資料 11〜14章",
+      "title": "トピックに publish する",
+      "kind": "gtest",
+      "sources": [
+        "src/minimal_publisher.cpp"
+      ],
+      "docs": [
+        {
+          "title": "Writing a simple publisher and subscriber (C++)",
+          "url": "https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Cpp-Publisher-And-Subscriber.html"
+        }
+      ],
+      "hints": [
+        "公式チュートリアルの MinimalPublisher とまったく同じものを書きます。",
+        "",
+        "  publisher_ = this->create_publisher<std_msgs::msg::String>(\"topic\", 10);",
+        "  timer_ = this->create_wall_timer(",
+        "    500ms, std::bind(&MinimalPublisher::timer_callback, this));",
+        "",
+        "timer_callback の中:",
+        "  auto message = std_msgs::msg::String();",
+        "  message.data = \"Hello, world! \" + std::to_string(count_++);",
+        "  RCLCPP_INFO(this->get_logger(), \"Publishing: '%s'\", message.data.c_str());",
+        "  publisher_->publish(message);",
+        "",
+        "count_ は後置インクリメントなので、1 通目は \"Hello, world! 0\" になります。"
+      ],
+      "lecture": [
+        {
+          "title": "11_C++でpub_subを書く（publisher を書く節）",
+          "path": "docs/ros2/11_C++でpub_subを書く.md"
+        }
+      ],
+      "chapter": "11章"
+    },
+    {
+      "id": "02_subscriber",
+      "package": "drill_02_subscriber",
+      "level": "初級",
+      "level_note": "講習資料 11〜14章",
+      "title": "トピックを購読する",
+      "kind": "gtest",
+      "sources": [
+        "src/minimal_subscriber.cpp"
+      ],
+      "docs": [
+        {
+          "title": "Writing a simple publisher and subscriber (C++)",
+          "url": "https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Cpp-Publisher-And-Subscriber.html"
+        }
+      ],
+      "hints": [
+        "公式チュートリアルの MinimalSubscriber と同じものを書きます。",
+        "",
+        "  subscription_ = this->create_subscription<std_msgs::msg::String>(",
+        "    \"topic\", 10, std::bind(&MinimalSubscriber::topic_callback, this, _1));",
+        "",
+        "topic_callback の中:",
+        "  RCLCPP_INFO(this->get_logger(), \"I heard: '%s'\", msg.data.c_str());",
+        "",
+        "std::bind の _1 は using std::placeholders::_1; が必要です。",
+        "コールバックの引数は const std_msgs::msg::String & です（ポインタではありません）。"
+      ],
+      "lecture": [
+        {
+          "title": "11_C++でpub_subを書く（subscriber を書く節）",
+          "path": "docs/ros2/11_C++でpub_subを書く.md"
+        }
+      ],
+      "chapter": "11章"
+    },
+    {
+      "id": "03_custom_interface",
+      "package": "drill_03_custom_interface",
+      "level": "初級",
+      "level_note": "講習資料 11〜14章",
+      "title": "カスタムインターフェースを定義して使う",
+      "kind": "gtest",
+      "sources": [
+        "msg/Num.msg",
+        "srv/AddThreeInts.srv",
+        "src/num_publisher.cpp"
+      ],
+      "docs": [
+        {
+          "title": "Custom ROS 2 interfaces",
+          "url": "https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Custom-ROS2-Interfaces.html"
+        },
+        {
+          "title": "Implementing custom interfaces（1 パッケージで定義して使う）",
+          "url": "https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Single-Package-Define-And-Use-Interface.html"
+        }
+      ],
+      "hints": [
+        "定義ファイルは「型 名前」を 1 行ずつ並べるだけです。",
+        "",
+        "msg/Num.msg:",
+        "  int64 num",
+        "",
+        "srv/AddThreeInts.srv（--- がリクエストとレスポンスの区切り）:",
+        "  int64 a",
+        "  int64 b",
+        "  int64 c",
+        "  ---",
+        "  int64 sum",
+        "",
+        "C++ 側は 01 と 04 の組み合わせです。",
+        "  publisher_ = this->create_publisher<Num>(\"num\", 10);",
+        "  timer_ = this->create_wall_timer(",
+        "    500ms, std::bind(&NumNode::timer_callback, this));",
+        "  service_ = this->create_service<AddThreeInts>(",
+        "    \"add_three_ints\", std::bind(&NumNode::add_three_ints, this, _1, _2));",
+        "",
+        "同じパッケージの中で定義した型を使うので、ビルド後は次で確認できます:",
+        "  ros2 interface show drill_03_custom_interface/msg/Num",
+        "  ros2 interface show drill_03_custom_interface/srv/AddThreeInts"
+      ],
+      "lecture": [
+        {
+          "title": "13_カスタムインターフェース（msg / srv の定義）",
+          "path": "docs/ros2/13_カスタムインターフェース.md"
+        }
+      ],
+      "chapter": "13章"
+    },
+    {
+      "id": "04_service_server",
+      "package": "drill_04_service_server",
+      "level": "初級",
+      "level_note": "講習資料 11〜14章",
+      "title": "サービスサーバを作る",
+      "kind": "gtest",
+      "sources": [
+        "src/add_two_ints_server.cpp"
+      ],
+      "docs": [
+        {
+          "title": "Writing a simple service and client (C++)",
+          "url": "https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Cpp-Service-And-Client.html"
+        }
+      ],
+      "hints": [
+        "公式チュートリアルの add 関数と create_service を書きます。",
+        "",
+        "  service_ = this->create_service<AddTwoInts>(",
+        "    \"add_two_ints\",",
+        "    std::bind(&AddTwoIntsServer::add, this, _1, _2));",
+        "",
+        "add の中では return せず、response に書き込みます:",
+        "  response->sum = request->a + request->b;",
+        "  RCLCPP_INFO(this->get_logger(), \"Incoming request\\na: %ld b: %ld\",",
+        "    request->a, request->b);",
+        "",
+        "サービスの中身は次で確認できます:",
+        "  ros2 interface show example_interfaces/srv/AddTwoInts"
+      ],
+      "lecture": [
+        {
+          "title": "06_サービス（サービスの概念）",
+          "path": "docs/ros2/06_サービス.md"
+        },
+        {
+          "title": "14_サービスの実装（server 側）",
+          "path": "docs/ros2/14_サービスの実装.md"
+        }
+      ],
+      "chapter": "14章"
+    },
+    {
+      "id": "05_service_client",
+      "package": "drill_05_service_client",
+      "level": "初級",
+      "level_note": "講習資料 11〜14章",
+      "title": "サービスクライアントを作る",
+      "kind": "gtest",
+      "sources": [
+        "src/add_two_ints_client.cpp"
+      ],
+      "docs": [
+        {
+          "title": "Writing a simple service and client (C++)",
+          "url": "https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Cpp-Service-And-Client.html"
+        }
+      ],
+      "hints": [
+        "  client_ = this->create_client<AddTwoInts>(\"add_two_ints\");",
+        "",
+        "サーバが立ち上がるのを待つのはクライアント側の責任です:",
+        "  client_->wait_for_service(timeout)",
+        "",
+        "リクエストは shared_ptr で作って async_send_request に渡します:",
+        "  auto request = std::make_shared<AddTwoInts::Request>();",
+        "  request->a = a;",
+        "  request->b = b;",
+        "  return client_->async_send_request(request);",
+        "",
+        "戻ってくる FutureAndRequestId は、呼び出し側が spin して待ちます。"
+      ],
+      "lecture": [
+        {
+          "title": "14_サービスの実装（client 側・同期と非同期）",
+          "path": "docs/ros2/14_サービスの実装.md"
+        }
+      ],
+      "chapter": "14章"
+    },
+    {
+      "id": "06_parameters",
+      "package": "drill_06_parameters",
+      "level": "中級",
+      "level_note": "講習資料 15〜17章",
+      "title": "クラスの中でパラメータを使う",
+      "kind": "gtest",
+      "sources": [
+        "src/minimal_param.cpp"
+      ],
+      "docs": [
+        {
+          "title": "Using parameters in a class (C++)",
+          "url": "https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Using-Parameters-In-A-Class-CPP.html"
+        }
+      ],
+      "hints": [
+        "公式チュートリアルの MinimalParam と同じものを書きます。",
+        "",
+        "  auto param_desc = rcl_interfaces::msg::ParameterDescriptor{};",
+        "  param_desc.description = \"This parameter is mine!\";",
+        "  this->declare_parameter(\"my_parameter\", \"world\", param_desc);",
+        "",
+        "タイマ（1000ms）のコールバックの中:",
+        "  std::string my_param = this->get_parameter(\"my_parameter\").as_string();",
+        "  RCLCPP_INFO(this->get_logger(), \"Hello %s!\", my_param.c_str());",
+        "  std::vector<rclcpp::Parameter> all_new_parameters{",
+        "    rclcpp::Parameter(\"my_parameter\", \"world\")};",
+        "  this->set_parameters(all_new_parameters);",
+        "",
+        "最後の set_parameters が公式のポイントです。ros2 param set で変えても",
+        "1 秒後に \"world\" に戻ります。パラメータは「毎回読む」のが原則です。"
+      ],
+      "lecture": [
+        {
+          "title": "07_パラメータ（パラメータの概念）",
+          "path": "docs/ros2/07_パラメータ.md"
+        },
+        {
+          "title": "15_パラメータとlaunchの実践（declare_parameter）",
+          "path": "docs/ros2/15_パラメータとlaunchの実践.md"
+        }
+      ],
+      "chapter": "15章"
+    },
+    {
+      "id": "07_param_events",
+      "package": "drill_07_param_events",
+      "level": "中級",
+      "level_note": "講習資料 15〜17章",
+      "title": "パラメータの変更を監視する",
+      "kind": "gtest",
+      "sources": [
+        "src/node_with_parameters.cpp"
+      ],
+      "docs": [
+        {
+          "title": "Monitoring for parameter changes (C++)",
+          "url": "https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Monitoring-For-Parameter-Changes-CPP.html"
+        }
+      ],
+      "hints": [
+        "課題05では「毎回 get_parameter する」方式でした。こちらは逆に、",
+        "変更されたときだけ通知を受け取る方式です。",
+        "",
+        "  param_subscriber_ = std::make_shared<rclcpp::ParameterEventHandler>(this);",
+        "  cb_handle_ = param_subscriber_->add_parameter_callback(",
+        "    \"an_int_param\", [this](const rclcpp::Parameter & p) { ... });",
+        "",
+        "add_parameter_callback の戻り値（ハンドル）をメンバに保持しないと、",
+        "その場でコールバックが解除されます。ここが一番のハマりどころです。",
+        "",
+        "コールバックは /parameter_events トピック経由で呼ばれるので、",
+        "ノードを spin していないと呼ばれません。"
+      ],
+      "lecture": [
+        {
+          "title": "07_パラメータ（実行中のゲイン調整）",
+          "path": "docs/ros2/07_パラメータ.md"
+        },
+        {
+          "title": "15_パラメータとlaunchの実践（パラメータの実践）",
+          "path": "docs/ros2/15_パラメータとlaunchの実践.md"
+        }
+      ],
+      "chapter": "15章"
+    },
+    {
+      "id": "08_params_yaml",
+      "package": "drill_08_params_yaml",
+      "level": "中級",
+      "level_note": "講習資料 15〜17章",
+      "title": "パラメータを YAML で管理する",
+      "kind": "pytest",
+      "sources": [
+        "config/params.yaml",
+        "launch/param_demo.launch.py"
+      ],
+      "docs": [
+        {
+          "title": "Understanding parameters",
+          "url": "https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Parameters/Understanding-ROS2-Parameters.html"
+        },
+        {
+          "title": "About parameters",
+          "url": "https://docs.ros.org/en/jazzy/Concepts/Basic/About-Parameters.html"
+        }
+      ],
+      "hints": [
+        "パラメータ YAML の構造は 3 段です。ここを間違える人が多いところです。",
+        "",
+        "  <ノード名>:",
+        "    ros__parameters:",
+        "      <パラメータ名>: <値>",
+        "",
+        "ros__parameters のアンダースコアは **2 本** です。",
+        "ノード名に名前空間がある場合は /ns/node_name のように書きます。",
+        "全ノード共通にしたいときは /** をノード名の代わりに使えます。",
+        "",
+        "コマンドラインからは:",
+        "  ros2 run <pkg> <exe> --ros-args --params-file config/params.yaml",
+        "launch からは Node(..., parameters=[パスの文字列]) です。"
+      ],
+      "lecture": [
+        {
+          "title": "07_パラメータ（YAML）",
+          "path": "docs/ros2/07_パラメータ.md"
+        },
+        {
+          "title": "15_パラメータとlaunchの実践（launch からの YAML 注入・名前空間）",
+          "path": "docs/ros2/15_パラメータとlaunchの実践.md"
+        }
+      ],
+      "chapter": "15章"
+    },
+    {
+      "id": "09_launch",
+      "package": "drill_09_launch",
+      "level": "中級",
+      "level_note": "講習資料 15〜17章",
+      "title": "launch を Python / XML / YAML で書く",
+      "kind": "pytest",
+      "sources": [
+        "launch/talker_listener.launch.py",
+        "launch/talker_listener.launch.xml",
+        "launch/talker_listener.launch.yaml"
+      ],
+      "docs": [
+        {
+          "title": "Creating a launch file",
+          "url": "https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Launch/Creating-Launch-Files.html"
+        },
+        {
+          "title": "Using Python, XML, and YAML for ROS 2 launch files",
+          "url": "https://docs.ros.org/en/jazzy/How-To-Guides/Launch-file-different-formats.html"
+        }
+      ],
+      "hints": [
+        "同じ内容を 3 つの書き方で書きます。書式は違っても構造は同じです。",
+        "",
+        "Python:",
+        "  from launch import LaunchDescription",
+        "  from launch_ros.actions import Node",
+        "  def generate_launch_description():",
+        "      return LaunchDescription([Node(package=..., executable=..., ...)])",
+        "",
+        "XML:  <launch><node pkg=\"...\" exec=\"...\" namespace=\"...\"><remap from=\"...\" to=\"...\"/></node></launch>",
+        "YAML: launch: [ {node: {pkg: ..., exec: ..., namespace: ..., remap: [...]}} ]",
+        "",
+        "Python は「プログラムで組み立てられる」、XML / YAML は「宣言的で読みやすい」",
+        "という住み分けです。条件分岐や繰り返しが要るなら Python です。"
+      ],
+      "lecture": [
+        {
+          "title": "09_launchとros2_bag（launch で一括起動）",
+          "path": "docs/ros2/09_launchとros2_bag.md"
+        },
+        {
+          "title": "15_パラメータとlaunchの実践（launch からの YAML 注入）",
+          "path": "docs/ros2/15_パラメータとlaunchの実践.md"
+        }
+      ],
+      "chapter": "09章 / 15章"
+    },
+    {
+      "id": "10_action_server",
+      "package": "drill_10_action_server",
+      "level": "中級",
+      "level_note": "講習資料 15〜17章",
+      "title": "アクションサーバを作る",
+      "kind": "gtest",
+      "sources": [
+        "src/fibonacci_action_server.cpp"
+      ],
+      "docs": [
+        {
+          "title": "Writing an action server and client (C++)",
+          "url": "https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Writing-an-Action-Server-Client/Cpp.html"
+        },
+        {
+          "title": "Creating an action",
+          "url": "https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Creating-an-Action.html"
+        }
+      ],
+      "hints": [
+        "アクションは「目標 → 途中経過 → 結果」の 3 段構えです。",
+        "サーバには 4 つの部品が必要です。",
+        "",
+        "  1. handle_goal    : 目標を受けるか断るか（ACCEPT_AND_EXECUTE / REJECT）",
+        "  2. handle_cancel  : キャンセル要求を受けるか（ACCEPT / REJECT）",
+        "  3. handle_accepted: 受けた目標の実行を始める（公式は std::thread で execute）",
+        "  4. execute        : 実際の計算。途中で publish_feedback、最後に succeed",
+        "",
+        "  action_server_ = rclcpp_action::create_server<Fibonacci>(",
+        "    this, \"fibonacci\",",
+        "    std::bind(&FibonacciActionServer::handle_goal, this, _1, _2),",
+        "    std::bind(&FibonacciActionServer::handle_cancel, this, _1),",
+        "    std::bind(&FibonacciActionServer::handle_accepted, this, _1));",
+        "",
+        "handle_accepted は「すぐ返る」ことが大事です。ここで重い処理をすると",
+        "Executor が止まります。だから公式は別スレッドに投げています。"
+      ],
+      "lecture": [
+        {
+          "title": "08_アクション（アクションの概念）",
+          "path": "docs/ros2/08_アクション.md"
+        },
+        {
+          "title": "16_アクションサーバの実装（goal/feedback/result/cancel）",
+          "path": "docs/ros2/16_アクションサーバの実装.md"
+        }
+      ],
+      "chapter": "16章"
+    },
+    {
+      "id": "11_node_test",
+      "package": "drill_11_node_test",
+      "level": "中級",
+      "level_note": "講習資料 15〜17章",
+      "title": "テストを書く",
+      "kind": "gtest_mutation",
+      "sources": [
+        "test/test_exercise.cpp"
+      ],
+      "docs": [
+        {
+          "title": "Writing basic tests with C++ with GTest",
+          "url": "https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Testing/Cpp.html"
+        },
+        {
+          "title": "Running tests in ROS 2 from the command line",
+          "url": "https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Testing/CLI.html"
+        }
+      ],
+      "hints": [
+        "この課題で書くのは「テスト」です。実装（limit_velocity）はもう完成しています。",
+        "",
+        "合格条件は 2 つあります。",
+        "  1. 正しい実装に対して、あなたのテストが通ること",
+        "  2. わざとバグを入れた実装に対して、あなたのテストが落ちること",
+        "つまり「通るテスト」だけでは不合格です。バグを踏める観点が必要です。",
+        "",
+        "足りていない観点を探すためのチェックリスト:",
+        "  - 速度制限（max_speed）は「正の側」だけでなく「負の側」にも効いているか",
+        "  - 加速度制限（max_delta）は増える方向・減る方向の両方で効いているか",
+        "  - ちょうど max_speed / ちょうど max_delta の境界値",
+        "  - max_speed や max_delta に 0 が来たとき",
+        "  - max_speed や max_delta に負の値が来たとき（仕様では 0 として扱う）",
+        "",
+        "浮動小数の比較に == は使いません。EXPECT_DOUBLE_EQ か EXPECT_NEAR を使います。"
+      ],
+      "lecture": [
+        {
+          "title": "17_テストとデバッグ（gtest / pytest と colcon test）",
+          "path": "docs/ros2/17_テストとデバッグ.md"
+        }
+      ],
+      "chapter": "17章"
+    },
+    {
+      "id": "12_qos",
+      "package": "drill_12_qos",
+      "level": "上級",
+      "level_note": "資料が「別記事」として先送りしている領域",
+      "title": "QoS プロファイルを設計する",
+      "kind": "gtest",
+      "sources": [
+        "src/qos_nodes.cpp"
+      ],
+      "docs": [
+        {
+          "title": "About Quality of Service settings",
+          "url": "https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Quality-of-Service-Settings.html"
+        },
+        {
+          "title": "quality_of_service_demo",
+          "url": "https://github.com/ros2/demos/tree/jazzy/quality_of_service_demo"
+        }
+      ],
+      "hints": [
+        "QoS は「送る側と受ける側の契約」です。合っていないと繋がりません。",
+        "",
+        "  rclcpp::QoS qos(rclcpp::KeepLast(1));",
+        "  qos.transient_local();   // 後から来た購読者にも最後の値を配る",
+        "  qos.reliable();",
+        "",
+        "TRANSIENT_LOCAL は「あとから起動した購読者にも最後の値が届く」設定です。",
+        "地図やロボット記述のような「変わらないが必ず要る」データに使います。",
+        "",
+        "publisher と subscription の両方を transient_local にする必要があります。",
+        "実際に何で繋がったかは publisher_->get_actual_qos() で確認できます。"
+      ],
+      "lecture": [
+        {
+          "title": "05_トピック（QoS の触り）",
+          "path": "docs/ros2/05_トピック.md"
+        }
+      ],
+      "chapter": "05章の発展"
+    },
+    {
+      "id": "13_executors",
+      "package": "drill_13_executors",
+      "level": "上級",
+      "level_note": "資料が「別記事」として先送りしている領域",
+      "title": "Executor とコールバックグループ",
+      "kind": "gtest",
+      "sources": [
+        "src/relay_with_service.cpp"
+      ],
+      "docs": [
+        {
+          "title": "Executors（概念）",
+          "url": "https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Executors.html"
+        },
+        {
+          "title": "Using callback groups",
+          "url": "https://docs.ros.org/en/jazzy/How-To-Guides/Using-callback-groups.html"
+        }
+      ],
+      "hints": [
+        "サブスクライバのコールバックの中でサービスの応答を待つと、",
+        "同じコールバックグループにいる限り**絶対に**返ってきません。",
+        "Executor は 1 つのグループから同時に 1 つのコールバックしか実行しないためです。",
+        "",
+        "  callback_group_ = this->create_callback_group(",
+        "    rclcpp::CallbackGroupType::MutuallyExclusive);",
+        "",
+        "  rclcpp::SubscriptionOptions options;",
+        "  options.callback_group = subscription_group_;",
+        "  subscription_ = this->create_subscription<...>(..., options);",
+        "",
+        "  client_ = this->create_client<...>(\"add_two_ints\",",
+        "    rclcpp::ServicesQoS(), client_group_);",
+        "",
+        "そして MultiThreadedExecutor で回すこと。片方だけでは解決しません。"
+      ],
+      "lecture": [
+        {
+          "title": "14_サービスの実装（コールバックの中で待つ問題と MultiThreadedExecutor）",
+          "path": "docs/ros2/14_サービスの実装.md"
+        }
+      ],
+      "chapter": "14章の発展"
+    },
+    {
+      "id": "14_zero_copy",
+      "package": "drill_14_zero_copy",
+      "level": "上級",
+      "level_note": "資料が「別記事」として先送りしている領域",
+      "title": "ゼロコピー（unique_ptr とプロセス内通信）",
+      "kind": "gtest",
+      "sources": [
+        "src/zero_copy_nodes.cpp"
+      ],
+      "docs": [
+        {
+          "title": "Intra-Process Communication（デモ解説）",
+          "url": "https://docs.ros.org/en/jazzy/Tutorials/Demos/Intra-Process-Communication.html"
+        },
+        {
+          "title": "intra_process_demo",
+          "url": "https://github.com/ros2/demos/tree/jazzy/intra_process_demo"
+        }
+      ],
+      "hints": [
+        "publish には 2 つの形があります。",
+        "",
+        "  publisher_->publish(message);              // コピーされる",
+        "  publisher_->publish(std::move(msg_uptr));  // 所有権を渡す＝コピーなし",
+        "",
+        "unique_ptr で渡し、購読側も ConstSharedPtr で受け、さらに",
+        "NodeOptions().use_intra_process_comms(true) で同一プロセス内通信を有効に",
+        "すると、送信側と受信側でメッセージの**アドレスが一致**します。",
+        "これがゼロコピーです。",
+        "",
+        "アドレスが変わってしまう場合は、どこかでコピーが発生しています。",
+        "publish に渡すのが値なのか std::move した unique_ptr なのかを確認しましょう。"
+      ],
+      "lecture": [
+        {
+          "title": "04_ノード（発展: component とプロセス内通信）",
+          "path": "docs/ros2/04_ノード.md"
+        }
+      ],
+      "chapter": "04章の発展"
+    },
+    {
+      "id": "15_composition",
+      "package": "drill_15_composition",
+      "level": "上級",
+      "level_note": "資料が「別記事」として先送りしている領域",
+      "title": "コンポーネント化する（RCLCPP_COMPONENTS）",
+      "kind": "gtest",
+      "sources": [
+        "src/composable_talker.cpp"
+      ],
+      "docs": [
+        {
+          "title": "Writing a composable node (C++)",
+          "url": "https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Writing-a-Composable-Node.html"
+        },
+        {
+          "title": "Composing multiple nodes in a single process",
+          "url": "https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Composition.html"
+        }
+      ],
+      "hints": [
+        "コンポーネントは「1 プロセス 1 ノード」をやめるための仕組みです。",
+        "同じプロセスに載せられるので、ゼロコピー通信の恩恵も受けられます。",
+        "",
+        "守るべき約束は 2 つです。",
+        "",
+        "  1. コンストラクタが const rclcpp::NodeOptions & を受け取り、",
+        "     それを Node の初期化にそのまま渡すこと",
+        "       explicit ComposableTalker(const rclcpp::NodeOptions & options)",
+        "       : Node(\"composable_talker\", options)",
+        "",
+        "  2. ソースの最後で登録すること",
+        "       #include \"rclcpp_components/register_node_macro.hpp\"",
+        "       RCLCPP_COMPONENTS_REGISTER_NODE(ComposableTalker)",
+        "",
+        "options を Node に渡し忘れると、--ros-args での名前変更や",
+        "パラメータの指定が効かないノードになります。"
+      ],
+      "lecture": [
+        {
+          "title": "04_ノード（発展: component ノード）",
+          "path": "docs/ros2/04_ノード.md"
+        }
+      ],
+      "chapter": "04章の発展"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!--
+  課題09: talker と listener を起動する launch 記述（XML 版）。
+
+  Python 版（talker_listener.launch.py）と同じ内容を XML で書きます。
+
+  骨格（要素名）:
+
+    <launch>
+      <node pkg="..." exec="..." name="..." namespace="...">
+        <remap from="..." to="..."/>
+      </node>
+    </launch>
+
+  起動する内容（README.md の表と同じ）:
+    talker:   pkg=drill_01_publisher, exec=talker,   name=talker,   namespace=demo, remap topic->chatter
+    listener: pkg=drill_02_subscriber, exec=listener, name=listener, namespace=demo, remap topic->chatter
+-->
+<launch>
+
+  <!-- TODO: talker 用の <node> を書く。
+       pkg="drill_01_publisher" exec="talker" name="talker" namespace="demo"
+       中に <remap from="topic" to="chatter"/> を入れること。 -->
+
+  <!-- TODO: listener 用の <node> も書く。
+       pkg="drill_02_subscriber" exec="listener" name="listener" namespace="demo"
+       remap の内容は talker と同じ。 -->
+
+  <!-- I AM NOT DONE -->
+
+</launch>

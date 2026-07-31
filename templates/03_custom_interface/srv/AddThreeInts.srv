@@ -1,0 +1,18 @@
+# I AM NOT DONE
+#
+# .srv ファイルは「リクエスト」と「レスポンス」を --- という行1本で区切る
+# 2段構造です。下にある --- がその区切りです（消さないこと）。
+#
+# --- の上がリクエスト（AddThreeInts::Request）、下がレスポンス
+# （AddThreeInts::Response）になります。
+#
+# TODO: --- より上（リクエスト側）に int64 型のフィールドを3つ、
+#       a, b, c という名前で定義すること。
+# TODO: --- より下（レスポンス側）に、3つの和を表す int64 型のフィールドを
+#       1つ、sum という名前で定義すること。
+#
+# 書けたら、生成された型を確認できます:
+#   ros2 interface show drill_03_custom_interface/srv/AddThreeInts
+#
+# 書き方が分からなければ ./drill hint 03
+---

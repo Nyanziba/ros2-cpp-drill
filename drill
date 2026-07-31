@@ -1,0 +1,711 @@
+#!/usr/bin/env python3
+"""ROS 2 練習帳（ros2-drill）のランナー。
+
+課題ごとに colcon でビルドし、テスト（C++ は gtest、launch/YAML は pytest）を
+走らせて合否を判定します。
+
+使い方:
+    ./drill list             課題一覧と進捗を表示
+    ./drill run [ID]         課題をビルドしてテストする（省略時は次の未完了課題）
+    ./drill watch [ID]       保存を検知して自動でテストし直す
+    ./drill hint ID          ヒントを表示
+    ./drill doc ID           公式ドキュメントの該当ページを表示
+    ./drill read [ID]        対応する講習資料の章を開く
+    ./drill solution ID      解答例を表示
+    ./drill reset ID         課題を初期状態に戻す
+    ./drill verify           全課題を順にテストする
+    ./drill completion [SH]  タブ補完スクリプトを出力する（bash / zsh）
+
+ID は "01" でも "01_publisher" でも "publisher" でも構いません。
+
+タブ補完を有効にするには、次の行を ~/.bashrc に足してください。
+
+    source /path/to/ros2-drill/completion/drill.bash
+
+zsh の場合は ./drill completion zsh の出力を使ってください。
+"""
+
+import json
+import os
+import shutil
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+EXERCISES_DIR = ROOT / "exercises"
+SOLUTIONS_DIR = ROOT / "solutions"
+TEMPLATES_DIR = ROOT / "templates"
+CONFIG = ROOT / "exercises.json"
+
+MARKER = "I AM NOT DONE"
+GTEST_TARGET = "test_exercise"
+
+# ---------------------------------------------------------------- 表示まわり
+
+_COLOR = sys.stdout.isatty() and os.environ.get("NO_COLOR") is None
+
+
+def _c(code, text):
+    return f"\033[{code}m{text}\033[0m" if _COLOR else text
+
+
+def bold(t):
+    return _c("1", t)
+
+
+def green(t):
+    return _c("32", t)
+
+
+def red(t):
+    return _c("31", t)
+
+
+def yellow(t):
+    return _c("33", t)
+
+
+def dim(t):
+    return _c("2", t)
+
+
+def cyan(t):
+    return _c("36", t)
+
+
+def die(msg):
+    print(red(f"エラー: {msg}"), file=sys.stderr)
+    sys.exit(1)
+
+
+def disp_width(text):
+    """端末上の表示幅。全角は 2 桁として数える。"""
+    return sum(2 if ord(ch) > 0x2E80 else 1 for ch in text)
+
+
+def pad(text, width):
+    """表示幅を揃えて右に空白を足す（f-string の :<N は文字数なので全角で崩れる）。"""
+    return text + " " * max(0, width - disp_width(text))
+
+
+def rule(title):
+    fill = max(0, 62 - disp_width(title))
+    print()
+    print(bold(f"━━━ {title} " + "━" * fill))
+    print()
+
+
+# ---------------------------------------------------------------- 課題データ
+
+
+def load_exercises():
+    if not CONFIG.exists():
+        die(f"{CONFIG} が見つかりません。")
+    return json.loads(CONFIG.read_text(encoding="utf-8"))["exercises"]
+
+
+def short_id(ex):
+    """課題 ID の先頭部分（"01_publisher" -> "01"、"c03_inheritance" -> "c03"）。
+
+    ./drill run などに渡せる最短のトークンを返す。ROS 2 編は 2 桁だが
+    C++ 編は "c" + 2 桁なので、先頭 2 文字を切るだけでは "c0" になってしまう。
+    """
+    return ex["id"].split("_", 1)[0]
+
+
+def lecture_ref(ex):
+    """その課題に対応する講習資料の (表示名, 絶対パス, 存在するか)。無ければ None。
+
+    Docs と Drill を 1 対 1 で対応させているので、課題の進捗がそのまま
+    「どこまで読んだか」の目安になる。list と doc の両方から使う。
+    """
+    lecture = ex.get("lecture") or []
+    if not lecture:
+        return None
+    ref = lecture[0]
+    path = (ROOT / ref["path"]).resolve()
+    return ref["title"], path, path.exists()
+
+
+def exercise_dir(ex):
+    return EXERCISES_DIR / ex["id"]
+
+
+def sources(ex):
+    """受講者が編集するファイルの絶対パス一覧。"""
+    return [exercise_dir(ex) / rel for rel in ex["sources"]]
+
+
+def is_done(ex):
+    """すべての編集対象から MARKER が消えていれば「完了申告済み」とみなす。"""
+    found_any = False
+    for src in sources(ex):
+        if not src.exists():
+            return False
+        found_any = True
+        if MARKER in src.read_text(encoding="utf-8"):
+            return False
+    return found_any
+
+
+def resolve(exercises, token):
+    """"01" / "01_publisher" / "publisher" / "c01" のいずれでも課題を引く。
+
+    候補の探し方を段階に分け、先の段階で 1 件に決まったらそこで確定する。
+    段階を分けないと "01" が 01_publisher と c01_build_and_link の両方に
+    当たって曖昧になる（"01" は "c01_build_and_link" の部分文字列でもある）。
+    """
+    if token is None:
+        for ex in exercises:
+            if not is_done(ex):
+                return ex
+        return None
+    token = token.strip().strip("/")
+
+    # ① ID 完全一致  ② 短縮 ID 完全一致  ③ 前方一致  ④ 部分一致
+    tiers = (
+        [ex for ex in exercises if ex["id"] == token],
+        [ex for ex in exercises if short_id(ex) == token],
+        [ex for ex in exercises if ex["id"].startswith(token)],
+        [ex for ex in exercises if token in ex["id"]],
+    )
+    for matches in tiers:
+        if len(matches) == 1:
+            return matches[0]
+        if len(matches) > 1:
+            die(
+                f"課題の指定が曖昧です: " + ", ".join(m["id"] for m in matches) +
+                "\n       もっと詳しく指定してください（例: " + short_id(matches[0]) + "）")
+    die(f"課題 '{token}' が見つかりません。./drill list で一覧を確認してください。")
+
+
+# ---------------------------------------------------------------- ROS 環境
+
+
+def find_ros_setup():
+    candidates = []
+    prefix = os.environ.get("ROS_ROOT_PREFIX")
+    if prefix:
+        candidates.append(Path(prefix) / "setup.bash")
+    opt = Path("/opt/ros")
+    if opt.is_dir():
+        candidates += sorted((d / "setup.bash" for d in opt.iterdir() if d.is_dir()), reverse=True)
+    return next((c for c in candidates if c.exists()), None)
+
+
+def ros_env():
+    env = os.environ.copy()
+    # 同じ LAN の他の受講者と DDS が混信しないよう閉じておく。
+    env.setdefault("ROS_AUTOMATIC_DISCOVERY_RANGE", "LOCALHOST")
+    env.setdefault("ROS_DOMAIN_ID", str(1 + os.getuid() % 99))
+    env.setdefault("COLCON_LOG_PATH", str(ROOT / "log"))
+    # rclcpp のテンプレートは 1 つの g++ で 1GB 近く食うことがある。
+    # コア数ぶん並列に走らせるとメモリ不足で落ちるので、既定で絞る。
+    # DRILL_COMPILE_JOBS で上書きできる。
+    env.setdefault("MAKEFLAGS", "-j" + env.get("DRILL_COMPILE_JOBS", "2"))
+    return env
+
+
+def ros_run(argv, capture=True, overlay=None):
+    """ROS 2 環境下でコマンドを実行する。返り値は (returncode, 出力)。
+
+    overlay に install ディレクトリを渡すと、その setup.bash も source する
+    （launch や ros2 run を使うテストで必要）。
+    """
+    env = ros_env()
+    prelude = []
+    if not env.get("ROS_DISTRO"):
+        setup = find_ros_setup()
+        if setup is None:
+            die(
+                "ROS 2 が見つかりません。\n"
+                "  source /opt/ros/jazzy/setup.bash を実行してから、もう一度お試しください。"
+            )
+        prelude.append(str(setup))
+    if overlay is not None and Path(overlay).exists():
+        prelude.append(str(overlay))
+
+    if prelude:
+        script = "".join(f'. "{p}" > /dev/null; ' for p in prelude) + 'exec "$@"'
+        cmd = ["bash", "-c", script, "drill"] + argv
+    else:
+        cmd = argv
+
+    if capture:
+        proc = subprocess.run(
+            cmd, cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
+        )
+        return proc.returncode, proc.stdout
+    return subprocess.call(cmd, cwd=ROOT, env=env), ""
+
+
+# ---------------------------------------------------------------- ビルド/テスト
+
+
+BUILD_ARGS = ["--executor", "sequential", "--parallel-workers", "1"]
+
+
+def build(ex):
+    """課題をビルドする。成功したら True。"""
+    print(dim("  ビルド中..."), flush=True)
+    code, out = ros_run(
+        ["colcon", "build", "--packages-select", ex["package"]] + BUILD_ARGS)
+    if code != 0:
+        print(red("  ✗ ビルドに失敗しました"))
+        print()
+        if any(rel.endswith((".msg", ".srv", ".action")) for rel in ex["sources"]):
+            print(yellow("  この課題は、インターフェース定義（.msg / .srv）が未完成のうちは"))
+            print(yellow("  ビルドが通りません。定義したフィールドが C++ の型に生えないので、"))
+            print(yellow("  「has no member named ...」というエラーが大量に出ます。"))
+            print(yellow("  まず定義ファイルを書いてください。エラーの数は気にしなくて大丈夫です。"))
+            print()
+        lines = out.splitlines()
+        head = lines[:40]
+        for line in head:
+            print("  " + line)
+        if len(lines) > len(head):
+            print(dim(f"  … 以下 {len(lines) - len(head)} 行省略（全文は log/latest_build/ にあります）"))
+        print()
+        print(dim("  まずはビルドを通すところから。型名やセミコロンを確認しましょう。"))
+        print(dim("  「undefined reference」が出ている場合は、関数の中身が空のままです。"))
+        return False
+    return True
+
+
+def run_tests(ex):
+    """テストを実行する。全部通れば True。"""
+    kind = ex.get("kind", "gtest")
+    if kind == "gtest":
+        binary = ROOT / "build" / ex["package"] / GTEST_TARGET
+        if not binary.exists():
+            die(f"テスト実行ファイルが見つかりません: {binary}")
+        argv = [str(binary)]
+        if _COLOR:
+            argv.append("--gtest_color=yes")
+        # カスタムインターフェースを持つ課題では、生成された typesupport の
+        # 共有ライブラリを実行時に dlopen する。install 空間を source しないと
+        # 「Type support not from this implementation」で落ちるため overlay を渡す。
+        code, _ = ros_run(argv, capture=False, overlay=ROOT / "install" / "setup.bash")
+        return code == 0
+    if kind == "pytest":
+        test_file = exercise_dir(ex) / "test" / "test_exercise.py"
+        argv = [sys.executable, "-m", "pytest", "-q", "--no-header", str(test_file)]
+        code, _ = ros_run(argv, capture=False, overlay=ROOT / "install" / "setup.bash")
+        return code == 0
+    if kind == "gtest_mutation":
+        # 受講者が「テストを書く」課題。2 つの実装に対して同じテストを走らせる。
+        #   test_exercise … 正しい実装 → 通らなければならない
+        #   test_mutant   … わざとバグを入れた実装 → 落ちなければならない
+        #                   （落ちないテストは、何も検証していないということ）
+        correct = ROOT / "build" / ex["package"] / GTEST_TARGET
+        mutant = ROOT / "build" / ex["package"] / "test_mutant"
+        for path in (correct, mutant):
+            if not path.exists():
+                die(f"テスト実行ファイルが見つかりません: {path}")
+
+        print(dim("  [1/2] 正しい実装に対して、あなたのテストを実行します"))
+        argv = [str(correct)] + (["--gtest_color=yes"] if _COLOR else [])
+        code_correct, _ = ros_run(argv, capture=False)
+        passed_correct = code_correct == 0
+        print()
+
+        print(dim("  [2/2] わざとバグを入れた実装に対して、同じテストを実行します"))
+        print(dim("        （ここで落ちれば「バグを検出できるテスト」になっています）"))
+        code_mutant, out = ros_run([str(mutant)], capture=True)
+        detected = code_mutant != 0
+        if detected:
+            print(green("  ✓ バグを検出しました"))
+        else:
+            print(red("  ✗ バグ入りの実装なのに、あなたのテストは全部通ってしまいました"))
+            print()
+            for line in out.splitlines()[-15:]:
+                print("  " + line)
+            print()
+            print(dim("  テストが assert していない、または観点が足りていません。"))
+            print(dim("  README の「検出すべきバグ」を読み直してください。"))
+        return passed_correct and detected
+    die(f"未知のテスト種別: {kind}")
+
+
+def check(ex, announce=True):
+    """1 課題をビルドしてテストする。合格なら True。"""
+    if announce:
+        rule(f"{ex['level']} {ex['id']}: {ex['title']}")
+    if not build(ex):
+        return False
+    print()
+    return run_tests(ex)
+
+
+def report(ex, passed, exercises):
+    print()
+    if not passed:
+        print(red(f"  ✗ 課題 {ex['id']} は未完了です"))
+        print(dim(f"     課題文:   {exercise_dir(ex) / 'README.md'}"))
+        for src in sources(ex):
+            print(dim(f"     編集する: {src}"))
+        print(dim(f"     ヒント:   ./drill hint {short_id(ex)}"))
+        return
+
+    print(green("  ✓ すべてのテストに合格しました！"))
+    remaining = [s for s in sources(ex) if MARKER in s.read_text(encoding="utf-8")]
+    if remaining:
+        print()
+        print(yellow("  次に進むには、下の行を削除してください:"))
+        print(cyan(f"      // {MARKER}"))
+        for src in remaining:
+            print(dim(f"      （{src}）"))
+    else:
+        nxt = next((e for e in exercises if not is_done(e)), None)
+        if nxt:
+            print(dim(f"     次の課題: ./drill run {short_id(nxt)}   ({nxt['title']})"))
+        else:
+            print()
+            print(green(bold("  🎉 全課題クリアです。おつかれさまでした！")))
+
+
+# ---------------------------------------------------------------- コマンド
+
+
+def cmd_list(exercises, _args):
+    print()
+    print(bold("  ROS 2 練習帳"))
+    current = next((e for e in exercises if not is_done(e)), None)
+    level = None
+    for ex in exercises:
+        if ex["level"] != level:
+            level = ex["level"]
+            print()
+            print(bold(f"  【{level}】") + dim(f"  {ex.get('level_note', '')}"))
+        done = is_done(ex)
+        if done:
+            mark, label = green("✓"), ex["id"]
+        elif ex is current:
+            mark, label = yellow("▶"), bold(ex["id"])
+        else:
+            mark, label = " ", dim(ex["id"])
+        suffix = dim("  ← 今ここ") if ex is current else ""
+        chapter = ex.get("chapter", "")
+        ch = dim(f"[{chapter}]") if chapter else ""
+        # label は色付きなのでエスケープを含む。幅計算は素の id で行う。
+        id_pad = " " * max(0, 22 - disp_width(ex["id"]))
+        print(f"    {mark} {label}{id_pad} {pad(ex['title'], 34)} {ch}{suffix}")
+    done_count = sum(1 for e in exercises if is_done(e))
+    print()
+    print(dim(f"  進捗: {done_count} / {len(exercises)}"))
+    print(dim("  [ ] 内が対応する講習資料の章です。./drill read ID でその章を開けます。"))
+    print()
+    return 0
+
+
+def cmd_run(exercises, args):
+    ex = resolve(exercises, args[0] if args else None)
+    if ex is None:
+        print(green("全課題クリア済みです。./drill verify で通しで確認できます。"))
+        return 0
+    passed = check(ex)
+    report(ex, passed, exercises)
+    return 0 if passed else 1
+
+
+def cmd_verify(exercises, _args):
+    failed = None
+    for ex in exercises:
+        if not check(ex):
+            failed = ex
+            report(ex, False, exercises)
+            break
+        print(green(f"\n  ✓ {ex['id']} 合格"))
+    print()
+    if failed:
+        print(red(f"  {failed['id']} で止まりました。"))
+        return 1
+    print(green(bold("  全課題のテストに合格しています。")))
+    print()
+    return 0
+
+
+def cmd_hint(exercises, args):
+    if not args:
+        die("課題 ID を指定してください（例: ./drill hint 01）")
+    ex = resolve(exercises, args[0])
+    rule(f"ヒント — {ex['id']}: {ex['title']}")
+    for line in ex.get("hints", ["（ヒントは用意されていません）"]):
+        print("  " + line)
+    print()
+    print(dim(f"  公式ドキュメント: ./drill doc {short_id(ex)}"))
+    print(dim(f"  行き詰まったら:   ./drill solution {short_id(ex)}"))
+    print()
+    return 0
+
+
+def cmd_doc(exercises, args):
+    if not args:
+        die("課題 ID を指定してください（例: ./drill doc 01）")
+    ex = resolve(exercises, args[0])
+    rule(f"参考資料 — {ex['id']}: {ex['title']}")
+
+    lecture = ex.get("lecture", [])
+    if lecture:
+        print(bold("  対応する講習資料"))
+        for ref in lecture:
+            path = (ROOT / ref["path"]).resolve()
+            mark = "" if path.exists() else dim("  ← 見つかりません")
+            print(f"    {ref['title']}{mark}")
+            print(cyan(f"      {path}"))
+        print()
+
+    docs = ex.get("docs", [])
+    if docs:
+        print(bold("  公式ドキュメント"))
+        for doc in docs:
+            print(f"    {doc['title']}")
+            print(cyan(f"      {doc['url']}"))
+        print()
+    return 0
+
+
+def cmd_solution(exercises, args):
+    if not args:
+        die("課題 ID を指定してください（例: ./drill solution 01）")
+    ex = resolve(exercises, args[0])
+    base = SOLUTIONS_DIR / ex["id"]
+    if not base.exists():
+        die(f"解答例が見つかりません: {base}")
+    rule(f"解答例 — {ex['id']}: {ex['title']}")
+    for rel in ex["sources"]:
+        path = base / rel
+        if not path.exists():
+            continue
+        print(bold(f"  ── {rel} " + "─" * 20))
+        print()
+        print(path.read_text(encoding="utf-8"))
+    return 0
+
+
+def cmd_reset(exercises, args):
+    if not args:
+        die("課題 ID を指定してください（例: ./drill reset 01）")
+    ex = resolve(exercises, args[0])
+    base = TEMPLATES_DIR / ex["id"]
+    if not base.exists():
+        die(f"テンプレートが見つかりません: {base}")
+    answer = input(f"{ex['id']} を初期状態に戻します。書きかけのコードは失われます。よろしいですか？ [y/N] ")
+    if answer.strip().lower() not in ("y", "yes"):
+        print("中止しました。")
+        return 1
+    for rel in ex["sources"]:
+        src, dst = base / rel, exercise_dir(ex) / rel
+        if src.exists():
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(src, dst)
+    print(green(f"  {ex['id']} を初期状態に戻しました。"))
+    return 0
+
+
+def cmd_watch(exercises, args):
+    ex = resolve(exercises, args[0] if args else None)
+    if ex is None:
+        print(green("全課題クリア済みです。"))
+        return 0
+    print()
+    print(bold("  watch モード（Ctrl-C で終了）"))
+    for src in sources(ex):
+        print(dim(f"  監視中: {src}"))
+
+    def fingerprint(exercise):
+        return tuple(s.stat().st_mtime if s.exists() else 0.0 for s in sources(exercise))
+
+    last = None
+    try:
+        while True:
+            now = fingerprint(ex)
+            if now != last:
+                last = now
+                if _COLOR:
+                    print("\033[2J\033[H", end="")
+                passed = check(ex)
+                report(ex, passed, exercises)
+                if passed and is_done(ex):
+                    nxt = next((e for e in exercises if not is_done(e)), None)
+                    if nxt is None:
+                        return 0
+                    ex, last = nxt, None
+                    print(dim(f"\n  次の課題に移りました: {nxt['id']}"))
+                    continue
+                print(dim("\n  保存すると自動で再テストします..."))
+            time.sleep(0.5)
+    except KeyboardInterrupt:
+        print("\n終了しました。")
+        return 0
+
+
+# ---------------------------------------------------------------- タブ補完
+
+
+# 課題 ID を引数に取るコマンド。補完で課題名を出す対象。
+ID_COMMANDS = ("run", "watch", "hint", "doc", "read", "solution", "reset")
+
+BASH_COMPLETION = r'''# ros2-drill のタブ補完（bash）
+#
+# 有効にするには ~/.bashrc に次の行を足してください。
+#   source /path/to/ros2-drill/completion/drill.bash
+#
+# 候補は ./drill 自身に問い合わせるので、課題を追加しても
+# このファイルを書き換える必要はありません。
+#
+# 絞り込みも ./drill 側でやっています（compgen は前方一致しかできないが、
+# ./drill run publisher のような部分一致も補完したいため）。
+_drill_complete()
+{
+  local exe cur prev
+  exe="${COMP_WORDS[0]}"
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+  # コマンド自体を補完する
+  if [ "$COMP_CWORD" -eq 1 ]; then
+    mapfile -t COMPREPLY < <("$exe" __complete commands "" "$cur" 2>/dev/null)
+    return 0
+  fi
+
+  # コマンドの引数を補完する
+  mapfile -t COMPREPLY < <("$exe" __complete args "$prev" "$cur" 2>/dev/null)
+  return 0
+}
+complete -F _drill_complete drill ./drill
+'''
+
+ZSH_COMPLETION = r'''# ros2-drill のタブ補完（zsh）
+#
+# 有効にするには ~/.zshrc に次の行を足してください。
+#   source /path/to/ros2-drill/completion/drill.zsh
+_drill_complete()
+{
+  local exe="${words[1]}"
+  local cur="${words[CURRENT]}"
+  if (( CURRENT == 2 )); then
+    compadd -- ${(f)"$("$exe" __complete commands '' "$cur" 2>/dev/null)"}
+  else
+    compadd -- ${(f)"$("$exe" __complete args "${words[CURRENT-1]}" "$cur" 2>/dev/null)"}
+  fi
+}
+compdef _drill_complete drill ./drill
+'''
+
+
+def _filter_candidates(candidates, cur):
+    """前方一致を優先し、無ければ部分一致で絞る。
+
+    resolve() が "publisher" のような部分一致を受け付けるので、補完も
+    同じように効かないと打てる文字列と補完できる文字列がずれる。
+    bash の compgen は前方一致しかできないため、絞り込みは Python 側でやる。
+    """
+    if not cur:
+        return candidates
+    prefix = [c for c in candidates if c.startswith(cur)]
+    if prefix:
+        return prefix
+    return [c for c in candidates if cur in c]
+
+
+def _emit_candidates(candidates, cur):
+    """候補を1行1件で出す。0件のときは1バイトも出さない。
+
+    空行を出すと bash の mapfile が「空文字列1件」として読んでしまい、
+    打ちかけの語が消される。0件のときは黙るのが正しい。
+    """
+    matched = _filter_candidates(candidates, cur)
+    if matched:
+        print("\n".join(matched))
+
+
+def cmd_read(exercises, args):
+    """課題に対応する講習資料を開く（PAGER、無ければパスを表示）。"""
+    ex = resolve(exercises, args[0] if args else None)
+    if ex is None:
+        print(green("全課題クリア済みです。"))
+        return 0
+    ref = lecture_ref(ex)
+    if ref is None:
+        die(f"{ex['id']} には対応する講習資料が登録されていません。")
+    title, path, exists = ref
+    if not exists:
+        die(f"資料が見つかりません: {path}")
+    print(dim(f"  {ex['id']}  →  {title}"))
+    print(cyan(f"  {path}"))
+    print()
+    pager = os.environ.get("PAGER")
+    if pager:
+        return subprocess.call([pager, str(path)])
+    for name in ("less", "more"):
+        if shutil.which(name):
+            return subprocess.call([name, str(path)])
+    # ページャが無い環境では中身をそのまま流す
+    print(path.read_text(encoding="utf-8"))
+    return 0
+
+
+def cmd_complete(exercises, args):
+    """タブ補完の候補を1行1件で出す（補完スクリプトが内部で呼ぶ）。
+
+    ./drill __complete commands                → コマンド名の一覧
+    ./drill __complete args <直前の語> [入力中の語] → 引数の候補
+    """
+    what = args[0] if args else "commands"
+    cur = args[2] if len(args) > 2 else ""
+    if what == "commands":
+        # __complete 自身は隠す（人が打つものではない）
+        _emit_candidates(sorted(c for c in COMMANDS if not c.startswith("__")), cur)
+        return 0
+    if what == "args":
+        prev = args[1] if len(args) > 1 else ""
+        if prev in ID_COMMANDS:
+            _emit_candidates([ex["id"] for ex in exercises], cur)
+        elif prev == "completion":
+            _emit_candidates(["bash", "zsh"], cur)
+    return 0
+
+
+def cmd_completion(_exercises, args):
+    """補完スクリプトを標準出力に書く。"""
+    shell = (args[0] if args else "bash").lstrip("-")
+    if shell == "bash":
+        print(BASH_COMPLETION, end="")
+        return 0
+    if shell == "zsh":
+        print(ZSH_COMPLETION, end="")
+        return 0
+    die(f"未知のシェル: {shell}（bash または zsh を指定してください）")
+
+
+COMMANDS = {
+    "list": cmd_list,
+    "run": cmd_run,
+    "watch": cmd_watch,
+    "hint": cmd_hint,
+    "doc": cmd_doc,
+    "read": cmd_read,
+    "solution": cmd_solution,
+    "reset": cmd_reset,
+    "verify": cmd_verify,
+    "completion": cmd_completion,
+    "__complete": cmd_complete,
+}
+
+
+def main(argv):
+    if argv and argv[0] in ("-h", "--help", "help"):
+        print(__doc__)
+        return 0
+    name = argv[0] if argv else "list"
+    if name not in COMMANDS:
+        print(__doc__)
+        die(f"不明なコマンド: {name}")
+    return COMMANDS[name](load_exercises(), argv[1:])
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

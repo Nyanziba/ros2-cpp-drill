@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!-- 課題09: talker と listener を起動する launch 記述（XML 版・解答）。 -->
+<launch>
+
+  <node pkg="drill_01_publisher" exec="talker" name="talker" namespace="demo">
+    <remap from="topic" to="chatter"/>
+  </node>
+
+  <node pkg="drill_02_subscriber" exec="listener" name="listener" namespace="demo">
+    <remap from="topic" to="chatter"/>
+  </node>
+
+</launch>

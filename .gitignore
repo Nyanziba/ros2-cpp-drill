@@ -1,0 +1,10 @@
+build/
+install/
+log/
+site/
+__pycache__/
+.pytest_cache/
+*.pyc
+*~
+*.swp
+.DS_Store

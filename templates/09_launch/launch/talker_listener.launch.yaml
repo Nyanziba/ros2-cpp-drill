@@ -1,0 +1,31 @@
+# 課題09: talker と listener を起動する launch 記述（YAML 版）。
+#
+# Python 版（talker_listener.launch.py）と同じ内容を YAML で書きます。
+#
+# 骨格（要素名）:
+#
+#   launch:
+#     - node:
+#         pkg: ...
+#         exec: ...
+#         name: ...
+#         namespace: ...
+#         remap:
+#           - from: ...
+#             to: ...
+#
+# 起動する内容（README.md の表と同じ）:
+#   talker:   pkg: drill_01_publisher, exec: talker,   name: talker,   namespace: demo, remap topic->chatter
+#   listener: pkg: drill_02_subscriber, exec: listener, name: listener, namespace: demo, remap topic->chatter
+
+# I AM NOT DONE
+
+launch:
+  []
+  # TODO: talker 用の node エントリを書く（上の骨格を参考に）。
+  #   pkg: drill_01_publisher, exec: talker, name: talker, namespace: demo
+  #   remap: topic -> chatter
+
+  # TODO: listener 用の node エントリも書く。
+  #   pkg: drill_02_subscriber, exec: listener, name: listener, namespace: demo
+  #   remap の内容は talker と同じ。

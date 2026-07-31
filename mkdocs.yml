@@ -1,0 +1,140 @@
+site_name: ROS 2 練習帳 — C++ と ROS 2 の教材
+site_description: >-
+  const や static で手が止まる人から、rclcpp のコードを読めるようになるまで。
+  読み物と課題が 1 対 1 で対応した ROS 2 / C++ の教材です。
+site_author: Nyanziba
+
+docs_dir: docs
+site_dir: site
+
+# false にしないと file:// で読めません。
+# true だと各ページが <名前>/index.html に置かれ、リンクが href="../07_static/" の
+# ようにディレクトリを指します。http で配信するなら綺麗ですが、ブラウザで
+# ファイルを直接開くとディレクトリ一覧が出るだけでページに飛べません。
+# false にすると <名前>.html が出力され、リンクも .html を直接指すので、
+# zip を展開して index.html を開くだけで全ページを辿れます。
+use_directory_urls: false
+
+# site_url は意図的に設定していません。
+# 設定すると（空文字を含めて）アセットのパスがルート絶対（/assets/...）になり、
+# zip を展開してローカルで開いたときに CSS も JS も読めなくなります。
+
+theme:
+  name: material
+  language: ja
+  # Google Fonts を取りに行かせない。オフラインでもそのまま読めるように
+  # 外部への通信をゼロにして、システムフォントで描画させます。
+  font: false
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top
+    - navigation.indexes
+    - navigation.tracking
+    - toc.follow
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: ダークモードに切り替え
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: ライトモードに切り替え
+
+plugins:
+  # lang: ja で lunr-languages の日本語トークナイザ（TinySegmenter）が入ります。
+  # これを入れないと日本語が空白区切りで切られ、全文検索がほぼ効きません。
+  - search:
+      lang: ja
+
+markdown_extensions:
+  - meta
+  - tables
+  - attr_list
+  - md_in_html
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.highlight:
+      anchor_linenums: true
+      pygments_lang_class: true
+  - toc:
+      permalink: true
+      permalink_title: この見出しへのリンク
+      # 既定の slugify は見出しを ASCII に落としてから slug を作るため、
+      # 日本語の見出しが全部消えて「#65-」のようなアンカーになります。
+      # pymdownx 版は Unicode をそのまま残し、GitHub と同じ規則で slug を作るので、
+      # GitHub 上で読んだときと同じアンカーが site 側でも通ります。
+      slugify: !!python/object/apply:pymdownx.slugs.slugify {kwds: {case: lower}}
+
+nav:
+  - 教材の全体像: README.md
+  - C++入門編:
+      - この講習について: cpp-basics/README.md
+      - "1. 宣言を読む": cpp-basics/01_宣言を読む.md
+      - "2. スコープと寿命": cpp-basics/02_スコープと寿命.md
+      - "3. 参照": cpp-basics/03_参照.md
+      - "4. ポインタ①（アドレスと間接参照）": cpp-basics/04_ポインタ1.md
+      - "5. ポインタ②（配列と使い分け）": cpp-basics/05_ポインタ2.md
+      - "6. const": cpp-basics/06_const.md
+      - "7. static": cpp-basics/07_static.md
+      - "8. その他の修飾子": cpp-basics/08_その他の修飾子.md
+      - "9. 値のセマンティクス": cpp-basics/09_値のセマンティクス.md
+      - "10. ヘッダとプロジェクト構成": cpp-basics/10_ヘッダとプロジェクト構成.md
+  - C++編:
+      - この講習について: cpp/README.md
+      - "1. ビルドとリンクの仕組み": cpp/01_ビルドとリンクの仕組み.md
+      - "2. クラスと初期化": cpp/02_クラスと初期化.md
+      - "3. 継承": cpp/03_継承.md
+      - "4. 参照と const": cpp/04_参照とconst.md
+      - "5. ムーブと所有権": cpp/05_ムーブと所有権.md
+      - "6. スマートポインタ": cpp/06_スマートポインタ.md
+      - "7. ラムダと std::bind": cpp/07_ラムダとstd_bind.md
+      - "8. auto と型推論": cpp/08_autoと型推論.md
+      - "9. テンプレートの読み方": cpp/09_テンプレートの読み方.md
+      - "10. 演算子オーバーロード": cpp/10_演算子オーバーロード.md
+      - "11. 標準ライブラリの道具箱": cpp/11_標準ライブラリの道具箱.md
+      - "12. std::chrono と時間": cpp/12_chronoと時間.md
+      - "13. 並行性の最小限": cpp/13_並行性の最小限.md
+      - "14. エラーの扱い": cpp/14_エラーの扱い.md
+      - "15. ドリルに入る前のチェックリスト": cpp/15_チェックリスト.md
+  - ROS 2編:
+      - "ROS2講習01: この記事からスタート（講習ハブ）": ros2/01_この記事からスタート_ROS2講習ハブ.md
+      - "ROS2講習02: 環境構築（Ubuntu 24.04 + ROS 2 Jazzy）": ros2/02_環境構築.md
+      - "ROS2講習03: turtlesimとrqtで感覚を掴む": ros2/03_turtlesimとrqtで感覚を掴む.md
+      - "ROS2講習04: ノード": ros2/04_ノード.md
+      - "ROS2講習05: トピック": ros2/05_トピック.md
+      - "ROS2講習05b: DDSとdiscoveryとROS_DOMAIN_ID": ros2/05b_DDSとdiscoveryとROS_DOMAIN_ID.md
+      - "ROS2講習06: サービス": ros2/06_サービス.md
+      - "ROS2講習07: パラメータ": ros2/07_パラメータ.md
+      - "ROS2講習08: アクション": ros2/08_アクション.md
+      - "ROS2講習09: launchとros2 bag": ros2/09_launchとros2_bag.md
+      - "ROS2講習10: ワークスペースとcolcon": ros2/10_ワークスペースとcolcon.md
+      - "ROS2講習11: C++でpub/subを書く": ros2/11_C++でpub_subを書く.md
+      - "ROS2講習12: Pythonでpub/subを書く": ros2/12_Pythonでpub_subを書く.md
+      - "ROS2講習13: カスタムインターフェース": ros2/13_カスタムインターフェース.md
+      - "ROS2講習14: サービスの実装": ros2/14_サービスの実装.md
+      - "ROS2講習15: パラメータとlaunchの実践": ros2/15_パラメータとlaunchの実践.md
+      - "ROS2講習16: アクションサーバの実装": ros2/16_アクションサーバの実装.md
+      - "ROS2講習17: テストとデバッグ": ros2/17_テストとデバッグ.md
+      - "ROS2講習18: TF2と座標系": ros2/18_TF2と座標系.md
+      - "ROS2講習19: URDFの書き方": ros2/19_URDFの書き方.md
+      - "ROS2講習20: ros2_control概要": ros2/20_ros2_control概要.md
+      - "ROS2講習20b: ros2_controlの使い方（差動二輪の足回りを例に）": ros2/20b_ros2_controlの使い方.md
+      - "ROS2講習21: センサ統合": ros2/21_センサ統合.md
+      - "ROS2講習22: 自己位置推定の考え方": ros2/22_自己位置推定の考え方.md
+  - 参考資料:
+      - "rclcpp の設計思想": rclcpp-の設計思想.md
+      - "ROS 2 のコーディング規約と言語バージョン（まとめ）": ros2-コーディング規約.md

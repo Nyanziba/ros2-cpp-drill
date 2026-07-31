@@ -1,0 +1,28 @@
+# I AM NOT DONE
+#
+# パラメータ YAML の構造は 3 段です。ここを間違える人が多いところです。
+#
+#   <ノード名>:
+#     ros__parameters:
+#       <パラメータ名>: <値>
+#
+# ros__parameters のアンダースコアは「2 本」です（ros_parameters ではありません）。
+#
+# TODO: ノード名 "param_echo" に対して、次の 4 つのパラメータを設定すること。
+#
+#   my_parameter    文字列        bonjour
+#   an_int_param    整数          7
+#   a_double_param  浮動小数      1.5
+#   a_string_list   文字列のリスト alpha と beta の 2 つ
+#
+# YAML に書いた書式が、そのままパラメータの型になります。
+#   7      -> 整数
+#   7.0    -> 浮動小数
+#   "7"    -> 文字列
+#   [1, 2] -> 整数の配列
+# 型がずれると param_echo 側の宣言で例外になります（テストも型を見ます）。
+#
+# 書けたら、まず手で確かめられます:
+#   ros2 run drill_08_params_yaml param_echo --ros-args --params-file config/params.yaml
+#
+# 書き方が分からなければ ./drill hint 08

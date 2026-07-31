@@ -1,0 +1,6 @@
+param_echo:
+  ros__parameters:
+    my_parameter: "bonjour"
+    an_int_param: 7
+    a_double_param: 1.5
+    a_string_list: ["alpha", "beta"]
