@@ -1,8 +1,10 @@
 name: docs
 
-# 教材サイトをビルドして artifact として置くワークフロー。
+# 教材サイトをビルドして GitHub Pages に配信する。
 # --strict なのでリンク切れと見出しアンカーの不一致は CI で落ちる。
-# GitHub Pages で配信したい場合は README の「サイトを公開する」を参照。
+#
+# Pages を有効にするには Settings > Pages > Source を「GitHub Actions」に
+# しておく必要がある（一度設定すれば以降は不要）。
 on:
   push:
     branches: [main]
@@ -20,6 +22,13 @@ on:
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
+
+# 同時に走らせない。あとから来た push を優先する。
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -37,7 +46,6 @@ jobs:
         run: pip install -r docs-requirements.txt
 
       - name: ビルド（警告をエラーにする）
-        # --strict でリンク切れやナビゲーションの取りこぼしを CI で落とします。
         run: mkdocs build --strict
 
       - name: 生成されたページ数を確認
@@ -46,8 +54,26 @@ jobs:
           echo "生成された HTML: ${count} ページ"
           test "$count" -ge 50
 
+      # Pages 用の tar と、普通にダウンロードできる zip の両方を置く。
+      # 前者は deploy ジョブが使い、後者はオフラインで配りたいとき用。
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/
+
       - uses: actions/upload-artifact@v4
         with:
           name: docs-site
           path: site/
           retention-days: 30
+
+  deploy:
+    # pull_request では配信しない（fork からの PR に配信権限を渡さないため）
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

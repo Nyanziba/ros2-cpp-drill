@@ -4,6 +4,8 @@ site_description: >-
   読み物と課題が 1 対 1 で対応した ROS 2 / C++ の教材です。
 site_author: Nyanziba
 
+site_url: https://nyanziba.github.io/ros2-cpp-drill/
+
 docs_dir: docs
 site_dir: site
 
