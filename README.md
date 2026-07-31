@@ -1,5 +1,8 @@
 # ROS 2 練習帳（ros2-drill）
 
+**📖 読み物はここで読めます → <https://nyanziba.github.io/ros2-cpp-drill/>**
+（章送り・トラックのタブ・日本語の全文検索つき。インストール不要）
+
 Rust の [rustlings](https://rustlings.rust-lang.org/) 方式の **ROS 2 / C++ 講習用ドリル**です。
 穴埋めのソースを埋めるとテストが合否を判定するので、採点する人が要りません。
 
@@ -84,8 +87,23 @@ source /path/to/ros2-drill/completion/drill.bash
 
 ## 読み物をサイトとして読む
 
-`docs/` は Markdown のまま読めますが、MkDocs Material のサイトにもできます。
-**章送り・トラックのタブ・日本語の全文検索**が付きます。
+### 公開サイト
+
+**<https://nyanziba.github.io/ros2-cpp-drill/>**
+
+`main` に push されるたびに `.github/workflows/docs.yml` が自動で配信します。
+入口はここです。
+
+| | |
+| --- | --- |
+| 全体像（入口） | <https://nyanziba.github.io/ros2-cpp-drill/> |
+| C++入門編 | <https://nyanziba.github.io/ros2-cpp-drill/cpp-basics/> |
+| C++編 | <https://nyanziba.github.io/ros2-cpp-drill/cpp/> |
+| ROS 2編 | <https://nyanziba.github.io/ros2-cpp-drill/ros2/01_この記事からスタート_ROS2講習ハブ.html> |
+
+### 手元でサイトを立てる
+
+オフラインで読みたいときや、書き換えて確認したいときはこちら。
 
 ```bash
 python3 -m venv .venv-docs          # Ubuntu なら先に sudo apt install python3-venv
@@ -94,21 +112,13 @@ python3 -m venv .venv-docs          # Ubuntu なら先に sudo apt install pytho
 ```
 
 `mkdocs build --strict` でリンク切れと見出しアンカーの不一致がエラーになります。
-CI（`.github/workflows/docs.yml`）もこれを回し、成果物を artifact に置きます。
+CI もこれを回すので、リンクを壊した push は落ちます。
+ビルド済みのサイトは Actions の `docs-site` artifact からも落とせます。
 
-### サイトを GitHub Pages で公開する
+### fork して自分のサイトにする
 
-`Settings > Pages > Source` を **GitHub Actions** にしてから、
-`.github/workflows/docs.yml` の `upload-artifact` ステップを Pages 用に差し替えます。
-
-```yaml
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: site/
-      - uses: actions/deploy-pages@v4
-```
-
-`permissions` に `pages: write` と `id-token: write` を足す必要があります。
+`Settings > Pages > Source` を **GitHub Actions** にして、`mkdocs.yml` の
+`site_url` を自分のものに書き換えれば、そのまま配信されます。
 
 ## この教材に含まれていないもの
 
