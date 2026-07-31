@@ -271,7 +271,7 @@ g++ -std=c++17 -Wall -Wextra copies.cpp -o copies && ./copies
 
 [▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/ojqrM6M81)
 
-<details><summary>解答（実行結果）</summary>
+<details markdown="1"><summary>解答（実行結果）</summary>
 
 ```
 log_only(m):
@@ -291,6 +291,8 @@ keep_it(m):
 
 4 点確認してください。
 
+<details markdown="1"><summary>解答（答え合わせ）</summary>
+
 1. **`log_only` は 0 回、`log_value` は 1 回。** 同じ `m` を同じように読んでいるだけで、
    `&` の 1 文字がコピーの有無を決めています
 2. `keep_it` は `const &` で受けているのに `copy=` が出ています。
@@ -300,6 +302,8 @@ keep_it(m):
    `v.push_back(m)` のものです。**出力の並びに引きずられて原因を誤認しないよう注意してください。**
    紛らわしければ `push_back` の前に `std::cout` を 1 行入れて確かめてください
 4. 範囲 for は `auto x` で 1 回コピー、`const auto & x` で 0 回
+
+</details>
 
 次に `const` を破ってエラーを見ます。`log_only` の中身を次に変えてください。
 

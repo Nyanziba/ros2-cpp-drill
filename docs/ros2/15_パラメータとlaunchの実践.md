@@ -391,7 +391,7 @@ ros2 launch speed_param_demo speed_param_launch.py namespace:=robot1
 
 **練習問題**: このlaunchファイルに、YAMLファイルのパスそのものをlaunch引数で切り替えられるようにする変更を加えてください。デフォルトはこれまでの`config/speed_param.yaml`のままとし、`params_file:=`で別のYAMLパスを指定できるようにします。
 
-<details><summary>解答</summary>
+<details markdown="1"><summary>解答</summary>
 
 ```python
 import os

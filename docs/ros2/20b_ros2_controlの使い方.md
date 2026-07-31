@@ -410,7 +410,7 @@ average rate: 199.998
 
 **練習問題**: `mobility_controllers.yaml`の`wheel_pid_controller`のゲインには`u_clamp_max: 0.25`という制限がついています。これがなぜ`[-1, 1]`ではなく`0.25`なのか、`mobility_controller`の役割と合わせて考えてください。
 
-<details><summary>解答</summary>
+<details markdown="1"><summary>解答</summary>
 
 `wheel_pid_controller`はcommand interfaceとして`voltage`を`[-1, 1]`の擬似電圧で出力できますが、`u_clamp_max`を`0.25`に絞っているのは、PID単体の出力上限を意図的に低く抑えるチューニングです。仮に`u_clamp_max`が`1.0`のままだと、速度の誤差が大きいときにPIDがフルパワーの電圧指令を出してしまい、急な挙動や過電流のリスクにつながります。`mobility_controller`側で計算したwheel velocity referenceに対して、PID側の出力を抑えめにしておくことで、キネマティクス計算の誤差やタイヤの空転などが起きても出力が暴れにくい構成にしています。
 

@@ -23,19 +23,19 @@
 
 Q1. `ros2 topic pub`で亀を動かしたあと、そのターミナルでCtrl+Cを押すと亀はどうなりますか。
 
-<details><summary>模範解答</summary>
+<details markdown="1"><summary>模範解答</summary>
 pubは一度きりのメッセージ配信ではなく、デフォルトで一定周期（1Hz）で繰り返し配信し続けています。Ctrl+Cで配信が止まると、亀への速度指令が途絶えるので亀はその場で停止します。turtlesimは慣性で動き続けるような実装にはなっていません。
 </details>
 
 Q2. teleop_keyでキーを押しても亀が反応しないとき、まず確認すべきことは何ですか。
 
-<details><summary>模範解答</summary>
+<details markdown="1"><summary>模範解答</summary>
 teleop_keyを起動したターミナルウィンドウにフォーカス（クリックしてアクティブ）が当たっているかを確認します。teleopはキーボードイベントをそのターミナルプロセスで直接読んでいるため、別のウィンドウ（rqtやブラウザなど）がアクティブなままだと入力が飛びません。
 </details>
 
 Q3. rqt_graphに表示される矢印は何を表していますか。ノード同士が直接関数呼び出しをしているのですか。
 
-<details><summary>模範解答</summary>
+<details markdown="1"><summary>模範解答</summary>
 矢印はトピック通信を表しています。ノードは互いを直接呼び出しているのではなく、DDS（Data Distribution Service）経由でトピックにpublish/subscribeしているだけです。ノード同士は互いの存在を知らなくてもよく、トピック名と型が一致していれば通信が成立します。この疎結合な構造がROS 2の設計の中心です。
 </details>
 

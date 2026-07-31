@@ -24,19 +24,19 @@
 
 Q1. launchファイルを使わずに`ros2 run`をターミナルごとに叩いていく方法と比べて、launchファイルの利点は何ですか。
 
-<details><summary>模範解答</summary>
+<details markdown="1"><summary>模範解答</summary>
 複数ノードを1コマンドでまとめて起動でき、ノード名のremapやパラメータの注入もファイル1つに記述できます。本番のロボットは10ノードを超えることが普通で、ターミナルを10枚開いて手で起動していくのは現実的ではありません。起動漏れや起動順のミスも減らせます。
 </details>
 
 Q2. `ros2 bag record -a`と、トピックを指定して記録する方法の違いと、それぞれをいつ使うべきか説明してください。
 
-<details><summary>模範解答</summary>
+<details markdown="1"><summary>模範解答</summary>
 `-a`は起動中の全トピックを記録します。何が問題の原因かわからないテストラン後の解析には`-a`が安全です（後から見たいトピックが記録されていないと詰みます）。一方、対象トピックが最初からわかっている場合や、画像・点群のような大容量トピックを含む場合は、トピック名を指定して記録すると容量と後の解析の手間を抑えられます。
 </details>
 
 Q3. `ros2 bag play`で再生したcmd_velと、実際にteleopから流していたcmd_velで、亀の動きに違いは出ますか。
 
-<details><summary>模範解答</summary>
+<details markdown="1"><summary>模範解答</summary>
 基本的に同じ動きが再現されます。bagはトピックに流れたメッセージとそのタイムスタンプをそのまま記録しており、再生時は記録時と同じ間隔でメッセージを流すからです。turtlesimはcmd_velの値だけを見て動くので、送信元がteleopかbag再生かは区別しません。ただし記録漏れのトピック（他ノードの内部状態など）に依存する処理があれば、そこは再現されません。
 </details>
 
@@ -196,7 +196,7 @@ ros2 bag play teleop_cmd_vel
 1. `ros2 bag play`実行中に`ros2 topic hz /turtlesim1/turtle1/cmd_vel`を叩き、記録時とだいたい同じ配信周波数で再生されていることを確認する
 2. 再生を`ros2 bag play -r 2.0 teleop_cmd_vel`のように2倍速で試し、亀の動きが速くなることを確認する
 
-<details><summary>解答</summary>
+<details markdown="1"><summary>解答</summary>
 1. teleopはキー入力があったときのみメッセージを送るため、`hz`は入力の頻度に依存します。記録時に押していたキーの頻度と近い値が再生時にも出れば、タイムスタンプ通りに再生されていることになります。
 2. `-r`（rate）オプションは再生速度の倍率です。2.0を指定すると、記録されたメッセージ間の時間間隔が半分になり、亀は同じ経路をより短時間でなぞります。動きの形（軌跡）自体は変わりません。
 </details>
@@ -313,7 +313,7 @@ Topic information: Topic: /turtlesim1/turtle1/pose | Type: turtlesim/msg/Pose | 
 1. teleopを起動した状態で同じlaunchを実行し、`cmd_vel`も記録されることを確認する
 2. `-o mimic_bag`を変えずに2回目を実行し、何が起きるかを確認する
 
-<details><summary>解答</summary>
+<details markdown="1"><summary>解答</summary>
 
 1. `ros2 bag info`のTopic informationに`/turtlesim1/turtle1/cmd_vel | Type: geometry_msgs/msg/Twist`の行が増えます。teleopでキーを押した回数だけCountが増えるので、`pose`（一定周期で流れる）と違ってCountが小さい値になります。
 

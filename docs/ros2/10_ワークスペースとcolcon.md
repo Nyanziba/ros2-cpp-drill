@@ -184,7 +184,7 @@ ros2 run examples_rclcpp_minimal_publisher publisher_member_function
 
 **練習問題**: `examples_rclcpp_minimal_subscriber`パッケージも同じ手順でビルドし、publisherと同時に実行して、subscriber側のターミナルに受信ログが出ることを確認してください。
 
-<details><summary>解答</summary>
+<details markdown="1"><summary>解答</summary>
 
 ```bash
 colcon build --symlink-install --packages-select examples_rclcpp_minimal_subscriber

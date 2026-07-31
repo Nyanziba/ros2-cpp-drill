@@ -316,9 +316,13 @@ g++ -std=c++17 -Wall -Wextra autocopy.cpp -o autocopy && ./autocopy
 
 3 点確認してください。
 
+<details markdown="1"><summary>解答（答え合わせ）</summary>
+
 1. `for (auto x : items)` で 3 回、`auto &` と `const auto &` で 0 回
 2. `auto y = items[0]` で 1 回、`const auto & z` で 0 回
 3. `auto diff` が `18446744073709551613` になる
+
+</details>
 
 `items.reserve(3)` を消してもう一度実行してください。
 **`emplace_back` のたびに再確保が起きて、`[copy]` が増えます。**

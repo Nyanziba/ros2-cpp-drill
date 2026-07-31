@@ -325,7 +325,7 @@ C++のtalkerが送るメッセージをPythonのlistenerが受け取り、ログ
 
 **練習問題**: ターミナル3を追加で開き、C++のtalker・Pythonのtalker・Pythonのlistenerを同時に起動してください。`listener`のログにはC++とPython、どちらのtalkerのメッセージも混ざって表示されるはずです。なぜそうなるのか、トピックの仕組みに基づいて説明してください。
 
-<details><summary>解答</summary>
+<details markdown="1"><summary>解答</summary>
 
 トピックは1対1の通信ではなく、同じトピック名・同じメッセージ型であれば複数のpublisherと複数のsubscriberが自由に繋がる多対多の仕組みです。C++のtalkerとPythonのtalkerはどちらも`topic`という名前の`std_msgs/msg/String`型トピックにpublishしているだけで、subscriber側からは送信元が何の言語で書かれたプロセスかを区別する情報がありません。そのため`listener`は両方のpublisherからのメッセージを区別なく受け取り、到着した順にコールバックが呼ばれます。ROS2のミドルウェア（DDS）はプロセス間通信の実体であり、実行バイナリの言語には関知しません。
 

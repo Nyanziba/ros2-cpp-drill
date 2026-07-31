@@ -372,7 +372,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic chrono_time_demo.cpp -o chrono_time_demo
 
 実測結果：
 
-<details><summary>解答（実行結果）</summary>
+<details markdown="1"><summary>解答（実行結果）</summary>
 
 ```
 === Duration types ===

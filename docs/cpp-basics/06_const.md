@@ -292,7 +292,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic const_all.cpp -o const_all && ./const_al
 
 [▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/xGYxjzo8T)
 
-<details><summary>解答（実行結果）</summary>
+<details markdown="1"><summary>解答（実行結果）</summary>
 
 ```
 == const オブジェクト ==
@@ -313,15 +313,29 @@ after *p2 = 99: a = 99
 
 3 点確認してください。
 
+<details markdown="1"><summary>解答（答え合わせ）</summary>
+
 1. `mutable` のおかげで `access_count` は 1 回目で 1 になっている（`const` メンバ関数内の更新が成功）
 2. `p1` はポインタが `const` ではないので `&b` に動かせる
 3. `p2` はポインタが `const` だが、指す先は `const` ではないので `99` に変更できる
 
+</details>
+
 次に、以下の行を 1 つずつコメント外してエラーメッセージを読んでください。
+
+- `r.resize(5.0, 5.0);`
+- `*p1 = 30;`
+- `p2 = &b;`
+
+**どれも `error:` で止まります。何が起きるか先に言ってから外してください。**
+
+<details markdown="1"><summary>解答（それぞれ何が起きるか）</summary>
 
 - `r.resize(5.0, 5.0);` — const オブジェクトは非 const メンバ関数を呼べない
 - `*p1 = 30;` — const int ポインタで指す先を変更しようとしている
 - `p2 = &b;` — const ポインタを再代入しようとしている
+
+</details>
 
 ## つまずきポイント
 

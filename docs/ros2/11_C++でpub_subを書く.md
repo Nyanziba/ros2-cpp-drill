@@ -263,7 +263,7 @@ talker側に`Publishing: 'Hello, world! 0'`のようなログが500ms間隔で�
 
 **練習問題**: talkerを起動したまま、listenerを後から起動しても正しく通信できることを確認してください。逆にlistenerを先に起動した場合はどうなるか予想してから試してください。
 
-<details><summary>解答</summary>
+<details markdown="1"><summary>解答</summary>
 
 どちらの順番でも通信できます。ROS2のトピックはDDSのdiscovery機能により、ノードが起動した順序に関係なく相手を見つけてつながる仕組みになっているためです（discoveryの詳細は[05_トピック](05_トピック.md)の発展節を参照）。ただしlistenerを後から起動した場合、起動前にpublishされたメッセージは受け取れません。QoS depthのバッファはpublisher/subscriberが繋がった状態を前提にした短期的な取りこぼし対策であり、繋がっていない間のメッセージまでは遡って届けてくれません。
 

@@ -245,7 +245,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic static_all.cpp -o static_all && ./static
 
 [▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/dPocTz5e1)
 
-<details><summary>解答（実行結果）</summary>
+<details markdown="1"><summary>解答（実行結果）</summary>
 
 ```
 == static in function ==
@@ -265,9 +265,13 @@ system: world
 
 3 点確認してください。
 
+<details markdown="1"><summary>解答（答え合わせ）</summary>
+
 1. `get_request_id()` の呼び出しごとに `id` が増えている（初期化は 1 回だけ）
 2. `Logger` のインスタンスを作るたびに `instance_count_` が増える
 3. `Logger::print_stats()` はクラス名で呼び出せ、`static` メンバにアクセスできる
+
+</details>
 
 次に以下を試してください。
 

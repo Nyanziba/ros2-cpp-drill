@@ -260,7 +260,7 @@ mkdir my_robot_description/urdf
 
 **練習問題**: 上記のURDFにキャスター（`caster_link`、球体、`fixed`ジョイントで`base_link`前方下に固定）を追加してください。
 
-<details><summary>解答</summary>
+<details markdown="1"><summary>解答</summary>
 
 ```xml
 <link name="caster_link">

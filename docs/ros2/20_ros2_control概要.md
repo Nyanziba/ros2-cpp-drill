@@ -138,7 +138,7 @@ mockハードウェアなので実際に何かが動くわけではありませ�
 
 **練習問題**: `ros2 control list_hardware_interfaces`を実行し、`left_wheel_joint`と`right_wheel_joint`にそれぞれどんなcommand interfaceとstate interfaceが定義されているか確認してください。
 
-<details><summary>解答</summary>
+<details markdown="1"><summary>解答</summary>
 
 `ros2 control list_hardware_interfaces`を実行すると、command interfacesにvelocity、state interfacesにposition/velocityが両輪分リストされます。これはdiffbotのURDF（`ros2_control_demo_example_2`のdescriptionパッケージ内）の`<ros2_control>`タグでの宣言と一致します。実機を用意する代わりに、まずこのURDF側の宣言を読むと、どんな値が流れる想定なのかが先にわかります。
 
