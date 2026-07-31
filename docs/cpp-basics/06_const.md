@@ -290,6 +290,8 @@ int main()
 g++ -std=c++17 -Wall -Wextra -Wpedantic const_all.cpp -o const_all && ./const_all
 ```
 
+[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/xGYxjzo8T)
+
 ```
 == const オブジェクト ==
 r.area() = 12

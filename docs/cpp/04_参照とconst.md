@@ -84,6 +84,8 @@ int main()
 }
 ```
 
+[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/1148bvT6T)
+
 ```
 生成:
   [生成]
@@ -142,6 +144,8 @@ int main()
   std::cout << r << "\n";   // 未定義動作
 }
 ```
+
+[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/8M9zKKbfd)
 
 g++ は警告します。
 
@@ -264,6 +268,8 @@ int main()
 ```bash
 g++ -std=c++17 -Wall -Wextra copies.cpp -o copies && ./copies
 ```
+
+[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/ojqrM6M81)
 
 ```
 log_only(m):

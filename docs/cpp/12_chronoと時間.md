@@ -368,6 +368,8 @@ int main()
 g++ -std=c++17 -Wall -Wextra -Wpedantic chrono_time_demo.cpp -o chrono_time_demo && ./chrono_time_demo
 ```
 
+[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/KsbaqsE7c)
+
 実測結果：
 
 ```

@@ -30,6 +30,8 @@ int main()
 }
 ```
 
+[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/sK3Gc3PaY)
+
 これで足りるなら `std::bind` もラムダも要りません。足りないのは、**状態を持てない**からです。
 
 `MinimalPublisher::timer_callback` は `this` を必要とします。
@@ -74,6 +76,8 @@ int main()
   return 0;
 }
 ```
+
+[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/EYEzThcoY)
 
 ```
 15
@@ -217,6 +221,8 @@ int main()
 }
 ```
 
+[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/13rareMGx)
+
 ```
 copy   a=1
 ref    a=99
@@ -344,6 +350,8 @@ int main()
   return 0;
 }
 ```
+
+[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/c3e6E69d8)
 
 ```
   x=1
@@ -491,6 +499,8 @@ int main()
 ```bash
 g++ -std=c++17 -Wall -Wextra lambda.cpp -o lambda && ./lambda
 ```
+
+[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/E93xYx5W5)
 
 次に**寿命の事故を起こします。** `main` の `②` の部分を次に差し替えてください。
 

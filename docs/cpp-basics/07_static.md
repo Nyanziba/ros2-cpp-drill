@@ -23,6 +23,8 @@ int main()
 }
 ```
 
+[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/oqaK3d54x)
+
 ```
 1001
 1002
@@ -113,6 +115,8 @@ int main()
   std::cout << Counter::get_total() << "\n";  // 2
 }
 ```
+
+[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/a19n4hYfW)
 
 ```
 0
@@ -238,6 +242,8 @@ int main()
 ```bash
 g++ -std=c++17 -Wall -Wextra -Wpedantic static_all.cpp -o static_all && ./static_all
 ```
+
+[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/dPocTz5e1)
 
 ```
 == static in function ==

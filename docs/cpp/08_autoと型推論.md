@@ -72,6 +72,8 @@ int main()
 }
 ```
 
+[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/5hTGz31Ka)
+
 ```
 hello changed
 ```
@@ -156,6 +158,8 @@ int main()
 }
 ```
 
+[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/rTdqTfz9c)
+
 ```
 18446744073709551613
 ```
@@ -203,6 +207,8 @@ int main()
   return 0;
 }
 ```
+
+[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/xaYGEKTTr)
 
 ```
 accel = 3
@@ -305,6 +311,8 @@ int main()
 ```bash
 g++ -std=c++17 -Wall -Wextra autocopy.cpp -o autocopy && ./autocopy
 ```
+
+[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/7exnsdeaY)
 
 3 点確認してください。
 
