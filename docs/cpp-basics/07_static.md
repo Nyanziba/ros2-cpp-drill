@@ -245,6 +245,8 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic static_all.cpp -o static_all && ./static
 
 [▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/dPocTz5e1)
 
+<details><summary>解答（実行結果）</summary>
+
 ```
 == static in function ==
 request 1: 1001
@@ -258,6 +260,8 @@ Total instances created: 2
 app: hello
 system: world
 ```
+
+</details>
 
 3 点確認してください。
 

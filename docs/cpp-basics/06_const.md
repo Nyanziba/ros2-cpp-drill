@@ -292,6 +292,8 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic const_all.cpp -o const_all && ./const_al
 
 [▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/xGYxjzo8T)
 
+<details><summary>解答（実行結果）</summary>
+
 ```
 == const オブジェクト ==
 r.area() = 12
@@ -306,6 +308,8 @@ now p1 points to b: *p1 = 20
 pointer is const: *p2 = 10, can modify pointee
 after *p2 = 99: a = 99
 ```
+
+</details>
 
 3 点確認してください。
 

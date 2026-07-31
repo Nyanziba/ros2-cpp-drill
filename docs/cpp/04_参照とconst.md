@@ -271,6 +271,8 @@ g++ -std=c++17 -Wall -Wextra copies.cpp -o copies && ./copies
 
 [▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/ojqrM6M81)
 
+<details><summary>解答（実行結果）</summary>
+
 ```
 log_only(m):
   read: hello
@@ -284,6 +286,8 @@ keep_it(m):
   copy
 -- 範囲 for（const auto &）
 ```
+
+</details>
 
 4 点確認してください。
 

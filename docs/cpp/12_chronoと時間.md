@@ -372,6 +372,8 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic chrono_time_demo.cpp -o chrono_time_demo
 
 実測結果：
 
+<details><summary>解答（実行結果）</summary>
+
 ```
 === Duration types ===
 500ms: 500
@@ -396,6 +398,8 @@ milliseconds(500): 500
 Both are equivalent.
 
 ```
+
+</details>
 
 **確認ポイント：**
 1. `2s` は `2` だが、ミリ秒に変換すると `2000` になります（10 倍の）
