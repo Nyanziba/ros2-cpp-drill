@@ -11,6 +11,8 @@
     ./drill hint ID          ヒントを表示
     ./drill doc ID           公式ドキュメントの該当ページを表示
     ./drill read [ID]        対応する講習資料の章を開く
+                             --web   ブラウザで開く（無ければ作るか聞きます）
+                             --build サイトを建て直してからブラウザで開く
     ./drill solution ID      解答例を表示
     ./drill reset ID         課題を初期状態に戻す
     ./drill verify           全課題を順にテストする
@@ -31,6 +33,7 @@ import shutil
 import subprocess
 import sys
 import time
+import webbrowser
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -41,6 +44,14 @@ CONFIG = ROOT / "exercises.json"
 
 MARKER = "I AM NOT DONE"
 GTEST_TARGET = "test_exercise"
+
+# ./drill read --web が開くサイトの URL。
+#
+# 公開版では make_public_repo.py が GitHub Pages の URL を埋めます。
+# こちらは private なのでサイトを公開しておらず、空のままです。
+# 手元でサイトを建てれば（README の「読み物をサイトとして読む」）
+# --web はそちらを開きます。
+SITE_URL = "https://nyanziba.github.io/ros2-cpp-drill/"
 
 # ---------------------------------------------------------------- 表示まわり
 
@@ -622,9 +633,154 @@ def _emit_candidates(candidates, cur):
         print("\n".join(matched))
 
 
+def page_url(path):
+    """docs/ の .md に対応するページの URL を返す。無ければ (None, 理由)。
+
+    探す順番:
+      1. DRILL_DOCS_URL（自分でサイトを建てている人の指定を最優先）
+      2. 手元でビルドした site/（file:// で開く）
+      3. SITE_URL（公開版に埋め込まれる GitHub Pages の URL）
+
+    MkDocs は use_directory_urls: false で建てているので、.md はそのまま
+    .html になります。ただし README.md だけは index.html です。
+    """
+    try:
+        rel = path.resolve().relative_to((ROOT / "docs").resolve())
+    except ValueError:
+        return None, f"{path} は docs/ の外にあります"
+    html = rel.with_name("index.html") if rel.name == "README.md" \
+        else rel.with_suffix(".html")
+    href = "/".join(html.parts)
+
+    base = os.environ.get("DRILL_DOCS_URL", "").rstrip("/")
+    if base:
+        return f"{base}/{href}", None
+
+    local = ROOT / "site" / html
+    if local.exists():
+        return local.as_uri(), None
+
+    if SITE_URL:
+        return f"{SITE_URL.rstrip('/')}/{href}", None
+
+    return None, "サイトがまだありません"
+
+
+DOCS_VENV = ROOT / ".venv-docs"
+
+
+def find_mkdocs():
+    """使える mkdocs を探す。無ければ None。"""
+    local = DOCS_VENV / "bin" / "mkdocs"
+    if local.exists():
+        return str(local)
+    return shutil.which("mkdocs")
+
+
+def build_site():
+    """読み物のサイトを site/ に建てる。成功したら True。
+
+    mkdocs が無ければ .venv-docs に用意します。既存の環境を汚さないよう、
+    システムの Python には入れません。
+    """
+    mkdocs = find_mkdocs()
+    if mkdocs is None:
+        print(dim("  mkdocs が無いので .venv-docs/ に用意します（初回だけ・数十秒）"))
+        sys.stdout.flush()
+        code = subprocess.call([sys.executable, "-m", "venv", str(DOCS_VENV)])
+        if code != 0:
+            # 失敗すると中途半端なディレクトリが残る。消しておかないと
+            # 次回 find_mkdocs が「あるのに動かない」状態を踏む。
+            shutil.rmtree(DOCS_VENV, ignore_errors=True)
+            print(red("  仮想環境を作れませんでした。"))
+            print(yellow("  Ubuntu では python3-venv が別パッケージです:"))
+            print(yellow("    sudo apt install python3-venv"))
+            print(dim("  入れられない場合は、公開サイトを指定する手もあります:"))
+            print(dim("    DRILL_DOCS_URL=https://example.com/docs ./drill read --web"))
+            return False
+        req = ROOT / "docs-requirements.txt"
+        code = subprocess.call(
+            [str(DOCS_VENV / "bin" / "pip"), "install", "-q", "-r", str(req)])
+        if code != 0:
+            print(red("  依存のインストールに失敗しました。"))
+            return False
+        mkdocs = str(DOCS_VENV / "bin" / "mkdocs")
+
+    print(dim("  サイトをビルドしています..."))
+    sys.stdout.flush()
+    # --strict は付けない。読むために建てるだけなので、リンク切れ 1 つで
+    # 読めなくなるほうが困る（CI のほうで --strict を掛けている）。
+    if subprocess.call([mkdocs, "build"], cwd=ROOT) != 0:
+        print(red("  ビルドに失敗しました。"))
+        return False
+    print(green("  site/ を作りました。"))
+    return True
+
+
+def ask_yes(question):
+    """[Y/n] で尋ねる。対話できない場面（CI・パイプ）では False。"""
+    if not (sys.stdin.isatty() and sys.stdout.isatty()):
+        return False
+    try:
+        answer = input(f"  {question} [Y/n]: ").strip().lower()
+    except (EOFError, KeyboardInterrupt):
+        print()
+        return False
+    return answer in ("", "y", "yes")
+
+
+def in_container():
+    """Docker の中かどうか。ブラウザが無いし、パスもホストと食い違う。"""
+    return Path("/.dockerenv").exists() or os.environ.get("DRILL_IN_CONTAINER") == "1"
+
+
+def open_in_browser(url, rel_hint=None):
+    """ブラウザで開く。開けなくても URL は必ず出す（端末から辿れるように）。"""
+    print(cyan(f"  {url}"))
+    print()
+
+    if in_container():
+        # コンテナにブラウザは無い。file:// を出しても、そのパスは
+        # コンテナの中を指しているのでホストのブラウザでは開けない。
+        # site/ はバインドマウントの上にあるので、ホスト側から開ける
+        # 相対パスを案内する。
+        if rel_hint:
+            print(dim("  コンテナの中なのでブラウザは開けません。"))
+            print(dim("  ホスト側でリポジトリ直下から開いてください:"))
+            print(cyan(f"    {rel_hint}"))
+        else:
+            print(dim("  コンテナの中なのでブラウザは開けません。上の URL を開いてください。"))
+        return 0
+
+    sys.stdout.flush()          # ブラウザ側が先に何か書いても順番が崩れないように
+    # SSH 先などにもブラウザは無い。webbrowser は False を返すか、
+    # 環境によっては例外を投げるので、どちらでも URL 表示で終わらせる。
+    try:
+        if webbrowser.open(url):
+            return 0
+    except Exception:
+        pass
+    print(dim("  ブラウザを開けませんでした。上の URL を開いてください。"))
+    return 0
+
+
 def cmd_read(exercises, args):
-    """課題に対応する講習資料を開く（PAGER、無ければパスを表示）。"""
-    ex = resolve(exercises, args[0] if args else None)
+    """課題に対応する講習資料を開く。
+
+    既定は PAGER（less）です。--web を付けるとブラウザで開きます。
+    サイトのほうが章送り・目次・全文検索が付くので通読には楽です。
+    """
+    web = force_build = False
+    rest = []
+    for a in args:
+        if a in ("--web", "-w"):
+            web = True
+        elif a == "--build":
+            web = force_build = True
+        else:
+            rest.append(a)
+
+    ex = resolve(exercises, rest[0] if rest else None)
     if ex is None:
         print(green("全課題クリア済みです。"))
         return 0
@@ -635,8 +791,40 @@ def cmd_read(exercises, args):
     if not exists:
         die(f"資料が見つかりません: {path}")
     print(dim(f"  {ex['id']}  →  {title}"))
+
+    if web:
+        if force_build:
+            build_site()
+        url, why = page_url(path)
+        if url is None:
+            # 初回はここに来る。作るかどうか聞いてから作る。
+            print(yellow(f"  {why}"))
+            if ask_yes("いま作りますか？（数十秒）") and build_site():
+                url, why = page_url(path)
+            else:
+                print(dim("  作るときは ./drill read --build "
+                          + short_id(ex) + " です。"))
+                print(dim("  公開サイトがあるなら "
+                          "DRILL_DOCS_URL=... を指定してください。"))
+        if url:
+            rel = None
+            if url.startswith("file://"):
+                try:
+                    rel = "site/" + str(Path(path).resolve()
+                                        .relative_to((ROOT / "docs").resolve())
+                                        .with_suffix(".html"))
+                except ValueError:
+                    rel = None
+            return open_in_browser(url, rel)
+        print(dim("  代わりに手元の Markdown を開きます。"))
+        print()
+
     print(cyan(f"  {path}"))
     print()
+    # ページャは fd 1 に直接書く。こちらの print はパイプ越しだとブロック
+    # バッファされるので、流しておかないと見出しがページャの出力より
+    # **後ろ**に出る（./drill read | head で踏む）。
+    sys.stdout.flush()
     pager = os.environ.get("PAGER")
     if pager:
         return subprocess.call([pager, str(path)])
@@ -662,7 +850,10 @@ def cmd_complete(exercises, args):
         return 0
     if what == "args":
         prev = args[1] if len(args) > 1 else ""
-        if prev in ID_COMMANDS:
+        if prev == "read":
+            # read だけはブラウザで開く指定を取る
+            _emit_candidates([ex["id"] for ex in exercises] + ["--web", "--build"], cur)
+        elif prev in ID_COMMANDS:
             _emit_candidates([ex["id"] for ex in exercises], cur)
         elif prev == "completion":
             _emit_candidates(["bash", "zsh"], cur)

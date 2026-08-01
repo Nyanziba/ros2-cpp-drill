@@ -134,11 +134,35 @@ source /opt/ros/jazzy/setup.bash   # 未 source でも drill が自動で探し�
 | `./drill watch [ID]` | 保存を検知して自動で再テスト |
 | `./drill hint ID` | ヒント（コードの形まで見せます） |
 | `./drill doc ID` | 対応する公式ドキュメントの URL |
-| `./drill read [ID]` | 対応する講習資料の章を開く |
+| `./drill read [ID]` | 対応する講習資料の章を開く（`--web` でブラウザ） |
 | `./drill solution ID` | 解答例を表示 |
 | `./drill reset ID` | 課題を初期状態に戻す |
 | `./drill verify` | 全課題を順にテスト |
 | `./drill completion [bash\|zsh]` | タブ補完スクリプトを出力 |
+
+### 資料をブラウザで読む
+
+`./drill read` は既定で `less` に流します。長い章はサイトのほうが読みやすいので、
+`--web` を付けるとブラウザで開きます。
+
+```bash
+./drill read --web cppb06     # 既定では公開サイトの該当ページを開きます
+./drill read --build cppb06   # 手元にサイトを建ててから開く（オフライン用）
+```
+
+開く先の決め方は次の順です。
+
+| 順 | 行き先 |
+| --- | --- |
+| 1 | `DRILL_DOCS_URL`（自分でサイトを建てている場合） |
+| 2 | 手元の `site/`（`file://` で開く） |
+| 3 | <https://nyanziba.github.io/ros2-cpp-drill/> |
+
+`--build` は `mkdocs` が無ければ `.venv-docs/` に用意してから建てます。
+
+**Docker の中ではブラウザを開けません。** `site/` はバインドマウントの上に
+できるので、`site/cpp-basics/06_const.html` をホスト側のブラウザで開いてください
+（そのパスを表示します）。
 
 ID は接頭辞で区別します。**`cppb` = C++入門編、`cpp` = C++編、数字だけ = ROS 2編**。
 `./drill run cppb06` / `./drill run cpp06` / `./drill run 01` のように打ちます。

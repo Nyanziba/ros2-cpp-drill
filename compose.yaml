@@ -41,6 +41,10 @@ services:
       - drill-build:/ws/build
       - drill-install:/ws/install
       - drill-log:/ws/log
+      # 読み物サイト用の venv もホストと分ける。ここで作る venv の shebang は
+      # /ws/... を指すので、ホスト側からは使えないものがホストに残ってしまう。
+      # site/ のほうはバインドのままにする（ホストのブラウザで開けるように）。
+      - drill-venv-docs:/ws/.venv-docs
 
     # DDS の共有メモリ転送が /dev/shm を使う。Docker の既定は 64MB しかなく、
     # ノードを複数立てるテスト（launch 系）が落ちることがある。
@@ -75,6 +79,7 @@ services:
       - drill-build:/ws/build
       - drill-install:/ws/install
       - drill-log:/ws/log
+      - drill-venv-docs:/ws/.venv-docs
       - /tmp/.X11-unix:/tmp/.X11-unix:ro
     shm_size: 512m
     environment:
@@ -91,3 +96,4 @@ volumes:
   drill-build:
   drill-install:
   drill-log:
+  drill-venv-docs:

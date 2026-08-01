@@ -23,6 +23,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 #   （action-tutorials-interfaces は ros-base に入っていないので明示する）
 # - python3-pytest          : 08_params_yaml と 09_launch が pytest を使う
 # - python3-yaml            : 08_params_yaml のテストが読む
+# - python3-venv            : ./drill read --build が読み物サイトを建てるのに使う
 # - gdb / less              : つまずいたときに中を見るため
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
@@ -32,6 +33,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         less \
         python3-colcon-common-extensions \
         python3-pytest \
+        python3-venv \
         python3-yaml \
         ros-jazzy-ament-cmake-gtest \
         ros-jazzy-ament-cmake-pytest \
@@ -94,7 +96,9 @@ RUN if [ "$(id -u ubuntu 2>/dev/null)" ]; then \
 # 入るため、目印が無いと同じパッケージが二重に見つかってビルドが壊れます。
 # ホスト側の install/ と log/ には元から置いてありますが、ここはボリュームで
 # 覆われてホスト側が見えなくなるので、イメージ側にも要ります。
-RUN mkdir -p /ws/build /ws/install /ws/log && \
+# .venv-docs も分ける。ここで作った venv の shebang は /ws/... を指すので、
+# バインドマウント上に置くとホスト側から使えない venv がホストに残る。
+RUN mkdir -p /ws/build /ws/install /ws/log /ws/.venv-docs && \
     touch /ws/install/COLCON_IGNORE /ws/log/COLCON_IGNORE /ws/build/COLCON_IGNORE && \
     chown -R "$UID:$GID" /ws
 

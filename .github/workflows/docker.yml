@@ -113,6 +113,20 @@ jobs:
           cp -r solutions/01_publisher/. exercises/01_publisher/
           docker compose run --rm -T drill ./drill run 01
 
+      # ./drill read --web はコンテナにブラウザが無いので URL を出して終わる。
+      # --build は python3-venv でサイトを建てる。イメージに入っているか確かめる。
+      - name: read --web が案内を出すこと
+        run: |
+          docker compose run --rm -T drill ./drill read --web cppb01 | tee /tmp/read.txt
+          grep -q 'サイトがまだありません' /tmp/read.txt
+
+      - name: read --build がコンテナ内でサイトを建てられること
+        run: |
+          docker compose run --rm -T drill ./drill read --build cppb01 | tee /tmp/build.txt
+          grep -q 'site/' /tmp/build.txt
+          # site/ はバインドマウントなのでホスト側にも出てくる
+          test -f "site/cpp-basics/01_宣言を読む.html"
+
       - name: 生成物がホスト側で root 所有にならないこと
         run: |
           docker compose run --rm -T drill touch /ws/.uidcheck
