@@ -1,0 +1,7 @@
+// この教材で前提にしている拡張。VS Code が初回に導入を勧めます。
+{
+    "recommendations": [
+        "ms-vscode.cpptools",
+        "ms-vscode-remote.remote-containers"
+    ]
+}

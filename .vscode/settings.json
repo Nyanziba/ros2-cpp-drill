@@ -1,0 +1,17 @@
+// 課題は C++17 / gtest です。
+{
+    "files.associations": {
+        "*.hpp": "cpp",
+        "*.ipp": "cpp"
+    },
+    "C_Cpp.default.cppStandard": "c++17",
+    "C_Cpp.default.cStandard": "c99",
+    // ビルド生成物は検索から外す。install/ には install した .hpp の複製が
+    // 入るので、外さないと同じ内容が二重に引っかかります。
+    "search.exclude": {
+        "**/build": true,
+        "**/install": true,
+        "**/log": true,
+        "**/site": true
+    }
+}

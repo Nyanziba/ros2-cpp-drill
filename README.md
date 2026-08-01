@@ -174,6 +174,31 @@ ID は接頭辞で区別します。**`cppb` = C++入門編、`cpp` = C++編、�
 source /path/to/ros2-drill/completion/drill.bash
 ```
 
+## エディタ（VS Code）
+
+`.vscode/` を同梱しています。開くだけで IntelliSense が効きます。
+無いと `rclcpp` などが全部赤線になり、こう出ます。
+
+```
+#include errors detected. Please update your includePath.
+Squiggles are disabled for this translation unit.
+```
+
+**ROS 2 のヘッダは `/opt/ros/jazzy/include/<パッケージ名>/<パッケージ名>/...` と
+1 段深いところにあります。** `#include "rclcpp/rclcpp.hpp"` を解決するには
+`/opt/ros/jazzy/include` ではなくその下の各パッケージのディレクトリが要るので、
+`**` で再帰的に拾っています。
+
+**自作の `.msg` / `.srv` から生えるヘッダだけは、一度ビルドするまで赤線が残ります。**
+`install/` にしか存在しないためです。`./drill run 03` を通せば消えます。
+
+### Ubuntu 以外なら Dev Container
+
+`/opt/ros/jazzy` がホストに無いと IntelliSense は効きません。
+`.devcontainer/` を同梱しているので、**「Dev Containers: Reopen in Container」**
+を実行すればコンテナの中で開けます。`compose.yaml` をそのまま使うので、
+ドリルを走らせる環境と同じものが開きます。
+
 ## 読み物をサイトとして読む
 
 ### 公開サイト

@@ -1,0 +1,34 @@
+// IntelliSense（C/C++ 拡張）の設定。
+//
+// これが無いと rclcpp などが赤線になり、次が出ます。
+//   #include errors detected. Please update your includePath.
+//
+// ROS 2 のヘッダは /opt/ros/jazzy/include/<パッケージ名>/<パッケージ名>/... と
+// 1 段深いところにあります。`#include "rclcpp/rclcpp.hpp"` を解決するには
+// /opt/ros/jazzy/include ではなく、その下の各パッケージのディレクトリが要ります。
+// だから ** で再帰的に拾っています。
+//
+// ビルド後は install/ 側も見ます。自作の .msg / .srv から生えるヘッダ
+// （drill_03_custom_interface/msg/num.hpp など）はそこにしかありません。
+// **その課題は一度 ./drill run を通すまで赤線が残ります。**
+{
+    "configurations": [
+        {
+            "name": "ROS 2 Jazzy",
+            "includePath": [
+                "${workspaceFolder}/exercises/*/include",
+                "${workspaceFolder}/tools",
+                "${workspaceFolder}/install/*/include/**",
+                "${workspaceFolder}/build/*/rosidl_generator_cpp",
+                "/opt/ros/jazzy/include/**",
+                "${workspaceFolder}/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/g++",
+            "cStandard": "c99",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}

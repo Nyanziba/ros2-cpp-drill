@@ -1,0 +1,24 @@
+// VS Code をコンテナの中で開くための設定。
+//
+// Ubuntu 以外の環境でも ROS 2 のヘッダが見えるので、IntelliSense が効きます。
+// 使い方: コマンドパレットで「Dev Containers: Reopen in Container」。
+//
+// compose.yaml をそのまま使うので、ドリルを走らせる環境と同じものが開きます。
+// **初回は docker compose build と同じだけ時間がかかります**（10〜20 分）。
+//
+// include path は .vscode/c_cpp_properties.json 側で持っています。
+// ${workspaceFolder} がコンテナでは /ws になるだけで、中身はそのまま通ります。
+{
+    "name": "ROS 2 練習帳",
+    "dockerComposeFile": "../compose.yaml",
+    "service": "drill",
+    "workspaceFolder": "/ws",
+    "shutdownAction": "stopCompose",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.cpptools"
+            ]
+        }
+    }
+}
