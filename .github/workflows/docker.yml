@@ -1,0 +1,122 @@
+name: docker
+
+# Docker 環境が本当に動くかを確かめるワークフロー。
+#
+# **手元に Docker が無い環境で書いたので、検証はここでやっています。**
+# イメージを組み、compose 経由で実際に課題をビルド・テストします。
+#
+# 見るのは 4 点です。
+#   1. 未解答の課題が **落ちる**（テストが機能している）
+#   2. 解答を当てた課題が **通る**（ビルドもテストも最後まで動く）
+#   3. ROS 2 を使う課題も通る（rclcpp と DDS がコンテナ内で動く）
+#   4. コンテナが作ったファイルが root 所有にならない
+#
+# 1 を見ないと「何をやっても通る」壊れ方を見逃します。
+# compose 経由にしているのは、名前付きボリュームの所有権と COLCON_IGNORE を
+# 含めて、利用者が実際に叩く経路をそのまま試すためです。
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Dockerfile'
+      - 'compose.yaml'
+      - '.dockerignore'
+      - '.github/workflows/docker.yml'
+      - 'drill'
+      - 'exercises.json'
+  pull_request:
+    paths:
+      - 'Dockerfile'
+      - 'compose.yaml'
+      - '.dockerignore'
+      - 'drill'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      # runner のユーザは UID 1001。1000 決め打ちで組むと、生成物が
+      # runner から触れなくなり、所有権のチェックも落ちる。
+      - id: ids
+        run: |
+          echo "uid=$(id -u)" >> "$GITHUB_OUTPUT"
+          echo "gid=$(id -g)" >> "$GITHUB_OUTPUT"
+          printf 'DRILL_UID=%s\nDRILL_GID=%s\n' "$(id -u)" "$(id -g)" > .env
+          cat .env
+
+      # レイヤキャッシュを GitHub Actions のキャッシュに置く。
+      # apt がかなり落とすので、これが無いと毎回 10 分以上かかる。
+      # tag は compose.yaml の image: と同じにする。同名のイメージが既にあれば
+      # compose は build し直さないので、この 1 回だけで済む。
+      - name: イメージをビルド
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: ros2-drill:jazzy
+          build-args: |
+            UID=${{ steps.ids.outputs.uid }}
+            GID=${{ steps.ids.outputs.gid }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: compose.yaml が妥当か
+        run: docker compose config --quiet
+
+      - name: 課題が見えているか
+        run: |
+          docker compose run --rm -T drill ./drill list | tee /tmp/list.txt
+          grep -q 'cppb01' /tmp/list.txt
+
+      # install/ と log/ はボリュームで覆われる。COLCON_IGNORE が効いていないと
+      # install 空間の package.xml を拾って二重検出になる。
+      - name: colcon がパッケージを二重に見つけていないこと
+        run: |
+          n=$(docker compose run --rm -T drill bash -lc 'colcon list 2>/dev/null | wc -l' | tr -d '\r')
+          echo "colcon が見つけたパッケージ: ${n}"
+          expected=$(ls exercises/*/package.xml | wc -l)
+          echo "exercises/ にある package.xml: ${expected}"
+          test "$n" -eq "$expected"
+
+      - name: 未解答の課題は落ちること（C++入門編）
+        run: |
+          set +e
+          docker compose run --rm -T drill ./drill run cppb01
+          code=$?
+          set -e
+          echo "終了コード: ${code}"
+          if [ "$code" -eq 0 ]; then
+            echo "::error::未解答の cppb01 が通ってしまいました。テストが機能していません。"
+            exit 1
+          fi
+
+      - name: 解答を当てれば通ること（C++入門編）
+        run: |
+          cp -r solutions/cppb01_declarations/. exercises/cppb01_declarations/
+          docker compose run --rm -T drill ./drill run cppb01
+
+      - name: 解答を当てれば通ること（ROS 2 / rclcpp）
+        run: |
+          cp -r solutions/01_publisher/. exercises/01_publisher/
+          docker compose run --rm -T drill ./drill run 01
+
+      - name: 生成物がホスト側で root 所有にならないこと
+        run: |
+          docker compose run --rm -T drill touch /ws/.uidcheck
+          owner=$(stat -c '%u' .uidcheck)
+          rm -f .uidcheck
+          echo "作られたファイルの UID: ${owner}（期待値 $(id -u)）"
+          test "$owner" = "$(id -u)"
+
+      - name: 後片付け
+        if: always()
+        run: docker compose down -v

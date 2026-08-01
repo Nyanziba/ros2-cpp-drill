@@ -8,3 +8,6 @@ __pycache__/
 *~
 *.swp
 .DS_Store
+
+# Docker の UID/GID 設定（環境ごとに違うのでコミットしない）
+.env

@@ -1,0 +1,14 @@
+# build context に入れないもの。
+# ビルド生成物は名前付きボリュームで持つので、イメージには要らない。
+build/
+install/
+log/
+site/
+.venv-docs/
+docs-public/
+public-repo/
+.git/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.env

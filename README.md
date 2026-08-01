@@ -49,7 +49,68 @@ rclcpp は `shared_ptr`・ラムダ・`std::move`・テンプレートに強く�
 - Ubuntu 24.04 / g++ 13 / CMake 3.28
 - Python 3（ランナー用。追加ライブラリは不要）
 
+**Ubuntu 以外なら Docker が使えます。** 次の節のとおりです。
+
+## Ubuntu 以外で動かす（Docker）
+
+ROS 2 Jazzy は Ubuntu 24.04 にしか公式パッケージがありません。
+macOS でも Windows でも他のディストリでも、コンテナの中身を Ubuntu 24.04 に
+揃えれば同じように動きます。arm64（Apple Silicon）でも動きます。
+
+```bash
+docker compose build                          # 初回だけ（10〜20 分）
+docker compose run --rm drill ./drill list
+docker compose run --rm drill ./drill watch cppb01
+docker compose run --rm drill                 # bash に入る
+```
+
+**ソースはホスト側をそのまま見ています。** 編集は普段のエディタでどうぞ。
+保存すれば `watch` が拾います（`drill` は mtime を見るだけなので、
+macOS や Windows のバインドマウントでも取りこぼしません）。
+
+**実行ビットが落ちる環境（Windows の NTFS 上に置いた場合など）では**
+`./drill` の代わりに `python3 drill list` と打ってください。
+
+ビルド生成物はホストの `build/` `install/` `log/` とは分けています
+（名前付きボリューム）。CMake は絶対パスとコンパイラのパスをキャッシュに
+焼くので、native ビルドと混ざると壊れるからです。消すときは
+`docker compose down -v` です。
+
+**Linux で UID が 1000 でない場合だけ**、先に `.env` を置いてください。
+置かないとコンテナの生成物が root 所有になり、ホストのエディタで保存できません。
+
+```bash
+printf 'DRILL_UID=%s\nDRILL_GID=%s\n' "$(id -u)" "$(id -g)" > .env
+```
+
+`UID` という名前は使えません。bash の組み込み変数で export されていないので、
+compose からは見えず常に既定値になります。
+macOS と Windows の Docker Desktop は所有権を勝手に合わせるので不要です。
+
+### GUI（turtlesim / rqt / RViz）
+
+課題は全て gtest / pytest なので、**GUI 無しで全課題を最後まで通せます。**
+GUI が要るのは読み物のほう（ROS 2編で turtlesim を動かす章）です。
+
+```bash
+docker compose build --build-arg WITH_GUI=1     # イメージが 1GB 以上太ります
+docker compose --profile x11 run --rm drill-gui ros2 run turtlesim turtlesim_node
+```
+
+ホスト側で X の許可が要ります。
+
+| ホスト | やること |
+| --- | --- |
+| Linux | `xhost +local:docker` |
+| macOS | XQuartz を入れて「ネットワーク・クライアントを許可」→ `xhost +localhost`、`DISPLAY=host.docker.internal:0` |
+| Windows (WSL2) | WSLg があればそのまま |
+
+CI（`.github/workflows/docker.yml`）が毎回イメージを組んで、**未解答の課題が
+落ちること**と**解答を当てた課題が通ること**の両方を確かめています。
+
 ## はじめかた
+
+Ubuntu 24.04 に ROS 2 Jazzy が入っている場合です。それ以外は上の Docker へ。
 
 ```bash
 source /opt/ros/jazzy/setup.bash   # 未 source でも drill が自動で探します

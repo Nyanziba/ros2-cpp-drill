@@ -1,0 +1,93 @@
+# ROS 2 練習帳を Docker で動かす。
+#
+#   docker compose build          # 初回だけ（10〜20 分かかります）
+#   docker compose run --rm drill ./drill list
+#   docker compose run --rm drill ./drill watch cppb01
+#   docker compose run --rm drill                     # bash に入る
+#
+# ソースはホスト側をそのまま見ています。**編集は普段のエディタでどうぞ。**
+# 保存すれば watch が拾います（drill は mtime を見に行くだけなので、
+# macOS や Windows のバインドマウントでも取りこぼしません）。
+
+services:
+  drill:
+    build:
+      context: .
+      args:
+        # ホストと同じ UID/GID でビルドする。Linux でこれを外すと、
+        # コンテナが作ったファイルが root 所有になって編集できなくなる。
+        #
+        # **`UID` という名前は使えません。** bash の組み込み変数で export されて
+        # いないので、compose からは見えず、常に既定値になります。
+        # UID が 1000 でない Linux では、リポジトリ直下に .env を置いてください。
+        #
+        #     printf 'DRILL_UID=%s\nDRILL_GID=%s\n' "$(id -u)" "$(id -g)" > .env
+        #
+        # macOS と Windows の Docker Desktop は所有権を勝手に辻褄合わせするので
+        # 何もしなくて構いません。
+        UID: ${DRILL_UID:-1000}
+        GID: ${DRILL_GID:-1000}
+        # GUI（turtlesim / rqt / RViz）を入れるなら 1。イメージが 1GB 以上太る。
+        WITH_GUI: ${WITH_GUI:-0}
+    image: ros2-drill:jazzy
+
+    # リポジトリをそのまま見せる。ホストで編集 → コンテナでテスト。
+    volumes:
+      - .:/ws
+      # **ビルド生成物はホストと分ける。**
+      # CMake は絶対パスとコンパイラのパスをキャッシュに焼くので、
+      # ホストで native にビルドしたものと混ざると壊れる。
+      # 名前付きボリュームなので docker compose down -v で消せる。
+      - drill-build:/ws/build
+      - drill-install:/ws/install
+      - drill-log:/ws/log
+
+    # DDS の共有メモリ転送が /dev/shm を使う。Docker の既定は 64MB しかなく、
+    # ノードを複数立てるテスト（launch 系）が落ちることがある。
+    shm_size: 512m
+
+    # 同じ LAN の他の受講者と混信しないよう、DDS を localhost に閉じる。
+    # ネットワーク自体は塞いでいない（apt や git を使えるようにするため）。
+    environment:
+      ROS_AUTOMATIC_DISCOVERY_RANGE: LOCALHOST
+      ROS_DOMAIN_ID: ${ROS_DOMAIN_ID:-42}
+
+    stdin_open: true
+    tty: true
+    working_dir: /ws
+    command: bash
+
+  # GUI が要るとき（ROS 2編の turtlesim / rqt / RViz）。
+  #
+  #   docker compose build --build-arg WITH_GUI=1
+  #   docker compose --profile x11 run --rm drill-gui ros2 run turtlesim turtlesim_node
+  #
+  # **ホスト側で X の許可が要ります。**
+  #   Linux          : xhost +local:docker
+  #   macOS          : XQuartz を入れて「ネットワーク・クライアントを許可」→
+  #                    xhost +localhost、DISPLAY=host.docker.internal:0
+  #   Windows (WSL2) : WSLg があればそのまま動きます
+  drill-gui:
+    profiles: [x11]
+    image: ros2-drill:jazzy
+    volumes:
+      - .:/ws
+      - drill-build:/ws/build
+      - drill-install:/ws/install
+      - drill-log:/ws/log
+      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+    shm_size: 512m
+    environment:
+      ROS_AUTOMATIC_DISCOVERY_RANGE: LOCALHOST
+      ROS_DOMAIN_ID: ${ROS_DOMAIN_ID:-42}
+      DISPLAY: ${DISPLAY:-:0}
+      QT_X11_NO_MITSHM: 1
+    stdin_open: true
+    tty: true
+    working_dir: /ws
+    command: bash
+
+volumes:
+  drill-build:
+  drill-install:
+  drill-log:
