@@ -83,6 +83,7 @@ markdown_extensions:
 
 nav:
   - 教材の全体像: README.md
+  - はじめかた: はじめかた.md
   - C++入門編:
       - この講習について: cpp-basics/README.md
       - "1. 宣言を読む": cpp-basics/01_宣言を読む.md

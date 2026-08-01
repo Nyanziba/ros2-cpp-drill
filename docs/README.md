@@ -6,6 +6,9 @@
 docs/cpp/06_スマートポインタ.md   ←→   exercises/cpp06_smart_pointers
 ```
 
+**課題を動かすところから始めるなら [はじめかた](はじめかた.md) をどうぞ。**
+Docker でも、Ubuntu に直接入れる形でも進められます。
+
 行き方は 2 通りあります。
 
 ```bash

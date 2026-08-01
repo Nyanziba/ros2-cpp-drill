@@ -46,12 +46,14 @@ MARKER = "I AM NOT DONE"
 GTEST_TARGET = "test_exercise"
 
 # ./drill read --web が開くサイトの URL。
-#
-# 公開版では make_public_repo.py が GitHub Pages の URL を埋めます。
-# こちらは private なのでサイトを公開しておらず、空のままです。
-# 手元でサイトを建てれば（README の「読み物をサイトとして読む」）
-# --web はそちらを開きます。
+# 配信しているサイトがあればここに入ります。無ければ手元の site/ を使います。
 SITE_URL = "https://nyanziba.github.io/ros2-cpp-drill/"
+
+# 別サイトへの逃がし先。このリポジトリは SITE_URL が入っているので使わない。
+MIRROR_URL = ""
+MIRROR_TRACKS = ()
+MIRROR_NOTE = ""
+MIRROR_NOTE2 = ""
 
 # ---------------------------------------------------------------- 表示まわり
 
@@ -639,7 +641,7 @@ def page_url(path):
     探す順番:
       1. DRILL_DOCS_URL（自分でサイトを建てている人の指定を最優先）
       2. 手元でビルドした site/（file:// で開く）
-      3. SITE_URL（公開版に埋め込まれる GitHub Pages の URL）
+      3. SITE_URL（配信しているサイトがあれば）
 
     MkDocs は use_directory_urls: false で建てているので、.md はそのまま
     .html になります。ただし README.md だけは index.html です。
@@ -662,6 +664,10 @@ def page_url(path):
 
     if SITE_URL:
         return f"{SITE_URL.rstrip('/')}/{href}", None
+
+    # 手元にサイトが無い。別のサイトで配信しているトラックならそちらを開く。
+    if MIRROR_URL and rel.parts and rel.parts[0] in MIRROR_TRACKS:
+        return f"{MIRROR_URL.rstrip('/')}/{href}", "mirror"
 
     return None, "サイトがまだありません"
 
@@ -797,7 +803,7 @@ def cmd_read(exercises, args):
             build_site()
         url, why = page_url(path)
         if url is None:
-            # 初回はここに来る。作るかどうか聞いてから作る。
+            # 手元にも配信先にも無いトラック。
             print(yellow(f"  {why}"))
             if ask_yes("いま作りますか？（数十秒）") and build_site():
                 url, why = page_url(path)
@@ -806,6 +812,10 @@ def cmd_read(exercises, args):
                           + short_id(ex) + " です。"))
                 print(dim("  公開サイトがあるなら "
                           "DRILL_DOCS_URL=... を指定してください。"))
+        elif why == "mirror":
+            print(dim("  " + MIRROR_NOTE))
+            print(dim("  " + MIRROR_NOTE2 + " ./drill read --build "
+                      + short_id(ex) + " で。"))
         if url:
             rel = None
             if url.startswith("file://"):
