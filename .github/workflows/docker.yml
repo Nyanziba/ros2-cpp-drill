@@ -115,10 +115,13 @@ jobs:
 
       # ./drill read --web はコンテナにブラウザが無いので URL を出して終わる。
       # --build は python3-venv でサイトを建てる。イメージに入っているか確かめる。
-      - name: read --web が案内を出すこと
+      # 出る内容はリポジトリによって違う。公開版は SITE_URL が埋まっているので
+      # 公開サイトの URL を出し、private はサイトが無いので案内を出す。
+      # 両方で通る形にしておく（同じ workflow を公開版にも配っているため）。
+      - name: read --web が URL か案内を出すこと
         run: |
           docker compose run --rm -T drill ./drill read --web cppb01 | tee /tmp/read.txt
-          grep -q 'サイトがまだありません' /tmp/read.txt
+          grep -qE 'https?://|file://|サイトがまだありません' /tmp/read.txt
 
       - name: read --build がコンテナ内でサイトを建てられること
         run: |
