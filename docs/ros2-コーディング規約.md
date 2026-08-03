@@ -58,8 +58,8 @@ https://raw.githubusercontent.com/ros2/ros2_documentation/jazzy/source/The-ROS2-
 | Boost | **どうしても必要な場合を除き避ける** |
 
 ラムダと `std::bind` に公式の優劣がない点は重要です。「bind は古いから直すべき」は公式ルールでは
-ありません。判断材料の整理は Claude Code の skill `rclcpp-refactor` にまとめてあります
-（このリポジトリの外、ワークスペース側の `.claude/skills/` にあります）。
+ありません。どちらを選ぶかの判断材料は
+[7. ラムダと `std::bind`](cpp/07_ラムダとstd_bind.md) にまとめてあります。
 
 ### コメント
 
@@ -127,7 +127,6 @@ https://raw.githubusercontent.com/ros2/ros2_documentation/jazzy/source/The-ROS2-
 ## 関連
 
 - [rclcpp の設計思想](rclcpp-の設計思想.md) — なぜその API 設計なのか
-- Claude Code の skill `rclcpp-refactor` — 既存コードを直すときの判断基準。
-  このリポジトリには含まれません（ワークスペース側の `.claude/skills/` にあります）
+- [7. ラムダと `std::bind`](cpp/07_ラムダとstd_bind.md) — 既存コードを直すときの判断基準
 - 原文で確認すべき隣接ドキュメント: `Developer-Guide.rst`（プログラミング規約全般）、
   `Quality-Guide.rst`（品質レベル）、REP 2000（各ディストロの依存バージョン）

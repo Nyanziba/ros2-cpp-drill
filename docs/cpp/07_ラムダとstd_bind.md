@@ -638,7 +638,6 @@ void handle_accepted(const std::shared_ptr<GoalHandleFibonacci> goal_handle)
 ## 参考
 
 - [ROS 2 のコーディング規約](../ros2-コーディング規約.md) — ラムダ / `std::function` / `std::bind` はいずれも "No restrictions"
-- `.claude/skills/rclcpp-refactor/SKILL.md` — 既存コードで bind とラムダのどちらを選ぶかの判断材料
 - `cppreference` の [Lambda expressions](https://en.cppreference.com/w/cpp/language/lambda) と [std::bind](https://en.cppreference.com/w/cpp/utility/functional/bind)
 
 ---
