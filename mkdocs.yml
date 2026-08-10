@@ -138,6 +138,32 @@ nav:
       - "ROS2講習20b: ros2_controlの使い方（差動二輪の足回りを例に）": ros2/20b_ros2_controlの使い方.md
       - "ROS2講習21: センサ統合": ros2/21_センサ統合.md
       - "ROS2講習22: 自己位置推定の考え方": ros2/22_自己位置推定の考え方.md
+  - デザインパターン編:
+      - この講習について: patterns/README.md
+      - "0. 使う前に": patterns/00_使う前に.md
+      - "1. Iterator": patterns/01_Iterator.md
+      - "2. Adapter": patterns/02_Adapter.md
+      - "3. Template Method": patterns/03_TemplateMethod.md
+      - "4. Factory Method": patterns/04_FactoryMethod.md
+      - "5. Singleton": patterns/05_Singleton.md
+      - "6. Prototype": patterns/06_Prototype.md
+      - "7. Builder": patterns/07_Builder.md
+      - "8. Abstract Factory": patterns/08_AbstractFactory.md
+      - "9. Bridge": patterns/09_Bridge.md
+      - "10. Strategy": patterns/10_Strategy.md
+      - "11. Composite": patterns/11_Composite.md
+      - "12. Decorator": patterns/12_Decorator.md
+      - "13. Visitor": patterns/13_Visitor.md
+      - "14. Chain of Responsibility": patterns/14_ChainOfResponsibility.md
+      - "15. Facade": patterns/15_Facade.md
+      - "16. Mediator": patterns/16_Mediator.md
+      - "17. Observer": patterns/17_Observer.md
+      - "18. Memento": patterns/18_Memento.md
+      - "19. State": patterns/19_State.md
+      - "20. Flyweight": patterns/20_Flyweight.md
+      - "21. Proxy": patterns/21_Proxy.md
+      - "22. Command": patterns/22_Command.md
+      - "23. Interpreter": patterns/23_Interpreter.md
   - 参考資料:
       - "rclcpp の設計思想": rclcpp-の設計思想.md
       - "ROS 2 のコーディング規約と言語バージョン（まとめ）": ros2-コーディング規約.md

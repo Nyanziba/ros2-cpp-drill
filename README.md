@@ -17,15 +17,18 @@ Rust の [rustlings](https://rustlings.rust-lang.org/) 方式の **ROS 2 / C++ �
 保存するたびに再テストされます。読み物（`docs/`）は 3 トラック計 49 章で、
 課題（`exercises/`）の 35 問は**そのうち演習を設けた章と章番号で対応**しています。
 
-## 3 つのトラック
+## 4 つのトラック
 
 | トラック | 読み物 | 課題 | 対象 |
 | --- | --- | --- | --- |
 | **C++入門編** | [docs/cpp-basics/](docs/cpp-basics/README.md) | `cppb01`〜`cppb10` | `const` や `static` で手が止まる人。全10章 |
 | **C++編** | [docs/cpp/](docs/cpp/README.md) | `cpp01`〜`cpp12` | rclcpp を読む準備。全15章 |
 | **ROS 2編** | [docs/ros2/](docs/ros2/01_この記事からスタート_ROS2講習ハブ.md) | `01`〜`15` | 全24本 |
+| **デザインパターン編** | [docs/patterns/](docs/patterns/README.md) | `dp01`〜`dp23` | 部内ライブラリを設計する人。結城本の輪読と並走。全23章 |
 
-**C++入門編と C++編は ROS 2 を使いません。** `ament_cmake` と gtest だけなので、
+**デザインパターン編は他のトラックと独立しています。** 順番の依存はありません。
+
+**C++入門編・C++編・デザインパターン編は ROS 2 を使いません。** `ament_cmake` と gtest だけなので、
 1 課題 2〜3 秒でビルドできます。
 
 rclcpp は `shared_ptr`・ラムダ・`std::move`・テンプレートに強く依存しています。

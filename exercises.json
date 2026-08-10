@@ -1335,6 +1335,718 @@
         }
       ],
       "chapter": "04章の発展"
+    },
+    {
+      "id": "dp01_iterator",
+      "package": "drill_dp01_iterator",
+      "level": "デザインパターン編",
+      "level_note": "docs/patterns/ の講習に対応。結城本『増補改訂版 Java言語で学ぶデザインパターン入門』の輪読と並走します。ROS 2 は使いません",
+      "title": "Iterator — GoF 版と STL 版",
+      "kind": "gtest",
+      "sources": [
+        "src/book_shelf.cpp"
+      ],
+      "docs": [
+        {
+          "title": "結城浩『増補改訂版 Java言語で学ぶデザインパターン入門』第1章",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ],
+      "hints": [
+        "`next()` は `const Book &` を返します。`Book` を返すと毎回コピーが走ります。 テスト「nextはコピーではなく本棚の中身を指す」がアドレスを比較して落とします",
+        "`iterator()` は `std::unique_ptr<Iterator>` を返します。生ポインタだと 誰が `delete` するかが型に書かれません",
+        "位置（`index_`）はイテレータ側が持ちます。本棚側に持たせると、 2 つのイテレータを同時に使ったとき互いに干渉します",
+        "`BookShelfIterator` は `BookShelf` への参照を持っています。 本棚より長生きさせられません。Java には無い制約です"
+      ],
+      "lecture": [
+        {
+          "title": "1. Iterator",
+          "path": "docs/patterns/01_Iterator.md"
+        }
+      ],
+      "chapter": "パターン 1章"
+    },
+    {
+      "id": "dp02_adapter",
+      "package": "drill_dp02_adapter",
+      "level": "デザインパターン編",
+      "level_note": "docs/patterns/ の講習に対応。結城本『増補改訂版 Java言語で学ぶデザインパターン入門』の輪読と並走します。ROS 2 は使いません",
+      "title": "Adapter — 委譲版と継承版",
+      "kind": "gtest",
+      "sources": [
+        "src/motor_adapter.cpp"
+      ],
+      "docs": [
+        {
+          "title": "結城浩『増補改訂版 Java言語で学ぶデザインパターン入門』第2章",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ],
+      "hints": [
+        "継承版は private 継承なので、`driver_.setPulse(...)` ではなく `setPulse(...)` と直接呼びます",
+        "`MotorActuator` の仮想デストラクタを消すと、`unique_ptr<MotorActuator>` で解放したとき未定義動作になります",
+        "パルスは `int`。`static_cast<int>` の切り捨てではなく `std::lround` で丸めます",
+        "50.0 rad/s は 5000 パルス相当ですが、ドライバ側が 1000 に丸めます。Adapter 側では丸めません"
+      ],
+      "lecture": [
+        {
+          "title": "2. Adapter",
+          "path": "docs/patterns/02_Adapter.md"
+        }
+      ],
+      "chapter": "パターン 2章"
+    },
+    {
+      "id": "dp03_template_method",
+      "package": "drill_dp03_template_method",
+      "level": "デザインパターン編",
+      "level_note": "docs/patterns/ の講習に対応。結城本『増補改訂版 Java言語で学ぶデザインパターン入門』の輪読と並走します。ROS 2 は使いません",
+      "title": "Template Method — NVI と CRTP",
+      "kind": "gtest",
+      "sources": [
+        "src/sensor_reader.cpp"
+      ],
+      "docs": [
+        {
+          "title": "結城浩『増補改訂版 Java言語で学ぶデザインパターン入門』第3章",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ],
+      "hints": [
+        "`read_once()` に `virtual` を付けない。 骨格は差し替えさせない。Java の `final` メソッドに当たる",
+        "各段の仮想関数は `private`。private でもオーバーライドはできる（呼び出しだけができない）",
+        "派生から基底版を呼びたい `validate()` だけ `protected` にしてある",
+        "`override` は必ず書く。`const` を 1 つ落とすと黙って別の関数になる",
+        "コンストラクタから `read_once()` を呼んではいけない（派生の実装がまだ動かない）"
+      ],
+      "lecture": [
+        {
+          "title": "3. Template Method",
+          "path": "docs/patterns/03_TemplateMethod.md"
+        }
+      ],
+      "chapter": "パターン 3章"
+    },
+    {
+      "id": "dp04_factory_method",
+      "package": "drill_dp04_factory_method",
+      "level": "デザインパターン編",
+      "level_note": "docs/patterns/ の講習に対応。結城本『増補改訂版 Java言語で学ぶデザインパターン入門』の輪読と並走します。ROS 2 は使いません",
+      "title": "Factory Method — unique_ptr を返す",
+      "kind": "gtest",
+      "sources": [
+        "src/logger_factory.cpp"
+      ],
+      "docs": [
+        {
+          "title": "結城浩『増補改訂版 Java言語で学ぶデザインパターン入門』第4章",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ],
+      "hints": [
+        "`create()` の最後は `return logger;` でよい。ローカル変数なので自動でムーブされる。 `return std::move(logger);` と書くとムーブ最適化を邪魔します",
+        "`create_logger()` の戻り値型は `std::unique_ptr<Logger>` です。 `std::unique_ptr<MemoryLogger>` に変えると共変戻り値型が効かずコンパイルエラーになります （`std::make_unique<MemoryLogger>(...)` を `unique_ptr<Logger>` として返すのは通ります）",
+        "生成失敗は `nullptr` で表します。例外は投げません（マイコンで使えないため）",
+        "`register_logger()` は `const Logger &` を受け取ります。所有権は渡っていません"
+      ],
+      "lecture": [
+        {
+          "title": "4. Factory Method",
+          "path": "docs/patterns/04_FactoryMethod.md"
+        }
+      ],
+      "chapter": "パターン 4章"
+    },
+    {
+      "id": "dp05_singleton",
+      "package": "drill_dp05_singleton",
+      "level": "デザインパターン編",
+      "level_note": "docs/patterns/ の講習に対応。結城本『増補改訂版 Java言語で学ぶデザインパターン入門』の輪読と並走します。ROS 2 は使いません",
+      "title": "Singleton — Meyers Singleton と初期化順序",
+      "kind": "gtest",
+      "sources": [
+        "src/uart_port.cpp"
+      ],
+      "docs": [
+        {
+          "title": "結城浩『増補改訂版 Java言語で学ぶデザインパターン入門』第5章",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ],
+      "hints": [
+        "関数ローカル static は C++11 以降スレッドセーフです。 自分で `std::mutex` を 書く必要はありません（マジックスタティック）。書くとむしろ遅くなります",
+        "`instance()` は 参照 を返します。ポインタを返すと、呼んだ側が `delete` してよいのか分からなくなります",
+        "`reset()` で `*this = UartPort{};` と書きたくなりますが、通りません。 コピー代入もムーブ代入も `= delete` されているからです。メンバを 1 つずつ戻します",
+        "コピー・ムーブの `= delete` が 4 行あるのは飾りではありません。 消すと `UartPort port = UartPort::instance();` が通り、シングルトンが崩れます。 テストの先頭の `static_assert` がそれを見張っています",
+        "コンストラクタの中でハードウェアを触らないでください。 いつ走るか分からないからです（詳しくは記事の「マイコンでの結論」）"
+      ],
+      "lecture": [
+        {
+          "title": "5. Singleton",
+          "path": "docs/patterns/05_Singleton.md"
+        }
+      ],
+      "chapter": "パターン 5章"
+    },
+    {
+      "id": "dp06_prototype",
+      "package": "drill_dp06_prototype",
+      "level": "デザインパターン編",
+      "level_note": "docs/patterns/ の講習に対応。結城本『増補改訂版 Java言語で学ぶデザインパターン入門』の輪読と並走します。ROS 2 は使いません",
+      "title": "Prototype — clone と共変戻り値型",
+      "kind": "gtest",
+      "sources": [
+        "src/waveform.cpp"
+      ],
+      "docs": [
+        {
+          "title": "結城浩『増補改訂版 Java言語で学ぶデザインパターン入門』第6章",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ],
+      "hints": [
+        "`std::unique_ptr<PulseTrain> do_clone()` と書きたくなりますが、通りません。 `std::unique_ptr<Base>` → `std::unique_ptr<Derived>` は共変戻り値型になれません。 だから `do_clone()` は生ポインタを返し、`clone()` が包みます",
+        "`clone()` は `override` しないでください。非仮想です。 override すべきは private の `do_clone()` の方です",
+        "`PulseTrain` のコピーコンストラクタで `Waveform(other)` を忘れないでください。 忘れると基底部分がデフォルト構築されます（この課題では見えませんが、 基底が状態を持つ設計だとバグになります）",
+        "`pattern_` は `std::unique_ptr<double[]>` なので、浅いコピーを書こうとしても コンパイルが通りません。生ポインタメンバだと通ってしまい、二重解放で落ちます",
+        "`WaveformLibrary` のコピーが `= delete` してあるのは、 「`std::vector<std::unique_ptr<...>>` を持てば自動的にコピー禁止になる」が 嘘だからです。ヘッダのコメントを読んでください"
+      ],
+      "lecture": [
+        {
+          "title": "6. Prototype",
+          "path": "docs/patterns/06_Prototype.md"
+        }
+      ],
+      "chapter": "パターン 6章"
+    },
+    {
+      "id": "dp07_builder",
+      "package": "drill_dp07_builder",
+      "level": "デザインパターン編",
+      "level_note": "docs/patterns/ の講習に対応。結城本『増補改訂版 Java言語で学ぶデザインパターン入門』の輪読と並走します。ROS 2 は使いません",
+      "title": "Builder — メソッドチェーンと参照修飾",
+      "kind": "gtest",
+      "sources": [
+        "src/motor_config.cpp",
+        "src/telemetry_builder.cpp"
+      ],
+      "docs": [
+        {
+          "title": "結城浩『増補改訂版 Java言語で学ぶデザインパターン入門』第7章",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ],
+      "hints": [
+        "セッタが `MotorConfigBuilder`（値）を返していると、テスト 「チェーンは同じBuilderの参照を返す」がアドレス比較で落とします",
+        "`build() &&` と `build() const &` は両方実装します。片方だけだと、 もう片方の呼び方がコンパイルエラーになります （`error: 'this' argument to member function 'build' is an lvalue, but function has rvalue ref-qualifier`）",
+        "`build() const &` で `std::move` すると、Builder が壊れて 2 回目の `build()` が空になります。 左辺値版はコピーです",
+        "Director に書式を書き始めたら手が滑っています。Director は `make_header` / `make_field` / `make_footer` を順に呼ぶだけです",
+        "`TelemetryDirector` は `TelemetryBuilder &` を参照で持っています。 Builder より長生きさせられません。Java には無い制約です"
+      ],
+      "lecture": [
+        {
+          "title": "7. Builder",
+          "path": "docs/patterns/07_Builder.md"
+        }
+      ],
+      "chapter": "パターン 7章"
+    },
+    {
+      "id": "dp08_abstract_factory",
+      "package": "drill_dp08_abstract_factory",
+      "level": "デザインパターン編",
+      "level_note": "docs/patterns/ の講習に対応。結城本『増補改訂版 Java言語で学ぶデザインパターン入門』の輪読と並走します。ROS 2 は使いません",
+      "title": "Abstract Factory — 製品群とテンプレート版",
+      "kind": "gtest",
+      "sources": [
+        "src/actuator_kit.cpp",
+        "src/static_kit.cpp"
+      ],
+      "docs": [
+        {
+          "title": "結城浩『増補改訂版 Java言語で学ぶデザインパターン入門』第8章",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ],
+      "hints": [
+        "`create_motor()` と `create_encoder()` に別の bus を渡すと、製品群が混ざります。 テスト「同じファクトリから出た部品どうしは繋がっている」が落とします",
+        "`run_open_loop()` の中に `SimulationKitFactory` と書いたら設計が壊れています。 引数は `const ActuatorKitFactory &` だけです",
+        "実機側は 4 逓倍エンコーダなので、同じ duty でもカウントは 4 倍進みます。 製品群が違えば挙動も違って当然です。合わせようとしないでください",
+        "テンプレート版で `typename KitTraits::Motor` の `typename` を忘れるとコンパイルエラーです",
+        "`MotorOutput` / `EncoderInput` / `ActuatorKitFactory` の仮想デストラクタはヘッダ側にあります。 自分で基底クラスを増やすなら、必ず仮想デストラクタを書いてください"
+      ],
+      "lecture": [
+        {
+          "title": "8. Abstract Factory",
+          "path": "docs/patterns/08_AbstractFactory.md"
+        }
+      ],
+      "chapter": "パターン 8章"
+    },
+    {
+      "id": "dp09_bridge",
+      "package": "drill_dp09_bridge",
+      "level": "デザインパターン編",
+      "level_note": "docs/patterns/ の講習に対応。結城本『増補改訂版 Java言語で学ぶデザインパターン入門』の輪読と並走します。ROS 2 は使いません",
+      "title": "Bridge — Pimpl と不完全型",
+      "kind": "gtest",
+      "sources": [
+        "src/link_stats.cpp",
+        "src/telemetry_view.cpp"
+      ],
+      "docs": [
+        {
+          "title": "結城浩『増補改訂版 Java言語で学ぶデザインパターン入門』第9章",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ],
+      "hints": [
+        "`TelemetryView` は `TelemetrySink` を継承していません。メンバとして 1 本持っているだけです。 継承にすると、機能 M 個 × 実装 N 個で M×N クラス要るようになります",
+        "`show()` の中に「どこへ出るか」を書いてしまったら Bridge が壊れています。 `sink()` を呼ぶ以外のことをしないでください",
+        "`LinkStats` のデストラクタをヘッダで `= default` にすると `error: invalid application of 'sizeof' to an incomplete type 'LinkStats::Impl'` になります",
+        "`count()` を `impl_->...` で書く前に、コンストラクタで `impl_` を作ってください。 作り忘れると nullptr 参照です"
+      ],
+      "lecture": [
+        {
+          "title": "9. Bridge",
+          "path": "docs/patterns/09_Bridge.md"
+        }
+      ],
+      "chapter": "パターン 9章"
+    },
+    {
+      "id": "dp10_strategy",
+      "package": "drill_dp10_strategy",
+      "level": "デザインパターン編",
+      "level_note": "docs/patterns/ の講習に対応。結城本『増補改訂版 Java言語で学ぶデザインパターン入門』の輪読と並走します。ROS 2 は使いません",
+      "title": "Strategy — 仮想関数 / std::function / テンプレート",
+      "kind": "gtest",
+      "sources": [
+        "src/velocity_filter.cpp"
+      ],
+      "docs": [
+        {
+          "title": "結城浩『増補改訂版 Java言語で学ぶデザインパターン入門』第10章",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ],
+      "hints": [
+        "3 つとも同じ出力でなければいけません。手段が違うだけで、アルゴリズムは同じものです",
+        "`VirtualCommander` が Strategy をコピーして持つと、テスト 「仮想関数版はStrategyを所有せず参照で指している」がアドレス比較で落とします",
+        "`filter_` を `const VelocityFilter &`（参照）にしたくなりますが、 参照は再束縛できないので差し替えができません。だからポインタです",
+        "`VirtualCommander` は Strategy を所有しません。 `ClampFilter` の実体を Commander より先に殺すと未定義動作です",
+        "`ClampPolicy` に `virtual` を付けると `static_assert` で落ちます。 vtable が付いて `sizeof` も増えます"
+      ],
+      "lecture": [
+        {
+          "title": "10. Strategy",
+          "path": "docs/patterns/10_Strategy.md"
+        }
+      ],
+      "chapter": "パターン 10章"
+    },
+    {
+      "id": "dp11_composite",
+      "package": "drill_dp11_composite",
+      "level": "デザインパターン編",
+      "level_note": "docs/patterns/ の講習に対応。結城本『増補改訂版 Java言語で学ぶデザインパターン入門』の輪読と並走します。ROS 2 は使いません",
+      "title": "Composite — unique_ptr の木と所有権",
+      "kind": "gtest",
+      "sources": [
+        "src/diagnostic_tree.cpp"
+      ],
+      "docs": [
+        {
+          "title": "結城浩『増補改訂版 Java言語で学ぶデザインパターン入門』第11章",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ],
+      "hints": [
+        "`error: call to implicitly-deleted copy constructor of 'std::unique_ptr<...>'` が出たら、 `push_back` に `std::move` が足りていません。`unique_ptr` はコピーできません",
+        "`add(std::move(group))` したあとの `group` は `nullptr` です。二度と使えません",
+        "子を `std::vector<DiagnosticEntry>`（値）で持ちたくなっても、できません。 抽象クラスなので `vector` に入れられず、入れられたとしても スライシングして `DiagnosticCheck` の部分が消えます",
+        "`DiagnosticGroup` は `unique_ptr` のメンバを持つのでコピーできません。 テスト先頭の `static_assert` がこれを見ています",
+        "親へのポインタは持たせていません。`shared_ptr` で親子を相互参照すると 循環して永久に解放されません（記事 11.5 に実測があります）"
+      ],
+      "lecture": [
+        {
+          "title": "11. Composite",
+          "path": "docs/patterns/11_Composite.md"
+        }
+      ],
+      "chapter": "パターン 11章"
+    },
+    {
+      "id": "dp12_decorator",
+      "package": "drill_dp12_decorator",
+      "level": "デザインパターン編",
+      "level_note": "docs/patterns/ の講習に対応。結城本『増補改訂版 Java言語で学ぶデザインパターン入門』の輪読と並走します。ROS 2 は使いません",
+      "title": "Decorator — 入れ子の所有とテンプレート版",
+      "kind": "gtest",
+      "sources": [
+        "src/log_sink.cpp"
+      ],
+      "docs": [
+        {
+          "title": "結城浩『増補改訂版 Java言語で学ぶデザインパターン入門』第12章",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ],
+      "hints": [
+        "`SinkDecorator(std::unique_ptr<LogSink> inner) : inner_(inner)` はコンパイルエラーです。 `unique_ptr` はコピーできません。`std::move(inner)` と書きます",
+        "`inner()` は `const LogSink &` を返します。`LogSink` は抽象クラスなので値では返せません",
+        "`format()` の中で先に中身を呼ぶこと。順番を間違えるとタグの位置が入れ替わります",
+        "包む順番で出力が変わるのが Decorator です。テストがそれを見ています",
+        "デストラクタの記録を忘れると「一番外側を破棄すると内側まで全部破棄される」が落ちます"
+      ],
+      "lecture": [
+        {
+          "title": "12. Decorator",
+          "path": "docs/patterns/12_Decorator.md"
+        }
+      ],
+      "chapter": "パターン 12章"
+    },
+    {
+      "id": "dp13_visitor",
+      "package": "drill_dp13_visitor",
+      "level": "デザインパターン編",
+      "level_note": "docs/patterns/ の講習に対応。結城本『増補改訂版 Java言語で学ぶデザインパターン入門』の輪読と並走します。ROS 2 は使いません",
+      "title": "Visitor — 二重ディスパッチと std::variant",
+      "kind": "gtest",
+      "sources": [
+        "src/diagnostics.cpp"
+      ],
+      "docs": [
+        {
+          "title": "結城浩『増補改訂版 Java言語で学ぶデザインパターン入門』第13章",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ],
+      "hints": [
+        "`accept` を実装していないうちは、`variant` 版のテストが `C++ exception with description \"vector\"` で落ちます。 `DiagArena::add` が何も保存していないので `at()` が範囲外になっているだけです",
+        "`accept` が仮想でないと、基底ポインタ経由の呼び出しで種類が消えます。 テスト「基底ポインタ経由でも派生ごとのvisitが選ばれる」がそこを見ます",
+        "`visit` の引数を `const SensorCheck &` ではなく `SensorCheck` にするとコピーが走ります。 基底型で受けるとスライシングします",
+        "`overloaded` の推論ガイドを忘れると `no viable constructor or deduction guide for deduction of template arguments` になります",
+        "ラムダの中から自分を再帰呼び出しはできません。 無名名前空間に名前付きの関数を用意して、その中で `std::visit` してください"
+      ],
+      "lecture": [
+        {
+          "title": "13. Visitor",
+          "path": "docs/patterns/13_Visitor.md"
+        }
+      ],
+      "chapter": "パターン 13章"
+    },
+    {
+      "id": "dp14_chain_of_responsibility",
+      "package": "drill_dp14_chain_of_responsibility",
+      "level": "デザインパターン編",
+      "level_note": "docs/patterns/ の講習に対応。結城本『増補改訂版 Java言語で学ぶデザインパターン入門』の輪読と並走します。ROS 2 は使いません",
+      "title": "Chain of Responsibility — 連鎖の所有権",
+      "kind": "gtest",
+      "sources": [
+        "src/fault_chain.cpp"
+      ],
+      "docs": [
+        {
+          "title": "結城浩『増補改訂版 Java言語で学ぶデザインパターン入門』第14章",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ],
+      "hints": [
+        "`set_next()` で `std::move(next)` したあとの `next` は空です。 `*next` を返すと落ちます。`next_` に入れてから `*next_` を返してください",
+        "`set_next()` が `*this` を返すと、`a.set_next(b).set_next(c)` で b が黙って解放されます。テスト「setNextは次のハンドラ自身への参照を返す」が落とします",
+        "デストラクタ本体が走ったあとにメンバ `next_` が破棄されます。 つまり破棄ログは先頭から末尾の順に並びます",
+        "`resolve()` の中で `next_` を触りたくなったら設計が壊れています。 たらい回しは `support()` だけの仕事です",
+        "「誰も処理しなかった」は `std::nullopt` です。`throw` しないでください （マイコンでは `-fno-exceptions` が普通のため）"
+      ],
+      "lecture": [
+        {
+          "title": "14. Chain of Responsibility",
+          "path": "docs/patterns/14_ChainOfResponsibility.md"
+        }
+      ],
+      "chapter": "パターン 14章"
+    },
+    {
+      "id": "dp15_facade",
+      "package": "drill_dp15_facade",
+      "level": "デザインパターン編",
+      "level_note": "docs/patterns/ の講習に対応。結城本『増補改訂版 Java言語で学ぶデザインパターン入門』の輪読と並走します。ROS 2 は使いません",
+      "title": "Facade — 名前空間か RAII クラスか",
+      "kind": "gtest",
+      "sources": [
+        "src/robot_startup.cpp"
+      ],
+      "docs": [
+        {
+          "title": "結城浩『増補改訂版 Java言語で学ぶデザインパターン入門』第15章",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ],
+      "hints": [
+        "コンストラクタの途中で `return` してもデストラクタは必ず走ります。 オブジェクトは構築済みだからです。だから巻き戻しはデストラクタに書けます",
+        "`std::move` した後のオブジェクトもデストラクタは走ります。 「ムーブしたから消えた」ではありません。ムーブ元を空にしないと電源が 2 回落ちます",
+        "電源投入で失敗した場合、成功した段は 0 個です。`power_off` を呼んではいけません。 テスト「電源投入で失敗すると後始末は何も走らない」がそこを見ます",
+        "`append()` は `const char *` を取ります。`drive()` は `std::string` を作るので、 `log_->push_back()` を直接使ってください（`log_` が `nullptr` のことがあります）",
+        "自由関数版を「`RobotSession` を作って捨てるだけ」で実装したくなりますが、 手で巻き戻す形で書いてください。 RAII 版との差を体で知るのがこの課題の主眼です"
+      ],
+      "lecture": [
+        {
+          "title": "15. Facade",
+          "path": "docs/patterns/15_Facade.md"
+        }
+      ],
+      "chapter": "パターン 15章"
+    },
+    {
+      "id": "dp16_mediator",
+      "package": "drill_dp16_mediator",
+      "level": "デザインパターン編",
+      "level_note": "docs/patterns/ の講習に対応。結城本『増補改訂版 Java言語で学ぶデザインパターン入門』の輪読と並走します。ROS 2 は使いません",
+      "title": "Mediator — 循環参照と weak_ptr",
+      "kind": "gtest",
+      "sources": [
+        "src/control_panel.cpp"
+      ],
+      "docs": [
+        {
+          "title": "結城浩『増補改訂版 Java言語で学ぶデザインパターン入門』第16章",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ],
+      "hints": [
+        "`set_enabled()` から `notify_changed()` を呼ばないこと。 `widget_changed()` → `update_enabled_states()` → `set_enabled()` → `widget_changed()` と 無限再帰します。「Mediator から呼ばれる入口」と「Colleague から呼ぶ入口」は別物です",
+        "Colleague の中から他の Colleague を触らないこと。テスト 「Mediatorを外すとColleague間に影響が伝わらない」がそれを落とします",
+        "`set_mediator()` で `std::shared_ptr` を持ち返さないこと。テスト 「ColleagueはMediatorを所有しない」が `use_count()` で見ています",
+        "コンストラクタの初期化子リストでは結線できません。Colleague を作るには Mediator が要り、 Mediator を渡すには Colleague が要るからです。だから 2 段階初期化になります",
+        "値が変わっていないときに報告すると、テスト「同じ値をもう一度入れても報告されない」が落ちます"
+      ],
+      "lecture": [
+        {
+          "title": "16. Mediator",
+          "path": "docs/patterns/16_Mediator.md"
+        }
+      ],
+      "chapter": "パターン 16章"
+    },
+    {
+      "id": "dp17_observer",
+      "package": "drill_dp17_observer",
+      "level": "デザインパターン編",
+      "level_note": "docs/patterns/ の講習に対応。結城本『増補改訂版 Java言語で学ぶデザインパターン入門』の輪読と並走します。ROS 2 は使いません",
+      "title": "Observer — 購読者の寿命と RAII トークン",
+      "kind": "gtest",
+      "sources": [
+        "src/sensor_hub.cpp"
+      ],
+      "docs": [
+        {
+          "title": "結城浩『増補改訂版 Java言語で学ぶデザインパターン入門』第17章",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ],
+      "hints": [
+        "通知ループの中で `entries.erase()` を呼ばない。 走っているループの添字がずれて、飛ばされる購読者と 2 回呼ばれる購読者が出ます。 印を付けるだけにして、削除はループが終わってから",
+        "参照やイテレータを取り置きしない。 通知の最中に `subscribe()` されると `std::vector` が再確保され、取り置きしたものが無効になります。添字で回してください",
+        "再入防止フラグを戻し忘れない。 `on_sample` が例外を投げても戻るように、 デストラクタで false にする小さな RAII をその場で書くのが安全です",
+        "`Subscription` のムーブ元を空にする。 忘れると、ムーブ元が死んだ瞬間に 購読が切れます（`unique_ptr` と同じ話です）",
+        "`registry_` は `weak_ptr`。 生ポインタで持つと、`SensorHub` が先に死んだあとの `~Subscription()` で死んだオブジェクトを触ります"
+      ],
+      "lecture": [
+        {
+          "title": "17. Observer",
+          "path": "docs/patterns/17_Observer.md"
+        }
+      ],
+      "chapter": "パターン 17章"
+    },
+    {
+      "id": "dp18_memento",
+      "package": "drill_dp18_memento",
+      "level": "デザインパターン編",
+      "level_note": "docs/patterns/ の講習に対応。結城本『増補改訂版 Java言語で学ぶデザインパターン入門』の輪読と並走します。ROS 2 は使いません",
+      "title": "Memento — 値セマンティクスと friend",
+      "kind": "gtest",
+      "sources": [
+        "src/gain_tuner.cpp"
+      ],
+      "docs": [
+        {
+          "title": "結城浩『増補改訂版 Java言語で学ぶデザインパターン入門』第18章",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ],
+      "hints": [
+        "Memento のメンバは値で持ちます。 `const State &` や `State *` や `std::shared_ptr<State>` で持つとスナップショットになりません。 元を変えると Memento も一緒に変わります。 `shared_ptr` が防ぐのは寿命であって共有ではありません",
+        "`GainSnapshot` のコンストラクタが private なのは意図どおりです。 Java の package private に相当する仕組みが C++ に無いので `friend` で表現しています。 外から `saved.kp_` に触ると `error: 'kp_' is a private member of 'GainSnapshot'` になります",
+        "`GainSnapshot` のコピーは禁止しないでください。 Undo 履歴は `std::vector<GainSnapshot>` に積むので、コピーもムーブも消すと `push_back` すら通りません",
+        "`head_` は「次に書く位置」です。最新は `head_` の 1 つ手前。 引き算で `std::size_t` が負にならないよう、`kCapacity` を足してから `%` を取ってください",
+        "`GainState` に `std::string` を足したくなったら止まってください。 `memcpy` で運べなくなり、ヘッダの `static_assert` がコンパイルを止めます"
+      ],
+      "lecture": [
+        {
+          "title": "18. Memento",
+          "path": "docs/patterns/18_Memento.md"
+        }
+      ],
+      "chapter": "パターン 18章"
+    },
+    {
+      "id": "dp19_state",
+      "package": "drill_dp19_state",
+      "level": "デザインパターン編",
+      "level_note": "docs/patterns/ の講習に対応。結城本『増補改訂版 Java言語で学ぶデザインパターン入門』の輪読と並走します。ROS 2 は使いません",
+      "title": "State — enum / State クラス / variant",
+      "kind": "gtest",
+      "sources": [
+        "src/state_machine.cpp"
+      ],
+      "docs": [
+        {
+          "title": "結城浩『増補改訂版 Java言語で学ぶデザインパターン入門』第19章",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ],
+      "hints": [
+        "`handle()` の中で状態機械を差し替えないでください。 そもそもできないように、 `State::handle()` は `Context` を受け取りません。これがこの章で一番大事なところです。 Java 版の `context.changeState(...)` を C++ で写経すると `delete this` になります",
+        "遷移しない入力ではアクションを走らせないこと。`Running` で `Start` をもう一度受けたときに `on_exit` → `on_enter` が走ると、実機ではモータが一瞬止まって再起動します",
+        "退場が先、入場が後です。逆にするとブレーキがかかった後にモータ停止が走ります",
+        "`state_object()` は何度呼んでも同じアドレスを返さなければいけません。 状態オブジェクトはメンバを 1 つも持たないので、`static` 実体 1 個で足ります（ヒープ確保ゼロ）",
+        "`std::visit` のラムダで分岐ごとに戻り値の型が違うとエラーになります。 `-> std::optional<StateVariant>` のように戻り値型を明示してください"
+      ],
+      "lecture": [
+        {
+          "title": "19. State",
+          "path": "docs/patterns/19_State.md"
+        }
+      ],
+      "chapter": "パターン 19章"
+    },
+    {
+      "id": "dp20_flyweight",
+      "package": "drill_dp20_flyweight",
+      "level": "デザインパターン編",
+      "level_note": "docs/patterns/ の講習に対応。結城本『増補改訂版 Java言語で学ぶデザインパターン入門』の輪読と並走します。ROS 2 は使いません",
+      "title": "Flyweight — weak_ptr プールと constexpr",
+      "kind": "gtest",
+      "sources": [
+        "src/calibration.cpp"
+      ],
+      "docs": [
+        {
+          "title": "結城浩『増補改訂版 Java言語で学ぶデザインパターン入門』第20章",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ],
+      "hints": [
+        "プールに `shared_ptr` を入れてはいけません。 入れるとプールが参照を握り続け、 プロセスが終わるまで解放されません。テストは `use_count` を見ています。 利用者が 2 人なら `use_count` は 2 です。3 になったらプールが数えています",
+        "`weak_ptr` にしても、`map` のエントリは自動では消えません。 `weak_ptr` は自分が expired になったことを `map` に伝えられないからです。 だから `sweep_expired()` が要ります",
+        "`sweep_expired()` では `it = pool_.erase(it)` と書いてください。 `++it` してから `erase` すると無効なイテレータを触ります",
+        "`zero_offset` を `CalibrationTable` 側に持たせないでください。 その瞬間、同じ型番のセンサ同士で共有できなくなります",
+        "`Handle` は `std::shared_ptr<const CalibrationTable>` です。`const` が付いています。 共有しているものを 1 人が書き換えたら、全員に波及するからです"
+      ],
+      "lecture": [
+        {
+          "title": "20. Flyweight",
+          "path": "docs/patterns/20_Flyweight.md"
+        }
+      ],
+      "chapter": "パターン 20章"
+    },
+    {
+      "id": "dp21_proxy",
+      "package": "drill_dp21_proxy",
+      "level": "デザインパターン編",
+      "level_note": "docs/patterns/ の講習に対応。結城本『増補改訂版 Java言語で学ぶデザインパターン入門』の輪読と並走します。ROS 2 は使いません",
+      "title": "Proxy — operator-> と遅延生成",
+      "kind": "gtest",
+      "sources": [
+        "src/calibration_proxy.cpp"
+      ],
+      "docs": [
+        {
+          "title": "結城浩『増補改訂版 Java言語で学ぶデザインパターン入門』第21章",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ],
+      "hints": [
+        "`error: no viable overloaded '='` / `but method is not marked const` → `operator->` は `const` です。ヘッダの `mutable std::unique_ptr<...> real_;` を見てください",
+        "「最初のアクセスまで本体は作られない」が落ちる → `CalibrationProxy` のコンストラクタで本体を作ってしまっています",
+        "「二度目以降のアクセスで本体は作り直されない」が落ちる → `if (!real_)` の判定を忘れて毎回 `make_unique` しています",
+        "`proxy->write_raw(...)` が動かない → `RegisterAccess::operator->()` が `nullptr` を返しています。 `SafeRegisterProxy` の `friend` なので `owner_.file_` に直接届きます",
+        "「弾いたのに本体に触っています」で落ちる → 範囲外の分岐で `file_.read_raw()` / `file_.write_raw()` を呼んでいます。 実機ではここが別のペリフェラルの破壊になります"
+      ],
+      "lecture": [
+        {
+          "title": "21. Proxy",
+          "path": "docs/patterns/21_Proxy.md"
+        }
+      ],
+      "chapter": "パターン 21章"
+    },
+    {
+      "id": "dp22_command",
+      "package": "drill_dp22_command",
+      "level": "デザインパターン編",
+      "level_note": "docs/patterns/ の講習に対応。結城本『増補改訂版 Java言語で学ぶデザインパターン入門』の輪読と並走します。ROS 2 は使いません",
+      "title": "Command — std::function とコマンドキュー",
+      "kind": "gtest",
+      "sources": [
+        "src/robot_console.cpp"
+      ],
+      "docs": [
+        {
+          "title": "結城浩『増補改訂版 Java言語で学ぶデザインパターン入門』第22章",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ],
+      "hints": [
+        "`undo()` の順序が本題です。 マクロを正順に undo すると、 依存のある操作（掴んでから持ち上げる、など）で状態が壊れます。末尾から戻してください",
+        "`CommandHistory::run()` で `undone_.clear()` を忘れない。 undo したあと別のコマンドを実行してから redo できてしまうと、 復元できない状態になります",
+        "`done_.back()` を `std::move` してから `pop_back()` してください。 順番を逆にすると解放済みのものを触ります",
+        "`add()` / `run()` / `push()` は `std::unique_ptr` を値で受け取ります。 `const std::unique_ptr<Command> &` で受けるとコピーできず、そもそも積めません",
+        "コマンドは `RobotArm` を所有しません。 `RotateCommand` が持っているのは 生ポインタです。アームより長生きさせるとぶら下がります（第17章 Observer と同じ問題）"
+      ],
+      "lecture": [
+        {
+          "title": "22. Command",
+          "path": "docs/patterns/22_Command.md"
+        }
+      ],
+      "chapter": "パターン 22章"
+    },
+    {
+      "id": "dp23_interpreter",
+      "package": "drill_dp23_interpreter",
+      "level": "デザインパターン編",
+      "level_note": "docs/patterns/ の講習に対応。結城本『増補改訂版 Java言語で学ぶデザインパターン入門』の輪読と並走します。ROS 2 は使いません",
+      "title": "Interpreter — 構文木と再帰の深さ",
+      "kind": "gtest",
+      "sources": [
+        "src/motion_script.cpp"
+      ],
+      "docs": [
+        {
+          "title": "結城浩『増補改訂版 Java言語で学ぶデザインパターン入門』第23章",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ],
+      "hints": [
+        "`evaluate()` は結果を返さず `out` に積みます。 ノードごとに `std::vector` を作って 結合すると、木の深さぶん確保が走ります",
+        "失敗を上に伝える方法。`throw` を使わないなら、 「エラーはメンバに置き、関数は `nullptr` を返す」のが定番です",
+        "`parse_sequence` は `}` と入力終端の両方で止まります。 止め忘れると `repeat` の本体が外まで食い込みます",
+        "深さ制限は再帰の入口で見ます。出口や後始末で見ても、 そこに着く前にスタックが尽きます",
+        "`variant_ast::VNode` は `std::variant<Command, std::unique_ptr<Repeat>>` です。 再帰的な型なので variant にしても間接参照は消えません。 variant の要素は完全型でなければならないため、`Repeat` は `unique_ptr` で挟んであります"
+      ],
+      "lecture": [
+        {
+          "title": "23. Interpreter",
+          "path": "docs/patterns/23_Interpreter.md"
+        }
+      ],
+      "chapter": "パターン 23章"
     }
   ]
 }
