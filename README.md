@@ -10,6 +10,73 @@ Compiler Explorer へのリンクが付いているので、`g++` が無くて�
 Rust の [rustlings](https://rustlings.rust-lang.org/) 方式の **ROS 2 / C++ 講習用ドリル**です。
 穴埋めのソースを埋めるとテストが合否を判定するので、採点する人が要りません。
 
+## このリポジトリの取り込みかた
+
+**読むだけなら何も要りません。** 上の公開サイトを開いてください。
+**課題を解くなら**、リポジトリを手元に持ってきます。
+
+```bash
+git clone https://github.com/Nyanziba/ros2-cpp-drill.git
+cd ros2-cpp-drill
+```
+
+`drill` は Python 3 の 1 ファイルです。追加のライブラリは要りません。
+
+```bash
+./drill list     # 課題一覧と進捗
+./drill run      # 次の未完了課題をビルドしてテスト
+```
+
+### どの環境で動かすか
+
+課題のビルドには `colcon` と `ament_cmake` が要ります。次のどちらかを選んでください。
+
+| | 向いている人 | 手間 |
+| --- | --- | --- |
+| **Docker** | Ubuntu 以外（macOS / Windows / 他のディストリ）、環境を汚したくない人 | `docker compose build` 1 回（10〜20 分） |
+| **直接入れる** | Ubuntu 24.04 を使っていて、ROS 2 も入れる人 | ROS 2 Jazzy のインストールが必要 |
+
+```bash
+# Docker の場合
+docker compose build
+docker compose run --rm drill        # コンテナの中に入る
+./drill list
+```
+
+ROS 2 Jazzy は **Ubuntu 24.04 にしか公式パッケージがありません。**
+それ以外の OS なら Docker を選んでください。
+詳しい手順は [はじめかた](docs/はじめかた.md) にあります。
+
+### どこから始めるか
+
+**全員が全部やる必要はありません。** 自分の行き先のトラックだけやってください。
+
+```bash
+./drill run cppb01     # C++入門編の1問目
+./drill run c01        # C言語編の1問目
+./drill run dp01       # デザインパターン編の1問目
+./drill run 01         # ROS 2編の1問目
+```
+
+読み物と課題は行き来できます。
+
+```bash
+./drill read cppb01          # 対応する章をターミナルで開く
+./drill read cppb01 --web    # ブラウザで開く
+./drill hint cppb01          # ヒント
+./drill solution cppb01      # 解答例
+./drill reset cppb01         # 初期状態に戻す
+```
+
+### 自分たちの教材として使う
+
+fork して、`exercises/` と `docs/` を差し替えれば、そのまま自分たちのドリルになります。
+`exercises.json` が課題と章の対応表なので、そこを編集します。
+サイトを自分の GitHub Pages で公開する手順は
+[fork して自分のサイトにする](#fork-して自分のサイトにする) にあります。
+
+**ライセンスは MIT です。** 部内配布・改変・再配布は自由です。
+
 ```bash
 ./drill watch
 ```
@@ -17,18 +84,31 @@ Rust の [rustlings](https://rustlings.rust-lang.org/) 方式の **ROS 2 / C++ �
 保存するたびに再テストされます。読み物（`docs/`）は 3 トラック計 49 章で、
 課題（`exercises/`）の 35 問は**そのうち演習を設けた章と章番号で対応**しています。
 
-## 4 つのトラック
+## 5 つのトラック
+
+**ROS 2 の前に C++ の講習があり、マイコン側のための C の講習と、
+部内ライブラリを設計するためのデザインパターンの講習もあります。**
+読み物（`docs/`）と課題（`exercises/`）は**章番号まで 1 対 1 で対応**しています。
 
 | トラック | 読み物 | 課題 | 対象 |
 | --- | --- | --- | --- |
+| **C言語編** | [docs/c/](docs/c/README.md) | `c01`〜`c12` | マイコン・足回り・CAN を書く人。全12章 |
 | **C++入門編** | [docs/cpp-basics/](docs/cpp-basics/README.md) | `cppb01`〜`cppb10` | `const` や `static` で手が止まる人。全10章 |
 | **C++編** | [docs/cpp/](docs/cpp/README.md) | `cpp01`〜`cpp12` | rclcpp を読む準備。全15章 |
 | **ROS 2編** | [docs/ros2/](docs/ros2/01_この記事からスタート_ROS2講習ハブ.md) | `01`〜`15` | 全24本 |
 | **デザインパターン編** | [docs/patterns/](docs/patterns/README.md) | `dp01`〜`dp23` | 部内ライブラリを設計する人。結城本の輪読と並走。全23章 |
 
+**全員が全部やる必要はありません。**
+
+| その人の行き先 | 進め方 |
+| --- | --- |
+| ROS 2 / 自律移動 | `cppb01`〜 → `cpp01`〜 → `01`〜（**C言語編は飛ばして構いません**） |
+| マイコン / 足回り / CAN | `c01`〜`c12` のみ |
+| 部内ライブラリの設計 | `dp01`〜`dp23`（結城本を読みながら） |
+
 **デザインパターン編は他のトラックと独立しています。** 順番の依存はありません。
 
-**C++入門編・C++編・デザインパターン編は ROS 2 を使いません。** `ament_cmake` と gtest だけなので、
+**C言語編・C++入門編・C++編・デザインパターン編は ROS 2 を使いません。** `ament_cmake` と gtest だけなので、
 1 課題 2〜3 秒でビルドできます。
 
 rclcpp は `shared_ptr`・ラムダ・`std::move`・テンプレートに強く依存しています。
