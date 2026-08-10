@@ -10,6 +10,73 @@ Compiler Explorer へのリンクが付いているので、`g++` が無くて�
 Rust の [rustlings](https://rustlings.rust-lang.org/) 方式の **ROS 2 / C++ 講習用ドリル**です。
 穴埋めのソースを埋めるとテストが合否を判定するので、採点する人が要りません。
 
+## このリポジトリの取り込みかた
+
+**読むだけなら何も要りません。** 上の公開サイトを開いてください。
+**課題を解くなら**、リポジトリを手元に持ってきます。
+
+```bash
+git clone https://github.com/Nyanziba/ros2-cpp-drill.git
+cd ros2-cpp-drill
+```
+
+`drill` は Python 3 の 1 ファイルです。追加のライブラリは要りません。
+
+```bash
+./drill list     # 課題一覧と進捗
+./drill run      # 次の未完了課題をビルドしてテスト
+```
+
+### どの環境で動かすか
+
+課題のビルドには `colcon` と `ament_cmake` が要ります。次のどちらかを選んでください。
+
+| | 向いている人 | 手間 |
+| --- | --- | --- |
+| **Docker** | Ubuntu 以外（macOS / Windows / 他のディストリ）、環境を汚したくない人 | `docker compose build` 1 回（10〜20 分） |
+| **直接入れる** | Ubuntu 24.04 を使っていて、ROS 2 も入れる人 | ROS 2 Jazzy のインストールが必要 |
+
+```bash
+# Docker の場合
+docker compose build
+docker compose run --rm drill        # コンテナの中に入る
+./drill list
+```
+
+ROS 2 Jazzy は **Ubuntu 24.04 にしか公式パッケージがありません。**
+それ以外の OS なら Docker を選んでください。
+詳しい手順は [はじめかた](docs/はじめかた.md) にあります。
+
+### どこから始めるか
+
+**全員が全部やる必要はありません。** 自分の行き先のトラックだけやってください。
+
+```bash
+./drill run cppb01     # C++入門編の1問目
+./drill run c01        # C言語編の1問目
+./drill run dp01       # デザインパターン編の1問目
+./drill run 01         # ROS 2編の1問目
+```
+
+読み物と課題は行き来できます。
+
+```bash
+./drill read cppb01          # 対応する章をターミナルで開く
+./drill read cppb01 --web    # ブラウザで開く
+./drill hint cppb01          # ヒント
+./drill solution cppb01      # 解答例
+./drill reset cppb01         # 初期状態に戻す
+```
+
+### 自分たちの教材として使う
+
+fork して、`exercises/` と `docs/` を差し替えれば、そのまま自分たちのドリルになります。
+`exercises.json` が課題と章の対応表なので、そこを編集します。
+サイトを自分の GitHub Pages で公開する手順は
+[fork して自分のサイトにする](#fork-して自分のサイトにする) にあります。
+
+**ライセンスは MIT です。** 部内配布・改変・再配布は自由です。
+
 ```bash
 ./drill watch
 ```
