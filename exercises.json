@@ -1,6 +1,345 @@
 {
   "exercises": [
     {
+      "id": "c01_split_compile",
+      "package": "drill_c01_split_compile",
+      "level": "C言語編",
+      "level_note": "docs/c/ の講習に対応。独立トラックなので、ROS 2 に進む人は飛ばして構いません",
+      "title": "分割コンパイルとヘッダガード",
+      "kind": "gtest",
+      "sources": [
+        "include/drill/counter.h",
+        "src/counter.c"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: Source file inclusion",
+          "url": "https://en.cppreference.com/w/c/preprocessor/include"
+        }
+      ],
+      "hints": [
+        "ヘッダガードは #ifndef DRILL_COUNTER_H / #define DRILL_COUNTER_H / ... / #endif の3点セットです。",
+        "redefinition of ‘struct Counter’ は「同じ翻訳単位で2回定義された」という意味です。テストが意図的に2回 include しています。",
+        "ファイルスコープの static は「他の .c から見えない」という意味です。関数内 static の「値が残る」とは別の意味です。",
+        "static int32_t call_count = 0; を関数の外に置いてください。"
+      ],
+      "lecture": [
+        {
+          "title": "1. 分割コンパイルとヘッダガード",
+          "path": "docs/c/01_分割コンパイルとヘッダガード.md"
+        }
+      ],
+      "chapter": "C 1章"
+    },
+    {
+      "id": "c02_fixed_width_int",
+      "package": "drill_c02_fixed_width_int",
+      "level": "C言語編",
+      "level_note": "docs/c/ の講習に対応。独立トラックなので、ROS 2 に進む人は飛ばして構いません",
+      "title": "固定幅整数と暗黙変換",
+      "kind": "gtest",
+      "sources": [
+        "src/fixed_width.c"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: Fixed width integer types",
+          "url": "https://en.cppreference.com/w/c/types/integer"
+        }
+      ],
+      "hints": [
+        "README.md の「やること」を先に読んでください。",
+        "詰まったら ./drill solution c02 で解答例が見られます。"
+      ],
+      "lecture": [
+        {
+          "title": "2. 固定幅整数と暗黙変換",
+          "path": "docs/c/02_固定幅整数と暗黙変換.md"
+        }
+      ],
+      "chapter": "C 2章"
+    },
+    {
+      "id": "c03_pointer",
+      "package": "drill_c03_pointer",
+      "level": "C言語編",
+      "level_note": "docs/c/ の講習に対応。独立トラックなので、ROS 2 に進む人は飛ばして構いません",
+      "title": "ポインタでアドレスを渡す",
+      "kind": "gtest",
+      "sources": [
+        "src/pointer.c"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: Pointer declaration",
+          "url": "https://en.cppreference.com/w/c/language/pointer"
+        }
+      ],
+      "hints": [
+        "README.md の「やること」を先に読んでください。",
+        "詰まったら ./drill solution c03 で解答例が見られます。"
+      ],
+      "lecture": [
+        {
+          "title": "3. ポインタ① アドレスと間接参照",
+          "path": "docs/c/03_ポインタ1.md"
+        }
+      ],
+      "chapter": "C 3章"
+    },
+    {
+      "id": "c04_pointer_array",
+      "package": "drill_c04_pointer_array",
+      "level": "C言語編",
+      "level_note": "docs/c/ の講習に対応。独立トラックなので、ROS 2 に進む人は飛ばして構いません",
+      "title": "配列とポインタ演算",
+      "kind": "gtest",
+      "sources": [
+        "src/array_ops.c"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: Array to pointer conversion",
+          "url": "https://en.cppreference.com/w/c/language/array"
+        }
+      ],
+      "hints": [
+        "README.md の「やること」を先に読んでください。",
+        "詰まったら ./drill solution c04 で解答例が見られます。"
+      ],
+      "lecture": [
+        {
+          "title": "4. ポインタ② 配列とポインタ演算",
+          "path": "docs/c/04_ポインタ2.md"
+        }
+      ],
+      "chapter": "C 4章"
+    },
+    {
+      "id": "c05_string",
+      "package": "drill_c05_string",
+      "level": "C言語編",
+      "level_note": "docs/c/ の講習に対応。独立トラックなので、ROS 2 に進む人は飛ばして構いません",
+      "title": "文字列とNUL終端",
+      "kind": "gtest",
+      "sources": [
+        "src/string_ops.c"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: Null-terminated byte strings",
+          "url": "https://en.cppreference.com/w/c/string/byte"
+        }
+      ],
+      "hints": [
+        "README.md の「やること」を先に読んでください。",
+        "詰まったら ./drill solution c05 で解答例が見られます。"
+      ],
+      "lecture": [
+        {
+          "title": "5. 文字列",
+          "path": "docs/c/05_文字列.md"
+        }
+      ],
+      "chapter": "C 5章"
+    },
+    {
+      "id": "c06_struct_align",
+      "package": "drill_c06_struct_align",
+      "level": "C言語編",
+      "level_note": "docs/c/ の講習に対応。独立トラックなので、ROS 2 に進む人は飛ばして構いません",
+      "title": "構造体とアラインメント",
+      "kind": "gtest",
+      "sources": [
+        "src/struct_align.c"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: offsetof",
+          "url": "https://en.cppreference.com/w/c/types/offsetof"
+        }
+      ],
+      "hints": [
+        "README.md の「やること」を先に読んでください。",
+        "詰まったら ./drill solution c06 で解答例が見られます。"
+      ],
+      "lecture": [
+        {
+          "title": "6. 構造体とアラインメント",
+          "path": "docs/c/06_構造体とアラインメント.md"
+        }
+      ],
+      "chapter": "C 6章"
+    },
+    {
+      "id": "c07_bit_ops",
+      "package": "drill_c07_bit_ops",
+      "level": "C言語編",
+      "level_note": "docs/c/ の講習に対応。独立トラックなので、ROS 2 に進む人は飛ばして構いません",
+      "title": "ビット演算とCAN ID",
+      "kind": "gtest",
+      "sources": [
+        "src/bit_ops.c"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: Bitwise operators",
+          "url": "https://en.cppreference.com/w/c/language/operator_arithmetic"
+        }
+      ],
+      "hints": [
+        "README.md の「やること」を先に読んでください。",
+        "詰まったら ./drill solution c07 で解答例が見られます。"
+      ],
+      "lecture": [
+        {
+          "title": "7. ビット演算とレジスタ操作",
+          "path": "docs/c/07_ビット演算とレジスタ操作.md"
+        }
+      ],
+      "chapter": "C 7章"
+    },
+    {
+      "id": "c08_malloc_free",
+      "package": "drill_c08_malloc_free",
+      "level": "C言語編",
+      "level_note": "docs/c/ の講習に対応。独立トラックなので、ROS 2 に進む人は飛ばして構いません",
+      "title": "手動メモリ管理",
+      "kind": "gtest",
+      "sources": [
+        "src/malloc_free.c"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: Dynamic memory management",
+          "url": "https://en.cppreference.com/w/c/memory"
+        }
+      ],
+      "hints": [
+        "README.md の「やること」を先に読んでください。",
+        "詰まったら ./drill solution c08 で解答例が見られます。"
+      ],
+      "lecture": [
+        {
+          "title": "8. 手動メモリ管理",
+          "path": "docs/c/08_手動メモリ管理.md"
+        }
+      ],
+      "chapter": "C 8章"
+    },
+    {
+      "id": "c09_function_pointer",
+      "package": "drill_c09_function_pointer",
+      "level": "C言語編",
+      "level_note": "docs/c/ の講習に対応。独立トラックなので、ROS 2 に進む人は飛ばして構いません",
+      "title": "関数ポインタとテーブル駆動",
+      "kind": "gtest",
+      "sources": [
+        "src/function_pointer.c"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: Pointers to functions",
+          "url": "https://en.cppreference.com/w/c/language/pointer"
+        }
+      ],
+      "hints": [
+        "README.md の「やること」を先に読んでください。",
+        "詰まったら ./drill solution c09 で解答例が見られます。"
+      ],
+      "lecture": [
+        {
+          "title": "9. 関数ポインタ",
+          "path": "docs/c/09_関数ポインタ.md"
+        }
+      ],
+      "chapter": "C 9章"
+    },
+    {
+      "id": "c10_volatile",
+      "package": "drill_c10_volatile",
+      "level": "C言語編",
+      "level_note": "docs/c/ の講習に対応。独立トラックなので、ROS 2 に進む人は飛ばして構いません",
+      "title": "volatile と共有変数",
+      "kind": "gtest",
+      "sources": [
+        "src/volatile_state.c"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: volatile type qualifier",
+          "url": "https://en.cppreference.com/w/c/language/volatile"
+        }
+      ],
+      "hints": [
+        "README.md の「やること」を先に読んでください。",
+        "詰まったら ./drill solution c10 で解答例が見られます。"
+      ],
+      "lecture": [
+        {
+          "title": "10. volatile と割り込み安全性",
+          "path": "docs/c/10_volatileと割り込み安全性.md"
+        }
+      ],
+      "chapter": "C 10章"
+    },
+    {
+      "id": "c11_endian_serialize",
+      "package": "drill_c11_endian_serialize",
+      "level": "C言語編",
+      "level_note": "docs/c/ の講習に対応。独立トラックなので、ROS 2 に進む人は飛ばして構いません",
+      "title": "エンディアンとシリアライズ",
+      "kind": "gtest",
+      "sources": [
+        "src/endian_serialize.c"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: memcpy",
+          "url": "https://en.cppreference.com/w/c/string/byte/memcpy"
+        }
+      ],
+      "hints": [
+        "README.md の「やること」を先に読んでください。",
+        "詰まったら ./drill solution c11 で解答例が見られます。"
+      ],
+      "lecture": [
+        {
+          "title": "11. エンディアンとシリアライズ",
+          "path": "docs/c/11_エンディアンとシリアライズ.md"
+        }
+      ],
+      "chapter": "C 11章"
+    },
+    {
+      "id": "c12_preprocessor",
+      "package": "drill_c12_preprocessor",
+      "level": "C言語編",
+      "level_note": "docs/c/ の講習に対応。独立トラックなので、ROS 2 に進む人は飛ばして構いません",
+      "title": "プリプロセッサとデバッグ",
+      "kind": "gtest",
+      "sources": [
+        "src/macro_utils.c"
+      ],
+      "docs": [
+        {
+          "title": "cppreference: Replacing text macros",
+          "url": "https://en.cppreference.com/w/c/preprocessor/replace"
+        }
+      ],
+      "hints": [
+        "README.md の「やること」を先に読んでください。",
+        "詰まったら ./drill solution c12 で解答例が見られます。"
+      ],
+      "lecture": [
+        {
+          "title": "12. プリプロセッサとデバッグ",
+          "path": "docs/c/12_プリプロセッサとデバッグ.md"
+        }
+      ],
+      "chapter": "C 12章"
+    },
+    {
       "id": "cppb01_declarations",
       "package": "drill_cppb01_declarations",
       "level": "C++入門編",
