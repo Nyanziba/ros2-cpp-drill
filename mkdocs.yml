@@ -84,6 +84,20 @@ markdown_extensions:
 nav:
   - 教材の全体像: README.md
   - はじめかた: はじめかた.md
+  - C言語編:
+      - この講習について: c/README.md
+      - "1. 分割コンパイルとヘッダガード": c/01_分割コンパイルとヘッダガード.md
+      - "2. 固定幅整数と暗黙変換": c/02_固定幅整数と暗黙変換.md
+      - "3. ポインタ①": c/03_ポインタ1.md
+      - "4. ポインタ②": c/04_ポインタ2.md
+      - "5. 文字列": c/05_文字列.md
+      - "6. 構造体とアラインメント": c/06_構造体とアラインメント.md
+      - "7. ビット演算とレジスタ操作": c/07_ビット演算とレジスタ操作.md
+      - "8. 手動メモリ管理": c/08_手動メモリ管理.md
+      - "9. 関数ポインタ": c/09_関数ポインタ.md
+      - "10. volatile と割り込み安全性": c/10_volatileと割り込み安全性.md
+      - "11. エンディアンとシリアライズ": c/11_エンディアンとシリアライズ.md
+      - "12. プリプロセッサとデバッグ": c/12_プリプロセッサとデバッグ.md
   - C++入門編:
       - この講習について: cpp-basics/README.md
       - "1. 宣言を読む": cpp-basics/01_宣言を読む.md
@@ -138,6 +152,32 @@ nav:
       - "ROS2講習20b: ros2_controlの使い方（差動二輪の足回りを例に）": ros2/20b_ros2_controlの使い方.md
       - "ROS2講習21: センサ統合": ros2/21_センサ統合.md
       - "ROS2講習22: 自己位置推定の考え方": ros2/22_自己位置推定の考え方.md
+  - デザインパターン編:
+      - この講習について: patterns/README.md
+      - "0. 使う前に": patterns/00_使う前に.md
+      - "1. Iterator": patterns/01_Iterator.md
+      - "2. Adapter": patterns/02_Adapter.md
+      - "3. Template Method": patterns/03_TemplateMethod.md
+      - "4. Factory Method": patterns/04_FactoryMethod.md
+      - "5. Singleton": patterns/05_Singleton.md
+      - "6. Prototype": patterns/06_Prototype.md
+      - "7. Builder": patterns/07_Builder.md
+      - "8. Abstract Factory": patterns/08_AbstractFactory.md
+      - "9. Bridge": patterns/09_Bridge.md
+      - "10. Strategy": patterns/10_Strategy.md
+      - "11. Composite": patterns/11_Composite.md
+      - "12. Decorator": patterns/12_Decorator.md
+      - "13. Visitor": patterns/13_Visitor.md
+      - "14. Chain of Responsibility": patterns/14_ChainOfResponsibility.md
+      - "15. Facade": patterns/15_Facade.md
+      - "16. Mediator": patterns/16_Mediator.md
+      - "17. Observer": patterns/17_Observer.md
+      - "18. Memento": patterns/18_Memento.md
+      - "19. State": patterns/19_State.md
+      - "20. Flyweight": patterns/20_Flyweight.md
+      - "21. Proxy": patterns/21_Proxy.md
+      - "22. Command": patterns/22_Command.md
+      - "23. Interpreter": patterns/23_Interpreter.md
   - 参考資料:
       - "rclcpp の設計思想": rclcpp-の設計思想.md
       - "ROS 2 のコーディング規約と言語バージョン（まとめ）": ros2-コーディング規約.md
