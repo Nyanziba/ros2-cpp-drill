@@ -205,7 +205,7 @@ By default, `colcon build` tries to build all the packages in the workspace in p
 
 ## Wrapping up
 
-The structure of a workspace (`src`/`build`/`install`/`log`) and the relationship between underlay and overlay are basic knowledge that you keep using when you develop with ROS 2. When the build feels strange, first suspect these two things: delete `build` and `install` and do a clean build, and check the order of sourcing. If you do not understand something, ask a senior student.
+The structure of a workspace (`src`/`build`/`install`/`log`) and the relationship between underlay and overlay are basic knowledge that you keep using when you develop with ROS 2. When the build feels strange, first suspect these two things: delete `build` and `install` and do a clean build, and check the order of sourcing. If you do not understand something, ask someone experienced or check the official documentation.
 
 Next is [11_writing_pub_sub_in_cpp](11_writing_pub_sub_in_cpp.md), where you write a node with the same structure as the examples you built today.
 

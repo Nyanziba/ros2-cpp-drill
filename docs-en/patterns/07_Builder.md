@@ -358,7 +358,7 @@ If you have five required items, the Builder has little meaning, so doubt the de
 
 (There is also a way of "advancing the state with types": each time you fill a required item, you return a different type,
 and only the type with everything filled gets `build()`. It can be prevented fully at compile time,
-but the number of types grows with the number of items. It is too heavy for a club library.)
+but the number of types grows with the number of items. It is too heavy for your team's library.)
 
 ## 7.8 As a tool to make immutable objects
 

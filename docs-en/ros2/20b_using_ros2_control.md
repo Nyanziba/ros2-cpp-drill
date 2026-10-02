@@ -520,7 +520,7 @@ Separately from `gz_ros2_control`, the suction of the suction cups is reproduced
 
 ## Conclusion
 
-Writing your own hardware_interface is the most laborious part of ros2_control. But once you have written it, the controller side (standard controllers such as `diff_drive_controller` and `pid_controller`) can be used in a swappable form. The reason this repository integrated all four systems (wheel/lift/hand/solenoid) into ros2_control is also this maintainability: "if you write only the hardware_interface, the rest rides on the common mechanism". If you do not understand something, ask a senior member.
+Writing your own hardware_interface is the most laborious part of ros2_control. But once you have written it, the controller side (standard controllers such as `diff_drive_controller` and `pid_controller`) can be used in a swappable form. The reason this repository integrated all four systems (wheel/lift/hand/solenoid) into ros2_control is also this maintainability: "if you write only the hardware_interface, the rest rides on the common mechanism". If you do not understand something, ask someone experienced or check the official documentation.
 
 Next is [21_sensor_integration](21_sensor_integration.md), which covers how to bring LiDAR and IMU into ROS 2.
 

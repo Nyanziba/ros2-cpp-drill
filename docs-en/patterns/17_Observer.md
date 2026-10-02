@@ -28,7 +28,7 @@ public abstract class NumberGenerator {
 }
 ```
 
-If you port it to C++ in a straightforward way, you get this. Since this is a club library, let's make it a hub that distributes distance sensor values.
+If you port it to C++ in a straightforward way, you get this. Since this is your team's library, let's make it a hub that distributes distance sensor values.
 
 ```cpp
 class SensorObserver
@@ -481,7 +481,7 @@ What Java does with `try` / `finally`, C++ does with a destructor.
 **Instead of `finally`, we have RAII.** This is a part where C++ is stronger.
 
 There is also a design other than "ignore" for re-entry: "push it to a queue and process it after the notification".
-It takes more implementation, but no notification is lost. For a club library, ignoring is enough at first.
+It takes more implementation, but no notification is lost. For a team library, ignoring is enough at first.
 **If you drop it, make sure the drop is written to the log.**
 
 ## 17.6 Comparison with the callback style using `std::function`
@@ -568,7 +568,7 @@ Since the standard has no such thing, **using an external library for signals/sl
 Boost.Signals2, Qt's `signals` / `slots`, and `sigslot` are examples.
 All of them are designed to **return a connection object (= a token)**.
 
-If your club library needs an Observer in only one place, **writing it yourself is faster**
+If your team library needs an Observer in only one place, **writing it yourself is faster**
 (about 150 lines in the exercise code). If it grows to 3 or more places and you also want thread safety,
 consider a library. **To make that decision, write it yourself once.**
 

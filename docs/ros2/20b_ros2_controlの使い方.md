@@ -520,7 +520,7 @@ mockは「関節が数値上動く」だけで、地面との摩擦も物体と�
 
 ## おわりに
 
-自作hardware_interfaceを書くこと自体は、ros2_controlの中では一番手間のかかる部分ですが、書いてしまえばコントローラ側（`diff_drive_controller`や`pid_controller`のような標準コントローラ）は差し替え可能な形で使えます。このリポがwheel/lift/hand/solenoidの4系統すべてをros2_controlに統合した理由も、この「hardware_interfaceだけ書けば残りは共通の仕組みに乗る」という保守性にあります。わからなければ先輩に聞きましょう。
+自作hardware_interfaceを書くこと自体は、ros2_controlの中では一番手間のかかる部分ですが、書いてしまえばコントローラ側（`diff_drive_controller`や`pid_controller`のような標準コントローラ）は差し替え可能な形で使えます。このリポがwheel/lift/hand/solenoidの4系統すべてをros2_controlに統合した理由も、この「hardware_interfaceだけ書けば残りは共通の仕組みに乗る」という保守性にあります。わからなければ、周りの経験者に聞くか、公式ドキュメントで確かめましょう。
 
 次は[21_センサ統合](21_センサ統合.md)で、LiDARやIMUをROS 2側に取り込む方法を扱います。
 

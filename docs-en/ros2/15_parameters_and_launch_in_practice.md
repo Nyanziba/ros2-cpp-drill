@@ -22,7 +22,7 @@ The prerequisite is that you have finished [12_writing_pub_sub_in_python](12_wri
 - An environment with Ubuntu 24.04 + ROS 2 Jazzy Jalisco already set up
 - The workspace created in [10_workspaces_and_colcon](10_workspaces_and_colcon.md)
 - A package for this lecture (Python, ament_python). You can create it on the day, but try `ros2 pkg create --build-type ament_python speed_param_demo` once beforehand to learn where people get stuck
-- Indentation mistakes in YAML files often cause `--params-file` to be ignored, so keep a YAML file that you have tested on the instructor's machine too
+- Indentation mistakes in YAML files often cause `--params-file` to be ignored, so keep a YAML file that you have tested on the teacher's machine too
 
 ### Suggested time plan
 
@@ -442,7 +442,7 @@ Python parameter types can also handle implicit lists (array parameters such as 
 
 When you can combine parameters and launch, adjustment at a test-run site is freed from rebuilding the source code. The ideal is a setup where the behavior changes by "fixing only the YAML of launch and restarting". On the other hand, if you bring parameters hard-coded in the code to the site, every small adjustment on the spot makes you wait for a build. Remember these two points as a set, as in the `speed_node` we made this time: always declare the values you want to adjust with `declare_parameter`, and always reflect the values you want to take effect at run time into internal variables with `add_on_set_parameters_callback`.
 
-Next, in [16_implementing_an_action_server](16_implementing_an_action_server.md), we implement a long-running task with feedback on the server side. If anything is unclear, ask a senior member.
+Next, in [16_implementing_an_action_server](16_implementing_an_action_server.md), we implement a long-running task with feedback on the server side. If anything is unclear, ask someone experienced or check the official documentation.
 
 ### Matching exercise
 

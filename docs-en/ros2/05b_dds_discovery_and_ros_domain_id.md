@@ -55,7 +55,7 @@ Model answer: `ROS_DOMAIN_ID` is a setting that "changes the channel". The UDP p
 
 Model answer: The maximum by specification is 232. `7400 + 250 × 232 + 11 = 65411`, and above this you would exceed the UDP port number limit of 65535. In practice, however, it is safe to keep it within **0 to 101**. The range that does not collide with the Linux ephemeral port range (`/proc/sys/net/ipv4/ip_local_port_range`, 32768 to 60999 in many environments) is up to `7400 + 250 × 101 = 32650` for domain 101. If you use 102 or higher, a hard-to-reproduce bug can happen: another application happened to take the same port first, so startup fails.
 
-**Q4. You got a report in the club room: "my test passes in my environment, but fails when everyone is working". How do you isolate it?**
+**Q4. You got a report at a study group: "my test passes in my environment, but fails when everyone is working". How do you isolate it?**
 
 Model answer: First, check with `ros2 node list` and `ros2 topic list` whether you can see nodes or topics that you did not start. If you can, suspect DDS crosstalk. Set `ROS_DOMAIN_ID` to a value that does not overlap with others, or set `ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST`, and run again. If it passes then, crosstalk is the cause. It tends to happen when the test uses topics with common names (such as `/chatter` or `/cmd_vel`). As a permanent measure, fix the environment variables on the test runner side (the `drill` script of `ros2-drill` does this).
 
@@ -191,7 +191,7 @@ ROS_DOMAIN_ID=43 ros2 node list
 
 Nothing appears. The talker is running, but from domain 43 it is the same as not existing.
 
-**This is the basic form of crosstalk prevention in the club room.** If each person uses a different domain, they do not interfere with each other even on the same network.
+**This is the basic form of crosstalk prevention on a shared network.** If each person uses a different domain, they do not interfere with each other even on the same network.
 
 #### What is happening: look at the port numbers
 
@@ -274,7 +274,7 @@ Content:
 | `SUBNET` | The whole same subnet (**default**) |
 | `SYSTEM_DEFAULT` | Follow the setting of the DDS implementation |
 
-**The default being `SUBNET` is the cause of the trouble in the club room.** If you set nothing, your node keeps announcing "I am here" to the whole LAN.
+**The default being `SUBNET` is the cause of the trouble on a shared network.** If you set nothing, your node keeps announcing "I am here" to the whole LAN.
 
 Let us experiment. In terminal 1, set `LOCALHOST` and start a talker.
 
@@ -326,7 +326,7 @@ You can specify several, separated by `;`. It is a means for networks where mult
 | Situation | Recommended |
 |---|---|
 | Develop and test on one PC | `ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST` |
-| Several people develop separate robots in the club room | A different `ROS_DOMAIN_ID` for each person (0 to 101) |
+| Several people develop separate robots on the same network | A different `ROS_DOMAIN_ID` for each person (0 to 101) |
 | Run one robot split across several PCs | The same `ROS_DOMAIN_ID` + `SUBNET` (leave the default) |
 | A network where multicast does not pass | `OFF` + `ROS_STATIC_PEERS` |
 
@@ -448,7 +448,7 @@ export ROS_DOMAIN_ID=11                        # Change the channel (0 to 101)
 export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST # Do not send announcements outside
 ```
 
-**We recommend writing them in `~/.bashrc`.** If you set them by hand every time you work in the club room, you will forget. When you forget, it does not stop at "my test fails". It can even go as far as "I move my neighbor's robot".
+**We recommend writing them in `~/.bashrc`.** If you set them by hand every time you work, you will forget. When you forget, it does not stop at "my test fails". It can even go as far as "I move my neighbor's robot".
 
 And be ready to explain "why this fixes it". If you remember it as a magic spell, you cannot apply it when a slightly different symptom appears. If you can go back to the port number formula, you can trace the cause when `ros2 node list` is empty.
 

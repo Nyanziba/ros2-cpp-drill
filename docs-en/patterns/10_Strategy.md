@@ -510,11 +510,11 @@ VelocityCommander<ClampPolicy> commander{ClampPolicy{1.0}};
 ```
 
 No vtable, no heap, and it is inlined. As we saw in 10.4,
-the call to `apply` itself disappears. **For the microcontroller side of the club, write it this way as a rule.**
+the call to `apply` itself disappears. **For the microcontroller side, write it this way as a rule.**
 
 **Do not use `std::function`.** The reason is as in 10.3:
 the standard does not guarantee whether an allocation happens.
-"It is small, so it is fine" will be broken by a junior who adds one capture.
+"It is small, so it is fine" will be broken by a later team member who adds one capture.
 
 ### When you really want to switch at run time
 

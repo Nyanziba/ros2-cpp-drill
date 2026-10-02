@@ -1,6 +1,6 @@
 // このファイルは編集しません（インタフェースの提示）。
 //
-// 部内共通のアクチュエータインタフェース（Target 役）。
+// チーム共通のアクチュエータインタフェース（Target 役）。
 // 上位の制御コードはこの型だけを見ます。生ドライバの存在を知りません。
 #pragma once
 
@@ -10,7 +10,7 @@ inline constexpr double PULSES_PER_RAD_PER_SEC = 100.0;
 /// 1 [rad] あたりのエンコーダカウント。
 inline constexpr double COUNTS_PER_RAD = 200.0;
 
-/// 部内共通のモータインタフェース。単位は SI（rad/s, rad）。
+/// チーム共通のモータインタフェース。単位は SI（rad/s, rad）。
 class MotorActuator
 {
 public:

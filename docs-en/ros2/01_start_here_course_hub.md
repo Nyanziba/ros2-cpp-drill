@@ -82,7 +82,7 @@ Not everyone needs to read everything. We offer two courses, depending on your g
 
 **Minimum course (Part 1 + Part 2, 17 articles)**
 
-This is for people who want to write and run their own nodes in ROS 2. The goal is that you can write one control package and take charge of one function of a competition robot (such as a servo control node). Part 1 and Part 2 alone are enough.
+This is for people who want to write and run their own nodes in ROS 2. The goal is that you can write one control package and take charge of one function of a real robot (such as a servo control node). Part 1 and Part 2 alone are enough.
 
 **Full course up to a real robot (Part 1 to Part 3, 24 articles)**
 
@@ -96,10 +96,10 @@ For both courses, the text is written on the assumption that you read in numeric
 
 This course runs as self-study plus an oral exam.
 
-- Each article has enough information for a new member to read through alone. The articles do not assume that an instructor explains them aloud. "Please read this" basically works.
-- Each article has an "For instructors" section with oral exam questions (sets of a question and a model answer) and a list of things to prepare for that article's scope. When a new member reports completion, use it to check their understanding.
-- Knowledge does not come by waiting. Let new members move their own learning forward, and ask questions only where they are stuck.
-- Do not avoid training new members. Teaching others also sharpens your own knowledge. If you are asked something you cannot answer, say so honestly and look it up together.
+- Each article has enough information for someone learning this for the first time to read through alone. The articles do not assume that an instructor explains them aloud. "Please read this" basically works.
+- Each article has a "Using this as a course" section with oral exam questions (sets of a question and a model answer) and a list of things to prepare for that article's scope. When a learner reports completion, use it to check their understanding.
+- Knowledge does not come by waiting. Let learners move their own learning forward, and ask questions only where they are stuck.
+- Do not avoid teaching. Teaching others also sharpens your own knowledge. If you are asked something you cannot answer, say so honestly and look it up together.
 
 
 ## References

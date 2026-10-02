@@ -1,6 +1,6 @@
 # 7. Bit operations and register access
 
-> **Goal of this chapter**: In microcontroller control, you read and write individual bits of registers. The basic technique is to combine the C bit operators `&`, `|`, `^`, `~`, `<<`, and `>>` so that you can "set / clear / read one bit" without "breaking the other bits". Our team's CAN protocol builds an 11-bit ID with `(type << 8) | (device << 4) | cmd` and splits it apart again, and it uses the same logic.
+> **Goal of this chapter**: In microcontroller control, you read and write individual bits of registers. The basic technique is to combine the C bit operators `&`, `|`, `^`, `~`, `<<`, and `>>` so that you can "set / clear / read one bit" without "breaking the other bits". The example CAN protocol used in this material (fictional) builds an 11-bit ID with `(type << 8) | (device << 4) | cmd` and splits it apart again, and it uses the same logic.
 
 ## 7.1 Basic bit operations
 

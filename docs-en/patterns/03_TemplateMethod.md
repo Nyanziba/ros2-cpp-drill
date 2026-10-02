@@ -534,7 +534,7 @@ CRTP has two costs.
 
 | Situation | What to choose |
 | --- | --- |
-| The sensor types are decided at compile time (a club robot is almost always like this) | **CRTP** |
+| The sensor types are decided at compile time (embedded robot code is almost always like this) | **CRTP** |
 | You choose the type at run time / you want to loop over all sensors in one list | Virtual functions + NVI |
 | You are unsure | **Start with virtual functions + NVI.** Measure, then move to CRTP |
 

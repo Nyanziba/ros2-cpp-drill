@@ -281,7 +281,7 @@ Also, the server this time received a request, calculated synchronously, and ret
 
 ## Wrapping up
 
-You implemented the service server and the client yourself, and covered the correct form of the asynchronous call and the reason why a synchronous call inside a callback causes a deadlock. Next is [15_parameters_and_launch_in_practice](15_parameters_and_launch_in_practice.md), which covers `declare_parameter` and YAML injection from launch. If you do not understand something, ask a senior student.
+You implemented the service server and the client yourself, and covered the correct form of the asynchronous call and the reason why a synchronous call inside a callback causes a deadlock. Next is [15_parameters_and_launch_in_practice](15_parameters_and_launch_in_practice.md), which covers `declare_parameter` and YAML injection from launch. If you do not understand something, ask someone experienced or check the official documentation.
 
 ### Matching exercises
 

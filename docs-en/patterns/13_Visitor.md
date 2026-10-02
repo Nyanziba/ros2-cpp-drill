@@ -196,7 +196,7 @@ It does not go away whichever pattern you choose. **All you can choose is which 
 > It is the same point as "abstracting something that has only one implementation" in [0. Before you use them](00_before_you_use_them.md):
 > **if you have only one visitor, you do not need Visitor.** Adding a member function to the elements is enough.
 
-In club code, it looks like this.
+In your team's code, it looks like this.
 
 - "Self-check results" and "communication frame types": **the kinds are fixed**. Visitor or variant works well
 - "Sensor types": **they will keep growing**. With Visitor, every new sensor means fixing every visitor

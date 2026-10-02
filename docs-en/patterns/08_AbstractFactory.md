@@ -25,7 +25,7 @@ Abstract Factory is the main culprit of this. Before you add it, ask yourself **
 What Abstract Factory handles is not "one kind of product". It is a **set of several products that go together as a pair**.
 In the example of Hiroshi Yuki's book, `Link`, `Tray`, and `Page` make one set, and there are two sets: the HTML version and the bullet-list version.
 
-In your club code, do you really have two such sets?
+In your own code, do you really have two such sets?
 If you only have "two implementations of a motor driver", that is **one product**.
 Factory Method (Chapter 4) is enough. You do not need Abstract Factory.
 
@@ -42,7 +42,7 @@ const char * mode = std::getenv("ROBOT_MODE");
 auto factory = make_factory(mode);
 ```
 
-In your club code, is there a case where you **switch the real-machine version and the simulation version inside the same binary**?
+In your own code, is there a case where you **switch the real-machine version and the simulation version inside the same binary**?
 If you build them separately, the switch happens at compile time. In that case,
 
 ```cpp

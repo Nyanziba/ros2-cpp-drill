@@ -365,7 +365,7 @@ Note that you need to keep it in `goal_response_callback` with `self._goal_handl
 
 ## Conclusion
 
-An action is a combination of a topic and a service, so it needs more code than a service. But what you must remember comes down to two things: "the three sections goal/result/feedback", and "settle the state with succeed/abort/canceled". Action servers that forgot to implement cancel handling are common, so after you write one, always get into the habit of testing a cancel halfway. If anything is unclear, ask a senior member.
+An action is a combination of a topic and a service, so it needs more code than a service. But what you must remember comes down to two things: "the three sections goal/result/feedback", and "settle the state with succeed/abort/canceled". Action servers that forgot to implement cancel handling are common, so after you write one, always get into the habit of testing a cancel halfway. If anything is unclear, ask someone experienced or check the official documentation.
 
 Next, in [17_testing_and_debugging](17_testing_and_debugging.md), we apply testing and debugging methods to the nodes we have written so far.
 

@@ -7,7 +7,7 @@ Last time, we ran turtlesim and looked at how nodes and topics connect on the sc
 ## Lecture goals / how to proceed
 
 - Time needed: about 40 minutes (assume a little under 1 hour for self-study)
-- Audience: new members who have finished [03_getting_a_feel_with_turtlesim_and_rqt](03_getting_a_feel_with_turtlesim_and_rqt.md)
+- Audience: people learning this for the first time who have finished [03_getting_a_feel_with_turtlesim_and_rqt](03_getting_a_feel_with_turtlesim_and_rqt.md)
 - Prerequisites: ROS 2 Jazzy Jalisco is installed, and the turtlesim package works (`ros2 run turtlesim turtlesim_node` succeeds)
 
 ## Using this as a course
@@ -154,7 +154,7 @@ When you load from the CLI, pass it like `ros2 component load /ComponentManager 
 This time we stop at "such a mechanism exists". The implementation of components, such as the `rclcpp_components` package and how to write a ComposableNode, is a theme big enough to be an article of its own, so we plan to cover it in a separate article.
 ## Summary
 
-Once you can start, check, and remap nodes, next we go into topics, the communication between nodes. If you have not fully understood what we covered so far, your understanding of the next articles will be shallow. Reread once and check whether you can explain the output of `ros2 node info` in your own words. If something is unclear, ask a senior member.
+Once you can start, check, and remap nodes, next we go into topics, the communication between nodes. If you have not fully understood what we covered so far, your understanding of the next articles will be shallow. Reread once and check whether you can explain the output of `ros2 node info` in your own words. If something is unclear, ask someone experienced or check the official documentation.
 
 ### Matching exercise
 

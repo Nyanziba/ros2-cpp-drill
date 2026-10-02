@@ -299,7 +299,7 @@ This is where things break the most right after the reading group, so we draw th
 **If any of the following applies, do not add a Factory.**
 
 1. **The type is decided at compile time.** `Imu sensor{0x68};` is enough.
-   Is there really a case in club code where you choose a sensor by a string at run time?
+   Is there really a case in your own code where you choose a sensor by a string at run time?
 2. **There is only one ConcreteCreator.** Same as 0.1: you only added files
 3. **There is no common processing before and after creation.** That is not a Factory, just a function (4.4)
 4. **The created object does not need to be on the heap.** On a microcontroller this is normal (4.7)
@@ -440,7 +440,7 @@ static UartLogger g_uart_logger{1};      // one object in .bss. Zero allocation
 Logger & logger() { return g_uart_logger; }
 ```
 
-90% of club microcontroller code can be done with this. You need neither `unique_ptr` nor switching of vtables.
+90% of microcontroller code can be done with this. You need neither `unique_ptr` nor switching of vtables.
 Things where "there is only one piece of hardware" belong to chapter 5 (Singleton).
 
 ### Option 2: Fixed pool + placement new
@@ -576,7 +576,7 @@ It is a clean example that satisfies the condition of 4.5,
 
 `ClassLoader` of `pluginlib` is a real run-time Factory, but
 **it pays off only when you have a requirement to load shared libraries at run time**.
-In a club's own library, you will almost never need that much.
+In your own library, you will almost never need that much.
 
 ## 4.9 Common pitfalls
 

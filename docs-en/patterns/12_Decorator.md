@@ -440,7 +440,7 @@ There are **2 costs.**
    the number of real `emit()` functions grows by the number of combinations you used
 
 First check whether you really need to reassemble at run time.
-For club log formatting, **it is almost always decided at build time.**
+For your team's log formatting, **it is almost always decided at build time.**
 
 ## 12.9 Conclusion for ROS 2 (supplement)
 

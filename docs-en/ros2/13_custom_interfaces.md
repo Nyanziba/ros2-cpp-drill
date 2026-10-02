@@ -67,7 +67,7 @@ When you want to search for a type among all installed packages, passing `ros2 i
 ros2 interface list | grep -i battery
 ```
 
-**If a standard type can express it, use the standard type.** Your own type does not work outside your own package, so when you want to work with existing tools such as `rviz2` and `tf2`, first think about whether you can express it with a standard type. Only when data appears that you still cannot express (such as sensor values unique to your team, or fields of your own protocol), make your own with the steps below.
+**If a standard type can express it, use the standard type.** Your own type does not work outside your own package, so when you want to work with existing tools such as `rviz2` and `tf2`, first think about whether you can express it with a standard type. Only when data appears that you still cannot express (such as sensor values unique to your project, or fields of your own protocol), make your own with the steps below.
 
 ### What you learn: The syntax of msg/srv files
 
@@ -292,7 +292,7 @@ float64[4] encoder_velocity
 bool[4] motor_enabled
 ```
 
-Which CAN frame and which bit position map to which msg field must follow the protocol specification of CAN communication that your team has decided. If you write a made-up mapping table here, it will differ from the real one and cause an accident, so always check the primary source.
+Which CAN frame and which bit position map to which msg field must follow the protocol specification of CAN communication that your project has decided. If you write a made-up mapping table here, it will differ from the real one and cause an accident, so always check the primary source.
 
 
 ## Going further
@@ -304,7 +304,7 @@ Also, not only `.msg` but also `.action` (an interface for actions) can be gener
 
 ## Wrapping up
 
-Make it a habit to check first whether a standard type is enough. Your own msgs are convenient, but if you add too many, you cannot maintain the dependencies and the documentation. If you do not understand something, ask a senior student.
+Make it a habit to check first whether a standard type is enough. Your own msgs are convenient, but if you add too many, you cannot maintain the dependencies and the documentation. If you do not understand something, ask someone experienced or check the official documentation.
 
 Next is [14_implementing_services](14_implementing_services.md), where you write a service node that actually uses the `AddThreeInts.srv` made this time.
 

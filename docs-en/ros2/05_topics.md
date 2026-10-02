@@ -205,11 +205,11 @@ Behind topic pub/sub, a communication middleware called DDS (Data Distribution S
 
 DDS has a mechanism called discovery, with which nodes find each other. Thanks to this discovery, you can see other nodes and topics with `ros2 node list` and `ros2 topic list`. If ROS 2 from several environments runs on the same network, you may see each other's topics unintentionally. There is an environment variable `ROS_DOMAIN_ID` to avoid this, but here it is enough to know its name.
 
-We go deeper in [05b_dds_discovery_and_ros_domain_id](05b_dds_discovery_and_ros_domain_id.md). **If several people work in the club room and you run into "I can see other people's nodes" or "my tests fail", read that article first.** Setting two environment variables solves it. While you work alone, you can go on to the next article ([06_services](06_services.md)).
+We go deeper in [05b_dds_discovery_and_ros_domain_id](05b_dds_discovery_and_ros_domain_id.md). **If several people work on the same network and you run into "I can see other people's nodes" or "my tests fail", read that article first.** Setting two environment variables solves it. While you work alone, you can go on to the next article ([06_services](06_services.md)).
 
 ## Summary
 
-Topics are the most frequently used mechanism in ROS 2. You will use the commands you typed here (list/echo/info/hz/pub) again and again, so type them many times until your hands remember. If something is unclear, ask a senior member.
+Topics are the most frequently used mechanism in ROS 2. You will use the commands you typed here (list/echo/info/hz/pub) again and again, so type them many times until your hands remember. If something is unclear, ask someone experienced or check the official documentation.
 
 Next, in [06_services](06_services.md), we cover "request/response" communication, which is the counterpart of topics.
 

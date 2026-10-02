@@ -83,7 +83,7 @@ The code that calls `add` always knows "where am I making a group now".
 ### Change 3: `print_list` does not return a string and pushes onto `out`
 
 The Java version calls `System.out.println` directly.
-Avoid having a library class write to standard output, even in club code.
+Avoid having a library class write to standard output, even in your team's code.
 It becomes untestable. Either pass `std::vector<std::string> & out` and push onto it, or
 receive a callback. **A microcontroller has no standard output in the first place**, too.
 
@@ -523,7 +523,7 @@ What we gained: zero allocation, zero vtable, zero `std::string`.
 Each `DiagNode` is 2 pointers + 2 bytes, and it is placed in ROM.
 
 What we lost: you cannot rearrange the tree at run time. **First check whether that is acceptable.**
-In a club robot, a situation where you add diagnostic items while running almost never comes.
+On a real robot, a situation where you add diagnostic items while running almost never comes.
 
 Recursion is still there, but **the depth is decided by the shape of `kTree`**, so you can read the upper limit.
 If you are worried, keep your own stack of indices and turn it into a loop.

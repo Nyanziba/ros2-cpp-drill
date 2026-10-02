@@ -422,7 +422,7 @@ xacro can also use if branches (`<xacro:if>`) and expressions (arithmetic inside
 
 ## Conclusion
 
-URDF is the file that becomes the input of all the lectures from here on. The tread and the wheel radius in particular are numbers that both the differential drive controller in [20_ros2_control_overview](20_ros2_control_overview.md) and the odometry calculation in [22_thinking_about_localization](22_thinking_about_localization.md) use directly, so measure the dimensions of the real robot accurately before you enter them. If it is wrong by even 1 mm here, the odometry keeps drifting and hurts the accuracy of localization. If anything is unclear, ask a senior member.
+URDF is the file that becomes the input of all the lectures from here on. The tread and the wheel radius in particular are numbers that both the differential drive controller in [20_ros2_control_overview](20_ros2_control_overview.md) and the odometry calculation in [22_thinking_about_localization](22_thinking_about_localization.md) use directly, so measure the dimensions of the real robot accurately before you enter them. If it is wrong by even 1 mm here, the odometry keeps drifting and hurts the accuracy of localization. If anything is unclear, ask someone experienced or check the official documentation.
 
 Next, in [20_ros2_control_overview](20_ros2_control_overview.md), we cover the mechanism that uses this URDF to actually move motors.
 

@@ -43,7 +43,7 @@ memcpy(&u32, &f, sizeof(u32));
 
 ### `build_speed_target_command`
 
-部内 CAN プロトコルの**速度目標コマンド**仕様：
+例の CAN プロトコル（架空）の**速度目標コマンド**仕様：
 
 - **Byte 0**: ポート ID（1-8、受け取った値をそのまま使う）
 - **Byte 1-4**: 目標速度（`float`、LE）
@@ -83,4 +83,3 @@ memcpy(&u32, &f, sizeof(u32));
 ## 参考
 
 - [C言語編: 11. エンディアンとシリアライズ](../../docs/c/11_エンディアンとシリアライズ.md)
-- [TEXNITIS CAN プロトコル仕様](https://github.com/TEXNITIS-YONELAB/CAN_protocol/)
