@@ -83,6 +83,25 @@ Compile:
 g++ -fsanitize=address basics05_oob.cpp -o basics05_oob && ./basics05_oob
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// basics05_oob.cpp
+#include <iostream>
+int main()
+{
+  int arr[2]{1, 2};
+  int * p = &arr[0];
+  std::cout << *(p + 2);  // Out of range!
+}
+```
+
+```bash
+g++ -fsanitize=address basics05_oob.cpp -o basics05_oob && ./basics05_oob
+```
+
+</details>
+
 Output (first part):
 ```
 ==1==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffffcb00028 at pc 0x555555555394

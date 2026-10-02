@@ -110,8 +110,58 @@ explicit SinkDecorator(std::unique_ptr<LogSink> inner)   // 値で受ける
 
 初期化子リストで `inner_(inner)` と書くとコンパイルエラーです。
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// copy_inner.cpp
+#include <memory>
+#include <string>
+#include <utility>
+
+class LogSink
+{
+public:
+  virtual ~LogSink() = default;
+  virtual std::string format(const std::string & message) const = 0;
+};
+
+class SinkDecorator : public LogSink
+{
+public:
+  explicit SinkDecorator(std::unique_ptr<LogSink> inner)
+  : inner_(inner)                                          // std::move を忘れた
+  {
+  }
+
+protected:
+  const LogSink & inner() const { return *inner_; }
+
+private:
+  std::unique_ptr<LogSink> inner_;
+};
+
+int main()
+{
+  return 0;
+}
 ```
-error: call to implicitly-deleted copy constructor of 'std::unique_ptr<LogSink>'
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic copy_inner.cpp -o copy_inner
+```
+
+</details>
+
+macOS の Apple clang 21 で実測した出力です（SDK のパスは `/.../` に省略しています）。
+
+```
+copy_inner.cpp:17:5: error: call to implicitly-deleted copy constructor of 'std::unique_ptr<LogSink>'
+   17 |   : inner_(inner)                                          // std::move を忘れた
+      |     ^      ~~~~~
+/.../c++/v1/__memory/unique_ptr.h:209:55: note: copy constructor is implicitly deleted because 'unique_ptr<LogSink>' has a user-declared move constructor
+  209 |   _LIBCPP_HIDE_FROM_ABI _LIBCPP_CONSTEXPR_SINCE_CXX23 unique_ptr(unique_ptr&& __u) _NOEXCEPT
+      |                                                       ^
+1 error generated.
 ```
 
 `const std::unique_ptr<LogSink> &` で受けるのは**間違い**です。
@@ -185,16 +235,83 @@ public:
 };
 ```
 
-Apple clang はコンパイル時点で警告します（`-Wall -Wextra -Wpedantic`）。
+Apple clang 21 はコンパイル時点で警告します（`-Wall -Wextra -Wpedantic`）。
+
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// novirt.cpp
+#include <iostream>
+#include <memory>
+#include <string>
+#include <utility>
+
+class Sink
+{
+public:
+  ~Sink() {}                                   // virtual を書き忘れた
+  virtual std::string format(const std::string & m) const = 0;
+};
+
+class Plain : public Sink
+{
+public:
+  ~Plain() { std::cout << "~Plain\n"; }
+  std::string format(const std::string & m) const override { return m; }
+};
+
+class Border : public Sink
+{
+public:
+  Border(std::unique_ptr<Sink> inner, std::string tag)
+  : inner_(std::move(inner)), tag_(std::move(tag))
+  {
+  }
+  ~Border() { std::cout << "~Border(" << tag_ << ")\n"; }
+
+  std::string format(const std::string & m) const override
+  {
+    return tag_ + " " + inner_->format(m);
+  }
+
+private:
+  std::unique_ptr<Sink> inner_;
+  std::string tag_;
+};
+
+int main()
+{
+  std::unique_ptr<Sink> sink = std::make_unique<Border>(
+    std::make_unique<Border>(std::make_unique<Plain>(), "[INFO]"), "12:00:00");
+  std::cout << sink->format("moving") << "\n";
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic novirt.cpp -o novirt 2>&1 | grep 'warning:'
+./novirt; echo "exit code $?"
+```
+
+</details>
+
+警告の行だけを抜き出すとこうなります（SDK のパスは `/.../` に省略しています）。
 
 ```
-warning: delete called on 'Sink' that is abstract but has non-virtual destructor
-         [-Wdelete-abstract-non-virtual-dtor]
-warning: delete called on non-final 'Border' that has virtual functions but
-         non-virtual destructor [-Wdelete-non-abstract-non-virtual-dtor]
+/.../c++/v1/__memory/unique_ptr.h:75:5: warning: delete called on 'Sink' that is abstract but has non-virtual destructor [-Wdelete-abstract-non-virtual-dtor]
+/.../c++/v1/__memory/unique_ptr.h:75:5: warning: delete called on non-final 'Plain' that has virtual functions but non-virtual destructor [-Wdelete-non-abstract-non-virtual-dtor]
+/.../c++/v1/__memory/unique_ptr.h:75:5: warning: delete called on non-final 'Border' that has virtual functions but non-virtual destructor [-Wdelete-non-abstract-non-virtual-dtor]
 ```
 
-そして手元で実行すると、`format()` の出力すら出ないまま終了コード 133 で落ちました。
+そして手元（macOS の zsh）で実行すると、`format()` の結果を 1 行出したあと、終了コード 133（`SIGTRAP`）で落ちました。
+
+```
+12:00:00 [INFO] moving
+zsh: trace trap  ./novirt
+exit code 133
+```
+
+出力をパイプやファイルに流すと、バッファが吐かれる前に落ちるので、`format()` の出力すら出ません。
 **未定義動作なので、何が起きるかは環境によって変わります。**
 運が良ければ落ち、悪ければ黙って内側だけ漏れ続けます。
 
@@ -205,7 +322,7 @@ warning: delete called on non-final 'Border' that has virtual functions but
 
 Decorator は入れ子が本体なので、**このパターンで仮想デストラクタを忘れる被害はいちばん大きい**です。
 
-正しく書いたときの破棄の順番も見ておきます（12.6 の実測です）。
+正しく書いたときの破棄の順番も見ておきます（12.7 の実測です。出力の 2 つ目のブロックにあたります）。
 
 ```
 ~Border([INFO])

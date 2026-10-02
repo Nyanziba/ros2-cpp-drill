@@ -27,12 +27,50 @@ int get_from_file1() { return add_one(10); }
 int get_from_file2() { return add_one(20); }
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// helper.h
+int add_one(int x) {
+  return x + 1;
+}
+```
+
+```cpp
+// file1.cpp
+#include "helper.h"
+int get_from_file1() { return add_one(10); }
+```
+
+```cpp
+// file2.cpp
+#include "helper.h"
+int get_from_file2() { return add_one(20); }
+```
+
+```cpp
+// main.cpp
+int get_from_file1();
+int get_from_file2();
+
+int main()
+{
+  return get_from_file1() + get_from_file2();
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic -c file1.cpp file2.cpp main.cpp && g++ file1.o file2.o main.o -o app
+```
+
+</details>
+
 If you link the files above, you get:
 
 ```
 /usr/bin/ld: file2.o: in function `add_one(int)':
-file2.cpp:(.text+0x0): multiple definition of `add_one(int)';
-file1.o:file1.cpp:(.text+0x0): first defined here
+file2.cpp:(.text+0x0): multiple definition of `add_one(int)'; file1.o:file1.cpp:(.text+0x0): first defined here
+collect2: error: ld returned 1 exit status
 ```
 
 **With `inline`, the linker allows the duplicates and merges them into one.**
@@ -43,6 +81,37 @@ inline int add_one(int x) {
   return x + 1;
 }
 ```
+
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// file1.cpp
+#include "helper.h"
+int get_from_file1() { return add_one(10); }
+```
+
+```bash
+mkdir -p without_inline with_inline
+cp file1.cpp without_inline/
+cp file1.cpp with_inline/
+cat > without_inline/helper.h <<'EOF'
+int add_one(int x) {
+  return x + 1;
+}
+EOF
+cat > with_inline/helper.h <<'EOF'
+inline int add_one(int x) {
+  return x + 1;
+}
+EOF
+echo "=== Without inline ==="
+(cd without_inline && g++ -c file1.cpp -o file1.o && nm -C file1.o | grep add_one)
+echo
+echo "=== With inline ==="
+(cd with_inline && g++ -c file1.cpp -o file1.o && nm -C file1.o | grep add_one)
+```
+
+</details>
 
 Now the link succeeds. Check with `nm -C`: without `inline` the symbol is `T` (strong symbol), with `inline` it is `W` (weak symbol):
 
@@ -115,8 +184,44 @@ private:
 configure(true);  // ERROR
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// explicit_error.cpp
+#include <iostream>
+
+class IsEnabled {
+public:
+  explicit IsEnabled(bool value) : value_(value) {}
+  
+  bool is_on() const { return value_; }
+  
+private:
+  bool value_;
+};
+
+void configure(IsEnabled enabled) {
+  if (enabled.is_on()) {
+    std::cout << "enabled\n";
+  } else {
+    std::cout << "disabled\n";
+  }
+}
+
+int main() {
+  configure(true);  // ERROR
+  return 0;
+}
 ```
-error: could not convert 'true' from 'bool' to 'IsEnabled'
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic explicit_error.cpp -o explicit_error
+```
+
+</details>
+
+```
+error: could not convert ‘true’ from ‘bool’ to ‘IsEnabled’
 ```
 
 The correct call uses the constructor explicitly:

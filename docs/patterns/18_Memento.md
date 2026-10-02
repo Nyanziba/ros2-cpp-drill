@@ -294,13 +294,71 @@ return saved.kp_ > 0.0 ? 0 : 1;    // GainTuner の外から wide interface に�
 
 とすると、次で止まります（実際の出力）。
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// private_access.cpp
+#include <string>
+#include <utility>
+
+class GainTuner;   // 前方宣言
+
+class GainSnapshot
+{
+public:
+  const std::string & label() const { return label_; }   // narrow interface
+
+private:
+  friend class GainTuner;                                // ← Java の package private の代わり
+
+  GainSnapshot(double kp, double ki, double kd, std::string label)
+  : kp_(kp), ki_(ki), kd_(kd), label_(std::move(label))
+  {
+  }
+
+  double kp_;
+  double ki_;
+  double kd_;
+  std::string label_;
+};
+
+class GainTuner
+{
+public:
+  GainSnapshot create_snapshot() const
+  {
+    return GainSnapshot{kp_, ki_, kd_, label_};   // ここで完成。以後 immutable
+  }
+
+private:
+  double kp_ = 1.0;
+  double ki_ = 0.0;
+  double kd_ = 0.0;
+  std::string label_ = "initial";
+};
+
+int main()
+{
+  const GainTuner tuner;
+  const GainSnapshot saved = tuner.create_snapshot();
+  return saved.kp_ > 0.0 ? 0 : 1;    // GainTuner の外から wide interface に触る
+}
 ```
-error: 'kp_' is a private member of 'GainSnapshot'
-   return saved.kp_ > 0.0 ? 0 : 1;
-                ^
-note: declared private here
-   double kp_;
-          ^
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic private_access.cpp -o private_access
+```
+
+</details>
+
+```
+private_access.cpp: In function ‘int main()’:
+private_access.cpp:45:16: error: ‘double GainSnapshot::kp_’ is private within this context
+   45 |   return saved.kp_ > 0.0 ? 0 : 1;    // GainTuner の外から wide interface に触る
+      |                ^~~
+private_access.cpp:20:10: note: declared private here
+   20 |   double kp_;
+      |          ^~~
 ```
 
 Java 版の「`getFruits()` はパッケージ外から呼べない」に対応するものが、
@@ -439,7 +497,7 @@ ROS 2 側では、Memento を自作する場面はほとんどありません。
 | 症状 | 原因 |
 | --- | --- |
 | 保存したはずの Memento が、元をいじると一緒に変わる | Memento が `shared_ptr` / 参照 / ポインタで持っている。値にする |
-| `error: 'kp_' is a private member of 'GainSnapshot'` | 意図どおり。`friend class GainTuner;` が効いている。Originator 経由で触る |
+| `error: 'double GainSnapshot::kp_' is private within this context` | 意図どおり。`friend class GainTuner;` が効いている。Originator 経由で触る |
 | `friend` を書いたのに見えない | クラス名の綴り違い、または前方宣言が無い。`class GainTuner;` を先に書く |
 | `std::vector<Memento>` に `push_back` できない | Memento のコピー／ムーブを `= delete` している |
 | ムーブ版で戻したあと、Memento の中身が残っていたり空だったりで安定しない | ムーブ後の `std::string` は未規定。約束するなら明示的に `clear()` する |

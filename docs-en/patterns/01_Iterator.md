@@ -262,6 +262,52 @@ int main()
 g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// try_no_begin.cpp
+#include <iostream>
+#include <string>
+#include <vector>
+
+class Book
+{
+public:
+  explicit Book(std::string name) : name_(std::move(name)) {}
+  const std::string & name() const { return name_; }
+
+private:
+  std::string name_;
+};
+
+class Shelf
+{
+public:
+  void append(Book book) { books_.push_back(std::move(book)); }
+
+private:
+  std::vector<Book> books_;
+};
+
+int main()
+{
+  Shelf shelf;
+  shelf.append(Book{"Design Patterns"});
+  shelf.append(Book{"Refactoring"});
+
+  for (const Book & book : shelf) {
+    std::cout << book.name() << "\n";
+  }
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic try_no_begin.cpp -o try_no_begin
+```
+
+</details>
+
 <details>
 <summary>Predict: how many lines are printed? And what happens if you delete <code>begin()</code> / <code>end()</code>?</summary>
 
@@ -275,7 +321,12 @@ Refactoring
 If you delete `begin()` / `end()`, the range-based for becomes a compile error.
 
 ```
-error: 'begin' was not declared in this scope
+try_no_begin.cpp: In function ‘int main()’:
+try_no_begin.cpp:31:28: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+   31 |   for (const Book & book : shelf) {
+      |                            ^~~~~
+      |                            std::begin
+...
 ```
 
 You can see that **range-based for just looks for the names `begin()` / `end()`**.

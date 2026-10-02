@@ -60,9 +60,35 @@ int main()
 }
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// terminate.cpp
+#include <iostream>
+#include <thread>
+
+void worker() { std::cout << "Thread running\n"; }
+
+int main()
+{
+  std::thread t(worker);
+  // leave main without join or detach
+  return 0;  // ← the destructor of t calls std::terminate
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic -pthread terminate.cpp -o terminate && ./terminate
+```
+
+</details>
+
 ```
 terminate called without an active exception
+Aborted
 ```
+
+The second line, `Aborted`, is a message printed by the shell, not by the program (measured in an interactive shell; depending on the environment it may read `Aborted (core dumped)`).
 
 ### `join()` and `detach()`
 
@@ -77,7 +103,7 @@ After you call either of them, `.joinable()` becomes `false`.
 ## 13.2 Data race — writing a shared variable without protection
 
 First, one warning. **A data race does not always show up when you write one.**
-This is the most troublesome property of this bug, so let us first look at an example where it does not show up.
+This is the most troublesome property of this bug, so let us first look at an example where it may not show up.
 
 ```cpp
 #include <iostream>
@@ -111,27 +137,28 @@ int main()
 ```bash
 $ g++ -std=c++17 -Wall -Wextra -pthread race1.cpp -o race1
 $ for i in 1 2 3 4 5 6 7 8; do ./race1 | head -1; done
-結果:   500000
-結果:   500000
-結果:   500000
-結果:   500000
-結果:   500000
-結果:   500000
-結果:   500000
-結果:   500000
+Result:   112347
+Result:   130427
+Result:   139839
+Result:   116629
+Result:   154372
+Result:   233807
+Result:   226115
+Result:   133656
 ```
 
 [▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/EaaqGrcrE)
 
 [▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/c54aMWoWr)
 
-**All 8 runs gave the right answer.** The result was the same with `-O2`, and without `-pthread`
-(measured on a 12-core machine).
+**The values in the output depend on the environment.** The output above was measured in Docker (`linux/arm64`, Ubuntu 24.04 / g++ 13.3 / aarch64, 10 cores). In this environment every one of the 8 runs gave a value below 500000, so the data race showed up. The numbers also differ from those in the Japanese edition, which is expected.
 
-This code is **broken**. It still gives the right answer because
-one thread finishes its 100000 loops in less than 0.5 milliseconds, and
+On the author's 12-core machine, on the other hand, the same code **gave the right answer (500000) in all 8 runs.** The result was the same with `-O2`, and without `-pthread`.
+That is because one thread finishes its 100000 loops in less than 0.5 milliseconds, and
 while `threads.emplace_back` creates the threads one by one,
-**the earlier thread has already finished.** If there is no one to race with, there is no race.
+**the earlier thread had already finished.** If there is no one to race with, there is no race.
+
+This code is **broken**. In some environments the race shows up, and in others it does not.
 
 Here is the most important fact in this chapter: **"it worked, so it is correct" does not hold.**
 
@@ -175,17 +202,17 @@ int main()
 ```bash
 $ g++ -std=c++17 -Wall -Wextra -pthread race2.cpp -o race2
 $ for i in 1 2 3 4 5; do ./race2 | head -1; done
-結果:   1352695
-結果:   1408128
-結果:   1427199
-結果:   1436394
-結果:   1467341
+Result:   1604949
+Result:   1724222
+Result:   2208129
+Result:   2470840
+Result:   1935995
 ```
 
 [▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/rTj9fbPcb)
 
-**Against the expected 8000000, the result is around 1.4 million. More than 80% of the increments are lost.**
-And the value is different every time.
+**Against the expected 8000000, the measured values are about 1.6 to 2.5 million. Roughly 70% to 80% of the increments are lost.**
+And the value is different every time. The output above was also measured in the same Docker environment (`linux/arm64`, 10 cores); the values change with the environment and from run to run.
 
 `++counter` looks like one operation, but in machine code it is three steps:
 `load` → `add` → `store`.
@@ -198,17 +225,19 @@ It is impossible to find a bug that "happens to work" by eye. **Use a tool.**
 
 ```bash
 $ g++ -std=c++17 -fsanitize=thread -g -pthread race2.cpp -o race2_ts
-$ ./race2_ts
-==================
-WARNING: ThreadSanitizer: data race (pid=134773)
-  Write of size 4 at 0x591893f74154 by thread T6:
-    #0 increment() race.cpp:13
-  Previous read of size 4 at 0x591893f74154 by thread T7:
-    ...
+$ ./race2_ts 2>&1 | grep -E "WARNING|SUMMARY|^  (Read|Write|Previous)|#0 increment" | head -6
+WARNING: ThreadSanitizer: data race (pid=135)
+  Write of size 4 at 0xaaaad5160020 by thread T8:
+    #0 increment() /w/race2.cpp:13 (race2_ts+0x148c) (BuildId: e6ca5c7b6339a6209d3bf2f047510a214364522d)
+  Previous read of size 4 at 0xaaaad5160020 by thread T7:
+    #0 increment() /w/race2.cpp:13 (race2_ts+0x1470) (BuildId: e6ca5c7b6339a6209d3bf2f047510a214364522d)
+SUMMARY: ThreadSanitizer: data race /w/race2.cpp:13 in increment()
 ```
 
+The TSan report is long, so `grep` keeps only the key lines. The pid, addresses, BuildId and file path change from run to run and from environment to environment. TSan was measured in Docker on `linux/arm64`. Under `linux/amd64` emulation it did not run and stopped with `FATAL: ThreadSanitizer: unexpected memory mapping`.
+
 **`-fsanitize=thread` detects a race even when it does not actually show up.**
-It also reports the first `race1.cpp` (the code that gave the right answer in all 8 runs).
+It also reports the first `race1.cpp` (the code that gave the right answer in all 8 runs on the author's 12-core machine). It was reported in the Docker environment above as well.
 Do not say "it is fine because the test passed". Make sure you can say **"it is fine because it passed TSan".**
 
 It makes the program 5 to 15 times slower, so you do not put it in a production build. Running it in CI is the standard practice.
@@ -717,8 +746,9 @@ and the repeat count from 1000000 back to 10000.
   };
 ```
 
-**This time the correct 30000 appears every time.** It is the same phenomenon you saw in section 13.2.
+**On the author's 12-core machine, the correct 30000 appeared every time this time.** It is the same phenomenon you saw in section 13.2.
 The code is still broken, but the result is correct.
+(When measured in Docker on `linux/amd64` and `linux/arm64`, both with 10 cores, some runs gave 30000 and some gave less than 30000. How it turns out depends on the environment.)
 **Why "it worked, so it is correct" does not hold** — confirm it with your own hands, twice.
 
 **② Add `-fsanitize=thread`.**

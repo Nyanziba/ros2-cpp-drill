@@ -514,8 +514,36 @@ std::string msg = "hello";
 printf("Message: %s\n", msg);  // undefined behavior
 ```
 
+When you run it, you get unpredictable output or a crash. In the environment where I measured it, garbage bytes were printed after `Message: ` (this changes from run to run). The compiler warning is as follows.
+
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// printf_string.cpp
+#include <cstdio>
+#include <string>
+
+int main()
+{
+  std::string msg = "hello";
+  printf("Message: %s\n", msg);  // undefined behavior
+  return 0;
+}
 ```
-When you run it, you get unpredictable output or a crash
+
+```bash
+g++ -std=c++17 -Wall printf_string.cpp -o printf_string && ./printf_string
+```
+
+</details>
+
+```
+printf_string.cpp: In function ‘int main()’:
+printf_string.cpp:8:21: warning: format ‘%s’ expects argument of type ‘char*’, but argument 2 has type ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} [-Wformat=]
+    8 |   printf("Message: %s\n", msg);  // undefined behavior
+      |                    ~^
+      |                     |
+      |                     char*
 ```
 
 Add `.c_str()`.
@@ -530,8 +558,33 @@ printf("Message: %s\n", msg.c_str());
 std::string s = "hello" + " world";  // error
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// concat_literals.cpp
+#include <string>
+
+int main()
+{
+  std::string s = "hello" + " world";  // error
+  return 0;
+}
 ```
-error: no match for 'operator+' (operand types are 'const char [6]' and 'const char [7]')
+
+```bash
+g++ -std=c++17 concat_literals.cpp -o concat_literals
+```
+
+</details>
+
+```
+concat_literals.cpp: In function ‘int main()’:
+concat_literals.cpp:6:27: error: invalid operands of types ‘const char [6]’ and ‘const char [7]’ to binary ‘operator+’
+    6 |   std::string s = "hello" + " world";  // error
+      |                   ~~~~~~~ ^ ~~~~~~~~
+      |                   |         |
+      |                   |         const char [7]
+      |                   const char [6]
 ```
 
 Make the left side a `std::string`.
@@ -563,8 +616,33 @@ std::optional<int> x = 5;
 int y = x;  // error
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// optional_to_int.cpp
+#include <optional>
+
+int main()
+{
+  std::optional<int> x = 5;
+  int y = x;  // error
+  return 0;
+}
 ```
-error: cannot convert 'std::optional<int>' to 'int'
+
+```bash
+g++ -std=c++17 optional_to_int.cpp -o optional_to_int
+```
+
+</details>
+
+```
+optional_to_int.cpp: In function ‘int main()’:
+optional_to_int.cpp:7:11: error: cannot convert ‘std::optional<int>’ to ‘int’ in initialization
+    7 |   int y = x;  // error
+      |           ^
+      |           |
+      |           std::optional<int>
 ```
 
 Check with `.has_value()`, take the value out with `*x`, or give a default value with `.value_or()`.
@@ -578,8 +656,39 @@ enum class Status { RUNNING };
 if (RED == Status::RUNNING) { }  // error
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// enum_mix.cpp
+enum Color { RED };
+enum class Status { RUNNING };
+
+int main()
+{
+  if (RED == Status::RUNNING) { }  // error
+  return 0;
+}
 ```
-error: no match for 'operator==' (operand types are 'Color' and 'Status')
+
+```bash
+g++ -std=c++17 enum_mix.cpp -o enum_mix
+```
+
+</details>
+
+```
+enum_mix.cpp: In function ‘int main()’:
+enum_mix.cpp:7:11: error: no match for ‘operator==’ (operand types are ‘Color’ and ‘Status’)
+    7 |   if (RED == Status::RUNNING) { }  // error
+      |       ~~~ ^~ ~~~~~~~~~~~~~~~
+      |       |              |
+      |       Color          Status
+enum_mix.cpp:7:11: note: candidate: ‘operator==(Status, Status)’ (built-in)
+    7 |   if (RED == Status::RUNNING) { }  // error
+      |       ~~~~^~~~~~~~~~~~~~~~~~
+enum_mix.cpp:7:11: note:   no known conversion for argument 1 from ‘Color’ to ‘Status’
+enum_mix.cpp:7:11: note: candidate: ‘operator==(Color, Color)’ (built-in)
+enum_mix.cpp:7:11: note:   no known conversion for argument 2 from ‘Status’ to ‘Color’
 ```
 
 Use one kind of enumeration. In new code, use `enum class`.

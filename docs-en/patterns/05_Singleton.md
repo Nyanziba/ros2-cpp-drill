@@ -269,6 +269,72 @@ private:
 On the `limiter.cpp` side, you only replace `g_config` with `Config::instance()`.
 With either link order, you get this.
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// config2.hpp
+#pragma once
+#include <iostream>
+
+class Config
+{
+public:
+  static Config & instance()      // Meyers Singleton
+  {
+    static Config the_config;     // Constructed only the first time we pass here
+    return the_config;
+  }
+  int max_duty() const { return max_duty_; }
+
+private:
+  Config()
+  : max_duty_(100)
+  {
+    std::cout << "Config constructor\n";
+  }
+  int max_duty_;
+};
+```
+
+```cpp
+// limiter2.cpp
+#include "config2.hpp"
+
+class Limiter
+{
+public:
+  Limiter()
+  : limit_(Config::instance().max_duty())   // Uses a global from another translation unit
+  {
+    std::cout << "Limiter constructor: limit_ = " << limit_ << "\n";
+  }
+  int limit() const { return limit_; }
+
+private:
+  int limit_;
+};
+
+Limiter g_limiter;
+```
+
+```cpp
+// main_meyers.cpp
+#include "config2.hpp"
+
+int main()
+{
+  std::cout << "main: " << Config::instance().max_duty() << "\n";
+  return 0;
+}
+```
+
+```bash
+c++ -std=c++17 -Wall -Wextra -Wpedantic limiter2.cpp main_meyers.cpp -o meyers1 && ./meyers1
+c++ -std=c++17 -Wall -Wextra -Wpedantic main_meyers.cpp limiter2.cpp -o meyers2 && ./meyers2
+```
+
+</details>
+
 ```
 Config constructor
 Limiter constructor: limit_ = 100
@@ -388,6 +454,50 @@ int main()
 g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// try_deleted.cpp
+#include <iostream>
+
+class Config
+{
+public:
+  static Config & instance()
+  {
+    static Config the_config;
+    return the_config;
+  }
+  void set_max_duty(int duty) { max_duty_ = duty; }
+  int max_duty() const { return max_duty_; }
+
+  Config(const Config &) = delete;
+  Config & operator=(const Config &) = delete;
+
+private:
+  Config() = default;
+  int max_duty_ = 100;
+};
+
+int main()
+{
+  Config copied = Config::instance();     // A copy is made
+  copied.set_max_duty(30);
+
+  std::cout << "instance: " << &Config::instance()
+            << " duty=" << Config::instance().max_duty() << "\n";
+  std::cout << "copied  : " << &copied
+            << " duty=" << copied.max_duty() << "\n";
+  return 0;
+}
+```
+
+```bash
+clang++ -std=c++17 -Wall -Wextra -Wpedantic try_deleted.cpp -o try_deleted
+```
+
+</details>
+
 <details>
 <summary>Predict: Does it compile? If it does, what happens to the two addresses and the duty?</summary>
 
@@ -409,15 +519,15 @@ Add the next two lines just before `private:`, and build again.
   Config & operator=(const Config &) = delete;
 ```
 
-This is the actual error (Apple clang. The line numbers change with the environment).
+This is the actual error (Apple clang 21).
 
 ```
-error: call to deleted constructor of 'Config'
-  Config copied = Config::instance();     // A copy is made
-         ^        ~~~~~~~~~~~~~~~~~~
-note: 'Config' has been explicitly marked deleted here
-  Config(const Config &) = delete;
-  ^
+try_deleted.cpp:25:10: error: call to deleted constructor of 'Config'
+   25 |   Config copied = Config::instance();     // A copy is made
+      |          ^        ~~~~~~~~~~~~~~~~~~
+try_deleted.cpp:15:3: note: 'Config' has been explicitly marked deleted here
+   15 |   Config(const Config &) = delete;
+      |   ^
 1 error generated.
 ```
 
@@ -467,7 +577,71 @@ private:
 };
 ```
 
-This is the actual output when `main` touches `Uart::instance()` first.
+This is the actual output when `main` touches `Uart::instance()` first and `Logger::instance()` after it.
+
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// destruction_order.cpp
+#include <iostream>
+#include <string>
+
+class Logger
+{
+public:
+  static Logger & instance()
+  {
+    static Logger the_logger;
+    return the_logger;
+  }
+  ~Logger() { alive_ = false; }
+
+  void log(const std::string & message)
+  {
+    std::cout << "[log alive=" << alive_ << "] " << message << "\n";
+  }
+
+private:
+  Logger() = default;
+  bool alive_ = true;
+};
+
+class Uart
+{
+public:
+  static Uart & instance()
+  {
+    static Uart the_uart;
+    return the_uart;
+  }
+  ~Uart() { Logger::instance().log("Closed the Uart"); }   // It may already be destroyed
+
+private:
+  Uart() = default;
+};
+
+int main(int argc, char *[])
+{
+  const bool is_logger_first = argc > 1;
+  if (is_logger_first) {
+    Logger::instance();   // touch Logger first if there is an argument
+    Uart::instance();
+  } else {
+    Uart::instance();     // touch Uart first if there is no argument
+    Logger::instance();
+  }
+  std::cout << "main finished\n";
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic destruction_order.cpp -o destruction_order
+./destruction_order              # touch Uart first
+./destruction_order logger_first # touch Logger first
+```
+
+</details>
 
 ```
 main finished
@@ -478,7 +652,7 @@ main finished
 This is undefined behavior. This time the value happened to be readable,
 but if it had a `std::string` or a `std::vector`, it would touch freed memory.
 
-If you touch `Logger::instance()` first, you get this.
+If you touch `Logger::instance()` first and `Uart::instance()` after it, you get this.
 
 ```
 main finished

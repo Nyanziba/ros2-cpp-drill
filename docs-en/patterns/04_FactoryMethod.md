@@ -193,6 +193,46 @@ struct FileCreator : Creator
 If you actually compile it, you get this (`g++ -std=c++17 -Wall -Wextra -Wpedantic`,
 Apple clang 21).
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// covariant.cpp
+#include <memory>
+
+struct Product
+{
+  virtual ~Product() = default;
+};
+
+struct FileProduct : Product
+{
+};
+
+struct Creator
+{
+  virtual ~Creator() = default;
+  virtual std::unique_ptr<Product> create() = 0;
+};
+
+struct FileCreator : Creator
+{
+  // tried to narrow the return type to unique_ptr<FileProduct>
+  std::unique_ptr<FileProduct> create() override { return std::make_unique<FileProduct>(); }
+};
+
+int main()
+{
+  FileCreator creator;
+  return 0;
+}
+```
+
+```bash
+clang++ -std=c++17 -Wall -Wextra -Wpedantic covariant.cpp -o covariant
+```
+
+</details>
+
 ```
 covariant.cpp:22:32: error: virtual function 'create' has a different return type ('unique_ptr<FileProduct>') than the function it overrides (which has return type 'unique_ptr<Product>')
    22 |   std::unique_ptr<FileProduct> create() override { return std::make_unique<FileProduct>(); }
@@ -232,10 +272,31 @@ std::unique_ptr<Base> b = std::make_unique<Derived>();   // compiles
 std::unique_ptr<Derived> d = std::move(b);               // does not compile
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// conv.cpp
+#include <memory>
+struct Base { virtual ~Base() = default; }; struct Derived : Base {};
+int main()
+{
+  std::unique_ptr<Base> b = std::make_unique<Derived>();   // compiles
+  std::unique_ptr<Derived> d = std::move(b);               // does not compile
+  return 0;
+}
+```
+
+```bash
+clang++ -std=c++17 -Wall -Wextra -Wpedantic conv.cpp -o conv
+```
+
+</details>
+
 ```
 conv.cpp:7:28: error: no viable conversion from '__libcpp_remove_reference_t<std::unique_ptr<Base, std::default_delete<Base>> &>' (aka 'std::unique_ptr<Base>') to 'std::unique_ptr<Derived>'
     7 |   std::unique_ptr<Derived> d = std::move(b);               // does not compile
       |                            ^   ~~~~~~~~~~~~
+...
 ```
 
 You may think "it is really a `Derived`, so you should be able to convert it back", but the compiler cannot know.

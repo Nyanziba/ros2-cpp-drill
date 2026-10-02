@@ -302,9 +302,46 @@ public:
 };
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// incomplete.cpp
+class PanelMediator;
+
+class PanelWidget
+{
+public:
+  void notify_changed() { mediator_->widget_changed(this); }
+  // ...
+
+private:
+  PanelMediator * mediator_ = nullptr;
+};
+
+int main()
+{
+  PanelWidget widget;
+  widget.notify_changed();
+  return 0;
+}
 ```
-error: member access into incomplete type 'PanelMediator'
-note: forward declaration of 'PanelMediator'
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic incomplete.cpp -o incomplete
+```
+
+</details>
+
+This is the output measured with Apple clang 21 on macOS.
+
+```
+incomplete.cpp:7:36: error: member access into incomplete type 'PanelMediator'
+    7 |   void notify_changed() { mediator_->widget_changed(this); }
+      |                                    ^
+incomplete.cpp:2:7: note: forward declaration of 'PanelMediator'
+    2 | class PanelMediator;
+      |       ^
+1 error generated.
 ```
 
 For two classes that refer to each other, **you must push the implementation of one of them out to the `.cpp`**.

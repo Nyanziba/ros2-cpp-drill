@@ -293,13 +293,71 @@ return saved.kp_ > 0.0 ? 0 : 1;    // touch the wide interface from outside Gain
 
 and the build stops with this (actual output).
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// private_access.cpp
+#include <string>
+#include <utility>
+
+class GainTuner;   // forward declaration
+
+class GainSnapshot
+{
+public:
+  const std::string & label() const { return label_; }   // narrow interface
+
+private:
+  friend class GainTuner;                                // <- replaces Java's package private
+
+  GainSnapshot(double kp, double ki, double kd, std::string label)
+  : kp_(kp), ki_(ki), kd_(kd), label_(std::move(label))
+  {
+  }
+
+  double kp_;
+  double ki_;
+  double kd_;
+  std::string label_;
+};
+
+class GainTuner
+{
+public:
+  GainSnapshot create_snapshot() const
+  {
+    return GainSnapshot{kp_, ki_, kd_, label_};   // Complete here. Immutable from now on
+  }
+
+private:
+  double kp_ = 1.0;
+  double ki_ = 0.0;
+  double kd_ = 0.0;
+  std::string label_ = "initial";
+};
+
+int main()
+{
+  const GainTuner tuner;
+  const GainSnapshot saved = tuner.create_snapshot();
+  return saved.kp_ > 0.0 ? 0 : 1;    // touch the wide interface from outside GainTuner
+}
 ```
-error: 'kp_' is a private member of 'GainSnapshot'
-   return saved.kp_ > 0.0 ? 0 : 1;
-                ^
-note: declared private here
-   double kp_;
-          ^
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic private_access.cpp -o private_access
+```
+
+</details>
+
+```
+private_access.cpp: In function ‘int main()’:
+private_access.cpp:45:16: error: ‘double GainSnapshot::kp_’ is private within this context
+   45 |   return saved.kp_ > 0.0 ? 0 : 1;    // touch the wide interface from outside GainTuner
+      |                ^~~
+private_access.cpp:20:10: note: declared private here
+   20 |   double kp_;
+      |          ^~~
 ```
 
 What corresponds to "`getFruits()` cannot be called from outside the package" in the Java version is
@@ -438,7 +496,7 @@ That is essentially the same story as on the microcontroller side, and on the RO
 | Symptom | Cause |
 | --- | --- |
 | A Memento you saved changes together with the original when you change the original | The Memento holds a `shared_ptr` / reference / pointer. Make it a value |
-| `error: 'kp_' is a private member of 'GainSnapshot'` | As intended. `friend class GainTuner;` is working. Go through the Originator |
+| `error: 'double GainSnapshot::kp_' is private within this context` | As intended. `friend class GainTuner;` is working. Go through the Originator |
 | You wrote `friend` but it is not visible | Wrong spelling of the class name, or no forward declaration. Write `class GainTuner;` first |
 | You cannot `push_back` into `std::vector<Memento>` | You wrote `= delete` for copy / move of the Memento |
 | After restoring with the move version, the contents of the Memento are sometimes left and sometimes empty, so it is not stable | A `std::string` after a move is unspecified. If you promise it, call `clear()` explicitly |

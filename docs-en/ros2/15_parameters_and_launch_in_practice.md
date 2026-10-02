@@ -359,11 +359,13 @@ def generate_launch_description():
 **Here is a trap that you should step on once.** The top-level key of the `speed_param.yaml` we made above is `speed_node:` (no namespace), but if you start with `namespace:=robot1`, the fully qualified name of the node becomes `/robot1/speed_node`. A parameter YAML matches the node name including the namespace, so the key `speed_node:` does **not match** `/robot1/speed_node`. It is not an error, and the node starts with the default value of `declare_parameter`.
 
 ```
-# no namespace
-[speed_node-1] [INFO] [speed_node]: max_speed = 2.0     ← the YAML takes effect
-# namespace:=robot1
-[speed_node-1] [INFO] [robot1.speed_node]: max_speed = 1.0   ← still the default value
+$ ros2 launch speed_param_demo speed_param_launch.py
+[speed_node-1] [INFO] [1790939696.049941586] [speed_node]: max_speed = 2.0
+$ ros2 launch speed_param_demo speed_param_launch.py namespace:=robot1
+[speed_node-1] [INFO] [1790939699.503564004] [robot1.speed_node]: max_speed = 1.0
 ```
+
+The top one is with the YAML taking effect (`2.0`), the bottom one is still the default value (`1.0`).
 
 If you want to reuse the same YAML for several robots, make the top-level key the wildcard `/**`. Then it applies even when a namespace is added.
 

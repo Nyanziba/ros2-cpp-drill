@@ -75,8 +75,34 @@ int counter = 0;  // external linkage
 int counter = 0;  // duplicates file1 → multiple definition error
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// file1.cpp
+int counter = 0;  // external linkage
 ```
-/usr/bin/ld: multiple definition of `counter'
+
+```cpp
+// file2.cpp
+int counter = 0;  // duplicates file1 → multiple definition error
+```
+
+```cpp
+// main.cpp
+int main()
+{
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic -c file1.cpp file2.cpp main.cpp && g++ file1.o file2.o main.o -o app
+```
+
+</details>
+
+```
+/usr/bin/ld: file2.o:(.bss+0x0): multiple definition of `counter'; file1.o:(.bss+0x0): first defined here
+collect2: error: ld returned 1 exit status
 ```
 
 **If you declare it `static` ("used only in this file"), the names do not collide at link time.**
@@ -126,8 +152,52 @@ int main()
 
 **A `static` member needs a definition.** A declaration alone cannot be found at link time.
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// static_undefined.cpp
+#include <iostream>
+
+class Counter
+{
+public:
+  Counter() { ++count_; }
+  
+  static int get_total() { return count_; }
+  
+private:
+  static int count_;
+};
+
+// int Counter::count_ = 0;  // A definition is required  <- leave this line out
+
+int main()
+{
+  std::cout << Counter::get_total() << "\n";  // 0
+  
+  Counter c1;
+  std::cout << Counter::get_total() << "\n";  // 1
+  
+  Counter c2;
+  std::cout << Counter::get_total() << "\n";  // 2
+}
 ```
-/usr/bin/ld: undefined reference to `Counter::count_'
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic -c static_undefined.cpp && g++ static_undefined.o -o static_undefined
+```
+
+</details>
+
+```
+/usr/bin/ld: static_undefined.o: warning: relocation against `_ZN7Counter6count_E' in read-only section `.text._ZN7Counter9get_totalEv[_ZN7Counter9get_totalEv]'
+/usr/bin/ld: static_undefined.o: in function `Counter::Counter()':
+static_undefined.cpp:(.text._ZN7CounterC2Ev[_ZN7CounterC5Ev]+0xe): undefined reference to `Counter::count_'
+/usr/bin/ld: static_undefined.cpp:(.text._ZN7CounterC2Ev[_ZN7CounterC5Ev]+0x17): undefined reference to `Counter::count_'
+/usr/bin/ld: static_undefined.o: in function `Counter::get_total()':
+static_undefined.cpp:(.text._ZN7Counter9get_totalEv[_ZN7Counter9get_totalEv]+0xa): undefined reference to `Counter::count_'
+/usr/bin/ld: warning: creating DT_TEXTREL in a PIE
+collect2: error: ld returned 1 exit status
 ```
 
 **Since C++17, `inline static` removes the need for a separate definition.**

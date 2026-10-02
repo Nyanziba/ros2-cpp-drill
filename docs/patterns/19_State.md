@@ -143,9 +143,85 @@ c++ -std=c++17 -Wall -Wextra -Wpedantic try_uaf.cpp -o uaf && ./uaf
 echo $?
 ```
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// try_uaf.cpp
+#include <iostream>
+#include <memory>
+
+class Context;
+
+class State
+{
+public:
+  virtual ~State() = default;
+  virtual const char * name() const = 0;
+  virtual void handle(Context & context) = 0;
+};
+
+class Context
+{
+public:
+  Context();
+  void set_state(std::unique_ptr<State> next) { state_ = std::move(next); }
+  void request() { state_->handle(*this); }
+
+private:
+  std::unique_ptr<State> state_;
+};
+
+class Faulted : public State
+{
+public:
+  const char * name() const override { return "Faulted"; }
+  void handle(Context &) override {}
+};
+
+class Running : public State
+{
+public:
+  const char * name() const override { return "Running"; }
+
+  void handle(Context & context) override
+  {
+    context.set_state(std::make_unique<Faulted>());  // ここで this が delete される
+    std::cout << "退場処理: " << name() << "\n";     // 既に死んだ this のメンバ関数
+    ticks_ = ticks_ + 1;                             // 既に解放されたメモリへの書き込み
+    std::cout << "ticks=" << ticks_ << "\n";
+  }
+
+private:
+  int ticks_ = 0;
+};
+
+Context::Context()
+: state_(std::make_unique<Running>())
+{
+}
+
+int main()
+{
+  Context context;
+  context.request();
+  std::cout << "done\n";
+  return 0;
+}
 ```
+
+```bash
+c++ -std=c++17 -Wall -Wextra -Wpedantic try_uaf.cpp -o uaf && ./uaf
+echo $?
+```
+
+</details>
+
+```
+Segmentation fault
 139
 ```
+
+1 行目の `Segmentation fault` はシェルが出す表示で、プログラム自身の出力ではありません。
 
 **警告は 1 つも出ません。**`-Wall -Wextra -Wpedantic` は素通りします。
 出力も 1 行も出ずに SIGSEGV（128 + 11 = 139）で落ちます。
@@ -328,13 +404,67 @@ auto bad = go<Ev::Start>(faulted);   // 異常状態から走行へ。書けな�
 
 最後の 1 行のコンパイルエラー（実際の出力）:
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// transition_check.cpp
+#include <cstdint>
+
+enum class Ev : std::uint8_t { PowerOn, Start, Stop, EStop, Reset };
+
+struct Stopped {};
+struct Idle {};
+struct Running {};
+struct Faulted {};
+
+template <typename From, Ev E>
+struct Transition;                                          // 宣言のみ。定義しない
+
+template <> struct Transition<Stopped, Ev::PowerOn> { using To = Idle; };
+template <> struct Transition<Idle,    Ev::Start>   { using To = Running; };
+template <> struct Transition<Running, Ev::Stop>    { using To = Idle; };
+template <> struct Transition<Faulted, Ev::Reset>   { using To = Stopped; };
+template <typename From> struct Transition<From, Ev::EStop> { using To = Faulted; };
+
+template <Ev E, typename From>
+typename Transition<From, E>::To go(const From &)
+{
+  return typename Transition<From, E>::To{};
+}
+
+int main()
+{
+  Stopped stopped;
+  auto idle    = go<Ev::PowerOn>(stopped);
+  auto running = go<Ev::Start>(idle);
+  auto faulted = go<Ev::EStop>(running);
+  auto back    = go<Ev::Reset>(faulted);
+
+  auto bad = go<Ev::Start>(faulted);   // 異常状態から走行へ。書けない
+}
 ```
-error: no matching function for call to 'go'
-   43 |   auto bad = go<Ev::Start>(faulted);
-      |              ^~~~~~~~~~~~~
-note: candidate template ignored: substitution failure [with E = Ev::Start,
-      From = typename Transition<Running, (Ev)3>::To]:
-      implicit instantiation of undefined template 'Transition<Faulted, Ev::Start>'
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic transition_check.cpp -o transition_check
+```
+
+</details>
+
+```
+transition_check.cpp: In function ‘int main()’:
+transition_check.cpp:34:27: error: no matching function for call to ‘go<Ev::Start>(Faulted&)’
+   34 |   auto bad = go<Ev::Start>(faulted);   // 異常状態から走行へ。書けない
+      |              ~~~~~~~~~~~~~^~~~~~~~~
+transition_check.cpp:21:34: note: candidate: ‘template<Ev E, class From> typename Transition<From, E>::To go(const From&)’
+   21 | typename Transition<From, E>::To go(const From &)
+      |                                  ^~
+transition_check.cpp:21:34: note:   template argument deduction/substitution failed:
+transition_check.cpp: In substitution of ‘template<Ev E, class From> typename Transition<From, E>::To go(const From&) [with Ev E = Ev::Start; From = Faulted]’:
+transition_check.cpp:34:27:   required from here
+transition_check.cpp:21:34: error: invalid use of incomplete type ‘struct Transition<Faulted, Ev::Start>’
+transition_check.cpp:12:8: note: declaration of ‘struct Transition<Faulted, Ev::Start>’
+   12 | struct Transition;                                          // 宣言のみ。定義しない
+      |        ^~~~~~~~~~
 ```
 
 **「異常停止から走行に入るコードは、コンパイルが通らない」**が実現できました。
@@ -355,6 +485,37 @@ note: candidate template ignored: substitution failure [with E = Ev::Start,
 | `std::variant` + `visit` | 直和型 | ゼロ | ゼロ | 持てる | 不可 |
 
 課題のヘッダで実測したサイズです（Apple clang, arm64）。
+
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// state_sizes.cpp
+#include <cstdint>
+#include <cstdio>
+#include <variant>
+
+enum class MachineState : std::uint8_t { Stopped, Idle, Running, Faulted };
+enum class MachineEvent : std::uint8_t { PowerOn, Start, Stop, EmergencyStop, Reset };
+
+struct StoppedState {};
+struct IdleState {};
+struct RunningState { std::uint8_t duty_percent = 60; };   // 状態固有のデータ
+struct FaultedState { MachineEvent cause; };
+
+using StateVariant = std::variant<StoppedState, IdleState, RunningState, FaultedState>;
+
+int main()
+{
+  std::printf("MachineState=%zu  StateVariant=%zu\n", sizeof(MachineState), sizeof(StateVariant));
+  return 0;
+}
+```
+
+```bash
+clang++ -std=c++17 -Wall -Wextra -Wpedantic state_sizes.cpp -o state_sizes && ./state_sizes
+```
+
+</details>
 
 ```
 MachineState=1  StateVariant=8
@@ -536,25 +697,110 @@ static_assert(sizeof(Machine) == 1, "状態機械は 1 バイト");
 `-fno-exceptions -fno-rtti` を付けてビルドし、`Start / PowerOn / Start / EStop / Start / Reset`
 を流した実際の出力です。
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// table_machine.cpp
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
+
+enum class St : std::uint8_t { Stopped, Idle, Running, Faulted, Count };
+enum class Ev : std::uint8_t { PowerOn, Start, Stop, EStop, Reset, Count };
+
+constexpr std::size_t kStates = static_cast<std::size_t>(St::Count);
+constexpr std::size_t kEvents = static_cast<std::size_t>(Ev::Count);
+
+// [現在の状態][イベント] = 遷移先。自分自身なら「無視」。
+constexpr St kTable[kStates][kEvents] = {
+  //            PowerOn      Start        Stop         EStop        Reset
+  /* Stopped */ {St::Idle,    St::Stopped, St::Stopped, St::Faulted, St::Stopped},
+  /* Idle    */ {St::Idle,    St::Running, St::Idle,    St::Faulted, St::Idle},
+  /* Running */ {St::Running, St::Running, St::Idle,    St::Faulted, St::Running},
+  /* Faulted */ {St::Faulted, St::Faulted, St::Faulted, St::Faulted, St::Stopped},
+};
+
+// 入場/退場アクションも表で持てる。関数ポインタは C 言語編 9 章と同じ道具。
+using Action = void (*)();
+
+void motor_stop() { std::printf("motor:stop\n"); }
+void brake_engage() { std::printf("brake:engage\n"); }
+void nothing() {}
+
+constexpr Action kOnExit[kStates]  = {nothing, nothing, motor_stop, nothing};
+constexpr Action kOnEnter[kStates] = {nothing, nothing, nothing, brake_engage};
+
+class Machine
+{
+public:
+  bool handle(Ev event)
+  {
+    const St next = kTable[static_cast<std::size_t>(state_)][static_cast<std::size_t>(event)];
+    if (next == state_) {
+      return false;
+    }
+    kOnExit[static_cast<std::size_t>(state_)]();
+    state_ = next;
+    kOnEnter[static_cast<std::size_t>(state_)]();
+    return true;
+  }
+
+  St state() const { return state_; }
+
+private:
+  St state_ = St::Stopped;
+};
+
+// 表そのものをコンパイル時に検査できる。
+static_assert(kTable[static_cast<std::size_t>(St::Faulted)][static_cast<std::size_t>(Ev::Start)] ==
+                St::Faulted,
+              "異常状態は Reset 以外で抜けてはいけない");
+static_assert(sizeof(Machine) == 1, "状態機械は 1 バイト");
+
+const char * const kStateNames[kStates] = {"Stopped", "Idle", "Running", "Faulted"};
+const char * const kEventNames[kEvents] = {"PowerOn", "Start", "Stop", "EStop", "Reset"};
+
+int main()
+{
+  Machine machine;
+  const Ev events[] = {Ev::Start, Ev::PowerOn, Ev::Start, Ev::EStop, Ev::Start, Ev::Reset};
+  for (const Ev event : events) {
+    std::printf("--- %s\n", kEventNames[static_cast<std::size_t>(event)]);
+    const St before = machine.state();
+    if (machine.handle(event)) {
+      std::printf(
+        "%s -> %s\n", kStateNames[static_cast<std::size_t>(before)],
+        kStateNames[static_cast<std::size_t>(machine.state())]);
+    } else {
+      std::printf("(無視)\n");
+    }
+  }
+  std::printf("sizeof(Machine)=%zu sizeof(kTable)=%zu\n", sizeof(Machine), sizeof(kTable));
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic -fno-exceptions -fno-rtti table_machine.cpp -o table_machine && ./table_machine
+```
+
+</details>
+
 ```
 --- Start
 (無視)
 --- PowerOn
-exit:Stopped
-enter:Idle
+Stopped -> Idle
 --- Start
-exit:Idle
-enter:Running
+Idle -> Running
 --- EStop
-exit:Running
 motor:stop
-enter:Faulted
 brake:engage
+Running -> Faulted
 --- Start
 (無視)
 --- Reset
-exit:Faulted
-enter:Stopped
+Faulted -> Stopped
 sizeof(Machine)=1 sizeof(kTable)=20
 ```
 

@@ -21,6 +21,29 @@ size_t len = strlen(s);  // inside: counts 'h' 'e' 'l' 'l' 'o' and returns 5
 
 Measured values:
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// string_length.c
+#include <stdio.h>
+#include <string.h>
+
+int main(void)
+{
+    char s[] = "hello";
+    size_t len = strlen(s);  // inside: counts 'h' 'e' 'l' 'l' 'o' and returns 5
+
+    printf("s: %s, strlen(s): %zu, sizeof(s): %zu\n", s, len, sizeof(s));
+    return 0;
+}
+```
+
+```bash
+gcc -std=c99 -Wall -Wextra -Wpedantic string_length.c -o string_length && ./string_length
+```
+
+</details>
+
 ```
 s: hello, strlen(s): 5, sizeof(s): 6
 ```
@@ -39,9 +62,31 @@ printf("strlen(arr): %zu\n", strlen(arr));  // 3 (a b c)
 
 Measured values:
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// string_size.c
+#include <stdio.h>
+#include <string.h>
+
+int main(void)
+{
+    char arr[] = "abc";
+    printf("sizeof(arr): %zu\n", sizeof(arr));  // 4 (a b c \0)
+    printf("strlen(arr): %zu\n", strlen(arr));  // 3 (a b c)
+    return 0;
+}
 ```
-sizeof(arr): 4 (includes NUL)
-strlen(arr): 3 (without NUL)
+
+```bash
+gcc -std=c99 -Wall -Wextra -Wpedantic string_size.c -o string_size && ./string_size
+```
+
+</details>
+
+```
+sizeof(arr): 4
+strlen(arr): 3
 ```
 
 **How many characters fit in a buffer?**
@@ -60,8 +105,35 @@ strcpy(buffer, "hello");  // 'h' 'e' 'l' 'l' 'o' '\0' → needs 6 bytes
 
 Compiler warning:
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// strcpy_overflow.c
+#include <string.h>
+
+int main(void)
+{
+    char buffer[5];
+    strcpy(buffer, "hello");  // 'h' 'e' 'l' 'l' 'o' '\0' → needs 6 bytes
+                               // buffer has only 5 bytes → buffer overflow!
+    return 0;
+}
 ```
-warning: '__builtin_memcpy' writing 6 bytes into a region of size 5 overflows the destination
+
+```bash
+gcc -std=c99 -Wall -Wextra -Wpedantic -c strcpy_overflow.c -o strcpy_overflow.o
+```
+
+</details>
+
+```
+strcpy_overflow.c: In function ‘main’:
+strcpy_overflow.c:7:5: warning: ‘__builtin_memcpy’ writing 6 bytes into a region of size 5 overflows the destination [-Wstringop-overflow=]
+    7 |     strcpy(buffer, "hello");  // 'h' 'e' 'l' 'l' 'o' '\0' → needs 6 bytes
+      |     ^~~~~~~~~~~~~~~~~~~~~~~
+strcpy_overflow.c:6:10: note: destination object ‘buffer’ of size 5
+    6 |     char buffer[5];
+      |          ^~~~~~
 ```
 
 `strcpy` remains only in code from the 1990s. Do not use it in new code.
@@ -96,6 +168,38 @@ int main(void)
 }
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// strncpy_trap.c
+#include <stdio.h>
+#include <string.h>
+
+int main(void)
+{
+  /* Prepare 16 bytes, fill the first 10 bytes with 'X', and put a NUL at the 11th.
+   * This way you can observe "how far it reads when there is no NUL"
+   * without going outside the array. */
+  char buf[16];
+  memset(buf, 'X', 10);
+  buf[10] = '\0';
+
+  strncpy(buf, "test", 4);   /* Copy only 4 characters. No room is given for the NUL */
+
+  printf("buf[0..4] = %c %c %c %c %c\n", buf[0], buf[1], buf[2], buf[3], buf[4]);
+  printf("numeric value of buf[4] = %d   ('X' = 88)\n", (unsigned char)buf[4]);
+  printf("strlen(buf) = %zu   ← not 4\n", strlen(buf));
+  printf("buf = \"%s\"\n", buf);
+  return 0;
+}
+```
+
+```bash
+gcc -std=c99 -Wall -Wextra -Wpedantic strncpy_trap.c -o strncpy_trap && ./strncpy_trap
+```
+
+</details>
+
 Measured values:
 
 ```
@@ -115,8 +219,10 @@ This is how a buffer over-read happens.
 The compiler also notices and warns (measured).
 
 ```
-warning: ‘strncpy’ output truncated before terminating nul copying 4 bytes
-from a string of the same length [-Wstringop-truncation]
+strncpy_trap.c: In function ‘main’:
+strncpy_trap.c:14:3: warning: ‘strncpy’ output truncated before terminating nul copying 4 bytes from a string of the same length [-Wstringop-truncation]
+   14 |   strncpy(buf, "test", 4);   /* Copy only 4 characters. No room is given for the NUL */
+      |   ^~~~~~~~~~~~~~~~~~~~~~~
 ```
 
 **If you use `strncpy`, always place the NUL yourself.**
@@ -138,6 +244,28 @@ printf("snprintf wrote: %d bytes (limited to %zu)\n", written, sizeof(buf));
 printf("buf: %s\n", buf);
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// snprintf_truncate.c
+#include <stdio.h>
+
+int main(void)
+{
+    char buf[10];
+    int written = snprintf(buf, sizeof(buf), "hello world");
+    printf("snprintf wrote: %d bytes (limited to %zu)\n", written, sizeof(buf));
+    printf("buf: %s\n", buf);
+    return 0;
+}
+```
+
+```bash
+gcc -std=c99 -Wall -Wextra -Wpedantic snprintf_truncate.c -o snprintf_truncate && ./snprintf_truncate
+```
+
+</details>
+
 Measured values:
 
 ```
@@ -150,7 +278,13 @@ The return value of `snprintf` is "the number of characters it wanted to write, 
 Compiler warning:
 
 ```
-warning: 'hello world' directive output truncated writing 11 bytes into a destination of size 10
+snprintf_truncate.c: In function ‘main’:
+snprintf_truncate.c:7:57: warning: ‘hello world’ directive output truncated writing 11 bytes into a region of size 10 [-Wformat-truncation=]
+    7 |     int written = snprintf(buf, sizeof(buf), "hello world");
+      |                                               ~~~~~~~~~~^
+snprintf_truncate.c:7:19: note: ‘snprintf’ output 12 bytes into a destination of size 10
+    7 |     int written = snprintf(buf, sizeof(buf), "hello world");
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ```
 
 ## Try it yourself

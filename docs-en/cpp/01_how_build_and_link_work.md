@@ -137,15 +137,44 @@ struct Point { int x; int y; };
 int main() { return 0; }
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// a.hpp
+struct Point { int x; int y; };
 ```
-In file included from b.hpp:1,
-                 from redef.cpp:2:
-a.hpp:1:8: error: redefinition of ‘struct Point’
-    1 | struct Point { int x; int y; };
+
+```cpp
+// b.hpp
+#include "a.hpp"
+```
+
+```cpp
+// main.cpp
+#include "a.hpp"
+#include "b.hpp"   // a.hpp is pasted a second time here
+int main() { return 0; }
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic main.cpp -o main
+```
+
+</details>
+
+```
+In file included from b.hpp:2,
+                 from main.cpp:3:
+a.hpp:2:8: error: redefinition of ‘struct Point’
+    2 | struct Point { int x; int y; };
+      |        ^~~~~
+In file included from main.cpp:2:
+a.hpp:2:8: note: previous definition of ‘struct Point’
+    2 | struct Point { int x; int y; };
       |        ^~~~~
 ```
 
-Notice that the error line points to `a.hpp:1`.
+Notice that the error line points to `a.hpp:2`.
 **What is wrong is the two `#include` lines in `main.cpp`, but the compiler points to the line where the text was pasted.**
 The chain of `In file included from` is the route that shows "how we got here".
 When you read a C++ error, the basic way is to read this route from bottom to top.
@@ -191,6 +220,32 @@ int add(int a, int b) { return a + b; }   // I wrote the body by mistake
 
 Even with `#pragma once`, this creates one definition in each of the **separate translation units**
 `x.cpp` and `y.cpp`. Compilation passes, and the link fails.
+
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// bad.hpp
+#pragma once
+int add(int a, int b) { return a + b; }   // I wrote the body by mistake
+```
+
+```cpp
+// x.cpp
+#include "bad.hpp"
+
+int main() { return add(1, 2); }
+```
+
+```cpp
+// y.cpp
+#include "bad.hpp"
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic x.cpp y.cpp -o app
+```
+
+</details>
 
 ```
 /usr/bin/ld: /tmp/cc51bYE3.o: in function `add(int, int)':

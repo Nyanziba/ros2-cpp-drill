@@ -262,6 +262,52 @@ int main()
 g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 ```
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// try_no_begin.cpp
+#include <iostream>
+#include <string>
+#include <vector>
+
+class Book
+{
+public:
+  explicit Book(std::string name) : name_(std::move(name)) {}
+  const std::string & name() const { return name_; }
+
+private:
+  std::string name_;
+};
+
+class Shelf
+{
+public:
+  void append(Book book) { books_.push_back(std::move(book)); }
+
+private:
+  std::vector<Book> books_;
+};
+
+int main()
+{
+  Shelf shelf;
+  shelf.append(Book{"Design Patterns"});
+  shelf.append(Book{"Refactoring"});
+
+  for (const Book & book : shelf) {
+    std::cout << book.name() << "\n";
+  }
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic try_no_begin.cpp -o try_no_begin
+```
+
+</details>
+
 <details>
 <summary>予想: 何行出るか。そして <code>begin()</code> / <code>end()</code> を消したらどうなるか</summary>
 
@@ -275,7 +321,12 @@ Refactoring
 `begin()` / `end()` を消すと、range-based for がコンパイルエラーになります。
 
 ```
-error: 'begin' was not declared in this scope
+try_no_begin.cpp: In function ‘int main()’:
+try_no_begin.cpp:31:28: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+   31 |   for (const Book & book : shelf) {
+      |                            ^~~~~
+      |                            std::begin
+...
 ```
 
 **range-based for は `begin()` / `end()` という名前を探しているだけ**だと分かります。

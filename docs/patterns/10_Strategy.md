@@ -255,10 +255,43 @@ Java の generics ではこれができません（`<T extends Strategy>` と書
 
 ### コストがゼロというのは本当か
 
-`-O2` で実際に出たコードです（arm64）。仮想関数版:
+`-O2` で実際に出たコードです（Apple clang 21 / arm64）。出したプログラムとコマンドはこれです。
+
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// asm.cpp
+class Filter
+{
+public:
+  virtual ~Filter() = default;
+  virtual double apply(double raw) const = 0;
+};
+
+class ClampPolicy
+{
+public:
+  explicit ClampPolicy(double m) : m_(m) {}
+  double apply(double raw) const { return raw > m_ ? m_ : raw; }
+private:
+  double m_;
+};
+
+double run_virtual(const Filter & filter, double raw) { return filter.apply(raw); }
+
+double run_policy(const ClampPolicy & policy, double raw) { return policy.apply(raw); }
+```
+
+```bash
+clang++ -std=c++17 -O2 -S asm.cpp -o - | grep -E '^_|^[[:space:]]+(ldr|fcmp|fcsel|br|ret)'
+```
+
+</details>
+
+コマンドの出力のうち、関数の本体の命令だけを抜き出しています（`;` 以降の説明は足したものです）。仮想関数版:
 
 ```
-__Z11run_virtualRK6Filterd:
+__Z11run_virtualRK6Filterd:             ; @_Z11run_virtualRK6Filterd
 	ldr	x8, [x0]        ; vptr を読む
 	ldr	x1, [x8, #16]   ; vtable から apply のアドレスを読む
 	br	x1              ; 間接ジャンプ
@@ -267,10 +300,10 @@ __Z11run_virtualRK6Filterd:
 ポリシー版:
 
 ```
-__Z10run_policyRK11ClampPolicyd:
+__Z10run_policyRK11ClampPolicyd:        ; @_Z10run_policyRK11ClampPolicyd
 	ldr	d1, [x0]        ; メンバ m_ を読む
-	fcmp	d1, d0
-	fcsel	d0, d1, d0, mi  ; 比較して選ぶだけ。呼び出しが消えている
+	fcmp	d0, d1
+	fcsel	d0, d1, d0, gt  ; 比較して選ぶだけ。呼び出しが消えている
 	ret
 ```
 
@@ -323,10 +356,31 @@ std::printf("%.1f\n", fp(3.0));      // 6.0
 つまり「ラムダで書きたい」だけなら `std::function` は要りません。
 **キャプチャを使わなければ、関数ポインタで受け取れます。**
 
-キャプチャすると変換できません。実際のエラーはこうです。
+キャプチャすると変換できません。実際のエラーはこうです（macOS の Apple clang 21 で実測）。
+
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// err.cpp
+int main()
+{
+  double scale = 2.0;
+  double (*fp)(double) = [scale](double raw) { return raw * scale; };
+  return fp(3.0) > 0.0 ? 0 : 1;
+}
+```
+
+```bash
+clang++ -std=c++17 -Wall -Wextra -Wpedantic err.cpp -o err
+```
+
+</details>
 
 ```
-error: no viable conversion from '(lambda at err.cpp:4:26)' to 'double (*)(double)'
+err.cpp:4:12: error: no viable conversion from '(lambda at err.cpp:4:26)' to 'double (*)(double)'
+    4 |   double (*fp)(double) = [scale](double raw) { return raw * scale; };
+      |            ^             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
 ```
 
 弱点は 2 つ。**状態を持てない**（キャプチャできない）ことと、

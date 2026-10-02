@@ -113,14 +113,47 @@ public:
 
 実際にコンパイルするとこう出ます。
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// covariant_clone.cpp
+#include <memory>
+
+class Waveform
+{
+public:
+  virtual std::unique_ptr<Waveform> clone() const = 0;
+};
+
+class SineSweep : public Waveform
+{
+public:
+  std::unique_ptr<SineSweep> clone() const override    // ここ
+  {
+    return std::make_unique<SineSweep>(*this);
+  }
+};
+
+int main()
+{
+  SineSweep sweep;
+  return 0;
+}
 ```
-error: virtual function 'clone' has a different return type ('unique_ptr<SineSweep>')
-       than the function it overrides (which has return type 'unique_ptr<Waveform>')
-   13 |   std::unique_ptr<SineSweep> clone() const override
-      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~ ^
-note: overridden virtual function is here
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic covariant_clone.cpp -o covariant_clone
+```
+
+</details>
+
+```
+covariant_clone.cpp:13:30: error: invalid covariant return type for ‘virtual std::unique_ptr<SineSweep> SineSweep::clone() const’
+   13 |   std::unique_ptr<SineSweep> clone() const override    // ここ
+      |                              ^~~~~
+covariant_clone.cpp:7:37: note: overridden function is ‘virtual std::unique_ptr<Waveform> Waveform::clone() const’
     7 |   virtual std::unique_ptr<Waveform> clone() const = 0;
-      |           ~~~~~~~~~~~~~~~~~~~~~~~~~ ^
+      |                                     ^~~~~
 ```
 
 **共変戻り値型はポインタと参照にしか許されていません。**
@@ -227,10 +260,51 @@ Waveform sliced = sweep;        // SineSweep の部分が切り捨てられる
 
 この課題の `Waveform` は両方やっています。実際に `Waveform sliced = pulse;` と書くと、
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// abstract_slicing.cpp
+class Waveform
+{
+public:
+  virtual ~Waveform() = default;
+  virtual double sample(double time) const = 0;   // 純粋仮想関数 = 抽象クラス
+};
+
+class PulseTrain : public Waveform
+{
+public:
+  double sample(double time) const override { return time < 0.5 ? 1.0 : 0.0; }
+};
+
+int main()
+{
+  PulseTrain pulse;
+  Waveform sliced = pulse;
+  return 0;
+}
 ```
-error: variable type 'Waveform' is an abstract class
-    5 |   Waveform sliced = pulse;
-      |            ^
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic abstract_slicing.cpp -o abstract_slicing
+```
+
+</details>
+
+```
+abstract_slicing.cpp: In function ‘int main()’:
+abstract_slicing.cpp:18:21: error: cannot allocate an object of abstract type ‘Waveform’
+   18 |   Waveform sliced = pulse;
+      |                     ^~~~~
+abstract_slicing.cpp:2:7: note:   because the following virtual functions are pure within ‘Waveform’:
+    2 | class Waveform
+      |       ^~~~~~~~
+abstract_slicing.cpp:6:18: note:     ‘virtual double Waveform::sample(double) const’
+    6 |   virtual double sample(double time) const = 0;   // 純粋仮想関数 = 抽象クラス
+      |                  ^~~~~~
+abstract_slicing.cpp:18:12: error: cannot declare variable ‘sliced’ to be of abstract type ‘Waveform’
+   18 |   Waveform sliced = pulse;
+      |            ^~~~~~
 ```
 
 さらに**基底への代入**も同じ事故です。`Waveform & operator=(const Waveform &) = delete;` で止めます。
@@ -264,8 +338,42 @@ PulseTrain b = a;      // pattern_ の「値」がコピーされる = 同じ配
                        // 両方のデストラクタが delete[] する = 二重解放
 ```
 
-手元で走らせると、**警告ゼロでコンパイルが通り、実行時に落ちます**（Linux の g++ では SIGABRT で終了コード 134、macOS の Apple clang では SIGTRAP で 133）。
+手元で走らせると、**二重解放については何の警告も出ずにコンパイルが通り、実行時に落ちます**（Linux の g++ では SIGABRT で終了コード 134、macOS の Apple clang では SIGTRAP で 133。
+Apple clang は未使用の `length_` について、二重解放とは別の警告を 1 つ出します）。
 Java では起こりえない壊れ方です。
+
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// double_free.cpp
+#include <cstddef>
+
+class PulseTrain
+{
+public:
+  explicit PulseTrain(std::size_t length) : pattern_(new double[length]()), length_(length) {}
+  ~PulseTrain() { delete[] pattern_; }
+
+private:
+  double * pattern_;
+  std::size_t length_;
+};
+
+int main()
+{
+  PulseTrain a{4};
+  PulseTrain b = a;      // pattern_ の「値」がコピーされる = 同じ配列を 2 つが指す
+                         // 両方のデストラクタが delete[] する = 二重解放
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic double_free.cpp -o double_free
+./double_free; echo "終了コード: $?"
+```
+
+</details>
 
 これを**言語に止めさせる**のが `std::unique_ptr` メンバです。
 
@@ -544,7 +652,7 @@ const 参照で渡すと middleware 側でコピーされます。**複製と共
 
 | 症状 | 原因 |
 | --- | --- |
-| `error: virtual function 'clone' has a different return type` | `unique_ptr` で共変戻り値型を使おうとしている。6.3 の NVI 版にする |
+| `error: invalid covariant return type for 'virtual std::unique_ptr<SineSweep> SineSweep::clone() const'` | `unique_ptr` で共変戻り値型を使おうとしている。6.3 の NVI 版にする |
 | 複製したのに元を変えると複製も変わる | 浅いコピー。ポインタメンバの中身を写していない |
 | 実行時に落ちる（SIGABRT で終了コード 134、macOS の clang では SIGTRAP で 133） | 生ポインタメンバの二重解放。`unique_ptr` にする |
 | `clone()` したのに `name()` が基底のものを返す | `do_clone()` が基底を `new` している。`new Derived(*this)` にする |

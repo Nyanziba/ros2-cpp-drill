@@ -94,9 +94,82 @@ Java は参照が返るので毎回コピーは起きません。C++ で `std::s
 `const` メンバ関数から `real_` に代入するので `mutable` が要ります。
 外すとこうなります（Apple clang での実測）。
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// printer_proxy.cpp
+#include <iostream>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <utility>
+
+class Printer
+{
+public:
+  explicit Printer(std::string name) : name_(std::move(name)) {}
+
+  void print(const std::string & text) { std::cout << "[" << name_ << "] " << text << "\n"; }
+
+private:
+  std::string name_;
+};
+
+class Printable
+{
+public:
+  virtual ~Printable() = default;                       // 変更点1
+  virtual void set_printer_name(std::string name) = 0;
+  virtual const std::string & printer_name() const = 0;  // 変更点2
+  virtual void print(const std::string & text) = 0;
+};
+
+class PrinterProxy : public Printable
+{
+public:
+  void set_printer_name(std::string name) override { name_ = std::move(name); }
+  const std::string & printer_name() const override { return name_; }
+
+  void print(const std::string & text) override
+  {
+    realize();
+    real_->print(text);
+  }
+
+private:
+  void realize() const                                  // 変更点3
+  {
+    if (!real_) { real_ = std::make_unique<Printer>(name_); }
+  }
+
+  std::string name_;
+  std::unique_ptr<Printer> real_;                       // 変更点4（mutable を外した）
+  mutable std::mutex mutex_;                            // 変更点5
+};
+
+int main()
+{
+  PrinterProxy proxy;
+  proxy.set_printer_name("lp0");
+  proxy.print("hello");
+  return 0;
+}
 ```
-error: no viable overloaded '='
-note: 'this' argument has type 'const std::unique_ptr<Real>', but method is not marked const
+
+```bash
+clang++ -std=c++17 -Wall -Wextra -Wpedantic printer_proxy.cpp -o printer_proxy
+```
+
+</details>
+
+```
+printer_proxy.cpp:43:25: error: no viable overloaded '='
+   43 |     if (!real_) { real_ = std::make_unique<Printer>(name_); }
+      |                   ~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__memory/unique_ptr.h:227:67: note: candidate function not viable: 'this' argument has type 'const std::unique_ptr<Printer>', but method is not marked const
+  227 |   _LIBCPP_HIDE_FROM_ABI _LIBCPP_CONSTEXPR_SINCE_CXX23 unique_ptr& operator=(unique_ptr&& __u) _NOEXCEPT {
+      |                                                                   ^
+...
 ```
 
 `mutable` は「論理的には `const`、物理的には書き換える」ときのための道具です。
@@ -405,6 +478,35 @@ int main()
 g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 ```
 
+なお、解答の最後にある C++11 のエラーは、次の最小のプログラムで測りました。
+
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// copy_elision.cpp
+class A
+{
+public:
+  A() = default;
+  A(const A &) = delete;
+};
+
+A make() { return A{}; }
+
+int main()
+{
+  A a = make();
+  (void)a;
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++11 -Wall -Wextra -Wpedantic copy_elision.cpp -o copy_elision
+```
+
+</details>
+
 <details>
 <summary>予想: <code>proxy-&gt;work()</code> の 1 行で、何が何回呼ばれるか</summary>
 
@@ -425,11 +527,23 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 呼ぶ側が何も書かなくてもロックが掛かります。
 
 `Guard` はコピーもムーブもできないのに、`operator->` が値で返せています。
-C++17 の**保証されたコピー省略**のおかげです。C++11 でコンパイルするとこうなります。
+C++17 の**保証されたコピー省略**のおかげです。同じ形を最小にしたプログラムを C++11 でコンパイルするとこうなります。
 
 ```
-error: call to deleted constructor of 'A'
-note: 'A' has been explicitly marked deleted here
+copy_elision.cpp: In function ‘A make()’:
+copy_elision.cpp:9:19: error: use of deleted function ‘A::A(const A&)’
+    9 | A make() { return A{}; }
+      |                   ^~~
+copy_elision.cpp:6:3: note: declared here
+    6 |   A(const A &) = delete;
+      |   ^
+copy_elision.cpp: In function ‘int main()’:
+copy_elision.cpp:13:14: error: use of deleted function ‘A::A(const A&)’
+   13 |   A a = make();
+      |              ^
+copy_elision.cpp:6:3: note: declared here
+    6 |   A(const A &) = delete;
+      |   ^
 ```
 </details>
 
@@ -539,6 +653,36 @@ class RegisterProxy
 
 この形なら `sizeof` は **1**（空クラスの最小サイズ）です。RAM を 1 バイトも使いません。
 実測しました。
+
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// register_proxy_size.cpp
+#include <cstdint>
+#include <cstdio>
+
+template <std::uint32_t Address, std::uint16_t Mask = 0xffffu>
+class RegisterProxy
+{
+  static volatile std::uint16_t * reg()
+  {
+    return reinterpret_cast<volatile std::uint16_t *>(static_cast<std::uintptr_t>(Address));
+  }
+  // ...
+};
+
+int main()
+{
+  std::printf("sizeof(RegisterProxy) = %zu\n", sizeof(RegisterProxy<0x40012C34u>));
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic register_proxy_size.cpp -o register_proxy_size && ./register_proxy_size
+```
+
+</details>
 
 ```
 sizeof(RegisterProxy) = 1

@@ -156,10 +156,35 @@ int main()
 
 [⚠ See this error in your browser (gcc 13.3)](https://godbolt.org/z/98ffMj7M1)
 
-As we saw in the previous chapter, this gives a 78-line error, and it is 3 lines (all with the same cause) if you narrow it down with `grep "error:"`. One of those lines is this one.
+As we saw in the previous chapter, this gives a 78-line error, and it is 3 lines (all with the same cause) if you narrow it down with `grep "error:"`. The output looks like this.
+
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// sortpoint.cpp
+#include <algorithm>
+#include <vector>
+
+struct Point { int x; int y; };
+
+int main()
+{
+  std::vector<Point> v{{3, 4}, {1, 2}};
+  std::sort(v.begin(), v.end());     // Point has no <
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 sortpoint.cpp -o sortpoint 2>&1 | grep "error:"
+```
+
+</details>
 
 ```
-error: no match for ‘operator<’ (operand types are ‘Point’ and ‘Point’)
+/usr/include/c++/13/bits/predefined_ops.h:45:23: error: no match for ‘operator<’ (operand types are ‘Point’ and ‘Point’)
+/usr/include/c++/13/bits/predefined_ops.h:98:22: error: no match for ‘operator<’ (operand types are ‘Point’ and ‘Point’)
+/usr/include/c++/13/bits/predefined_ops.h:69:22: error: no match for ‘operator<’ (operand types are ‘Point’ and ‘Point’)
 ```
 
 **`std::sort` sorts using `a < b` by default.** That is why `operator<` is needed.
@@ -547,6 +572,106 @@ int main()
 ```
 
 The expected output is this.
+
+<details markdown="1"><summary>Full program that produced this output (the TODOs filled in. It contains the answer to exercise cpp10, so solve it first)</summary>
+
+```cpp
+// ops.cpp
+#include <algorithm>
+#include <iostream>
+#include <sstream>
+#include <tuple>
+#include <vector>
+
+struct Vec2
+{
+  double x;
+  double y;
+
+  Vec2 & operator+=(const Vec2 & other)
+  {
+    x += other.x;
+    y += other.y;
+    return *this;
+  }
+
+  double length_squared() const { return x * x + y * y; }
+};
+
+Vec2 operator+(Vec2 a, const Vec2 & b)
+{
+  a += b;
+  return a;
+}
+
+Vec2 operator*(const Vec2 & v, double s)
+{
+  return Vec2{v.x * s, v.y * s};
+}
+
+Vec2 operator*(double s, const Vec2 & v)
+{
+  return Vec2{s * v.x, s * v.y};
+}
+
+bool operator==(const Vec2 & a, const Vec2 & b)
+{
+  return a.x == b.x && a.y == b.y;
+}
+
+bool operator!=(const Vec2 & a, const Vec2 & b)
+{
+  return !(a == b);
+}
+
+bool operator<(const Vec2 & a, const Vec2 & b)
+{
+  return a.length_squared() < b.length_squared();
+}
+
+std::ostream & operator<<(std::ostream & os, const Vec2 & v)
+{
+  os << "(" << v.x << ", " << v.y << ")";
+  return os;
+}
+
+int main()
+{
+  Vec2 a{1.0, 2.0};
+  Vec2 b{10.0, 20.0};
+
+  std::cout << "a      = " << a << "\n";
+  std::cout << "a + b  = " << (a + b) << "\n";
+  std::cout << "a * 3  = " << (a * 3.0) << "\n";
+  std::cout << "3 * a  = " << (3.0 * a) << "\n";
+
+  Vec2 c = a;
+  c += b;
+  std::cout << "c      = " << c << "\n";
+
+  std::cout << "a == a : " << (a == a) << "\n";
+  std::cout << "a != b : " << (a != b) << "\n";
+
+  std::vector<Vec2> v{{3.0, 4.0}, {1.0, 0.0}, {0.0, 2.0}};
+  std::sort(v.begin(), v.end());
+  std::cout << "sorted :";
+  for (const auto & e : v) {
+    std::cout << " " << e;
+  }
+  std::cout << "\n";
+
+  std::ostringstream ss;
+  ss << "pos=" << a;
+  std::cout << "stream : " << ss.str() << "\n";
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic ops.cpp -o ops && ./ops
+```
+
+</details>
 
 ```
 a      = (1, 2)

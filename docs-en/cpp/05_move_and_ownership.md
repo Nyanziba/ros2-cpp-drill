@@ -166,8 +166,35 @@ Another mechanical test is **whether you can take its address with `&`.**
 &std::string("hi");     // error -> rvalue
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// address_of_rvalue.cpp
+#include <string>
+
+int main()
+{
+  std::string a = "hello";
+  &a;                     // OK -> lvalue
+  &std::string("hi");     // error -> rvalue
+  return 0;
+}
 ```
-error: taking address of rvalue
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic address_of_rvalue.cpp -o address_of_rvalue
+```
+
+</details>
+
+```
+address_of_rvalue.cpp: In function ‘int main()’:
+address_of_rvalue.cpp:7:3: warning: statement has no effect [-Wunused-value]
+    7 |   &a;                     // OK -> lvalue
+      |   ^~
+address_of_rvalue.cpp:8:9: error: taking address of rvalue [-fpermissive]
+    8 |   &std::string("hi");     // error -> rvalue
+      |         ^~~~~~~~~~~~
 ```
 
 ### Why this distinction matters
@@ -476,8 +503,45 @@ g++ warns you about this.
 g++ -std=c++17 -Wall -Wextra -Wpessimizing-move ...
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// pessimizing.cpp
+#include <string>
+#include <utility>
+
+std::string make_bad()
+{
+  std::string s = "hello";
+  return std::move(s);       // <- do not write this
+}
+
+std::string make_good()
+{
+  std::string s = "hello";
+  return s;                  // this is correct
+}
+
+int main()
+{
+  std::string bad = make_bad();
+  std::string good = make_good();
+  return 0;
+}
 ```
-warning: moving a local object in a return statement prevents copy elision [-Wpessimizing-move]
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpessimizing-move pessimizing.cpp -o pessimizing
+```
+
+</details>
+
+```
+pessimizing.cpp: In function ‘std::string make_bad()’:
+pessimizing.cpp:8:19: warning: moving a local object in a return statement prevents copy elision [-Wpessimizing-move]
+    8 |   return std::move(s);       // <- do not write this
+      |          ~~~~~~~~~^~~
+pessimizing.cpp:8:19: note: remove ‘std::move’ call
 ```
 
 **`-Wpessimizing-move` is included in `-Wall`.** If this warning appears, delete the `std::move`.

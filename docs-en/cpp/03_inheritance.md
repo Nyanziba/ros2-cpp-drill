@@ -129,8 +129,51 @@ public:
 };
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// private.cpp
+#include <iostream>
+#include <string>
+
+class Base
+{
+public:
+  explicit Base(std::string name) : name_(std::move(name)) {}
+
+  void greet() const { std::cout << "Hello, " << name_ << "\n"; }
+  const std::string & name() const { return name_; }
+
+private:
+  std::string name_;
+};
+
+class Derived : public Base
+{
+public:
+  void bad() { std::cout << name_; }   // error
+};
+
+int main()
+{
+  return 0;
+}
 ```
-error: ‘std::string Base::name_’ is private within this context
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic private.cpp -o private
+```
+
+</details>
+
+```
+private.cpp: In member function ‘void Derived::bad()’:
+private.cpp:20:29: error: ‘std::string Base::name_’ is private within this context
+   20 |   void bad() { std::cout << name_; }   // error
+      |                             ^~~~~
+private.cpp:14:15: note: declared private here
+   14 |   std::string name_;
+      |               ^~~~~
 ```
 
 In `rclcpp::Node` too, all the real data is `private`.
@@ -354,10 +397,66 @@ A class that has even one pure virtual function is called an **abstract class**,
 Shape s;   // error
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// abstract.cpp
+#include <iostream>
+#include <memory>
+#include <vector>
+
+class Shape
+{
+public:
+  virtual ~Shape() = default;                  // explained in Section 3.5
+  virtual double area() const = 0;             // = 0 means "the derived class writes the contents"
+  virtual const char * name() const { return "shape"; }   // has a default implementation
+};
+
+class Circle : public Shape
+{
+public:
+  explicit Circle(double r) : r_(r) {}
+  double area() const override { return 3.14159 * r_ * r_; }
+  const char * name() const override { return "circle"; }
+private:
+  double r_;
+};
+
+class Square : public Shape
+{
+public:
+  explicit Square(double s) : s_(s) {}
+  double area() const override { return s_ * s_; }
+  // name() is not overridden -> the base "shape" is used
+private:
+  double s_;
+};
+
+int main()
+{
+  Shape s;   // error
+  return 0;
+}
 ```
-error: cannot declare variable ‘s’ to be of abstract type ‘Shape’
-note:   because the following virtual functions are pure within ‘Shape’:
-note:     ‘virtual double Shape::area() const’
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic abstract.cpp -o abstract
+```
+
+</details>
+
+```
+abstract.cpp: In function ‘int main()’:
+abstract.cpp:36:9: error: cannot declare variable ‘s’ to be of abstract type ‘Shape’
+   36 |   Shape s;   // error
+      |         ^
+abstract.cpp:6:7: note:   because the following virtual functions are pure within ‘Shape’:
+    6 | class Shape
+      |       ^~~~~
+abstract.cpp:10:18: note:     ‘virtual double Shape::area() const’
+   10 |   virtual double area() const = 0;             // = 0 means "the derived class writes the contents"
+      |                  ^~~~
 ```
 
 It is a tool for "deciding only the interface and making the implementation replaceable".
@@ -377,8 +476,48 @@ public:
 };
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// override.cpp
+#include <iostream>
+#include <memory>
+#include <vector>
+
+class Shape
+{
+public:
+  virtual ~Shape() = default;                  // explained in Section 3.5
+  virtual double area() const = 0;             // = 0 means "the derived class writes the contents"
+  virtual const char * name() const { return "shape"; }   // has a default implementation
+};
+
+class Circle : public Shape
+{
+public:
+  explicit Circle(double r) : r_(r) {}
+  double area() override { return 3.14159 * r_ * r_; }   // forgot const
+  const char * name() const override { return "circle"; }
+private:
+  double r_;
+};
+
+int main()
+{
+  return 0;
+}
 ```
-error: ‘double Circle::area()’ marked ‘override’, but does not override
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic override.cpp -o override
+```
+
+</details>
+
+```
+override.cpp:18:10: error: ‘double Circle::area()’ marked ‘override’, but does not override
+   18 |   double area() override { return 3.14159 * r_ * r_; }   // forgot const
+      |          ^~~~
 ```
 
 What happens if you do not write `override`? **It is not an error.**
@@ -500,6 +639,38 @@ int main()
 The resources that `Derived` had acquired are never released.
 
 If you make it `virtual ~Base()`, it is fixed.
+
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// vdtor.cpp
+#include <iostream>
+#include <memory>
+
+class Base
+{
+public:
+  virtual ~Base() { std::cout << "~Base()\n"; }
+};
+
+class Derived : public Base
+{
+public:
+  ~Derived() { std::cout << "~Derived()\n"; }
+};
+
+int main()
+{
+  std::unique_ptr<Base> p = std::make_unique<Derived>();
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic vdtor.cpp -o vdtor && ./vdtor
+```
+
+</details>
 
 ```
 ~Derived()

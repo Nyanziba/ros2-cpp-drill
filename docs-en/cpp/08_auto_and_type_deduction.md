@@ -351,8 +351,38 @@ There is no initializer, or it has a form that cannot be deduced. You cannot wri
 
 **A warning appears when comparing unsigned integers**
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// signcompare.cpp
+#include <iostream>
+#include <vector>
+
+int main()
+{
+  std::vector<int> v{10, 20, 30};
+
+  for (int i = 0; i < v.size(); ++i) {
+    std::cout << v[i] << "\n";
+  }
+  return 0;
+}
 ```
-warning: comparison of integer expressions of different signedness [-Wsign-compare]
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic signcompare.cpp -o signcompare && ./signcompare
+```
+
+</details>
+
+```
+signcompare.cpp: In function ‘int main()’:
+signcompare.cpp:9:21: warning: comparison of integer expressions of different signedness: ‘int’ and ‘std::vector<int>::size_type’ {aka ‘long unsigned int’} [-Wsign-compare]
+    9 |   for (int i = 0; i < v.size(); ++i) {
+      |                   ~~^~~~~~~~~~
+10
+20
+30
 ```
 
 You are comparing `int i` with `v.size()`. Make it `size_t i`, or align them

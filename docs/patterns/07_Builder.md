@@ -312,13 +312,73 @@ std::optional<MotorConfig> MotorConfigBuilder::build() &&
 
 `build() &&` だけを書いて、左辺値から呼ぶとこうなります（実際の出力）。
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// build_rvalue_only.cpp
+#include <cstdint>
+#include <optional>
+#include <string>
+#include <utility>
+
+struct MotorConfig
+{
+  std::uint8_t motor_id = 0;
+  std::string name = "unnamed";
+  double max_duty = 1.0;
+  double current_limit_ampere = 5.0;
+  std::uint32_t encoder_counts_per_rev = 4096;
+  bool invert_direction = false;
+  bool brake_on_stop = true;
+};
+
+class MotorConfigBuilder
+{
+public:
+  MotorConfigBuilder & motor_id(std::uint8_t id);
+  std::optional<MotorConfig> build() &&;        // 右辺値から呼ばれた → ムーブ
+
+private:
+  MotorConfig config_;
+  bool has_motor_id_ = false;
+};
+
+MotorConfigBuilder & MotorConfigBuilder::motor_id(std::uint8_t id)
+{
+  config_.motor_id = id;
+  has_motor_id_ = true;
+  return *this;
+}
+
+std::optional<MotorConfig> MotorConfigBuilder::build() &&
+{
+  if (!has_motor_id_) { return std::nullopt; }
+  return std::move(config_);      // ムーブ。std::string の確保が 1 回減る
+}
+
+int main()
+{
+  MotorConfigBuilder builder;
+  builder.motor_id(3);
+  const auto config = builder.build();
+  return config.has_value() ? 0 : 1;
+}
 ```
-error: 'this' argument to member function 'build' is an lvalue, but function has rvalue ref-qualifier
-   17 |   Config config = builder.build();
-      |                   ^
-note: 'build' declared here
-    7 |   Config build() && { return config_; }
-      |          ^
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic build_rvalue_only.cpp -o build_rvalue_only
+```
+
+</details>
+
+```
+build_rvalue_only.cpp: In function ‘int main()’:
+build_rvalue_only.cpp:46:36: error: passing ‘MotorConfigBuilder’ as ‘this’ argument discards qualifiers [-fpermissive]
+   46 |   const auto config = builder.build();
+      |                       ~~~~~~~~~~~~~^~
+build_rvalue_only.cpp:36:28: note:   in call to ‘std::optional<MotorConfig> MotorConfigBuilder::build() &&’
+   36 | std::optional<MotorConfig> MotorConfigBuilder::build() &&
+      |                            ^~~~~~~~~~~~~~~~~~
 ```
 
 **参照修飾子は片方だけ書くと、もう片方が使えなくなります。**
@@ -599,7 +659,7 @@ auto qos = rclcpp::QoS(rclcpp::KeepLast(10)).reliable().transient_local();
 | 症状 | 原因 |
 | --- | --- |
 | チェーンするほど遅い。プロファイラで `std::string` のコピーが出る | セッタが `Builder`（値）を返している。`Builder &` にする |
-| `error: 'this' argument to member function 'build' is an lvalue, but function has rvalue ref-qualifier` | `build() &&` しか書いていない。`build() const &` も書く |
+| `error: passing 'MotorConfigBuilder' as 'this' argument discards qualifiers` | `build() &&` しか書いていない。`build() const &` も書く |
 | `build()` を 2 回呼んだら 2 回目が空になった | `build() &` 版で `std::move` している。左辺値版はコピー |
 | `std::move(builder).build()` にしてもコピーが減らない | 文字列が短くて SSO に収まっている。ムーブの効果はヒープを持つ大きさから |
 | `constexpr` を付けたらコンパイルが通らない | メンバに `std::string` か仮想関数がある。`constexpr` と同居しません |

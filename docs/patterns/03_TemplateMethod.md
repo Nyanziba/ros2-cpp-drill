@@ -131,9 +131,46 @@ private:
 
 実際に出るエラーです。
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// private_call.cpp
+class Sensor
+{
+private:
+  virtual void setup() { }       // private
+};
+
+class Imu : public Sensor
+{
+private:
+  void setup() override
+  {
+    Sensor::setup();     // private なのでエラー。派生から基底版を呼ぶ道は閉じている
+  }
+};
+
+int main()
+{
+  Imu imu;
+  (void)imu;
+}
 ```
-error: 'setup' is a private member of 'Sensor'
-note: declared private here
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic private_call.cpp -o private_call
+```
+
+</details>
+
+```
+private_call.cpp: In member function ‘virtual void Imu::setup()’:
+private_call.cpp:13:18: error: ‘virtual void Sensor::setup()’ is private within this context
+   13 |     Sensor::setup();     // private なのでエラー。派生から基底版を呼ぶ道は閉じている
+      |     ~~~~~~~~~~~~~^~
+private_call.cpp:5:16: note: declared private here
+    5 |   virtual void setup() { }       // private
+      |                ^~~~~
 ```
 
 派生クラスにできるのは「中身を埋めること」だけになります。
@@ -173,10 +210,45 @@ private:
 
 `override` を書くと、その場でエラーになります。
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// override_const.cpp
+class Sensor
+{
+private:
+  virtual bool check(double value) const { return value == value; }
+};
+
+class Imu : public Sensor
+{
+private:
+  bool check(double value) override { return value > 0.0; }   // const を落とした。override を付けた
+};
+
+int main()
+{
+  Imu imu;
+  (void)imu;
+}
 ```
-error: non-virtual member function marked 'override' hides virtual member function
-note: hidden overloaded virtual function 'Sensor::check' declared here:
-      different qualifiers ('const' vs unqualified)
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic override_const.cpp -o override_const
+```
+
+</details>
+
+```
+override_const.cpp:11:8: error: ‘bool Imu::check(double)’ marked ‘override’, but does not override
+   11 |   bool check(double value) override { return value > 0.0; }   // const を落とした。override を付けた
+      |        ^~~~~
+override_const.cpp:5:16: warning: ‘virtual bool Sensor::check(double) const’ was hidden [-Woverloaded-virtual=]
+    5 |   virtual bool check(double value) const { return value == value; }
+      |                ^~~~~
+override_const.cpp:11:8: note:   by ‘bool Imu::check(double)’
+   11 |   bool check(double value) override { return value > 0.0; }   // const を落とした。override を付けた
+      |        ^~~~~
 ```
 
 `override` は「基底の仮想関数を差し替えているつもりだ」という宣言で、
@@ -193,8 +265,39 @@ public:
 };
 ```
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// override_boot.cpp
+class Sensor
+{
+public:
+  void boot() { }     // 非仮想の骨格
+};
+
+class Imu : public Sensor
+{
+public:
+  void boot() override { }     // Sensor::boot() は非仮想
+};
+
+int main()
+{
+  Imu imu;
+  imu.boot();
+}
 ```
-error: only virtual member functions can be marked 'override'
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic override_boot.cpp -o override_boot
+```
+
+</details>
+
+```
+override_boot.cpp:11:8: error: ‘void Imu::boot()’ marked ‘override’, but does not override
+   11 |   void boot() override { }     // Sensor::boot() は非仮想
+      |        ^~~~
 ```
 
 **これは良い間違いです。** 「骨格を差し替えようとしている」と気づけます。
@@ -211,9 +314,42 @@ private:
 };
 ```
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// final_setup.cpp
+class Sensor
+{
+private:
+  virtual void setup() final { }    // ここから先は差し替え禁止
+};
+
+class Imu : public Sensor
+{
+private:
+  void setup() override { }         // final を差し替えようとした
+};
+
+int main()
+{
+  Imu imu;
+  (void)imu;
+}
 ```
-error: declaration of 'setup' overrides a 'final' function
-note: overridden virtual function is here
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic final_setup.cpp -o final_setup
+```
+
+</details>
+
+```
+final_setup.cpp:11:8: error: virtual function ‘virtual void Imu::setup()’ overriding final function
+   11 |   void setup() override { }         // final を差し替えようとした
+      |        ^~~~~
+final_setup.cpp:5:16: note: overridden function is ‘virtual void Sensor::setup()’
+    5 |   virtual void setup() final { }    // ここから先は差し替え禁止
+      |                ^~~~~
 ```
 
 Java の `final` メソッドと同じ効果ですが、C++ では **`virtual` の連鎖を途中で切る**ために使います。
@@ -262,18 +398,40 @@ struct D : B { void setup() override { std::printf("D\n"); } };
 int main() { D d; (void)d; }
 ```
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// pure_virtual.cpp
+#include <cstdio>
+
+struct B { B() { setup(); } virtual ~B() = default; virtual void setup() = 0; };
+struct D : B { void setup() override { std::printf("D\n"); } };
+int main() { D d; (void)d; }
 ```
-warning: call to pure virtual member function 'setup' has undefined behavior;
-         overrides of 'setup' in subclasses are not available in the constructor of 'B'
-         [-Wcall-to-pure-virtual-from-ctor-dtor]
+
+```bash
+clang++ -std=c++17 -Wall -Wextra -Wpedantic pure_virtual.cpp -o pure_virtual && ./pure_virtual
+```
+
+</details>
+
+```
+pure_virtual.cpp:4:18: warning: call to pure virtual member function 'setup' has undefined behavior; overrides of 'setup' in subclasses are not available in the constructor of 'B' [-Wcall-to-pure-virtual-from-ctor-dtor]
+    4 | struct B { B() { setup(); } virtual ~B() = default; virtual void setup() = 0; };
+      |                  ^
+pure_virtual.cpp:4:53: note: 'setup' declared here
+    4 | struct B { B() { setup(); } virtual ~B() = default; virtual void setup() = 0; };
+      |                                                     ^
+1 warning generated.
 ```
 
 ```
 libc++abi: Pure virtual function called!
 ```
 
-（Apple clang 17 / libc++ での実行結果。gcc / libstdc++ では
-`pure virtual method called` というメッセージになります）
+（Apple clang 21 / libc++ での実行結果。同じプログラムを Linux の g++ 13.3 / libstdc++ でビルドすると、
+警告は `pure virtual ‘virtual void B::setup()’ called from constructor` になり、
+`undefined reference to 'B::setup()'` でリンクに失敗して実行ファイルができません）
 
 **この場合は警告が出ます**が、3.4 冒頭のように基底に実装がある場合は
 警告も出ずに静かに基底が呼ばれます。そちらのほうが厄介です。
@@ -360,6 +518,57 @@ int main()
 g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 ```
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// try_boot.cpp
+#include <iostream>
+
+class Sensor
+{
+public:
+  Sensor()
+  {
+    std::cout << "Sensor() から setup() を呼ぶ\n";
+    setup();                       // 危険。派生はまだ存在していない
+  }
+  virtual ~Sensor() = default;
+
+  // 骨格。virtual を付けない = 差し替えさせない
+  void boot()
+  {
+    std::cout << "boot() から setup() を呼ぶ\n";
+    setup();
+  }
+
+private:
+  // private なのに派生クラスはオーバーライドできる
+  virtual void setup() { std::cout << "  Sensor::setup\n"; }
+};
+
+class Imu : public Sensor
+{
+public:
+  void boot() override { }      // 非仮想の骨格を差し替えようとした
+
+private:
+  void setup() override { std::cout << "  Imu::setup\n"; }
+};
+
+int main()
+{
+  Imu imu;
+  imu.boot();
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic try_boot.cpp -o try_boot
+```
+
+</details>
+
 <details>
 <summary>予想: <code>setup()</code> は 2 回呼ばれる。2 回とも <code>Imu::setup</code> か</summary>
 
@@ -383,7 +592,9 @@ boot() から setup() を呼ぶ
 `Imu` に `void boot() override { }` を足してみてください。
 
 ```
-error: only virtual member functions can be marked 'override'
+try_boot.cpp:29:8: error: ‘void Imu::boot()’ marked ‘override’, but does not override
+   29 |   void boot() override { }      // 非仮想の骨格を差し替えようとした
+      |        ^~~~
 ```
 
 **骨格は守られています。**
@@ -561,9 +772,9 @@ rclcpp 周辺の NVI らしい例は `rclcpp_lifecycle::LifecycleNode` です。
 | --- | --- |
 | 派生の実装が呼ばれず、基底の実装が動く | 基底の関数に `virtual` が付いていない。C++ は書かないと仮想にならない |
 | 派生の実装が呼ばれない（`virtual` は付けた） | シグネチャがずれて別関数になっている。`override` を付ければエラーになる |
-| `error: only virtual member functions can be marked 'override'` | 非仮想の骨格を差し替えようとしている。設計を見直す |
-| `error: 'setup' is a private member of 'Sensor'` | `private virtual` を派生から**呼ぼう**としている。呼ぶ必要があるなら `protected` へ |
-| `error: declaration of 'setup' overrides a 'final' function` | 基底で `final` が付いている。差し替えは意図的に止められている |
+| `error: 'void Imu::boot()' marked 'override', but does not override` | 非仮想の骨格を差し替えようとしている。設計を見直す |
+| `error: 'virtual void Sensor::setup()' is private within this context` | `private virtual` を派生から**呼ぼう**としている。呼ぶ必要があるなら `protected` へ |
+| `error: virtual function 'virtual void Imu::setup()' overriding final function` | 基底で `final` が付いている。差し替えは意図的に止められている |
 | コンストラクタの中でだけ挙動が違う | 3.4。コンストラクタ／デストラクタ内の仮想呼び出しは基底の実装が動く |
 | 実行時に `pure virtual method called` で落ちる | コンストラクタ／デストラクタから**純粋**仮想関数を呼んでいる |
 | 基底ポインタで破棄したらリークした | `virtual ~SensorReader()` が無い |

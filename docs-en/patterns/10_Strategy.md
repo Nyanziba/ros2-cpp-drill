@@ -255,10 +255,43 @@ You cannot put them in the same variable.
 
 ### Is the cost really zero?
 
-This is the code that was actually produced with `-O2` (arm64). The virtual function version:
+This is the code that was actually produced with `-O2` (Apple clang 21 / arm64). The program and the command are as follows.
+
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// asm.cpp
+class Filter
+{
+public:
+  virtual ~Filter() = default;
+  virtual double apply(double raw) const = 0;
+};
+
+class ClampPolicy
+{
+public:
+  explicit ClampPolicy(double m) : m_(m) {}
+  double apply(double raw) const { return raw > m_ ? m_ : raw; }
+private:
+  double m_;
+};
+
+double run_virtual(const Filter & filter, double raw) { return filter.apply(raw); }
+
+double run_policy(const ClampPolicy & policy, double raw) { return policy.apply(raw); }
+```
+
+```bash
+clang++ -std=c++17 -O2 -S asm.cpp -o - | grep -E '^_|^[[:space:]]+(ldr|fcmp|fcsel|br|ret)'
+```
+
+</details>
+
+Of the command output, only the instructions of the function bodies are extracted (the explanations after `;` were added). The virtual function version:
 
 ```
-__Z11run_virtualRK6Filterd:
+__Z11run_virtualRK6Filterd:             ; @_Z11run_virtualRK6Filterd
 	ldr	x8, [x0]        ; read the vptr
 	ldr	x1, [x8, #16]   ; read the address of apply from the vtable
 	br	x1              ; indirect jump
@@ -267,10 +300,10 @@ __Z11run_virtualRK6Filterd:
 The policy version:
 
 ```
-__Z10run_policyRK11ClampPolicyd:
+__Z10run_policyRK11ClampPolicyd:        ; @_Z10run_policyRK11ClampPolicyd
 	ldr	d1, [x0]        ; read the member m_
-	fcmp	d1, d0
-	fcsel	d0, d1, d0, mi  ; just compare and select. The call has disappeared
+	fcmp	d0, d1
+	fcsel	d0, d1, d0, gt  ; just compare and select. The call has disappeared
 	ret
 ```
 
@@ -323,10 +356,31 @@ std::printf("%.1f\n", fp(3.0));      // 6.0
 So if you only want to "write it as a lambda", you do not need `std::function`.
 **If you do not use captures, you can receive it with a function pointer.**
 
-If it captures, it cannot be converted. The actual error looks like this.
+If it captures, it cannot be converted. The actual error looks like this (measured with Apple clang 21 on macOS).
+
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// err.cpp
+int main()
+{
+  double scale = 2.0;
+  double (*fp)(double) = [scale](double raw) { return raw * scale; };
+  return fp(3.0) > 0.0 ? 0 : 1;
+}
+```
+
+```bash
+clang++ -std=c++17 -Wall -Wextra -Wpedantic err.cpp -o err
+```
+
+</details>
 
 ```
-error: no viable conversion from '(lambda at err.cpp:4:26)' to 'double (*)(double)'
+err.cpp:4:12: error: no viable conversion from '(lambda at err.cpp:4:26)' to 'double (*)(double)'
+    4 |   double (*fp)(double) = [scale](double raw) { return raw * scale; };
+      |            ^             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
 ```
 
 There are 2 weak points. It **cannot hold state** (it cannot capture), and

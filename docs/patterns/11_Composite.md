@@ -285,9 +285,46 @@ struct N { std::unique_ptr<N> next; };
 // 20 万段つないでから head.reset();
 ```
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// deep_list.cpp
+#include <cstdio>
+#include <memory>
+
+struct N { std::unique_ptr<N> next; };
+// 20 万段つないでから head.reset();
+
+int main()
+{
+  constexpr int depth = 200000;
+  auto head = std::make_unique<N>();
+  N * tail = head.get();
+  for (int i = 1; i < depth; ++i) {
+    tail->next = std::make_unique<N>();
+    tail = tail->next.get();
+  }
+  std::printf("built\n");
+  std::fflush(stdout);
+
+  head.reset();
+  std::printf("freed\n");
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic deep_list.cpp -o deep_list && ./deep_list; echo "exit code $?"
+```
+
+</details>
+
+macOS の zsh で実測しました（`zsh: segmentation fault` の行はシェルが出すメッセージです）。
+
 ```
 built
-（ここで SIGSEGV。exit code 139）
+zsh: segmentation fault  ./deep_list
+exit code 139
 ```
 
 **構築は成功し、解放でスタックオーバーフローしました。** `freed` は出ていません。

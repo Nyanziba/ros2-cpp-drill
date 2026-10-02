@@ -110,8 +110,58 @@ So **the message "please hand over the ownership" is written in the type of the 
 
 If you write `inner_(inner)` in the initializer list, it is a compile error.
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// copy_inner.cpp
+#include <memory>
+#include <string>
+#include <utility>
+
+class LogSink
+{
+public:
+  virtual ~LogSink() = default;
+  virtual std::string format(const std::string & message) const = 0;
+};
+
+class SinkDecorator : public LogSink
+{
+public:
+  explicit SinkDecorator(std::unique_ptr<LogSink> inner)
+  : inner_(inner)                                          // forgot std::move
+  {
+  }
+
+protected:
+  const LogSink & inner() const { return *inner_; }
+
+private:
+  std::unique_ptr<LogSink> inner_;
+};
+
+int main()
+{
+  return 0;
+}
 ```
-error: call to implicitly-deleted copy constructor of 'std::unique_ptr<LogSink>'
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic copy_inner.cpp -o copy_inner
+```
+
+</details>
+
+This is the output measured with Apple clang 21 on macOS (the SDK path is abbreviated to `/.../`).
+
+```
+copy_inner.cpp:17:5: error: call to implicitly-deleted copy constructor of 'std::unique_ptr<LogSink>'
+   17 |   : inner_(inner)                                          // forgot std::move
+      |     ^      ~~~~~
+/.../c++/v1/__memory/unique_ptr.h:209:55: note: copy constructor is implicitly deleted because 'unique_ptr<LogSink>' has a user-declared move constructor
+  209 |   _LIBCPP_HIDE_FROM_ABI _LIBCPP_CONSTEXPR_SINCE_CXX23 unique_ptr(unique_ptr&& __u) _NOEXCEPT
+      |                                                       ^
+1 error generated.
 ```
 
 Receiving it as `const std::unique_ptr<LogSink> &` is **wrong.**
@@ -185,16 +235,83 @@ public:
 };
 ```
 
-Apple clang warns at compile time (`-Wall -Wextra -Wpedantic`).
+Apple clang 21 warns at compile time (`-Wall -Wextra -Wpedantic`).
+
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// novirt.cpp
+#include <iostream>
+#include <memory>
+#include <string>
+#include <utility>
+
+class Sink
+{
+public:
+  ~Sink() {}                                   // forgot to write virtual
+  virtual std::string format(const std::string & m) const = 0;
+};
+
+class Plain : public Sink
+{
+public:
+  ~Plain() { std::cout << "~Plain\n"; }
+  std::string format(const std::string & m) const override { return m; }
+};
+
+class Border : public Sink
+{
+public:
+  Border(std::unique_ptr<Sink> inner, std::string tag)
+  : inner_(std::move(inner)), tag_(std::move(tag))
+  {
+  }
+  ~Border() { std::cout << "~Border(" << tag_ << ")\n"; }
+
+  std::string format(const std::string & m) const override
+  {
+    return tag_ + " " + inner_->format(m);
+  }
+
+private:
+  std::unique_ptr<Sink> inner_;
+  std::string tag_;
+};
+
+int main()
+{
+  std::unique_ptr<Sink> sink = std::make_unique<Border>(
+    std::make_unique<Border>(std::make_unique<Plain>(), "[INFO]"), "12:00:00");
+  std::cout << sink->format("moving") << "\n";
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic novirt.cpp -o novirt 2>&1 | grep 'warning:'
+./novirt; echo "exit code $?"
+```
+
+</details>
+
+Extracting only the warning lines gives this (the SDK path is abbreviated to `/.../`).
 
 ```
-warning: delete called on 'Sink' that is abstract but has non-virtual destructor
-         [-Wdelete-abstract-non-virtual-dtor]
-warning: delete called on non-final 'Border' that has virtual functions but
-         non-virtual destructor [-Wdelete-non-abstract-non-virtual-dtor]
+/.../c++/v1/__memory/unique_ptr.h:75:5: warning: delete called on 'Sink' that is abstract but has non-virtual destructor [-Wdelete-abstract-non-virtual-dtor]
+/.../c++/v1/__memory/unique_ptr.h:75:5: warning: delete called on non-final 'Plain' that has virtual functions but non-virtual destructor [-Wdelete-non-abstract-non-virtual-dtor]
+/.../c++/v1/__memory/unique_ptr.h:75:5: warning: delete called on non-final 'Border' that has virtual functions but non-virtual destructor [-Wdelete-non-abstract-non-virtual-dtor]
 ```
 
-And when I ran it on my machine, it crashed with exit code 133 without even printing the output of `format()`.
+And when I ran it on my machine (zsh on macOS), it printed the result of `format()` on one line and then crashed with exit code 133 (`SIGTRAP`).
+
+```
+12:00:00 [INFO] moving
+zsh: trace trap  ./novirt
+exit code 133
+```
+
+If you send the output to a pipe or a file, it crashes before the buffer is flushed, so even the output of `format()` does not appear.
 **It is undefined behavior, so what happens depends on the environment.**
 If you are lucky it crashes, and if you are unlucky it silently keeps leaking only the inside.
 
@@ -205,7 +322,7 @@ The deeper the nesting, the more is leaked all at once.
 
 The nesting is the main body of Decorator, so **the damage of forgetting the virtual destructor is the biggest in this pattern.**
 
-Let us also look at the order of destruction when it is written correctly (this is the measurement of 12.6).
+Let us also look at the order of destruction when it is written correctly (this is the measurement of 12.7; it is the second block of its output).
 
 ```
 ~Border([INFO])

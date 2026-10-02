@@ -42,8 +42,38 @@ But a function pointer has no place to store "whose object".
 void (*f)() = &MinimalPublisher::timer_callback;   // error
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// member_pointer.cpp
+
+class MinimalPublisher
+{
+public:
+  void timer_callback() {}
+};
+
+int main()
+{
+  void (*f)() = &MinimalPublisher::timer_callback;   // error
+  return 0;
+}
 ```
-error: cannot convert ‘void (MinimalPublisher::*)()’ to ‘void (*)()’
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic member_pointer.cpp -o member_pointer
+```
+
+</details>
+
+```
+member_pointer.cpp: In function ‘int main()’:
+member_pointer.cpp:11:17: error: cannot convert ‘void (MinimalPublisher::*)()’ to ‘void (*)()’ in initialization
+   11 |   void (*f)() = &MinimalPublisher::timer_callback;   // error
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+member_pointer.cpp:11:10: warning: unused variable ‘f’ [-Wunused-variable]
+   11 |   void (*f)() = &MinimalPublisher::timer_callback;   // error
+      |          ^
 ```
 
 The types are different. `void (MinimalPublisher::*)()` is a different type called a **pointer to member function**.
@@ -124,8 +154,52 @@ std::bind(&MinimalSubscriber::topic_callback, this, _1)
 std::bind(MinimalSubscriber::topic_callback, this, _1)   // forgot the &
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// bind_noamp.cpp
+#include <functional>
+#include <string>
+
+using std::placeholders::_1;
+
+void subscribe(std::function<void(const std::string &)> callback) { (void)callback; }
+
+class MinimalSubscriber
+{
+public:
+  void topic_callback(const std::string & msg) { (void)msg; }
+
+  void start()
+  {
+    subscribe(
+      std::bind(MinimalSubscriber::topic_callback, this, _1)   // forgot the &
+    );
+  }
+};
+
+int main()
+{
+  MinimalSubscriber subscriber;
+  subscriber.start();
+  return 0;
+}
 ```
-error: invalid use of non-static member function
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic bind_noamp.cpp -o bind_noamp
+```
+
+</details>
+
+```
+bind_noamp.cpp: In member function ‘void MinimalSubscriber::start()’:
+bind_noamp.cpp:17:36: error: invalid use of non-static member function ‘void MinimalSubscriber::topic_callback(const std::string&)’
+   17 |       std::bind(MinimalSubscriber::topic_callback, this, _1)   // forgot the &
+      |                 ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+bind_noamp.cpp:12:8: note: declared here
+   12 |   void topic_callback(const std::string & msg) { (void)msg; }
+      |        ^~~~~~~~~~~~~~
 ```
 
 **② `this`** — "which object's member function".
@@ -502,7 +576,7 @@ g++ -std=c++17 -Wall -Wextra lambda.cpp -o lambda && ./lambda
 
 [▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/Y1YvE31T1)
 
-Next, **cause the lifetime accident.** Replace the `②` part of `main` with the following.
+Next, **cause the lifetime accident.** Replace the `②` part of `main` with the following (`c` no longer exists, so also delete the later `c.show();` line).
 
 ```cpp
   // ② capturing this (dangerous version)
@@ -541,8 +615,8 @@ $ g++ -std=c++17 -c lambda.cpp -o /dev/null 2>&1 | wc -l
 22
 ```
 
-It printed **22 lines**. Most of them are template expansions of `std::_Bind<...>`,
-and nowhere does it say "there is one `_2` too many".
+It printed **22 lines**. Most of them are template expansions of `std::_Bind_check_arity<...>` and `std::_Bind_helper<...>`,
+and the only line that tells you the number of arguments is wrong is `static assertion failed: Wrong number of arguments for pointer-to-member`.
 If you get the number of arguments wrong in a lambda, you get just 1 or 2 lines such as `too few arguments to function`.
 This is the practical reason we recommend "a lambda for new code".
 

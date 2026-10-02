@@ -306,8 +306,35 @@ so it requires the content to be copyable too. A lambda that captures a `unique_
 std::function<void()> action = [p = std::make_unique<int>(3)]() { (void)p; };
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// move_only_capture.cpp
+#include <functional>
+#include <memory>
+
+int main()
+{
+  std::function<void()> action = [p = std::make_unique<int>(3)]() { (void)p; };
+  return 0;
+}
 ```
-error: call to implicitly-deleted copy constructor of '(lambda at ...)'
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic move_only_capture.cpp -o move_only_capture
+```
+
+</details>
+
+```
+In file included from /usr/include/c++/13/functional:59,
+                 from move_only_capture.cpp:2:
+/usr/include/c++/13/bits/std_function.h: In instantiation of ‘std::function<_Res(_ArgTypes ...)>::function(_Functor&&) [with _Functor = main()::<lambda()>; _Constraints = void; _Res = void; _ArgTypes = {}]’:
+move_only_capture.cpp:7:78:   required from here
+/usr/include/c++/13/bits/std_function.h:439:69: error: static assertion failed: std::function target must be copy-constructible
+  439 |           static_assert(is_copy_constructible<__decay_t<_Functor>>::value,
+      |                                                                     ^~~~~
+/usr/include/c++/13/bits/std_function.h:439:69: note: ‘std::integral_constant<bool, false>::value’ evaluates to false
 ```
 
 `std::move_only_function` in C++23 solves this, but **you cannot use it in C++17.**
