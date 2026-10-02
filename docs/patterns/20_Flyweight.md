@@ -738,4 +738,4 @@ ROS 2 では Flyweight を自分で書く場面はほとんどありません。
 
 ---
 
-前: [19. State](19_State.md) ／ 次: 21. Proxy（準備中）
+前: [19. State](19_State.md) ／ 次: [21. Proxy](21_Proxy.md)

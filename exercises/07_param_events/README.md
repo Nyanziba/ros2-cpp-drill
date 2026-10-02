@@ -19,7 +19,7 @@
 クラス宣言（`include/drill/node_with_parameters.hpp`）は与えてあります。メンバ変数
 `param_subscriber_` / `cb_handle_` に何を入れるかと、コールバックの中身を考えてください。
 
-## 課題05との使い分け（ポーリング vs イベント通知）
+## 課題06との使い分け（ポーリング vs イベント通知）
 
 課題06（`Using parameters in a class`）では、タイマのコールバックが毎回
 `get_parameter()` を呼んで値を読み直す「ポーリング」方式でした。パラメータが
@@ -103,5 +103,5 @@ ros2 topic echo /parameter_events
 ## 参考
 
 - 公式: [Monitoring for parameter changes (C++)](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Monitoring-For-Parameter-Changes-CPP.html)
-- 課題06: [../05_parameters/README.md](../05_parameters/README.md)（ポーリング方式との比較）
+- 課題06: [../06_parameters/README.md](../05_parameters/README.md)（ポーリング方式との比較）
 - 仕組みの解説: [docs/rclcpp-の設計思想.md](../../docs/rclcpp-の設計思想.md)

@@ -495,4 +495,4 @@ rclcpp に GoF 版の Decorator クラスは出てきませんが、
 
 ---
 
-前: [11. Composite](11_Composite.md) ／ 次: 13. Visitor（準備中）
+前: [11. Composite](11_Composite.md) ／ 次: [13. Visitor](13_Visitor.md)

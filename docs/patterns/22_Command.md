@@ -632,4 +632,4 @@ ROS 2 で自作の Command キューを書きたくなったら、まず
 
 ---
 
-前: [21. Proxy](21_Proxy.md) ／ 次: 23. Interpreter（準備中）
+前: [21. Proxy](21_Proxy.md) ／ 次: [23. Interpreter](23_Interpreter.md)

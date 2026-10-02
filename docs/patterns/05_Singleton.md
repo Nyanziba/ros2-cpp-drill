@@ -746,4 +746,4 @@ auto node = std::make_shared<MyNode>();
 
 ---
 
-前: [4. Factory Method](04_FactoryMethod.md) ／ 次: 6. Prototype（準備中）
+前: [4. Factory Method](04_FactoryMethod.md) ／ 次: [6. Prototype](06_Prototype.md)

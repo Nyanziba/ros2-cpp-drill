@@ -502,4 +502,4 @@ Memento は**状態を丸ごとコピー**します。状態が 10 KB あって 
 
 ---
 
-前: [17. Observer](17_Observer.md) ／ 次: 19. State（準備中）
+前: [17. Observer](17_Observer.md) ／ 次: [19. State](19_State.md)

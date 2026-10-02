@@ -655,4 +655,4 @@ auto qos = rclcpp::QoS(rclcpp::KeepLast(10)).reliable().transient_local();
 
 ---
 
-前: [6. Prototype](06_Prototype.md) ／ 次: 8. Abstract Factory（準備中）
+前: [6. Prototype](06_Prototype.md) ／ 次: [8. Abstract Factory](08_AbstractFactory.md)

@@ -574,4 +574,4 @@ variant 版が GoF 版と 1 文字も違わない文字列を返すこと、
 
 ---
 
-前: [12. Decorator](12_Decorator.md) ／ 次: 14. Chain of Responsibility（準備中）
+前: [12. Decorator](12_Decorator.md) ／ 次: [14. Chain of Responsibility](14_ChainOfResponsibility.md)

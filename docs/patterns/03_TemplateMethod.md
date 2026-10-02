@@ -607,4 +607,4 @@ rclcpp 周辺の NVI らしい例は `rclcpp_lifecycle::LifecycleNode` です。
 
 ---
 
-前: [2. Adapter](02_Adapter.md) ／ 次: 4. Factory Method（準備中）
+前: [2. Adapter](02_Adapter.md) ／ 次: [4. Factory Method](04_FactoryMethod.md)

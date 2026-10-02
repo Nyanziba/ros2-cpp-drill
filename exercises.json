@@ -2026,7 +2026,7 @@
         }
       ],
       "hints": [
-        "課題05では「毎回 get_parameter する」方式でした。こちらは逆に、",
+        "課題06では「毎回 get_parameter する」方式でした。こちらは逆に、",
         "変更されたときだけ通知を受け取る方式です。",
         "",
         "  param_subscriber_ = std::make_shared<rclcpp::ParameterEventHandler>(this);",

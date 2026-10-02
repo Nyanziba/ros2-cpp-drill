@@ -910,4 +910,4 @@ public:
 
 ---
 
-前: [14. Chain of Responsibility](14_ChainOfResponsibility.md) ／ 次: 16. Mediator（準備中）
+前: [14. Chain of Responsibility](14_ChainOfResponsibility.md) ／ 次: [16. Mediator](16_Mediator.md)

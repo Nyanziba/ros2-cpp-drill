@@ -657,4 +657,4 @@ Faulted --Reset--> Stopped （手動リセットでしか抜けられない）
 
 ---
 
-前: [18. Memento](18_Memento.md) ／ 次: 20. Flyweight（準備中）
+前: [18. Memento](18_Memento.md) ／ 次: [20. Flyweight](20_Flyweight.md)

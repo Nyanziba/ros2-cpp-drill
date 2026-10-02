@@ -264,7 +264,7 @@ PulseTrain b = a;      // pattern_ の「値」がコピーされる = 同じ配
                        // 両方のデストラクタが delete[] する = 二重解放
 ```
 
-手元で走らせると、**警告ゼロでコンパイルが通り、実行時に SIGABRT で落ちます**（終了コード 133）。
+手元で走らせると、**警告ゼロでコンパイルが通り、実行時に落ちます**（Linux の g++ では SIGABRT で終了コード 134、macOS の Apple clang では SIGTRAP で 133）。
 Java では起こりえない壊れ方です。
 
 これを**言語に止めさせる**のが `std::unique_ptr` メンバです。
@@ -546,7 +546,7 @@ const 参照で渡すと middleware 側でコピーされます。**複製と共
 | --- | --- |
 | `error: virtual function 'clone' has a different return type` | `unique_ptr` で共変戻り値型を使おうとしている。6.3 の NVI 版にする |
 | 複製したのに元を変えると複製も変わる | 浅いコピー。ポインタメンバの中身を写していない |
-| 実行時に SIGABRT（終了コード 133） | 生ポインタメンバの二重解放。`unique_ptr` にする |
+| 実行時に落ちる（SIGABRT で終了コード 134、macOS の clang では SIGTRAP で 133） | 生ポインタメンバの二重解放。`unique_ptr` にする |
 | `clone()` したのに `name()` が基底のものを返す | `do_clone()` が基底を `new` している。`new Derived(*this)` にする |
 | 値で受けたら派生の情報が消えた | スライシング。基底を抽象クラスにするかコピーを `protected` に |
 | コピーコンストラクタを書いたらムーブが効かなくなった | Rule of Five。ムーブも `= default` で明示する |
@@ -586,4 +586,4 @@ const 参照で渡すと middleware 側でコピーされます。**複製と共
 
 ---
 
-前: [5. Singleton](05_Singleton.md) ／ 次: 7. Builder（準備中）
+前: [5. Singleton](05_Singleton.md) ／ 次: [7. Builder](07_Builder.md)
