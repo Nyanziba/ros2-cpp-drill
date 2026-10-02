@@ -331,6 +331,7 @@ ROS 2編は第3部まで、つまり基礎・パッケージ開発・TF2・URDF�
 ## 貢献
 
 誤りの報告や修正を歓迎します。Issue や PR を出す前に [CONTRIBUTING.md](CONTRIBUTING.md) を読んでください。
+参加するすべての人は [行動規範](CODE_OF_CONDUCT.md) に従ってください。
 
 ## ライセンス
 

@@ -6,6 +6,7 @@ Contributions are welcome. Fixing one typo or adding a new chapter and exercise 
 If fixing is hard, **just reporting an issue is also a great contribution.**
 
 Your contribution will be released under the same [MIT License](LICENSE) as this repository.
+Everyone who takes part in this project must follow the [Code of Conduct](CODE_OF_CONDUCT.en.md).
 
 ## Contents
 

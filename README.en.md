@@ -335,6 +335,7 @@ That depends heavily on each individual robot, so it is outside this material.
 ## Contributing
 
 Reports and fixes are welcome. Please read [CONTRIBUTING.en.md](CONTRIBUTING.en.md) before you open an issue or a pull request.
+Everyone who takes part must follow the [Code of Conduct](CODE_OF_CONDUCT.en.md).
 
 ## License
 
