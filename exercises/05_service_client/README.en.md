@@ -72,7 +72,7 @@ If a log such as `Sum: 42` appears in terminal 2, it works.
 ./drill run 05
 ```
 
-The tests do not depend on the `server` of exercise 03. The test itself prepares the server role (a probe node) with
+The tests do not depend on the `server` of exercise 04. The test itself prepares the server role (a probe node) with
 `create_service<AddTwoInts>("add_two_ints", ...)`.
 
 | Test | What it checks |

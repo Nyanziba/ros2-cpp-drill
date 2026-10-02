@@ -19,7 +19,7 @@ Fill in the TODOs in `src/node_with_parameters.cpp`. The specification is the sa
 The class declaration (`include/drill/node_with_parameters.hpp`) is provided. Think about what goes into the member variables
 `param_subscriber_` / `cb_handle_`, and the body of the callback.
 
-## When to use this versus exercise 05 (polling vs event notification)
+## When to use this versus exercise 06 (polling vs event notification)
 
 In exercise 06 (`Using parameters in a class`), the timer callback calls
 `get_parameter()` every time and re-reads the value. This is the "polling" style. It reads at a fixed period whether or not the parameter

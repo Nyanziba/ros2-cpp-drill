@@ -2055,7 +2055,7 @@
       "title_en": "Watch for parameter changes",
       "chapter_en": "ROS 2 ch.15",
       "hints_en": [
-        "In exercise 05, you used the \"call get_parameter every time\" style. This one is the opposite:",
+        "In exercise 06, you used the \"call get_parameter every time\" style. This one is the opposite:",
         "you get a notification only when the value changes.",
         "",
         "  param_subscriber_ = std::make_shared<rclcpp::ParameterEventHandler>(this);",
