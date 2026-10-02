@@ -3,14 +3,14 @@
 
 #include "drill/limiter.hpp"
 
-TEST(StlTest, clampが値を制限する)
+TEST(StlTest, ClampLimitsValue)
 {
   EXPECT_DOUBLE_EQ(clamp_velocity(5.0, 0.0, 10.0), 5.0);
   EXPECT_DOUBLE_EQ(clamp_velocity(-5.0, 0.0, 10.0), 0.0);
   EXPECT_DOUBLE_EQ(clamp_velocity(15.0, 0.0, 10.0), 10.0);
 }
 
-TEST(StlTest, optionalで値を見つける)
+TEST(StlTest, OptionalFindsValue)
 {
   std::map<std::string, int> users = {
     {"Alice", 1},
