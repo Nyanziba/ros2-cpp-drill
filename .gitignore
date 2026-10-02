@@ -2,6 +2,7 @@ build/
 install/
 log/
 site/
+.venv-docs/
 __pycache__/
 .pytest_cache/
 *.pyc

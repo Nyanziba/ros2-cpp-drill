@@ -60,6 +60,17 @@ plugins:
   - search:
       lang: ja
 
+# 言語切替（右上の地球アイコン）。英語版は mkdocs.en.yml で site/en/ に建てる。
+# リンクはページからの相対で解決されるので、site/ から見た各言語のトップ。
+extra:
+  alternate:
+    - name: 日本語
+      link: index.html
+      lang: ja
+    - name: English
+      link: en/index.html
+      lang: en
+
 markdown_extensions:
   - meta
   - tables

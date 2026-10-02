@@ -10,13 +10,17 @@ on:
     branches: [main]
     paths:
       - 'docs/**'
+      - 'docs-en/**'
       - 'mkdocs.yml'
+      - 'mkdocs.en.yml'
       - 'docs-requirements.txt'
       - '.github/workflows/docs.yml'
   pull_request:
     paths:
       - 'docs/**'
+      - 'docs-en/**'
       - 'mkdocs.yml'
+      - 'mkdocs.en.yml'
       - 'docs-requirements.txt'
   workflow_dispatch:
 
@@ -48,11 +52,16 @@ jobs:
       - name: ビルド（警告をエラーにする）
         run: mkdocs build --strict
 
+      # 英語版は site/en/ に出る。日本語版のビルドが site/ を掃除するので必ず後に。
+      - name: 英語版をビルド（警告をエラーにする）
+        run: mkdocs build --strict -f mkdocs.en.yml
+
       - name: 生成されたページ数を確認
         run: |
           count=$(find site -name '*.html' | wc -l)
           echo "生成された HTML: ${count} ページ"
           test "$count" -ge 50
+          test -f site/en/index.html
 
       # Pages 用の tar と、普通にダウンロードできる zip の両方を置く。
       # 前者は deploy ジョブが使い、後者はオフラインで配りたいとき用。

@@ -1,0 +1,184 @@
+# 英語版サイト。日本語版（mkdocs.yml）の設定を引き継ぎ、違うところだけ上書きする。
+#
+#   mkdocs build                      # 日本語版 → site/
+#   mkdocs build -f mkdocs.en.yml     # 英語版   → site/en/
+#
+# **必ず日本語版を先に建てる。** 日本語版のビルドは site/ を丸ごと掃除するので、
+# 英語版を先に建てると site/en/ が消える。
+#
+# リストの設定（nav / plugins / palette / markdown_extensions）は引き継がれず
+# 丸ごと置き換わるので、変えたいものは全部書き直している。
+INHERIT: mkdocs.yml
+
+site_name: ROS 2 Drill — C++ and ROS 2 course
+site_description: >-
+  From getting stuck on const and static to reading rclcpp code.
+  A ROS 2 / C++ course where every chapter has a matching exercise.
+site_url: https://nyanziba.github.io/ros2-cpp-drill/en/
+
+docs_dir: docs-en
+site_dir: site/en
+
+theme:
+  name: material
+  language: en
+  font: false
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top
+    - navigation.indexes
+    - navigation.tracking
+    - toc.follow
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+plugins:
+  - search:
+      lang: en
+
+markdown_extensions:
+  - meta
+  - tables
+  - attr_list
+  - md_in_html
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.highlight:
+      anchor_linenums: true
+      pygments_lang_class: true
+  - toc:
+      permalink: true
+      permalink_title: Link to this heading
+      slugify: !!python/object/apply:pymdownx.slugs.slugify {kwds: {case: lower}}
+
+# 言語切替。リンクはページからの相対で解決されるので、site/en/ から見た日本語版のトップ。
+extra:
+  alternate:
+    - name: English
+      link: index.html
+      lang: en
+    - name: 日本語
+      link: ../index.html
+      lang: ja
+
+nav:
+  - "Overview": README.md
+  - "Getting started": getting-started.md
+  - C track:
+      - "About this track": c/README.md
+      - "1. Separate compilation and header guards": c/01_separate_compilation_and_header_guards.md
+      - "2. Fixed-width integers and implicit conversions": c/02_fixed_width_integers_and_implicit_conversions.md
+      - "3. Pointers (1)": c/03_pointers_1.md
+      - "4. Pointers (2)": c/04_pointers_2.md
+      - "5. Strings": c/05_strings.md
+      - "6. Structs and alignment": c/06_structs_and_alignment.md
+      - "7. Bit operations and register access": c/07_bit_operations_and_registers.md
+      - "8. Manual memory management": c/08_manual_memory_management.md
+      - "9. Function pointers": c/09_function_pointers.md
+      - "10. volatile and interrupt safety": c/10_volatile_and_interrupt_safety.md
+      - "11. Endianness and serialization": c/11_endianness_and_serialization.md
+      - "12. The preprocessor and debugging": c/12_preprocessor_and_debugging.md
+  - C++ Basics:
+      - "About this track": cpp-basics/README.md
+      - "1. Reading declarations": cpp-basics/01_reading_declarations.md
+      - "2. Scope and lifetime": cpp-basics/02_scope_and_lifetime.md
+      - "3. References": cpp-basics/03_references.md
+      - "4. Pointers (1) (addresses and dereferencing)": cpp-basics/04_pointers_1.md
+      - "5. Pointers (2) (arrays and when to use which)": cpp-basics/05_pointers_2.md
+      - "6. const": cpp-basics/06_const.md
+      - "7. static": cpp-basics/07_static.md
+      - "8. Other qualifiers": cpp-basics/08_other_qualifiers.md
+      - "9. Value semantics": cpp-basics/09_value_semantics.md
+      - "10. Headers and project layout": cpp-basics/10_headers_and_project_layout.md
+  - C++:
+      - "About this track": cpp/README.md
+      - "1. How building and linking work": cpp/01_how_build_and_link_work.md
+      - "2. Classes and initialization": cpp/02_classes_and_initialization.md
+      - "3. Inheritance": cpp/03_inheritance.md
+      - "4. References and const": cpp/04_references_and_const.md
+      - "5. Move and ownership": cpp/05_move_and_ownership.md
+      - "6. Smart pointers": cpp/06_smart_pointers.md
+      - "7. Lambdas and std::bind": cpp/07_lambdas_and_std_bind.md
+      - "8. auto and type deduction": cpp/08_auto_and_type_deduction.md
+      - "9. Reading templates": cpp/09_reading_templates.md
+      - "10. Operator overloading": cpp/10_operator_overloading.md
+      - "11. The standard library toolbox": cpp/11_standard_library_toolbox.md
+      - "12. std::chrono and time": cpp/12_chrono_and_time.md
+      - "13. The minimum on concurrency": cpp/13_minimal_concurrency.md
+      - "14. Error handling": cpp/14_error_handling.md
+      - "15. Checklist before the drill": cpp/15_checklist.md
+  - ROS 2:
+      - "ROS 2 Lecture 01: Start here (course hub)": ros2/01_start_here_course_hub.md
+      - "ROS 2 Lecture 02: Environment setup (Ubuntu 24.04 + ROS 2 Jazzy)": ros2/02_environment_setup.md
+      - "ROS 2 Lecture 03: Getting a feel with turtlesim and rqt": ros2/03_getting_a_feel_with_turtlesim_and_rqt.md
+      - "ROS 2 Lecture 04: Nodes": ros2/04_nodes.md
+      - "ROS 2 Lecture 05: Topics": ros2/05_topics.md
+      - "ROS 2 Lecture 05b: DDS, discovery and ROS_DOMAIN_ID": ros2/05b_dds_discovery_and_ros_domain_id.md
+      - "ROS 2 Lecture 06: Services": ros2/06_services.md
+      - "ROS 2 Lecture 07: Parameters": ros2/07_parameters.md
+      - "ROS 2 Lecture 08: Actions": ros2/08_actions.md
+      - "ROS 2 Lecture 09: launch and ros2 bag": ros2/09_launch_and_ros2_bag.md
+      - "ROS 2 Lecture 10: Workspaces and colcon": ros2/10_workspaces_and_colcon.md
+      - "ROS 2 Lecture 11: Writing pub/sub in C++": ros2/11_writing_pub_sub_in_cpp.md
+      - "ROS 2 Lecture 12: Writing pub/sub in Python": ros2/12_writing_pub_sub_in_python.md
+      - "ROS 2 Lecture 13: Custom interfaces": ros2/13_custom_interfaces.md
+      - "ROS 2 Lecture 14: Implementing services": ros2/14_implementing_services.md
+      - "ROS 2 Lecture 15: Parameters and launch in practice": ros2/15_parameters_and_launch_in_practice.md
+      - "ROS 2 Lecture 16: Implementing an action server": ros2/16_implementing_an_action_server.md
+      - "ROS 2 Lecture 17: Testing and debugging": ros2/17_testing_and_debugging.md
+      - "ROS 2 Lecture 18: TF2 and coordinate frames": ros2/18_tf2_and_coordinate_frames.md
+      - "ROS 2 Lecture 19: Writing URDF": ros2/19_writing_urdf.md
+      - "ROS 2 Lecture 20: ros2_control overview": ros2/20_ros2_control_overview.md
+      - "ROS 2 Lecture 20b: Using ros2_control (a differential drive base as the example)": ros2/20b_using_ros2_control.md
+      - "ROS 2 Lecture 21: Sensor integration": ros2/21_sensor_integration.md
+      - "ROS 2 Lecture 22: How to think about localization": ros2/22_thinking_about_localization.md
+  - Design Patterns:
+      - "About this track": patterns/README.md
+      - "0. Before you use them": patterns/00_before_you_use_them.md
+      - "1. Iterator": patterns/01_Iterator.md
+      - "2. Adapter": patterns/02_Adapter.md
+      - "3. Template Method": patterns/03_TemplateMethod.md
+      - "4. Factory Method": patterns/04_FactoryMethod.md
+      - "5. Singleton": patterns/05_Singleton.md
+      - "6. Prototype": patterns/06_Prototype.md
+      - "7. Builder": patterns/07_Builder.md
+      - "8. Abstract Factory": patterns/08_AbstractFactory.md
+      - "9. Bridge": patterns/09_Bridge.md
+      - "10. Strategy": patterns/10_Strategy.md
+      - "11. Composite": patterns/11_Composite.md
+      - "12. Decorator": patterns/12_Decorator.md
+      - "13. Visitor": patterns/13_Visitor.md
+      - "14. Chain of Responsibility": patterns/14_ChainOfResponsibility.md
+      - "15. Facade": patterns/15_Facade.md
+      - "16. Mediator": patterns/16_Mediator.md
+      - "17. Observer": patterns/17_Observer.md
+      - "18. Memento": patterns/18_Memento.md
+      - "19. State": patterns/19_State.md
+      - "20. Flyweight": patterns/20_Flyweight.md
+      - "21. Proxy": patterns/21_Proxy.md
+      - "22. Command": patterns/22_Command.md
+      - "23. Interpreter": patterns/23_Interpreter.md
+  - References:
+      - "The design philosophy of rclcpp": rclcpp_design_philosophy.md
+      - "ROS 2 coding conventions and language versions (summary)": ros2_coding_conventions.md
+      - "Slides": slides.md
