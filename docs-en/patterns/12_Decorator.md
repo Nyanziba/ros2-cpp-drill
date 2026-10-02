@@ -495,4 +495,4 @@ and that **the template version returns the same output and `std::is_polymorphic
 
 ---
 
-Previous: [11. Composite](11_Composite.md) / Next: 13. Visitor (coming soon)
+Previous: [11. Composite](11_Composite.md) / Next: [13. Visitor](13_Visitor.md)

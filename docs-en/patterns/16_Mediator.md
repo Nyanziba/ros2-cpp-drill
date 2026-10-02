@@ -590,4 +590,4 @@ In addition to the mediation rules, the tests check that **removing the Mediator
 
 ---
 
-Previous: [15. Facade](15_Facade.md) / Next: 17. Observer (coming soon)
+Previous: [15. Facade](15_Facade.md) / Next: [17. Observer](17_Observer.md)

@@ -665,4 +665,4 @@ The tests check the following 4 points.
 
 ---
 
-Previous: [9. Bridge](09_Bridge.md) / Next: 11. Composite (coming soon)
+Previous: [9. Bridge](09_Bridge.md) / Next: [11. Composite](11_Composite.md)

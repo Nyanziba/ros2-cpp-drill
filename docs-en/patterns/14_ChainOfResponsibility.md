@@ -746,4 +746,4 @@ The tests check
 
 ---
 
-Previous: [13. Visitor](13_Visitor.md) / Next: 15. Facade (coming soon)
+Previous: [13. Visitor](13_Visitor.md) / Next: [15. Facade](15_Facade.md)

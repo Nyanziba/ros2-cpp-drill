@@ -33,7 +33,7 @@ int main() {
 [⚠ See this error in your browser (gcc 13.3)](https://godbolt.org/z/9Pnf7nx1z)
 
 ```
-error: 'add' was not declared in this scope
+error: ‘add’ was not declared in this scope
 ```
 
 **This is a compile error.** The compiler cannot find a declaration of `add()`.
@@ -55,7 +55,8 @@ int main() {
 [⚠ See this error in your browser (gcc 13.3)](https://godbolt.org/z/aP6GPnfs7)
 
 ```
-/usr/bin/ld: (.text+0x17): undefined reference to `add(int, int)'
+/usr/bin/ld: /tmp/ccXsvxNy.o: in function `main':
+nu.cpp:(.text+0x17): undefined reference to `add(int, int)'
 ```
 
 **This is a link error.** The compiler succeeded, but the linker cannot find the definition.
@@ -81,7 +82,7 @@ g++ -E simple.cpp | wc -l
 ```
 
 ```
-25257
+25325
 ```
 
 `#include` is **text replacement.** It pastes the contents of the header file as they are.
@@ -107,10 +108,10 @@ int main() { return 0; }
 ```
 
 ```
-no_guard.h:1:8: error: redefinition of ‘struct Point’
+no_guard.h:2:8: error: redefinition of ‘struct Point’
 ```
 
-**The error points at line 1 of `no_guard.h`**, not at the `#include` line in
+**The error points at line 2 of `no_guard.h`** (the `struct Point {` line), not at the `#include` line in
 `main.cpp`. `#include` pastes text, so from the compiler's point of view the problem is in the pasted text.
 If you read the `In file included from ...` chain from bottom to top, you can see how it got there.
 

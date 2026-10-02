@@ -126,7 +126,7 @@ gpio_state ^= (1 << LED_PIN);  // flip the LED pin (on → off, off → on)
 
 ```c
 uint8_t x = 0x01;     // 0b00000001
-uint8_t y = ~x;       // 0b11111110 = 0xFF
+uint8_t y = ~x;       // 0b11111110 = 0xFE
 ```
 
 **Be careful when you build a mask with `~(1 << 2)`.** `1` is an `int` by default, so its type may be widened in a shift operation.
@@ -265,7 +265,7 @@ gcc -std=c99 -Wall -Wextra -Wpedantic bitops_all.c -o bitops_all && ./bitops_all
 == Basic bit operations ==
 x = 0x00
 After x |= (1 << 2): x = 0x04
-After x |= (1 << 5): x = 0x20
+After x |= (1 << 5): x = 0x24
 After x &= ~(1 << 2): x = 0x20
 Bit 5 of x: 1
 
@@ -275,7 +275,6 @@ Extracted: type=1, device=5, cmd=7
 
 == Signed shift (dangerous) ==
 neg = -1, neg >> 1 = -1 (arithmetic right shift)
-shifted = -1
 255u >> 1 = 127 (logical right shift)
 
 == XOR for toggling ==

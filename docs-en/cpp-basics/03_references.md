@@ -41,7 +41,7 @@ int & r = x;    // OK
 
 Compiler message:
 ```
-error: declaration of reference variable 'r' requires an initializer
+error: ‘r’ declared as reference but not initialized
 ```
 
 ## 3.4 A reference cannot be reseated
@@ -73,7 +73,7 @@ int & ref = nullptr;  // Error
 
 Compiler message:
 ```
-error: a reference of type 'int&' cannot bind to a null pointer
+error: invalid initialization of non-const reference of type ‘int&’ from an rvalue of type ‘std::nullptr_t’
 ```
 
 If you want to express the state "nothing exists", use a pointer (chapter 4).
@@ -191,7 +191,7 @@ std::cout << *ref;                  // undefined behavior
 The compiler should give a warning:
 
 ```
-warning: returning reference to local variable [-Wreturn-local-addr]
+warning: reference to local variable ‘local’ returned [-Wreturn-local-addr]
 ```
 
 If you return a reference, return a reference that was passed in, or make sure the object still exists after the function exits.
@@ -226,7 +226,7 @@ int main()
 
   std::cout << "--- 3. A reference must be initialized ---\n";
   std::cout << "Test: int & r; (no initializer) is an error\n";
-  std::cout << "error: declaration of reference variable 'r' requires an initializer\n";
+  std::cout << "error: ‘r’ declared as reference but not initialized\n";
   std::cout << "(please try it yourself)\n\n";
 
   std::cout << "--- 4. A reference cannot be reseated ---\n";
@@ -243,7 +243,7 @@ int main()
   std::cout << "--- 5. A reference cannot be null ---\n";
   std::cout << "A reference always refers to some object\n";
   std::cout << "int & null_ref = nullptr;  // this is an error\n";
-  std::cout << "error: a reference of type 'int&' cannot bind to a null pointer\n\n";
+  std::cout << "error: invalid initialization of non-const reference of type ‘int&’ from an rvalue of type ‘std::nullptr_t’\n\n";
 
   std::cout << "--- 6. The difference between pass by value and pass by reference ---\n";
   auto modify_by_value = [](int n) {
@@ -286,7 +286,7 @@ int main()
   std::cout << "  return local;  // local is destroyed when the function exits!\n";
   std::cout << "} (original);\n";
   std::cout << "The compiler should warn you\n";
-  std::cout << "warning: returning reference to local variable\n";
+  std::cout << "warning: reference to local variable ‘local’ returned\n";
 
   return 0;
 }
@@ -298,7 +298,7 @@ int main()
 g++ -std=c++17 -Wall -Wextra -Wpedantic basics03_practice.cpp -o basics03_practice && ./basics03_practice
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/heKxhvnva)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/h4xKTf973)
 
 Output:
 
@@ -322,7 +322,7 @@ ref = 20
 
 --- 3. A reference must be initialized ---
 Test: int & r; (no initializer) is an error
-error: declaration of reference variable 'r' requires an initializer
+error: ‘r’ declared as reference but not initialized
 (please try it yourself)
 
 --- 4. A reference cannot be reseated ---
@@ -336,7 +336,7 @@ ref2 is still an alias of x
 --- 5. A reference cannot be null ---
 A reference always refers to some object
 int & null_ref = nullptr;  // this is an error
-error: a reference of type 'int&' cannot bind to a null pointer
+error: invalid initialization of non-const reference of type ‘int&’ from an rvalue of type ‘std::nullptr_t’
 
 --- 6. The difference between pass by value and pass by reference ---
 before modify_by_value: a = 1
@@ -365,7 +365,7 @@ const int & dangerous_ref = [](const int & x) -> const int & {
   return local;  // local is destroyed when the function exits!
 } (original);
 The compiler should warn you
-warning: returning reference to local variable
+warning: reference to local variable ‘local’ returned
 ```
 
 </details>

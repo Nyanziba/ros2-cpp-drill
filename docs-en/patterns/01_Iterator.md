@@ -367,4 +367,4 @@ and that `std::count_if` works with the STL version.
 
 ---
 
-Previous: [0. Before you use them](00_before_you_use_them.md) / Next: 2. Adapter (coming soon)
+Previous: [0. Before you use them](00_before_you_use_them.md) / Next: [2. Adapter](02_Adapter.md)

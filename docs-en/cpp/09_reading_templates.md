@@ -226,12 +226,12 @@ int main()
 
 ```bash
 $ g++ -std=c++17 sorterr.cpp -o sorterr 2>&1 | wc -l
-84
+78
 ```
 
 [⚠ See this error in your browser (gcc 13.3)](https://godbolt.org/z/a65vx3nYP)
 
-It prints **84 lines**. But the real cause is just one: "`Point` has no `operator<`".
+It prints **78 lines**. But the real cause is just one: "`Point` has no `operator<`".
 
 Let us fix a procedure for reading.
 
@@ -242,11 +242,13 @@ g++ -std=c++17 sorterr.cpp 2>&1 | grep "error:"
 ```
 
 ```
-/usr/include/c++/13/bits/predefined_ops.h:43:23: error: no match for ‘operator<’ (operand types are ‘Point’ and ‘Point’)
+/usr/include/c++/13/bits/predefined_ops.h:45:23: error: no match for ‘operator<’ (operand types are ‘Point’ and ‘Point’)
+/usr/include/c++/13/bits/predefined_ops.h:98:22: error: no match for ‘operator<’ (operand types are ‘Point’ and ‘Point’)
+/usr/include/c++/13/bits/predefined_ops.h:69:22: error: no match for ‘operator<’ (operand types are ‘Point’ and ‘Point’)
 ```
 
-**It became 1 line.** This is the cause.
-The other 83 lines are `note:` (a list of candidates) and `In instantiation of` (the call path).
+**It became 3 lines.** All 3 have the same cause (`Point` has no `operator<`).
+The other 75 lines are `note:` (a list of candidates), `In instantiation of` (the call path), and so on.
 
 **Step 2: Find the lines that show your own file name.**
 
@@ -255,8 +257,10 @@ g++ -std=c++17 sorterr.cpp 2>&1 | grep "sorterr.cpp"
 ```
 
 ```
-sorterr.cpp: In function ‘int main()’:
-sorterr.cpp:9:8: required from here
+                 from sorterr.cpp:1:
+sorterr.cpp:9:12:   required from here
+sorterr.cpp:9:12:   required from here
+sorterr.cpp:9:12:   required from here
 ```
 
 **`required from here` tells you "which line of your code is the trigger".**
@@ -277,7 +281,7 @@ In summary:
 
 **`-fmax-errors=1` is worth remembering.**
 Often, fixing only the first error makes the rest disappear in a chain,
-so 84 lines become 20 lines, which is easier to read.
+so 78 lines become 28 lines, which is easier to read.
 
 ```bash
 g++ -std=c++17 -fmax-errors=1 sorterr.cpp
@@ -338,7 +342,7 @@ static_assert(ec::kNoPathFound == GetPathResult::NO_PATH_FOUND);
 
 ## Try it yourself
 
-**You will practice narrowing an 84-line error down to 1 line.** This is the skill you use most in real work.
+**You will practice narrowing a 78-line error down to 3 lines.** This is the skill you use most in real work.
 
 ```cpp
 // tmplerr.cpp
@@ -380,8 +384,8 @@ g++ -std=c++17 tmplerr.cpp 2>&1 | grep "tmplerr.cpp"
 g++ -std=c++17 -fmax-errors=1 tmplerr.cpp 2>&1 | wc -l
 ```
 
-**Check that the result of `grep "error:"` is 1 line.**
-In the 84 lines of output, that 1 line is the only meaningful information.
+**Check that the result of `grep "error:"` is 3 lines (all with the same cause).**
+In the 78 lines of output, those 3 lines are the only meaningful information.
 
 There are 2 ways to fix it. Try both.
 

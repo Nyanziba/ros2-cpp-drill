@@ -56,7 +56,7 @@ int validate_port_id(uint8_t port_id)
 #define SQUARE(x) x * x  // NG: missing parentheses
 ```
 
-In this case, `2 + SQUARE(3)` becomes not `2 + 3 * 3 = 11` but `2 + 3 * 3` = ... Be careful about operator precedence.
+In this case, `SQUARE(1 + 2)` becomes `1 + 2 * 1 + 2 = 5`, not `(1 + 2) * (1 + 2) = 9`. Be careful about operator precedence.
 
 ### The problem with the multi-statement macro `DOUBLE_SQ(x)`
 

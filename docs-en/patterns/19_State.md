@@ -656,4 +656,4 @@ What the tests check (13 tests):
 
 ---
 
-Previous: [18. Memento](18_Memento.md) / Next: 20. Flyweight (coming soon)
+Previous: [18. Memento](18_Memento.md) / Next: [20. Flyweight](20_Flyweight.md)

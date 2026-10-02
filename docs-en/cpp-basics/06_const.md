@@ -20,7 +20,7 @@ x = 10;  // Error
 ```
 
 ```
-error: assignment of read-only variable 'x'
+error: assignment of read-only variable ‘x’
 ```
 
 A `const` value is "guaranteed not to change", so the compiler can optimize more easily.
@@ -48,7 +48,7 @@ void process(const std::string & s)
 ```
 
 ```
-error: no match for ‘operator=’ (operand types are ‘const std::string’ and ‘const char [9]’)
+error: no match for ‘operator=’ (operand types are ‘const std::string’ {aka ‘const std::__cxx11::basic_string<char>’} and ‘const char [9]’)
 ```
 
 **The message changes with the type.** Here the type is `std::string`, so it appears as
@@ -138,7 +138,7 @@ std::cout << p.distance() << "\n";  // OK
 Error message:
 
 ```
-error: passing 'const Point' as 'this' argument discards qualifiers [-fpermissive]
+error: passing ‘const Point’ as ‘this’ argument discards qualifiers [-fpermissive]
 ```
 
 This rule (**separation by `const`-ness**) is very important.
@@ -339,19 +339,19 @@ Next, uncomment the following lines one at a time and read the error messages.
 
 ## Common pitfalls
 
-**`error: assignment of read-only variable 'x'`**
+**`error: assignment of read-only variable ‘x’`**
 You tried to assign to a `const` variable. Decide the value at initialization.
 
-**`error: assignment of read-only reference 'n'`** / **`error: no match for ‘operator=’`**
+**`error: assignment of read-only reference ‘n’`** / **`error: no match for ‘operator=’`**
 You tried to modify a `const` reference parameter.
 If your intent is "read-only", do not modify what it refers to.
 If your intent is "I want to modify it", remove `const`.
 
-**`error: passing 'const Point' as 'this' argument discards qualifiers`**
+**`error: passing ‘const Point’ as ‘this’ argument discards qualifiers`**
 You are calling a non-`const` member function on a `const` object.
 Add `const` to the member function to make it "read-only".
 
-**`error: assignment of member '...' in read-only object`**
+**`error: assignment of member ‘...’ in read-only object`**
 You tried to modify a member from inside a `const` member function.
 Unless the member is `mutable`, a `const` member function cannot write to it.
 

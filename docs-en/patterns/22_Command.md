@@ -632,4 +632,4 @@ and that the ring buffer drops the oldest ones when it exceeds the capacity.
 
 ---
 
-Previous: [21. Proxy](21_Proxy.md) / Next: 23. Interpreter (coming soon)
+Previous: [21. Proxy](21_Proxy.md) / Next: [23. Interpreter](23_Interpreter.md)

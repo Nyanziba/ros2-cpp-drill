@@ -910,4 +910,4 @@ The tests check
 
 ---
 
-Previous: [14. Chain of Responsibility](14_ChainOfResponsibility.md) / Next: 16. Mediator (coming soon)
+Previous: [14. Chain of Responsibility](14_ChainOfResponsibility.md) / Next: [16. Mediator](16_Mediator.md)

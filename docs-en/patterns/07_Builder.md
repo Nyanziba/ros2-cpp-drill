@@ -655,4 +655,4 @@ What the tests check:
 
 ---
 
-Previous: [6. Prototype](06_Prototype.md) / Next: 8. Abstract Factory (coming soon)
+Previous: [6. Prototype](06_Prototype.md) / Next: [8. Abstract Factory](08_AbstractFactory.md)
