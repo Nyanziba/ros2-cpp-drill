@@ -79,7 +79,7 @@ Fork the repository and replace `exercises/` and `docs/`, and it becomes your ow
 For how to publish the site on your own GitHub Pages, see
 [Fork it as your own site](#fork-it-as-your-own-site).
 
-**The license is MIT.** You are free to distribute it inside your group, modify it, and redistribute it.
+**The license is MIT.** You are free to use, modify, and redistribute it.
 
 ```bash
 ./drill watch
@@ -91,7 +91,7 @@ and the 35 exercises in `exercises/` **match the chapters that have an exercise,
 ## The 5 tracks
 
 **There is a C++ course before ROS 2. There is also a C course for microcontroller work,
-and a Design Patterns course for designing our group's libraries.**
+and a Design Patterns course for designing libraries.**
 The reading (`docs/`) and the exercises (`exercises/`) **match one-to-one, down to the chapter number**.
 
 | Track | Reading | Exercises | Target |
@@ -100,7 +100,7 @@ The reading (`docs/`) and the exercises (`exercises/`) **match one-to-one, down 
 | **C++ Basics** | [docs-en/cpp-basics/](docs-en/cpp-basics/README.md) | `cppb01` to `cppb10` | People who get stuck on `const` and `static`. 10 chapters |
 | **C++** | [docs-en/cpp/](docs-en/cpp/README.md) | `cpp01` to `cpp12` | Preparation for reading rclcpp. 15 chapters |
 | **ROS 2** | [docs-en/ros2/](docs-en/ros2/01_start_here_course_hub.md) | `01` to `15` | 24 articles |
-| **Design Patterns** | [docs-en/patterns/](docs-en/patterns/README.md) | `dp01` to `dp23` | People who design our group's libraries. Runs alongside a reading group on Hiroshi Yuki's *Learning Design Patterns in Java* (in Japanese). 23 chapters |
+| **Design Patterns** | [docs-en/patterns/](docs-en/patterns/README.md) | `dp01` to `dp23` | People who design their own libraries. Meant to be read alongside Hiroshi Yuki's *Learning Design Patterns in Java* (in Japanese). 23 chapters |
 
 **Not everyone has to do everything.**
 
@@ -108,7 +108,7 @@ The reading (`docs/`) and the exercises (`exercises/`) **match one-to-one, down 
 | --- | --- |
 | ROS 2 / autonomous navigation | `cppb01`... → `cpp01`... → `01`... (**you may skip the C track**) |
 | Microcontrollers / drive train / CAN | `c01` to `c12` only |
-| Designing our group's libraries | `dp01` to `dp23` (while reading Hiroshi Yuki's *Learning Design Patterns in Java*) |
+| Designing libraries | `dp01` to `dp23` (while reading Hiroshi Yuki's *Learning Design Patterns in Java*) |
 
 **The Design Patterns track is independent of the other tracks.** There is no required order.
 
@@ -334,8 +334,11 @@ That depends heavily on each individual robot, so it is outside this material.
 
 ## Contributing
 
-Reports and fixes are welcome. Please read [CONTRIBUTING.en.md](CONTRIBUTING.en.md) before you open an issue or a pull request.
+Reports and fixes are welcome. Requests are welcome too, such as "I want a chapter or an exercise about this". Please use the "Request" issue template.
+Please read [CONTRIBUTING.en.md](CONTRIBUTING.en.md) before you open an issue or a pull request.
 Everyone who takes part must follow the [Code of Conduct](CODE_OF_CONDUCT.en.md).
+
+This is a personal project. I try to follow the latest specifications of ROS 2 and C++ as closely as I can, but I cannot keep up with everything. If you find something out of date, please tell me in an issue.
 
 ## License
 
