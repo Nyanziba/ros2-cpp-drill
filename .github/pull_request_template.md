@@ -10,7 +10,7 @@
 
 - [ ] 載せた出力は、すべて実際に動かした結果（環境が既定と違えば本文に明記） / Every output shown comes from a real run (the environment is stated if it differs from the default)
 - [ ] コードを変えたなら、出力と Compiler Explorer のリンクも作り直した / If I changed code, I re-measured the output and recreated the Compiler Explorer link
-- [ ] `mkdocs build --strict`（英語版は `-f mkdocs.en.yml`）が通り、アンカーの INFO も出ていない / `mkdocs build --strict` (and `-f mkdocs.en.yml`) passes with no anchor INFO messages
+- [ ] `mkdocs build --strict`（英語版は `-f mkdocs.en.yml`）が通る / `mkdocs build --strict` (and `-f mkdocs.en.yml`) passes
 - [ ] 課題を変えたなら、未解答で落ち、解答例で通ることを確かめた / If I changed an exercise, it fails as given and passes with the solution
 - [ ] 英語版も直した（または「英語版は未対応」と書いた） / I updated the English version too (or noted that it is not updated)
 - [ ] 1 つの PR に 1 つの話題だけ / One topic per pull request

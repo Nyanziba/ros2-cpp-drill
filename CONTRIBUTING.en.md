@@ -97,8 +97,7 @@ use the compiler `x86-64 gcc 13.3` and the same options as the command in the te
   File names are `<number>_<title>.md`.
 - **Add new pages to `nav` in `mkdocs.yml`.** If you do not, they do not appear on the site.
 - Link pages to each other with relative paths to `.md` (example: `[6. const](06_const.md)`).
-- `mkdocs build --strict` fails on broken links, but **it does not fail on a mismatched heading anchor (`#...`)** (it only prints INFO).
-  Check by eye that the build output has no `does not contain an anchor`.
+- `mkdocs build --strict` fails on broken links and on mismatched heading anchors (`#...`).
 
 ### Chapter template
 
@@ -214,7 +213,7 @@ The PR template has the same items.
 
 - [ ] All output shown is the result of an actual run (if the environment differs from the default, it is stated in the text)
 - [ ] If I changed code, I also made the output and the Compiler Explorer link again
-- [ ] `mkdocs build --strict` passes (also the English `-f mkdocs.en.yml` if I changed the readings), and no anchor INFO appears
+- [ ] `mkdocs build --strict` passes (also the English `-f mkdocs.en.yml` if I changed the readings)
 - [ ] If I changed an exercise, I checked that it fails when unsolved and passes with the sample solution
 - [ ] I fixed the English version too (or wrote "English version not done" in the PR)
 - [ ] Only one topic in one PR
