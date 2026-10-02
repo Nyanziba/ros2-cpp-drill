@@ -150,7 +150,7 @@ head->set_next(std::move(b)).set_next(std::move(c));
 
 In C++, the `*this` version is not just "a different order".
 At the second `set_next`, `head`'s `next_` is overwritten, and **b is released right there**.
-The exercise test "replacing the middle of a chain destroys the old rest" checks this.
+The exercise test `ReplacingMiddleDestroysOldRemainder` checks this.
 
 ## 14.3 A C++-specific danger: the lifetime of the chain
 

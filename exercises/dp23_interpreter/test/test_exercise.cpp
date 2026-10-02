@@ -1,6 +1,8 @@
 // このファイルは編集しません（採点用）。
 #include <gtest/gtest.h>
 
+#include "drill_i18n.hpp"
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -24,7 +26,7 @@ Motion turn(int value)
 std::vector<Motion> expand(const std::string & source)
 {
   const ParseResult result = parse(source);
-  EXPECT_TRUE(result.ok()) << "parse に失敗: " << result.error().message;
+  EXPECT_TRUE(result.ok()) << drill::localized("parse に失敗: ", "parse failed: ") << result.error().message;
   if (!result.ok()) {
     return {};
   }
@@ -47,7 +49,7 @@ std::string nested_source(std::size_t depth)
 
 }  // namespace
 
-TEST(InterpreterTest, 単純な文の並びを解釈する)
+TEST(InterpreterTest, InterpretsSimpleStatementSequence)
 {
   const std::vector<Motion> motions = expand("forward 100; turn 90; forward 50;");
 
@@ -55,7 +57,7 @@ TEST(InterpreterTest, 単純な文の並びを解釈する)
   EXPECT_EQ(motions, expected);
 }
 
-TEST(InterpreterTest, 負の数と改行を含む入力を解釈する)
+TEST(InterpreterTest, InterpretsNegativeNumbersAndNewlines)
 {
   const std::vector<Motion> motions = expand("turn -90;\n  forward 0;\n");
 
@@ -63,7 +65,7 @@ TEST(InterpreterTest, 負の数と改行を含む入力を解釈する)
   EXPECT_EQ(motions, expected);
 }
 
-TEST(InterpreterTest, 空のプログラムは空の動作列になる)
+TEST(InterpreterTest, EmptyProgramGivesEmptyActionList)
 {
   const ParseResult result = parse("   \n  ");
   ASSERT_TRUE(result.ok()) << result.error().message;
@@ -71,7 +73,7 @@ TEST(InterpreterTest, 空のプログラムは空の動作列になる)
   EXPECT_TRUE(run(*result.ast()).empty());
 }
 
-TEST(InterpreterTest, 繰り返しが展開される)
+TEST(InterpreterTest, RepeatIsExpanded)
 {
   const std::vector<Motion> motions = expand("repeat 3 { forward 50; }");
 
@@ -79,12 +81,12 @@ TEST(InterpreterTest, 繰り返しが展開される)
   EXPECT_EQ(motions, expected);
 }
 
-TEST(InterpreterTest, 繰り返し0回は何も生まない)
+TEST(InterpreterTest, RepeatZeroTimesProducesNothing)
 {
   EXPECT_TRUE(expand("repeat 0 { forward 50; turn 90; }").empty());
 }
 
-TEST(InterpreterTest, 入れ子の繰り返しが正しく展開される)
+TEST(InterpreterTest, NestedRepeatIsExpandedCorrectly)
 {
   const std::vector<Motion> motions =
     expand("forward 10; repeat 2 { turn 90; repeat 2 { forward 5; } } turn -90;");
@@ -97,7 +99,7 @@ TEST(InterpreterTest, 入れ子の繰り返しが正しく展開される)
   EXPECT_EQ(motions, expected);
 }
 
-TEST(InterpreterTest, 構文エラーは例外ではなくエラー値で返る)
+TEST(InterpreterTest, SyntaxErrorIsReturnedAsValueNotException)
 {
   const std::vector<std::string> broken = {
     "forward;",             // 数値が無い
@@ -111,25 +113,25 @@ TEST(InterpreterTest, 構文エラーは例外ではなくエラー値で返る)
 
   for (const std::string & source : broken) {
     ParseResult result = ParseResult::failure(ParseError{"未実行", 0});
-    ASSERT_NO_THROW(result = parse(source)) << "throw してはいけません: " << source;
-    EXPECT_FALSE(result.ok()) << "エラーになるはず: " << source;
+    ASSERT_NO_THROW(result = parse(source)) << drill::localized("throw してはいけません: ", "Do not throw: ") << source;
+    EXPECT_FALSE(result.ok()) << drill::localized("エラーになるはず: ", "This should be an error: ") << source;
     EXPECT_EQ(result.ast(), nullptr) << source;
     EXPECT_FALSE(result.error().message.empty())
-      << "エラーメッセージが空です: " << source;
+      << drill::localized("エラーメッセージが空です: ", "The error message is empty: ") << source;
   }
 
   // 「常に失敗する」パーサでは意味が無いので、正しい入力も見ます。
   EXPECT_TRUE(parse("forward 1; repeat 1 { turn 1; }").ok());
 }
 
-TEST(InterpreterTest, 正しい入力ではエラーにならない)
+TEST(InterpreterTest, ValidInputIsNotAnError)
 {
   const ParseResult result = parse("repeat 2 { forward 1; turn 1; }");
   EXPECT_TRUE(result.ok()) << result.error().message;
   EXPECT_NE(result.ast(), nullptr);
 }
 
-TEST(InterpreterTest, variant版がクラス版と同じ結果を返す)
+TEST(InterpreterTest, VariantVersionGivesSameResultAsClassVersion)
 {
   using namespace variant_ast;
 
@@ -156,7 +158,7 @@ TEST(InterpreterTest, variant版がクラス版と同じ結果を返す)
   EXPECT_EQ(from_variant.size(), 8u);
 }
 
-TEST(InterpreterTest, variant版が空とコマンド1つを正しく扱う)
+TEST(InterpreterTest, VariantVersionHandlesEmptyAndSingleCommand)
 {
   const std::vector<variant_ast::VNode> empty_program;
   EXPECT_TRUE(run_variant(empty_program).empty());
@@ -168,7 +170,7 @@ TEST(InterpreterTest, variant版が空とコマンド1つを正しく扱う)
   EXPECT_EQ(run_variant(one), expected);
 }
 
-TEST(InterpreterTest, 上限までの入れ子は通る)
+TEST(InterpreterTest, NestingUpToLimitIsAccepted)
 {
   const std::vector<Motion> motions = expand(nested_source(kMaxNestingDepth));
 
@@ -176,14 +178,14 @@ TEST(InterpreterTest, 上限までの入れ子は通る)
   EXPECT_EQ(motions, expected);
 }
 
-TEST(InterpreterTest, 上限を超える入れ子はスタックを壊さずエラーになる)
+TEST(InterpreterTest, NestingOverLimitIsErrorWithoutBreakingStack)
 {
   // 上限ちょうどは通ること。ここが落ちるなら制限が厳しすぎます。
   EXPECT_TRUE(parse(nested_source(kMaxNestingDepth)).ok());
 
   ParseResult result = ParseResult::failure(ParseError{"未実行", 0});
   ASSERT_NO_THROW(result = parse(nested_source(kMaxNestingDepth + 1)));
-  EXPECT_FALSE(result.ok()) << "深さ制限が効いていません";
+  EXPECT_FALSE(result.ok()) << drill::localized("深さ制限が効いていません", "The depth limit does not work");
   EXPECT_FALSE(result.error().message.empty());
 
   // 1000 重でも落ちないこと（再帰の入口で深さを見ていれば落ちません）。
@@ -191,13 +193,13 @@ TEST(InterpreterTest, 上限を超える入れ子はスタックを壊さずエ�
   EXPECT_FALSE(result.ok());
 }
 
-TEST(InterpreterTest, 繰り返し回数の上限を超えるとエラーになる)
+TEST(InterpreterTest, RepeatCountOverLimitIsError)
 {
   const std::string source =
     "repeat " + std::to_string(static_cast<long long>(kMaxRepeatCount) + 1) + " { forward 1; }";
 
   const ParseResult result = parse(source);
-  EXPECT_FALSE(result.ok()) << "kMaxRepeatCount を超えた回数はエラーにしてください";
+  EXPECT_FALSE(result.ok()) << drill::localized("kMaxRepeatCount を超えた回数はエラーにしてください", "A count over kMaxRepeatCount must be an error");
 
   // ちょうど上限は通ること。
   const std::string just_under =

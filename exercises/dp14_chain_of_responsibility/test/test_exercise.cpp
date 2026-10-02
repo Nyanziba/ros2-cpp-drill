@@ -1,6 +1,8 @@
 // このファイルは編集しません（採点用）。
 #include <gtest/gtest.h>
 
+#include "drill_i18n.hpp"
+
 #include <cstddef>
 #include <memory>
 #include <optional>
@@ -25,33 +27,33 @@ std::unique_ptr<FaultHandler> make_standard_chain(std::vector<std::string> * log
 
 }  // namespace
 
-TEST(ChainOfResponsibilityTest, 適切なハンドラが処理する)
+TEST(ChainOfResponsibilityTest, AppropriateHandlerHandlesFault)
 {
   const auto chain = make_standard_chain();
 
   const auto low = chain->support(Fault{FaultKind::kLowVoltage, 10500});
-  ASSERT_TRUE(low.has_value()) << "電圧低下を誰も処理していません";
+  ASSERT_TRUE(low.has_value()) << drill::localized("電圧低下を誰も処理していません", "Nobody handles the voltage drop");
   EXPECT_EQ(low->handler_name, "low_voltage");
   EXPECT_EQ(low->action, "reduce_duty");
 
   const auto over = chain->support(Fault{FaultKind::kOverCurrent, 25000});
-  ASSERT_TRUE(over.has_value()) << "先頭が処理できないとき次に回せていません";
+  ASSERT_TRUE(over.has_value()) << drill::localized("先頭が処理できないとき次に回せていません", "The head handler does not pass the fault to the next one");
   EXPECT_EQ(over->handler_name, "over_current");
   EXPECT_EQ(over->action, "cut_output");
 
   const auto comm = chain->support(Fault{FaultKind::kCommTimeout, 800});
-  ASSERT_TRUE(comm.has_value()) << "連鎖の末尾まで届いていません";
+  ASSERT_TRUE(comm.has_value()) << drill::localized("連鎖の末尾まで届いていません", "The fault does not reach the end of the chain");
   EXPECT_EQ(comm->handler_name, "comm_timeout");
   EXPECT_EQ(comm->action, "safe_stop");
 }
 
-TEST(ChainOfResponsibilityTest, 条件を満たさない異常は素通しされる)
+TEST(ChainOfResponsibilityTest, FaultBelowConditionPassesThrough)
 {
   const auto chain = make_standard_chain();
 
   // 種類は合っているが閾値を満たさない。担当ハンドラも「処理しない」を選ぶ。
   EXPECT_FALSE(chain->support(Fault{FaultKind::kLowVoltage, 12000}).has_value())
-    << "閾値を満たさないのに electric 系ハンドラが処理してしまっています";
+    << drill::localized("閾値を満たさないのに electric 系ハンドラが処理してしまっています", "An electric handler handled a fault that is below its threshold");
   EXPECT_FALSE(chain->support(Fault{FaultKind::kOverCurrent, 5000}).has_value());
   EXPECT_FALSE(chain->support(Fault{FaultKind::kCommTimeout, 100}).has_value());
 
@@ -61,7 +63,7 @@ TEST(ChainOfResponsibilityTest, 条件を満たさない異常は素通しされ
   EXPECT_TRUE(chain->support(Fault{FaultKind::kCommTimeout, 500}).has_value());
 }
 
-TEST(ChainOfResponsibilityTest, 誰も処理しなければnulloptが返る)
+TEST(ChainOfResponsibilityTest, ReturnsNulloptWhenNobodyHandles)
 {
   const auto chain = make_standard_chain();
 
@@ -70,10 +72,10 @@ TEST(ChainOfResponsibilityTest, 誰も処理しなければnulloptが返る)
 
   const auto result = chain->support(Fault{FaultKind::kEncoderSlip, 9999});
   EXPECT_FALSE(result.has_value())
-    << "担当がいない異常は std::nullopt で返す仕様です（例外は投げません）";
+    << drill::localized("担当がいない異常は std::nullopt で返す仕様です（例外は投げません）", "A fault with no handler must return std::nullopt (do not throw)");
 }
 
-TEST(ChainOfResponsibilityTest, 連鎖の順番を変えると処理するハンドラが変わる)
+TEST(ChainOfResponsibilityTest, ChangingChainOrderChangesHandler)
 {
   // 20A で切るハンドラと 30A で切るハンドラ。35A はどちらでも処理できる。
   auto early_first = make_over_current_handler("cut_20A", 20000);
@@ -91,10 +93,10 @@ TEST(ChainOfResponsibilityTest, 連鎖の順番を変えると処理するハン
 
   EXPECT_EQ(a->handler_name, "cut_20A");
   EXPECT_EQ(b->handler_name, "cut_30A")
-    << "先頭のハンドラが処理できるのに次に回してしまっています";
+    << drill::localized("先頭のハンドラが処理できるのに次に回してしまっています", "The head handler can handle it but passes it on");
 }
 
-TEST(ChainOfResponsibilityTest, setNextは次のハンドラ自身への参照を返す)
+TEST(ChainOfResponsibilityTest, SetNextReturnsReferenceToNextHandler)
 {
   auto head = make_low_voltage_handler("head", 11000);
   auto second = make_over_current_handler("second", 20000);
@@ -103,23 +105,23 @@ TEST(ChainOfResponsibilityTest, setNextは次のハンドラ自身への参照�
   FaultHandler & returned = head->set_next(std::move(second));
 
   EXPECT_EQ(&returned, second_address)
-    << "set_next() は *this ではなく、つないだ次のハンドラへの参照を返します";
+    << drill::localized("set_next() は *this ではなく、つないだ次のハンドラへの参照を返します", "set_next() returns a reference to the next handler, not *this");
 }
 
-TEST(ChainOfResponsibilityTest, 先頭を破棄すると連鎖全体が破棄される)
+TEST(ChainOfResponsibilityTest, DestroyingHeadDestroysWholeChain)
 {
   std::vector<std::string> destruction_log;
   {
     const auto chain = make_standard_chain(&destruction_log);
-    EXPECT_TRUE(destruction_log.empty()) << "まだ誰も壊れていないはずです";
+    EXPECT_TRUE(destruction_log.empty()) << drill::localized("まだ誰も壊れていないはずです", "Nothing should be destroyed yet");
   }
 
   const std::vector<std::string> expected = {"low_voltage", "over_current", "comm_timeout"};
   EXPECT_EQ(destruction_log, expected)
-    << "先頭から順に、連鎖全体が破棄されるはずです。next_ を unique_ptr で所有していますか";
+    << drill::localized("先頭から順に、連鎖全体が破棄されるはずです。next_ を unique_ptr で所有していますか", "The whole chain should be destroyed from the head. Does next_ own the next handler with unique_ptr?");
 }
 
-TEST(ChainOfResponsibilityTest, 連鎖の途中を差し替えると古い残りは破棄される)
+TEST(ChainOfResponsibilityTest, ReplacingMiddleDestroysOldRemainder)
 {
   std::vector<std::string> destruction_log;
   auto head = make_low_voltage_handler("head", 11000, &destruction_log);
@@ -130,24 +132,24 @@ TEST(ChainOfResponsibilityTest, 連鎖の途中を差し替えると古い残り
 
   const std::vector<std::string> after_replace = {"old_tail"};
   EXPECT_EQ(destruction_log, after_replace)
-    << "差し替えられた古い next_ が解放されていません（生ポインタで持っていませんか）";
+    << drill::localized("差し替えられた古い next_ が解放されていません（生ポインタで持っていませんか）", "The replaced old next_ was not freed (are you using a raw pointer?)");
 
   const auto result = head->support(Fault{FaultKind::kCommTimeout, 600});
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->handler_name, "new_tail");
 }
 
-TEST(ChainOfResponsibilityTest, supportAloneは次に回さない)
+TEST(ChainOfResponsibilityTest, SupportAloneDoesNotPassToNext)
 {
   const auto chain = make_standard_chain();
 
   // 先頭は電圧低下しか見ない。単体で聞けば過電流は処理されない。
   EXPECT_FALSE(chain->support_alone(Fault{FaultKind::kOverCurrent, 25000}).has_value())
-    << "support_alone() が次に回してしまっています";
+    << drill::localized("support_alone() が次に回してしまっています", "support_alone() passes the fault to the next handler");
   EXPECT_TRUE(chain->support_alone(Fault{FaultKind::kLowVoltage, 10000}).has_value());
 }
 
-TEST(ChainOfResponsibilityTest, 配列方式でも同じ結果になる)
+TEST(ChainOfResponsibilityTest, ArrayVersionGivesSameResult)
 {
   const auto low = make_low_voltage_handler("low_voltage", 11000);
   const auto over = make_over_current_handler("over_current", 20000);
@@ -157,7 +159,7 @@ TEST(ChainOfResponsibilityTest, 配列方式でも同じ結果になる)
   const std::size_t count = sizeof(handlers) / sizeof(handlers[0]);
 
   const auto over_result = dispatch(handlers, count, Fault{FaultKind::kOverCurrent, 25000});
-  ASSERT_TRUE(over_result.has_value()) << "dispatch() が配列を回れていません";
+  ASSERT_TRUE(over_result.has_value()) << drill::localized("dispatch() が配列を回れていません", "dispatch() does not walk the array");
   EXPECT_EQ(over_result->handler_name, "over_current");
 
   const auto comm_result = dispatch(handlers, count, Fault{FaultKind::kCommTimeout, 800});
@@ -166,7 +168,7 @@ TEST(ChainOfResponsibilityTest, 配列方式でも同じ結果になる)
 
   EXPECT_FALSE(dispatch(handlers, count, Fault{FaultKind::kEncoderSlip, 1}).has_value());
   EXPECT_FALSE(dispatch(handlers, 0, Fault{FaultKind::kOverCurrent, 25000}).has_value())
-    << "count が 0 のときは std::nullopt です";
+    << drill::localized("count が 0 のときは std::nullopt です", "When count is 0, return std::nullopt");
 
   // 連鎖版と配列版で答えが一致すること。
   const auto chain = make_standard_chain();
@@ -178,7 +180,7 @@ TEST(ChainOfResponsibilityTest, 配列方式でも同じ結果になる)
   EXPECT_TRUE(*from_chain == *from_array);
 }
 
-TEST(ChainOfResponsibilityTest, ハンドラはコピーできない)
+TEST(ChainOfResponsibilityTest, HandlerIsNotCopyable)
 {
   static_assert(
     !std::is_copy_constructible<FaultHandler>::value,

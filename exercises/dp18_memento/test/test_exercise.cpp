@@ -1,6 +1,8 @@
 // このファイルは編集しません（採点用）。
 #include <gtest/gtest.h>
 
+#include "drill_i18n.hpp"
+
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -18,7 +20,7 @@ GainTuner make_tuner()
 
 }  // namespace
 
-TEST(MementoTest, スナップショットの時点に戻せる)
+TEST(MementoTest, RestoresToSnapshotPoint)
 {
   GainTuner tuner = make_tuner();
 
@@ -36,27 +38,27 @@ TEST(MementoTest, スナップショットの時点に戻せる)
   EXPECT_EQ(tuner.label(), "初期値");
 }
 
-TEST(MementoTest, 保存後に元を変えてもスナップショットは変わらない)
+TEST(MementoTest, SnapshotIsUnaffectedByLaterChanges)
 {
   GainTuner tuner = make_tuner();
 
   const GainSnapshot saved = tuner.create_snapshot();
   EXPECT_EQ(saved.label(), "初期値")
-    << "create_snapshot() が現在のラベルを値でコピーしていません";
+    << drill::localized("create_snapshot() が現在のラベルを値でコピーしていません", "create_snapshot() does not copy the current label by value");
 
   // 元をいじる。Memento が参照や shared_ptr を持っていると、ここで一緒に変わります。
   tuner.set_label("いじったあと");
   tuner.set_gains(5.0, 5.0, 5.0);
 
   EXPECT_EQ(saved.label(), "初期値")
-    << "Memento が元と状態を共有しています。値で持ってください";
+    << drill::localized("Memento が元と状態を共有しています。値で持ってください", "The Memento shares state with the original. Hold it by value");
 
   tuner.restore(saved);
   EXPECT_DOUBLE_EQ(tuner.kp(), 1.0);
   EXPECT_EQ(tuner.label(), "初期値");
 }
 
-TEST(MementoTest, 同じスナップショットに何度でも戻せる)
+TEST(MementoTest, CanRestoreSameSnapshotRepeatedly)
 {
   GainTuner tuner = make_tuner();
 
@@ -72,7 +74,7 @@ TEST(MementoTest, 同じスナップショットに何度でも戻せる)
   EXPECT_EQ(tuner.label(), "初期値");
 }
 
-TEST(MementoTest, Undoスタックで任意の時点に戻せる)
+TEST(MementoTest, UndoStackRestoresToAnyPoint)
 {
   GainTuner tuner = make_tuner();
 
@@ -107,7 +109,7 @@ TEST(MementoTest, Undoスタックで任意の時点に戻せる)
   EXPECT_EQ(tuner.label(), "初期値");
 }
 
-TEST(MementoTest, ムーブ版のrestoreはMementoから状態を奪う)
+TEST(MementoTest, MoveRestoreTakesStateFromMemento)
 {
   GainTuner tuner = make_tuner();
 
@@ -124,10 +126,10 @@ TEST(MementoTest, ムーブ版のrestoreはMementoから状態を奪う)
 
   // ヘッダの約束: ムーブ版で戻したあと、Memento のラベルは空になる。
   EXPECT_TRUE(saved.label().empty())
-    << "ムーブ版の restore が label を奪ったあと clear() していません";
+    << drill::localized("ムーブ版の restore が label を奪ったあと clear() していません", "The move version of restore did not call clear() after taking the label");
 }
 
-TEST(MementoTest, Mementoの中身はOriginator以外から触れない)
+TEST(MementoTest, MementoContentsAreHiddenFromOthers)
 {
   // wide interface（4 つの値を渡すコンストラクタ）は private なので、
   // GainTuner 以外からは呼べません。Java の package private に対応するのが friend です。
@@ -152,7 +154,7 @@ TEST(MementoTest, Mementoの中身はOriginator以外から触れない)
   // EXPECT_DOUBLE_EQ(saved.kp_, 1.0);
 }
 
-TEST(MementoTest, POD状態を取り出して書き戻せる)
+TEST(MementoTest, PodStateCanBeSavedAndRestored)
 {
   static_assert(
     std::is_trivially_copyable<GainState>::value,
@@ -172,10 +174,10 @@ TEST(MementoTest, POD状態を取り出して書き戻せる)
   EXPECT_DOUBLE_EQ(tuner.kp(), 1.0);
   EXPECT_DOUBLE_EQ(tuner.kd(), 0.01);
   EXPECT_EQ(tuner.label(), "ラベルは戻らない")
-    << "restore_state はゲインだけを戻します。label は触りません";
+    << drill::localized("restore_state はゲインだけを戻します。label は触りません", "restore_state restores only the gains. It does not touch the label");
 }
 
-TEST(MementoTest, 固定長リングバッファでも同じ復元ができる)
+TEST(MementoTest, FixedSizeRingBufferRestoresTheSame)
 {
   GainTuner tuner = make_tuner();
   GainHistory history;
@@ -201,7 +203,7 @@ TEST(MementoTest, 固定長リングバッファでも同じ復元ができる)
   EXPECT_DOUBLE_EQ(tuner.kd(), 0.01);
 }
 
-TEST(MementoTest, リングバッファは容量を超えると古いものから消える)
+TEST(MementoTest, RingBufferDropsOldestWhenOverCapacity)
 {
   GainHistory history;
 
@@ -212,13 +214,13 @@ TEST(MementoTest, リングバッファは容量を超えると古いものか�
   }
 
   EXPECT_EQ(history.size(), GainHistory::kCapacity)
-    << "size() が容量を超えています。リングバッファになっていません";
+    << drill::localized("size() が容量を超えています。リングバッファになっていません", "size() is over the capacity. This is not a ring buffer");
 
   // 最後に積んだのは kCapacity + 1。そこから kCapacity 件だけ残っている。
   for (std::size_t back = 0; back < GainHistory::kCapacity; ++back) {
     const double expected =
       static_cast<double>(GainHistory::kCapacity + 1 - back);
     EXPECT_DOUBLE_EQ(history.recent(back).kp, expected)
-      << "back_index = " << back << " の中身が違います";
+      << "back_index = " << back << drill::localized(" の中身が違います", " has the wrong content");
   }
 }

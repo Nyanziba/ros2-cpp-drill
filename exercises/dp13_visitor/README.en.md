@@ -68,7 +68,7 @@ The output format (the indentation and the format of the lines) is prepared in `
   `C++ exception with description "vector"`.
   `DiagArena::add` does not save anything, so `at()` is just out of range
 - If `accept` is not virtual, the kind disappears when you call through a base pointer.
-  The test "基底ポインタ経由でも派生ごとのvisitが選ばれる" (the visit of each derived class is chosen even through a base pointer) checks that
+  The test `VisitIsChosenPerDerivedClassViaBasePointer` checks that
 - If you make the argument of `visit` `SensorCheck` instead of `const SensorCheck &`, a **copy** happens.
   If you take it as the base type, it **slices**
 - If you forget the deduction guide of `overloaded`, you get

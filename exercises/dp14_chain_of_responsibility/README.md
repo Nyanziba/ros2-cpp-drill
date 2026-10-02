@@ -52,7 +52,7 @@
 - `set_next()` で `std::move(next)` した**あと**の `next` は空です。
   `*next` を返すと落ちます。`next_` に入れてから `*next_` を返してください
 - `set_next()` が `*this` を返すと、`a.set_next(b).set_next(c)` で
-  **b が黙って解放されます**。テスト「setNextは次のハンドラ自身への参照を返す」が落とします
+  **b が黙って解放されます**。テスト`SetNextReturnsReferenceToNextHandler`が落とします
 - デストラクタ本体が走ったあとにメンバ `next_` が破棄されます。
   つまり破棄ログは**先頭から末尾の順**に並びます
 - `resolve()` の中で `next_` を触りたくなったら設計が壊れています。
