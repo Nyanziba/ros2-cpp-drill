@@ -29,7 +29,23 @@
           "path": "docs/c/01_分割コンパイルとヘッダガード.md"
         }
       ],
-      "chapter": "C 1章"
+      "chapter": "C 1章",
+      "level_en": "C track",
+      "level_note_en": "Matches the lecture notes in docs-en/c/. This is an independent track, so you can skip it if you are going on to ROS 2",
+      "title_en": "Split compilation, header guards",
+      "chapter_en": "C ch.1",
+      "hints_en": [
+        "A header guard is the three-piece set: #ifndef DRILL_COUNTER_H / #define DRILL_COUNTER_H / ... / #endif.",
+        "redefinition of ‘struct Counter’ means \"it was defined twice in the same translation unit\". The test includes the header twice on purpose.",
+        "A file-scope static means \"not visible from other .c files\". It is a different meaning from the \"the value is kept\" of a static inside a function.",
+        "Put static int32_t call_count = 0; outside the function."
+      ],
+      "lecture_en": [
+        {
+          "title": "1. Separate compilation and header guards",
+          "path": "docs-en/c/01_separate_compilation_and_header_guards.md"
+        }
+      ]
     },
     {
       "id": "c02_fixed_width_int",
@@ -57,7 +73,21 @@
           "path": "docs/c/02_固定幅整数と暗黙変換.md"
         }
       ],
-      "chapter": "C 2章"
+      "chapter": "C 2章",
+      "level_en": "C track",
+      "level_note_en": "Matches the lecture notes in docs-en/c/. This is an independent track, so you can skip it if you are going on to ROS 2",
+      "title_en": "Fixed-width ints and conversions",
+      "chapter_en": "C ch.2",
+      "hints_en": [
+        "Read \"What to do\" in README.en.md first.",
+        "If you get stuck, ./drill solution c02 shows a sample answer."
+      ],
+      "lecture_en": [
+        {
+          "title": "2. Fixed-width integers and implicit conversions",
+          "path": "docs-en/c/02_fixed_width_integers_and_implicit_conversions.md"
+        }
+      ]
     },
     {
       "id": "c03_pointer",
@@ -85,7 +115,21 @@
           "path": "docs/c/03_ポインタ1.md"
         }
       ],
-      "chapter": "C 3章"
+      "chapter": "C 3章",
+      "level_en": "C track",
+      "level_note_en": "Matches the lecture notes in docs-en/c/. This is an independent track, so you can skip it if you are going on to ROS 2",
+      "title_en": "Pass addresses with pointers",
+      "chapter_en": "C ch.3",
+      "hints_en": [
+        "Read \"What to do\" in README.en.md first.",
+        "If you get stuck, ./drill solution c03 shows a sample answer."
+      ],
+      "lecture_en": [
+        {
+          "title": "3. Pointers (1)",
+          "path": "docs-en/c/03_pointers_1.md"
+        }
+      ]
     },
     {
       "id": "c04_pointer_array",
@@ -113,7 +157,21 @@
           "path": "docs/c/04_ポインタ2.md"
         }
       ],
-      "chapter": "C 4章"
+      "chapter": "C 4章",
+      "level_en": "C track",
+      "level_note_en": "Matches the lecture notes in docs-en/c/. This is an independent track, so you can skip it if you are going on to ROS 2",
+      "title_en": "Arrays and pointer arithmetic",
+      "chapter_en": "C ch.4",
+      "hints_en": [
+        "Read \"What to do\" in README.en.md first.",
+        "If you get stuck, ./drill solution c04 shows a sample answer."
+      ],
+      "lecture_en": [
+        {
+          "title": "4. Pointers (2)",
+          "path": "docs-en/c/04_pointers_2.md"
+        }
+      ]
     },
     {
       "id": "c05_string",
@@ -141,7 +199,21 @@
           "path": "docs/c/05_文字列.md"
         }
       ],
-      "chapter": "C 5章"
+      "chapter": "C 5章",
+      "level_en": "C track",
+      "level_note_en": "Matches the lecture notes in docs-en/c/. This is an independent track, so you can skip it if you are going on to ROS 2",
+      "title_en": "Strings and NUL termination",
+      "chapter_en": "C ch.5",
+      "hints_en": [
+        "Read \"What to do\" in README.en.md first.",
+        "If you get stuck, ./drill solution c05 shows a sample answer."
+      ],
+      "lecture_en": [
+        {
+          "title": "5. Strings",
+          "path": "docs-en/c/05_strings.md"
+        }
+      ]
     },
     {
       "id": "c06_struct_align",
@@ -169,7 +241,21 @@
           "path": "docs/c/06_構造体とアラインメント.md"
         }
       ],
-      "chapter": "C 6章"
+      "chapter": "C 6章",
+      "level_en": "C track",
+      "level_note_en": "Matches the lecture notes in docs-en/c/. This is an independent track, so you can skip it if you are going on to ROS 2",
+      "title_en": "Structs and alignment",
+      "chapter_en": "C ch.6",
+      "hints_en": [
+        "Read \"What to do\" in README.en.md first.",
+        "If you get stuck, ./drill solution c06 shows a sample answer."
+      ],
+      "lecture_en": [
+        {
+          "title": "6. Structs and alignment",
+          "path": "docs-en/c/06_structs_and_alignment.md"
+        }
+      ]
     },
     {
       "id": "c07_bit_ops",
@@ -197,7 +283,21 @@
           "path": "docs/c/07_ビット演算とレジスタ操作.md"
         }
       ],
-      "chapter": "C 7章"
+      "chapter": "C 7章",
+      "level_en": "C track",
+      "level_note_en": "Matches the lecture notes in docs-en/c/. This is an independent track, so you can skip it if you are going on to ROS 2",
+      "title_en": "Bit operations and CAN IDs",
+      "chapter_en": "C ch.7",
+      "hints_en": [
+        "Read \"What to do\" in README.en.md first.",
+        "If you get stuck, ./drill solution c07 shows a sample answer."
+      ],
+      "lecture_en": [
+        {
+          "title": "7. Bit operations and register access",
+          "path": "docs-en/c/07_bit_operations_and_registers.md"
+        }
+      ]
     },
     {
       "id": "c08_malloc_free",
@@ -225,7 +325,21 @@
           "path": "docs/c/08_手動メモリ管理.md"
         }
       ],
-      "chapter": "C 8章"
+      "chapter": "C 8章",
+      "level_en": "C track",
+      "level_note_en": "Matches the lecture notes in docs-en/c/. This is an independent track, so you can skip it if you are going on to ROS 2",
+      "title_en": "Manual memory management",
+      "chapter_en": "C ch.8",
+      "hints_en": [
+        "Read \"What to do\" in README.en.md first.",
+        "If you get stuck, ./drill solution c08 shows a sample answer."
+      ],
+      "lecture_en": [
+        {
+          "title": "8. Manual memory management",
+          "path": "docs-en/c/08_manual_memory_management.md"
+        }
+      ]
     },
     {
       "id": "c09_function_pointer",
@@ -253,7 +367,21 @@
           "path": "docs/c/09_関数ポインタ.md"
         }
       ],
-      "chapter": "C 9章"
+      "chapter": "C 9章",
+      "level_en": "C track",
+      "level_note_en": "Matches the lecture notes in docs-en/c/. This is an independent track, so you can skip it if you are going on to ROS 2",
+      "title_en": "Function pointers, table-driven",
+      "chapter_en": "C ch.9",
+      "hints_en": [
+        "Read \"What to do\" in README.en.md first.",
+        "If you get stuck, ./drill solution c09 shows a sample answer."
+      ],
+      "lecture_en": [
+        {
+          "title": "9. Function pointers",
+          "path": "docs-en/c/09_function_pointers.md"
+        }
+      ]
     },
     {
       "id": "c10_volatile",
@@ -281,7 +409,21 @@
           "path": "docs/c/10_volatileと割り込み安全性.md"
         }
       ],
-      "chapter": "C 10章"
+      "chapter": "C 10章",
+      "level_en": "C track",
+      "level_note_en": "Matches the lecture notes in docs-en/c/. This is an independent track, so you can skip it if you are going on to ROS 2",
+      "title_en": "volatile and shared variables",
+      "chapter_en": "C ch.10",
+      "hints_en": [
+        "Read \"What to do\" in README.en.md first.",
+        "If you get stuck, ./drill solution c10 shows a sample answer."
+      ],
+      "lecture_en": [
+        {
+          "title": "10. volatile and interrupt safety",
+          "path": "docs-en/c/10_volatile_and_interrupt_safety.md"
+        }
+      ]
     },
     {
       "id": "c11_endian_serialize",
@@ -309,7 +451,21 @@
           "path": "docs/c/11_エンディアンとシリアライズ.md"
         }
       ],
-      "chapter": "C 11章"
+      "chapter": "C 11章",
+      "level_en": "C track",
+      "level_note_en": "Matches the lecture notes in docs-en/c/. This is an independent track, so you can skip it if you are going on to ROS 2",
+      "title_en": "Endianness and serialization",
+      "chapter_en": "C ch.11",
+      "hints_en": [
+        "Read \"What to do\" in README.en.md first.",
+        "If you get stuck, ./drill solution c11 shows a sample answer."
+      ],
+      "lecture_en": [
+        {
+          "title": "11. Endianness and serialization",
+          "path": "docs-en/c/11_endianness_and_serialization.md"
+        }
+      ]
     },
     {
       "id": "c12_preprocessor",
@@ -337,7 +493,21 @@
           "path": "docs/c/12_プリプロセッサとデバッグ.md"
         }
       ],
-      "chapter": "C 12章"
+      "chapter": "C 12章",
+      "level_en": "C track",
+      "level_note_en": "Matches the lecture notes in docs-en/c/. This is an independent track, so you can skip it if you are going on to ROS 2",
+      "title_en": "The preprocessor and debugging",
+      "chapter_en": "C ch.12",
+      "hints_en": [
+        "Read \"What to do\" in README.en.md first.",
+        "If you get stuck, ./drill solution c12 shows a sample answer."
+      ],
+      "lecture_en": [
+        {
+          "title": "12. The preprocessor and debugging",
+          "path": "docs-en/c/12_preprocessor_and_debugging.md"
+        }
+      ]
     },
     {
       "id": "cppb01_declarations",
@@ -366,7 +536,22 @@
           "path": "docs/cpp-basics/01_宣言を読む.md"
         }
       ],
-      "chapter": "入門 1章"
+      "chapter": "入門 1章",
+      "level_en": "C++ Basics",
+      "level_note_en": "Matches the lecture notes in docs-en/cpp-basics/. ROS 2 is not used",
+      "title_en": "Reading declarations",
+      "chapter_en": "Basics ch.1",
+      "hints_en": [
+        "Read a declaration from right to left. const int * means \"a pointer to const int\".",
+        "int read_value(const int * p) { return *p; }  // read-only",
+        "void modify(int * p) { *p = 42; }  // can write"
+      ],
+      "lecture_en": [
+        {
+          "title": "1. Reading declarations",
+          "path": "docs-en/cpp-basics/01_reading_declarations.md"
+        }
+      ]
     },
     {
       "id": "cppb02_scope",
@@ -394,7 +579,21 @@
           "path": "docs/cpp-basics/02_スコープと寿命.md"
         }
       ],
-      "chapter": "入門 2章"
+      "chapter": "入門 2章",
+      "level_en": "C++ Basics",
+      "level_note_en": "Matches the lecture notes in docs-en/cpp-basics/. ROS 2 is not used",
+      "title_en": "Scope and lifetime",
+      "chapter_en": "Basics ch.2",
+      "hints_en": [
+        "The Tracer class appends to the global log when it is constructed and destroyed",
+        "Objects are destroyed in reverse order when leaving the scope"
+      ],
+      "lecture_en": [
+        {
+          "title": "2. Scope and lifetime",
+          "path": "docs-en/cpp-basics/02_scope_and_lifetime.md"
+        }
+      ]
     },
     {
       "id": "cppb03_reference",
@@ -423,7 +622,22 @@
           "path": "docs/cpp-basics/03_参照.md"
         }
       ],
-      "chapter": "入門 3章"
+      "chapter": "入門 3章",
+      "level_en": "C++ Basics",
+      "level_note_en": "Matches the lecture notes in docs-en/cpp-basics/. ROS 2 is not used",
+      "title_en": "Receive by reference",
+      "chapter_en": "Basics ch.3",
+      "hints_en": [
+        "The & in void swap_values(int & a, int & b) is a reference. Both a and b are aliases of the caller's variables, so if you swap them as they are, the caller's variables change.",
+        "int & largest(...) returns a reference. Do not return a local variable (it becomes a dangling reference). Both arguments belong to the caller, so it is safe to return one of them.",
+        "The spec says to return a when a == b. With (a > b) ? a : b, b is returned."
+      ],
+      "lecture_en": [
+        {
+          "title": "3. References",
+          "path": "docs-en/cpp-basics/03_references.md"
+        }
+      ]
     },
     {
       "id": "cppb04_pointer",
@@ -451,7 +665,21 @@
           "path": "docs/cpp-basics/04_ポインタ1.md"
         }
       ],
-      "chapter": "入門 4章"
+      "chapter": "入門 4章",
+      "level_en": "C++ Basics",
+      "level_note_en": "Matches the lecture notes in docs-en/cpp-basics/. ROS 2 is not used",
+      "title_en": "Use pointers",
+      "chapter_en": "Basics ch.4",
+      "hints_en": [
+        "nullptr check",
+        "bool try_read(const int * p, int * out);"
+      ],
+      "lecture_en": [
+        {
+          "title": "4. Pointers (1)",
+          "path": "docs-en/cpp-basics/04_pointers_1.md"
+        }
+      ]
     },
     {
       "id": "cppb05_pointer_array",
@@ -479,7 +707,21 @@
           "path": "docs/cpp-basics/05_ポインタ2.md"
         }
       ],
-      "chapter": "入門 5章"
+      "chapter": "入門 5章",
+      "level_en": "C++ Basics",
+      "level_note_en": "Matches the lecture notes in docs-en/cpp-basics/. ROS 2 is not used",
+      "title_en": "Arrays and pointers",
+      "chapter_en": "Basics ch.5",
+      "hints_en": [
+        "An array decays to a pointer when passed as a function argument",
+        "int sum(const int * data, std::size_t count);"
+      ],
+      "lecture_en": [
+        {
+          "title": "5. Pointers (2)",
+          "path": "docs-en/cpp-basics/05_pointers_2.md"
+        }
+      ]
     },
     {
       "id": "cppb06_const",
@@ -508,7 +750,28 @@
           "path": "docs/cpp-basics/06_const.md"
         }
       ],
-      "chapter": "入門 6章"
+      "chapter": "入門 6章",
+      "level_en": "C++ Basics",
+      "level_note_en": "Matches the lecture notes in docs-en/cpp-basics/. ROS 2 is not used",
+      "title_en": "Match const in declaration and definition",
+      "chapter_en": "Basics ch.6",
+      "hints_en": [
+        "The trailing const is part of the function type. You need it in both the declaration and the definition.",
+        "no declaration matches ‘int Config::get_limit()’ does not mean \"there is no declaration with that name\". It means \"there is no declaration with a matching type\".",
+        "The header side (the const on the argument, the const on the member) is already written. You only add const in two places in src/config.cpp."
+      ],
+      "lecture_en": [
+        {
+          "title": "6. const",
+          "path": "docs-en/cpp-basics/06_const.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "cppreference: cv (const and volatile) type qualifiers",
+          "url": "https://en.cppreference.com/w/cpp/language/cv"
+        }
+      ]
     },
     {
       "id": "cppb07_static",
@@ -538,7 +801,23 @@
           "path": "docs/cpp-basics/07_static.md"
         }
       ],
-      "chapter": "入門 7章"
+      "chapter": "入門 7章",
+      "level_en": "C++ Basics",
+      "level_note_en": "Matches the lecture notes in docs-en/cpp-basics/. ROS 2 is not used",
+      "title_en": "The three meanings of static",
+      "chapter_en": "Basics ch.7",
+      "hints_en": [
+        "static inside a function: static int id = 0; is initialized only on the first call.",
+        "A static class member cannot be linked with only the declaration in the header. You need a definition such as int IdGenerator::count_ = 0; in the .cpp file.",
+        "id() is a non-static member function, but what it touches is the shared count_. That is why the numbers continue between gen1 and gen2.",
+        "You cannot reset the function-local static of next_id() with reset(). That is the correct behavior."
+      ],
+      "lecture_en": [
+        {
+          "title": "7. static",
+          "path": "docs-en/cpp-basics/07_static.md"
+        }
+      ]
     },
     {
       "id": "cppb08_qualifiers",
@@ -568,7 +847,23 @@
           "path": "docs/cpp-basics/08_その他の修飾子.md"
         }
       ],
-      "chapter": "入門 8章"
+      "chapter": "入門 8章",
+      "level_en": "C++ Basics",
+      "level_note_en": "Matches the lecture notes in docs-en/cpp-basics/. ROS 2 is not used",
+      "title_en": "Put qualifiers in the right places",
+      "chapter_en": "Basics ch.8",
+      "hints_en": [
+        "In this exercise only, the file you edit is the header. inline / explicit / constexpr / trailing const are qualifiers that go on a declaration, so you cannot add them later on the .cpp side.",
+        "If you write explicit Pair::Pair(int, int) {}, you get error: ‘explicit’ outside class declaration.",
+        "constexpr includes inline. So if you put constexpr on square, it is not defined multiple times, and only twice needs a separate inline.",
+        "multiple definition is a link-time error. You cannot see it until you fix the other three first."
+      ],
+      "lecture_en": [
+        {
+          "title": "8. Other qualifiers",
+          "path": "docs-en/cpp-basics/08_other_qualifiers.md"
+        }
+      ]
     },
     {
       "id": "cppb09_value_semantics",
@@ -597,7 +892,22 @@
           "path": "docs/cpp-basics/09_値のセマンティクス.md"
         }
       ],
-      "chapter": "入門 9章"
+      "chapter": "入門 9章",
+      "level_en": "C++ Basics",
+      "level_note_en": "Matches the lecture notes in docs-en/cpp-basics/. ROS 2 is not used",
+      "title_en": "Count the copies",
+      "chapter_en": "Basics ch.9",
+      "hints_en": [
+        "The copy constructor \"creates an object that does not exist yet\"; copy assignment \"puts a value into an object that already exists\". This is the difference between Data d2(d1); and d2 = d1;.",
+        "process_by_const_ref takes the argument as const Data &, so the argument is not copied.",
+        "The copy of the return value disappears by NRVO. So the copy count of the const& version is 0, not 1."
+      ],
+      "lecture_en": [
+        {
+          "title": "9. Value semantics",
+          "path": "docs-en/cpp-basics/09_value_semantics.md"
+        }
+      ]
     },
     {
       "id": "cppb10_headers",
@@ -625,7 +935,20 @@
           "path": "docs/cpp-basics/10_ヘッダとプロジェクト構成.md"
         }
       ],
-      "chapter": "入門 10章"
+      "chapter": "入門 10章",
+      "level_en": "C++ Basics",
+      "level_note_en": "Matches the lecture notes in docs-en/cpp-basics/. ROS 2 is not used",
+      "title_en": "Split into headers",
+      "chapter_en": "Basics ch.10",
+      "hints_en": [
+        "Separate declaration and definition, and link two .cpp files"
+      ],
+      "lecture_en": [
+        {
+          "title": "10. Headers and project layout",
+          "path": "docs-en/cpp-basics/10_headers_and_project_layout.md"
+        }
+      ]
     },
     {
       "id": "cpp01_build_and_link",
@@ -667,7 +990,34 @@
           "path": "docs/cpp/01_ビルドとリンクの仕組み.md"
         }
       ],
-      "chapter": "C++ 1章"
+      "chapter": "C++ 1章",
+      "level_en": "C++",
+      "level_note_en": "Matches the lecture notes in docs-en/cpp/. ROS 2 is not used",
+      "title_en": "Get the build and link working",
+      "chapter_en": "C++ ch.1",
+      "hints_en": [
+        "There are two places to fix. One is the header and the other is the .cpp.",
+        "",
+        "TODO(1) include/drill/counter.hpp:",
+        "  int add_one(int x) { ... }  →  inline int add_one(int x) { ... }",
+        "  (Moving the body into src/counter.cpp and leaving only the declaration in the header also passes.)",
+        "",
+        "TODO(2) src/counter.cpp:",
+        "  int next_id()",
+        "  {",
+        "    static int id = 0;",
+        "    return ++id;",
+        "  }",
+        "",
+        "A static local variable is initialized only once, at the first call, and it stays alive after the function returns.",
+        "Return ++id. With id++, the first call returns 0."
+      ],
+      "lecture_en": [
+        {
+          "title": "1. How building and linking work",
+          "path": "docs-en/cpp/01_how_build_and_link_work.md"
+        }
+      ]
     },
     {
       "id": "cpp02_class_init",
@@ -703,7 +1053,29 @@
           "path": "docs/cpp/02_クラスと初期化.md"
         }
       ],
-      "chapter": "C++ 2章"
+      "chapter": "C++ 2章",
+      "level_en": "C++",
+      "level_note_en": "Matches the lecture notes in docs-en/cpp/. ROS 2 is not used",
+      "title_en": "Initialize a class",
+      "chapter_en": "C++ ch.2",
+      "hints_en": [
+        "A const member cannot be assigned. It can only be initialized.",
+        "So do not use = in the constructor body. Write it in the member initializer list.",
+        "",
+        "  Stopwatch::Stopwatch(...)",
+        "  : member1(argument1), member2(argument2)",
+        "  {",
+        "  }",
+        "",
+        "Write the members in the same order as you declared them in the class definition.",
+        "If the order differs, -Wreorder gives a warning (the real initialization order is the declaration order)."
+      ],
+      "lecture_en": [
+        {
+          "title": "2. Classes and initialization",
+          "path": "docs-en/cpp/02_classes_and_initialization.md"
+        }
+      ]
     },
     {
       "id": "cpp03_inheritance",
@@ -739,7 +1111,29 @@
           "path": "docs/cpp/03_継承.md"
         }
       ],
-      "chapter": "C++ 3章"
+      "chapter": "C++ 3章",
+      "level_en": "C++",
+      "level_note_en": "Matches the lecture notes in docs-en/cpp/. ROS 2 is not used",
+      "title_en": "Inherit and implement virtuals",
+      "chapter_en": "C++ ch.3",
+      "hints_en": [
+        "A derived class must implement the pure virtual functions of the base class (the ones with = 0).",
+        "Add override when you implement them.",
+        "",
+        "  double read() const override { return ...; }",
+        "",
+        "With override, you get a compile error when the signature differs from the base.",
+        "Without it, the function silently compiles as \"a new, different function\", and the base implementation keeps being called.",
+        "Forgetting const is the typical mistake. The safe way is to copy the base declaration.",
+        "",
+        "A virtual function that has a default implementation uses the base one unless you override it."
+      ],
+      "lecture_en": [
+        {
+          "title": "3. Inheritance",
+          "path": "docs-en/cpp/03_inheritance.md"
+        }
+      ]
     },
     {
       "id": "cpp04_reference_const",
@@ -773,7 +1167,27 @@
           "path": "docs/cpp/04_参照とconst.md"
         }
       ],
-      "chapter": "C++ 4章"
+      "chapter": "C++ 4章",
+      "level_en": "C++",
+      "level_note_en": "Matches the lecture notes in docs-en/cpp/. ROS 2 is not used",
+      "title_en": "Receive by reference and const",
+      "chapter_en": "C++ ch.4",
+      "hints_en": [
+        "The test in this exercise counts how many times a copy happens.",
+        "",
+        "Taking const T & gives 0 copies. Taking T gives 1 copy.",
+        "Read a declaration from right to left: const Payload & p means",
+        "\"p is a reference to a const Payload (one that cannot be changed)\".",
+        "",
+        "The const at the end of a member function is a different thing. It means \"this function does not change the object\".",
+        "Add it to every function that does not modify the members."
+      ],
+      "lecture_en": [
+        {
+          "title": "4. References and const",
+          "path": "docs-en/cpp/04_references_and_const.md"
+        }
+      ]
     },
     {
       "id": "cpp05_move",
@@ -812,7 +1226,32 @@
           "path": "docs/cpp/05_ムーブと所有権.md"
         }
       ],
-      "chapter": "C++ 5章"
+      "chapter": "C++ 5章",
+      "level_en": "C++",
+      "level_note_en": "Matches the lecture notes in docs-en/cpp/. ROS 2 is not used",
+      "title_en": "Move ownership",
+      "chapter_en": "C++ ch.5",
+      "hints_en": [
+        "A move constructor \"steals\". It does not copy. It re-attaches the pointer.",
+        "",
+        "  Buffer::Buffer(Buffer && other) noexcept",
+        "  : size_(other.size_), data_(std::move(other.data_))",
+        "  {",
+        "    other.size_ = 0;      // ← empty the moved-from object",
+        "  }",
+        "",
+        "Do not forget to empty the moved-from object. If two objects own the same memory,",
+        "it is freed twice.",
+        "",
+        "Add noexcept. Without it, std::vector reallocation chooses to copy.",
+        "The test compares the addresses of the buffers to check that no copy happened."
+      ],
+      "lecture_en": [
+        {
+          "title": "5. Move and ownership",
+          "path": "docs-en/cpp/05_move_and_ownership.md"
+        }
+      ]
     },
     {
       "id": "cpp06_smart_pointers",
@@ -851,7 +1290,32 @@
           "path": "docs/cpp/06_スマートポインタ.md"
         }
       ],
-      "chapter": "C++ 6章"
+      "chapter": "C++ 6章",
+      "level_en": "C++",
+      "level_note_en": "Matches the lecture notes in docs-en/cpp/. ROS 2 is not used",
+      "title_en": "Express ownership: smart ptrs",
+      "chapter_en": "C++ ch.6",
+      "hints_en": [
+        "This reproduces what rclcpp does inside.",
+        "Hold the registered objects as weak_ptr, and check whether each one is alive with lock() when you use it.",
+        "",
+        "  for (const auto & w : items_) {",
+        "    if (auto p = w.lock()) {",
+        "      // here p is guaranteed to be alive",
+        "    }",
+        "  }",
+        "",
+        "Do not check with expired() and then use it. Branch on the result of lock().",
+        "lock() checks and gets at the same time, so there is no race.",
+        "",
+        "This mechanism is the reason behind \"it does not work unless you keep the return value of create_publisher as a member\"."
+      ],
+      "lecture_en": [
+        {
+          "title": "6. Smart pointers",
+          "path": "docs-en/cpp/06_smart_pointers.md"
+        }
+      ]
     },
     {
       "id": "cpp07_lambda",
@@ -889,7 +1353,31 @@
           "path": "docs/cpp/07_ラムダとstd_bind.md"
         }
       ],
-      "chapter": "C++ 7章"
+      "chapter": "C++ 7章",
+      "level_en": "C++",
+      "level_note_en": "Matches the lecture notes in docs-en/cpp/. ROS 2 is not used",
+      "title_en": "Register lambdas as callbacks",
+      "chapter_en": "C++ ch.7",
+      "hints_en": [
+        "What you write in the capture [ ] changes the meaning.",
+        "",
+        "  [x]     copy x (remember the value at the time the lambda is created)",
+        "  [&x]    reference x (see the value at the time it is called)",
+        "  [this]  a pointer to yourself. Needed to touch members",
+        "",
+        "This is how you pass a member function with std::bind.",
+        "",
+        "  std::bind(&Manager::on_event, this, std::placeholders::_1)",
+        "",
+        "If you forget the &, you get invalid use of non-static member function.",
+        "Match the number of _1 to the number of arguments passed when it is called."
+      ],
+      "lecture_en": [
+        {
+          "title": "7. Lambdas and std::bind",
+          "path": "docs-en/cpp/07_lambdas_and_std_bind.md"
+        }
+      ]
     },
     {
       "id": "cpp10_operators",
@@ -931,7 +1419,35 @@
           "path": "docs/cpp/10_演算子オーバーロード.md"
         }
       ],
-      "chapter": "C++ 10章"
+      "chapter": "C++ 10章",
+      "level_en": "C++",
+      "level_note_en": "Matches the lecture notes in docs-en/cpp/. ROS 2 is not used",
+      "title_en": "Overload operators",
+      "chapter_en": "C++ ch.10",
+      "hints_en": [
+        "An operator is just a function. Only its name is a symbol.",
+        "",
+        "  Vec2 operator+(const Vec2 & a, const Vec2 & b)",
+        "  {",
+        "    return Vec2{a.x + b.x, a.y + b.y};",
+        "  }",
+        "",
+        "There are 4 things to watch out for.",
+        "",
+        "1. You need two operator*. Vec2 * double and double * Vec2 are different functions.",
+        "      Delegate the latter to the former and it is one line: return v * s;",
+        "2. Implement operator< with <. If you use <=, a < a becomes true,",
+        "      which breaks strict weak ordering and makes std::sort undefined behavior.",
+        "3. operator<< returns std::ostream &, and ends with return os;.",
+        "      Without it, you cannot chain <<.",
+        "4. operator+= returns Vec2 & (a reference) and ends with return *this;."
+      ],
+      "lecture_en": [
+        {
+          "title": "10. Operator overloading",
+          "path": "docs-en/cpp/10_operator_overloading.md"
+        }
+      ]
     },
     {
       "id": "cpp11_stl",
@@ -971,7 +1487,33 @@
           "path": "docs/cpp/11_標準ライブラリの道具箱.md"
         }
       ],
-      "chapter": "C++ 11章"
+      "chapter": "C++ 11章",
+      "level_en": "C++",
+      "level_note_en": "Matches the lecture notes in docs-en/cpp/. ROS 2 is not used",
+      "title_en": "Use the standard library",
+      "chapter_en": "C++ ch.11",
+      "hints_en": [
+        "std::clamp(value, lower, upper) keeps a value inside a range. It needs #include <algorithm>.",
+        "",
+        "  const double limited = std::clamp(v, -max, max);",
+        "",
+        "std::optional expresses \"there may be no value\" in the type.",
+        "",
+        "  std::optional<int> find(...) {",
+        "    auto it = table.find(key);",
+        "    if (it == table.end()) { return std::nullopt; }",
+        "    return it->second;",
+        "  }",
+        "",
+        "operator[] of std::map inserts an element with a default value when the key is missing.",
+        "If you only want to look up, use find() or count()."
+      ],
+      "lecture_en": [
+        {
+          "title": "11. The standard library toolbox",
+          "path": "docs-en/cpp/11_standard_library_toolbox.md"
+        }
+      ]
     },
     {
       "id": "cpp12_chrono",
@@ -1010,7 +1552,32 @@
           "path": "docs/cpp/12_chronoと時間.md"
         }
       ],
-      "chapter": "C++ 12章"
+      "chapter": "C++ 12章",
+      "level_en": "C++",
+      "level_note_en": "Matches the lecture notes in docs-en/cpp/. ROS 2 is not used",
+      "title_en": "Handle time with types",
+      "chapter_en": "C++ ch.12",
+      "hints_en": [
+        "A duration of std::chrono is \"a different type means a different unit\".",
+        "milliseconds and seconds are not compatible.",
+        "",
+        "The direction that loses no information (seconds → milliseconds) is converted automatically.",
+        "The direction that loses information (milliseconds → seconds) needs duration_cast, and it truncates.",
+        "",
+        "  const auto s = std::chrono::duration_cast<std::chrono::seconds>(ms);",
+        "",
+        "duration_cast truncates. It does not round. 500ms → 0s.",
+        "",
+        "To make milliseconds from seconds held in a double,",
+        "  std::chrono::milliseconds(static_cast<int64_t>(seconds * 1000))",
+        "convert to an integer first, as above, and then construct the duration."
+      ],
+      "lecture_en": [
+        {
+          "title": "12. std::chrono and time",
+          "path": "docs-en/cpp/12_chrono_and_time.md"
+        }
+      ]
     },
     {
       "id": "01_publisher",
@@ -1049,7 +1616,32 @@
           "path": "docs/ros2/11_C++でpub_subを書く.md"
         }
       ],
-      "chapter": "11章"
+      "chapter": "11章",
+      "level_en": "ROS 2 Beginner",
+      "level_note_en": "Lecture notes, chapters 11-14",
+      "title_en": "Publish to a topic",
+      "chapter_en": "ROS 2 ch.11",
+      "hints_en": [
+        "Write exactly the same thing as MinimalPublisher in the official tutorial.",
+        "",
+        "  publisher_ = this->create_publisher<std_msgs::msg::String>(\"topic\", 10);",
+        "  timer_ = this->create_wall_timer(",
+        "    500ms, std::bind(&MinimalPublisher::timer_callback, this));",
+        "",
+        "Inside timer_callback:",
+        "  auto message = std_msgs::msg::String();",
+        "  message.data = \"Hello, world! \" + std::to_string(count_++);",
+        "  RCLCPP_INFO(this->get_logger(), \"Publishing: '%s'\", message.data.c_str());",
+        "  publisher_->publish(message);",
+        "",
+        "count_ uses post-increment, so the first message is \"Hello, world! 0\"."
+      ],
+      "lecture_en": [
+        {
+          "title": "ROS 2 Lecture 11: Writing pub/sub in C++ (the publisher section)",
+          "path": "docs-en/ros2/11_writing_pub_sub_in_cpp.md"
+        }
+      ]
     },
     {
       "id": "02_subscriber",
@@ -1085,7 +1677,29 @@
           "path": "docs/ros2/11_C++でpub_subを書く.md"
         }
       ],
-      "chapter": "11章"
+      "chapter": "11章",
+      "level_en": "ROS 2 Beginner",
+      "level_note_en": "Lecture notes, chapters 11-14",
+      "title_en": "Subscribe to a topic",
+      "chapter_en": "ROS 2 ch.11",
+      "hints_en": [
+        "Write the same thing as MinimalSubscriber in the official tutorial.",
+        "",
+        "  subscription_ = this->create_subscription<std_msgs::msg::String>(",
+        "    \"topic\", 10, std::bind(&MinimalSubscriber::topic_callback, this, _1));",
+        "",
+        "Inside topic_callback:",
+        "  RCLCPP_INFO(this->get_logger(), \"I heard: '%s'\", msg.data.c_str());",
+        "",
+        "_1 of std::bind needs using std::placeholders::_1;.",
+        "The argument of the callback is const std_msgs::msg::String & (not a pointer)."
+      ],
+      "lecture_en": [
+        {
+          "title": "ROS 2 Lecture 11: Writing pub/sub in C++ (the subscriber section)",
+          "path": "docs-en/ros2/11_writing_pub_sub_in_cpp.md"
+        }
+      ]
     },
     {
       "id": "03_custom_interface",
@@ -1139,7 +1753,51 @@
           "path": "docs/ros2/13_カスタムインターフェース.md"
         }
       ],
-      "chapter": "13章"
+      "chapter": "13章",
+      "level_en": "ROS 2 Beginner",
+      "level_note_en": "Lecture notes, chapters 11-14",
+      "title_en": "Define and use custom interfaces",
+      "chapter_en": "ROS 2 ch.13",
+      "hints_en": [
+        "A definition file is just \"type name\" lines, one per line.",
+        "",
+        "msg/Num.msg:",
+        "  int64 num",
+        "",
+        "srv/AddThreeInts.srv (--- separates the request and the response):",
+        "  int64 a",
+        "  int64 b",
+        "  int64 c",
+        "  ---",
+        "  int64 sum",
+        "",
+        "The C++ side is a combination of 01 and 04.",
+        "  publisher_ = this->create_publisher<Num>(\"num\", 10);",
+        "  timer_ = this->create_wall_timer(",
+        "    500ms, std::bind(&NumNode::timer_callback, this));",
+        "  service_ = this->create_service<AddThreeInts>(",
+        "    \"add_three_ints\", std::bind(&NumNode::add_three_ints, this, _1, _2));",
+        "",
+        "You use types defined in the same package, so after building you can check them with:",
+        "  ros2 interface show drill_03_custom_interface/msg/Num",
+        "  ros2 interface show drill_03_custom_interface/srv/AddThreeInts"
+      ],
+      "lecture_en": [
+        {
+          "title": "ROS 2 Lecture 13: Custom interfaces (defining msg / srv)",
+          "path": "docs-en/ros2/13_custom_interfaces.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Custom ROS 2 interfaces",
+          "url": "https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Custom-ROS2-Interfaces.html"
+        },
+        {
+          "title": "Implementing custom interfaces (define and use them in one package)",
+          "url": "https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Single-Package-Define-And-Use-Interface.html"
+        }
+      ]
     },
     {
       "id": "04_service_server",
@@ -1182,7 +1840,36 @@
           "path": "docs/ros2/14_サービスの実装.md"
         }
       ],
-      "chapter": "14章"
+      "chapter": "14章",
+      "level_en": "ROS 2 Beginner",
+      "level_note_en": "Lecture notes, chapters 11-14",
+      "title_en": "Write a service server",
+      "chapter_en": "ROS 2 ch.14",
+      "hints_en": [
+        "Write the add function and create_service from the official tutorial.",
+        "",
+        "  service_ = this->create_service<AddTwoInts>(",
+        "    \"add_two_ints\",",
+        "    std::bind(&AddTwoIntsServer::add, this, _1, _2));",
+        "",
+        "Do not return in add. Write into response:",
+        "  response->sum = request->a + request->b;",
+        "  RCLCPP_INFO(this->get_logger(), \"Incoming request\\na: %ld b: %ld\",",
+        "    request->a, request->b);",
+        "",
+        "You can check what the service contains with:",
+        "  ros2 interface show example_interfaces/srv/AddTwoInts"
+      ],
+      "lecture_en": [
+        {
+          "title": "ROS 2 Lecture 06: Services (the service concept)",
+          "path": "docs-en/ros2/06_services.md"
+        },
+        {
+          "title": "ROS 2 Lecture 14: Implementing services (server side)",
+          "path": "docs-en/ros2/14_implementing_services.md"
+        }
+      ]
     },
     {
       "id": "05_service_client",
@@ -1220,7 +1907,31 @@
           "path": "docs/ros2/14_サービスの実装.md"
         }
       ],
-      "chapter": "14章"
+      "chapter": "14章",
+      "level_en": "ROS 2 Beginner",
+      "level_note_en": "Lecture notes, chapters 11-14",
+      "title_en": "Write a service client",
+      "chapter_en": "ROS 2 ch.14",
+      "hints_en": [
+        "  client_ = this->create_client<AddTwoInts>(\"add_two_ints\");",
+        "",
+        "Waiting for the server to start is the client's job:",
+        "  client_->wait_for_service(timeout)",
+        "",
+        "Make the request with a shared_ptr and pass it to async_send_request:",
+        "  auto request = std::make_shared<AddTwoInts::Request>();",
+        "  request->a = a;",
+        "  request->b = b;",
+        "  return client_->async_send_request(request);",
+        "",
+        "The FutureAndRequestId that comes back is waited for by the caller with spin."
+      ],
+      "lecture_en": [
+        {
+          "title": "ROS 2 Lecture 14: Implementing services (client side, sync and async)",
+          "path": "docs-en/ros2/14_implementing_services.md"
+        }
+      ]
     },
     {
       "id": "06_parameters",
@@ -1265,7 +1976,38 @@
           "path": "docs/ros2/15_パラメータとlaunchの実践.md"
         }
       ],
-      "chapter": "15章"
+      "chapter": "15章",
+      "level_en": "ROS 2 Intermediate",
+      "level_note_en": "Lecture notes, chapters 15-17",
+      "title_en": "Use parameters in a class",
+      "chapter_en": "ROS 2 ch.15",
+      "hints_en": [
+        "Write the same thing as MinimalParam in the official tutorial.",
+        "",
+        "  auto param_desc = rcl_interfaces::msg::ParameterDescriptor{};",
+        "  param_desc.description = \"This parameter is mine!\";",
+        "  this->declare_parameter(\"my_parameter\", \"world\", param_desc);",
+        "",
+        "Inside the timer (1000ms) callback:",
+        "  std::string my_param = this->get_parameter(\"my_parameter\").as_string();",
+        "  RCLCPP_INFO(this->get_logger(), \"Hello %s!\", my_param.c_str());",
+        "  std::vector<rclcpp::Parameter> all_new_parameters{",
+        "    rclcpp::Parameter(\"my_parameter\", \"world\")};",
+        "  this->set_parameters(all_new_parameters);",
+        "",
+        "The last set_parameters is the key point of the official tutorial. Even if you change it with ros2 param set,",
+        "it goes back to \"world\" one second later. The rule is: read a parameter every time."
+      ],
+      "lecture_en": [
+        {
+          "title": "ROS 2 Lecture 07: Parameters (the parameter concept)",
+          "path": "docs-en/ros2/07_parameters.md"
+        },
+        {
+          "title": "ROS 2 Lecture 15: Parameters and launch in practice (declare_parameter)",
+          "path": "docs-en/ros2/15_parameters_and_launch_in_practice.md"
+        }
+      ]
     },
     {
       "id": "07_param_events",
@@ -1307,7 +2049,35 @@
           "path": "docs/ros2/15_パラメータとlaunchの実践.md"
         }
       ],
-      "chapter": "15章"
+      "chapter": "15章",
+      "level_en": "ROS 2 Intermediate",
+      "level_note_en": "Lecture notes, chapters 15-17",
+      "title_en": "Watch for parameter changes",
+      "chapter_en": "ROS 2 ch.15",
+      "hints_en": [
+        "In exercise 05, you used the \"call get_parameter every time\" style. This one is the opposite:",
+        "you get a notification only when the value changes.",
+        "",
+        "  param_subscriber_ = std::make_shared<rclcpp::ParameterEventHandler>(this);",
+        "  cb_handle_ = param_subscriber_->add_parameter_callback(",
+        "    \"an_int_param\", [this](const rclcpp::Parameter & p) { ... });",
+        "",
+        "If you do not keep the return value (the handle) of add_parameter_callback as a member,",
+        "the callback is removed on the spot. This is the biggest pitfall.",
+        "",
+        "The callback is called through the /parameter_events topic,",
+        "so it is not called unless you spin the node."
+      ],
+      "lecture_en": [
+        {
+          "title": "ROS 2 Lecture 07: Parameters (tuning gains at run time)",
+          "path": "docs-en/ros2/07_parameters.md"
+        },
+        {
+          "title": "ROS 2 Lecture 15: Parameters and launch in practice (parameters in practice)",
+          "path": "docs-en/ros2/15_parameters_and_launch_in_practice.md"
+        }
+      ]
     },
     {
       "id": "08_params_yaml",
@@ -1355,7 +2125,36 @@
           "path": "docs/ros2/15_パラメータとlaunchの実践.md"
         }
       ],
-      "chapter": "15章"
+      "chapter": "15章",
+      "level_en": "ROS 2 Intermediate",
+      "level_note_en": "Lecture notes, chapters 15-17",
+      "title_en": "Manage parameters with YAML",
+      "chapter_en": "ROS 2 ch.15",
+      "hints_en": [
+        "A parameter YAML has 3 levels. Many people get this wrong.",
+        "",
+        "  <node_name>:",
+        "    ros__parameters:",
+        "      <parameter_name>: <value>",
+        "",
+        "The underscore of ros__parameters is **2 characters**.",
+        "If the node name has a namespace, write it like /ns/node_name.",
+        "To apply to all nodes, use /** instead of the node name.",
+        "",
+        "From the command line:",
+        "  ros2 run <pkg> <exe> --ros-args --params-file config/params.yaml",
+        "From launch, use Node(..., parameters=[path string])."
+      ],
+      "lecture_en": [
+        {
+          "title": "ROS 2 Lecture 07: Parameters (YAML)",
+          "path": "docs-en/ros2/07_parameters.md"
+        },
+        {
+          "title": "ROS 2 Lecture 15: Parameters and launch in practice (injecting YAML from launch, and namespaces)",
+          "path": "docs-en/ros2/15_parameters_and_launch_in_practice.md"
+        }
+      ]
     },
     {
       "id": "09_launch",
@@ -1404,7 +2203,36 @@
           "path": "docs/ros2/15_パラメータとlaunchの実践.md"
         }
       ],
-      "chapter": "09章 / 15章"
+      "chapter": "09章 / 15章",
+      "level_en": "ROS 2 Intermediate",
+      "level_note_en": "Lecture notes, chapters 15-17",
+      "title_en": "Write launch in Python/XML/YAML",
+      "chapter_en": "ROS 2 ch.9 / ch.15",
+      "hints_en": [
+        "Write the same content in 3 formats. The syntax differs, but the structure is the same.",
+        "",
+        "Python:",
+        "  from launch import LaunchDescription",
+        "  from launch_ros.actions import Node",
+        "  def generate_launch_description():",
+        "      return LaunchDescription([Node(package=..., executable=..., ...)])",
+        "",
+        "XML:  <launch><node pkg=\"...\" exec=\"...\" namespace=\"...\"><remap from=\"...\" to=\"...\"/></node></launch>",
+        "YAML: launch: [ {node: {pkg: ..., exec: ..., namespace: ..., remap: [...]}} ]",
+        "",
+        "Python can be \"built with a program\", and XML / YAML are \"declarative and easy to read\".",
+        "That is how they divide the work. If you need branching or loops, use Python."
+      ],
+      "lecture_en": [
+        {
+          "title": "ROS 2 Lecture 09: launch and ros2 bag (starting everything with launch)",
+          "path": "docs-en/ros2/09_launch_and_ros2_bag.md"
+        },
+        {
+          "title": "ROS 2 Lecture 15: Parameters and launch in practice (injecting YAML from launch)",
+          "path": "docs-en/ros2/15_parameters_and_launch_in_practice.md"
+        }
+      ]
     },
     {
       "id": "10_action_server",
@@ -1454,7 +2282,39 @@
           "path": "docs/ros2/16_アクションサーバの実装.md"
         }
       ],
-      "chapter": "16章"
+      "chapter": "16章",
+      "level_en": "ROS 2 Intermediate",
+      "level_note_en": "Lecture notes, chapters 15-17",
+      "title_en": "Write an action server",
+      "chapter_en": "ROS 2 ch.16",
+      "hints_en": [
+        "An action has 3 stages: \"goal → feedback → result\".",
+        "The server needs 4 parts.",
+        "",
+        "  1. handle_goal    : accept or reject the goal (ACCEPT_AND_EXECUTE / REJECT)",
+        "  2. handle_cancel  : accept or reject a cancel request (ACCEPT / REJECT)",
+        "  3. handle_accepted: start executing the accepted goal (the official one runs execute in std::thread)",
+        "  4. execute        : the real computation. publish_feedback on the way, and succeed at the end",
+        "",
+        "  action_server_ = rclcpp_action::create_server<Fibonacci>(",
+        "    this, \"fibonacci\",",
+        "    std::bind(&FibonacciActionServer::handle_goal, this, _1, _2),",
+        "    std::bind(&FibonacciActionServer::handle_cancel, this, _1),",
+        "    std::bind(&FibonacciActionServer::handle_accepted, this, _1));",
+        "",
+        "It is important that handle_accepted \"returns quickly\". If you do heavy work here,",
+        "the Executor stops. That is why the official tutorial hands it to another thread."
+      ],
+      "lecture_en": [
+        {
+          "title": "ROS 2 Lecture 08: Actions (the action concept)",
+          "path": "docs-en/ros2/08_actions.md"
+        },
+        {
+          "title": "ROS 2 Lecture 16: Implementing an action server (goal/feedback/result/cancel)",
+          "path": "docs-en/ros2/16_implementing_an_action_server.md"
+        }
+      ]
     },
     {
       "id": "11_node_test",
@@ -1499,7 +2359,34 @@
           "path": "docs/ros2/17_テストとデバッグ.md"
         }
       ],
-      "chapter": "17章"
+      "chapter": "17章",
+      "level_en": "ROS 2 Intermediate",
+      "level_note_en": "Lecture notes, chapters 15-17",
+      "title_en": "Write tests",
+      "chapter_en": "ROS 2 ch.17",
+      "hints_en": [
+        "What you write in this exercise is a \"test\". The implementation (limit_velocity) is already finished.",
+        "",
+        "There are 2 conditions to pass.",
+        "  1. Your test passes against the correct implementation",
+        "  2. Your test fails against an implementation with a bug put in on purpose",
+        "So a test that only \"passes\" is not enough. You need viewpoints that can catch a bug.",
+        "",
+        "A checklist to find the viewpoints you are missing:",
+        "  - Does the speed limit (max_speed) work on the \"negative side\" as well as the \"positive side\"?",
+        "  - Does the acceleration limit (max_delta) work in both the increasing and the decreasing direction?",
+        "  - Boundary values: exactly max_speed / exactly max_delta",
+        "  - When max_speed or max_delta is 0",
+        "  - When max_speed or max_delta is negative (the spec treats it as 0)",
+        "",
+        "Do not compare floating-point numbers with ==. Use EXPECT_DOUBLE_EQ or EXPECT_NEAR."
+      ],
+      "lecture_en": [
+        {
+          "title": "ROS 2 Lecture 17: Testing and debugging (gtest / pytest and colcon test)",
+          "path": "docs-en/ros2/17_testing_and_debugging.md"
+        }
+      ]
     },
     {
       "id": "12_qos",
@@ -1540,7 +2427,30 @@
           "path": "docs/ros2/05_トピック.md"
         }
       ],
-      "chapter": "05章の発展"
+      "chapter": "05章の発展",
+      "level_en": "ROS 2 Advanced",
+      "level_note_en": "Areas that the lecture notes put off to separate articles",
+      "title_en": "Design a QoS profile",
+      "chapter_en": "ROS 2 ch.5 (advanced)",
+      "hints_en": [
+        "QoS is \"a contract between the sender and the receiver\". If they do not match, they do not connect.",
+        "",
+        "  rclcpp::QoS qos(rclcpp::KeepLast(1));",
+        "  qos.transient_local();   // also give the last value to subscribers that come later",
+        "  qos.reliable();",
+        "",
+        "TRANSIENT_LOCAL is the setting where \"the last value also reaches a subscriber that starts later\".",
+        "Use it for data that \"does not change but is always needed\", such as maps and robot descriptions.",
+        "",
+        "You need to set both the publisher and the subscription to transient_local.",
+        "You can check what they actually connected with using publisher_->get_actual_qos()."
+      ],
+      "lecture_en": [
+        {
+          "title": "ROS 2 Lecture 05: Topics (a first look at QoS)",
+          "path": "docs-en/ros2/05_topics.md"
+        }
+      ]
     },
     {
       "id": "13_executors",
@@ -1585,7 +2495,44 @@
           "path": "docs/ros2/14_サービスの実装.md"
         }
       ],
-      "chapter": "14章の発展"
+      "chapter": "14章の発展",
+      "level_en": "ROS 2 Advanced",
+      "level_note_en": "Areas that the lecture notes put off to separate articles",
+      "title_en": "Executors and callback groups",
+      "chapter_en": "ROS 2 ch.14 (advanced)",
+      "hints_en": [
+        "If you wait for a service response inside a subscriber callback,",
+        "it will **never** come back as long as they are in the same callback group.",
+        "This is because the Executor runs only one callback at a time from one group.",
+        "",
+        "  callback_group_ = this->create_callback_group(",
+        "    rclcpp::CallbackGroupType::MutuallyExclusive);",
+        "",
+        "  rclcpp::SubscriptionOptions options;",
+        "  options.callback_group = subscription_group_;",
+        "  subscription_ = this->create_subscription<...>(..., options);",
+        "",
+        "  client_ = this->create_client<...>(\"add_two_ints\",",
+        "    rclcpp::ServicesQoS(), client_group_);",
+        "",
+        "And run it with MultiThreadedExecutor. Doing only one of the two does not fix it."
+      ],
+      "lecture_en": [
+        {
+          "title": "ROS 2 Lecture 14: Implementing services (waiting inside a callback and MultiThreadedExecutor)",
+          "path": "docs-en/ros2/14_implementing_services.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Executors (concepts)",
+          "url": "https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Executors.html"
+        },
+        {
+          "title": "Using callback groups",
+          "url": "https://docs.ros.org/en/jazzy/How-To-Guides/Using-callback-groups.html"
+        }
+      ]
     },
     {
       "id": "14_zero_copy",
@@ -1627,7 +2574,41 @@
           "path": "docs/ros2/04_ノード.md"
         }
       ],
-      "chapter": "04章の発展"
+      "chapter": "04章の発展",
+      "level_en": "ROS 2 Advanced",
+      "level_note_en": "Areas that the lecture notes put off to separate articles",
+      "title_en": "Zero copy within one process",
+      "chapter_en": "ROS 2 ch.4 (advanced)",
+      "hints_en": [
+        "publish has 2 forms.",
+        "",
+        "  publisher_->publish(message);              // copied",
+        "  publisher_->publish(std::move(msg_uptr));  // hand over ownership = no copy",
+        "",
+        "Pass a unique_ptr, receive with ConstSharedPtr on the subscriber side, and also",
+        "turn on intra-process communication with NodeOptions().use_intra_process_comms(true).",
+        "Then the **address of the message is the same** on the sending and receiving sides.",
+        "This is zero copy.",
+        "",
+        "If the address changes, a copy is happening somewhere.",
+        "Check whether what you pass to publish is a value or a unique_ptr passed with std::move."
+      ],
+      "lecture_en": [
+        {
+          "title": "ROS 2 Lecture 04: Nodes (advanced: components and intra-process communication)",
+          "path": "docs-en/ros2/04_nodes.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Intra-Process Communication (demo walkthrough)",
+          "url": "https://docs.ros.org/en/jazzy/Tutorials/Demos/Intra-Process-Communication.html"
+        },
+        {
+          "title": "intra_process_demo",
+          "url": "https://github.com/ros2/demos/tree/jazzy/intra_process_demo"
+        }
+      ]
     },
     {
       "id": "15_composition",
@@ -1673,7 +2654,35 @@
           "path": "docs/ros2/04_ノード.md"
         }
       ],
-      "chapter": "04章の発展"
+      "chapter": "04章の発展",
+      "level_en": "ROS 2 Advanced",
+      "level_note_en": "Areas that the lecture notes put off to separate articles",
+      "title_en": "Componentize (RCLCPP_COMPONENTS)",
+      "chapter_en": "ROS 2 ch.4 (advanced)",
+      "hints_en": [
+        "A component is a mechanism to stop using \"one process, one node\".",
+        "You can put them in the same process, so you also get the benefit of zero-copy communication.",
+        "",
+        "There are 2 rules to follow.",
+        "",
+        "  1. The constructor takes const rclcpp::NodeOptions &",
+        "        and passes it straight to the initialization of Node",
+        "       explicit ComposableTalker(const rclcpp::NodeOptions & options)",
+        "       : Node(\"composable_talker\", options)",
+        "",
+        "  2. Register it at the end of the source",
+        "       #include \"rclcpp_components/register_node_macro.hpp\"",
+        "       RCLCPP_COMPONENTS_REGISTER_NODE(ComposableTalker)",
+        "",
+        "If you forget to pass options to Node, you get a node where renaming with --ros-args",
+        "and parameter settings do not work."
+      ],
+      "lecture_en": [
+        {
+          "title": "ROS 2 Lecture 04: Nodes (advanced: component nodes)",
+          "path": "docs-en/ros2/04_nodes.md"
+        }
+      ]
     },
     {
       "id": "dp01_iterator",
@@ -1703,7 +2712,29 @@
           "path": "docs/patterns/01_Iterator.md"
         }
       ],
-      "chapter": "パターン 1章"
+      "chapter": "パターン 1章",
+      "level_en": "Design Patterns",
+      "level_note_en": "Matches the lecture notes in docs-en/patterns/. Runs alongside the reading group for Hiroshi Yuki's \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese). ROS 2 is not used",
+      "title_en": "Iterator: GoF and STL versions",
+      "chapter_en": "Patterns ch.1",
+      "hints_en": [
+        "`next()` returns `const Book &`. If it returns `Book`, a copy runs every time. The test \"next points into the shelf, not to a copy\" catches this by comparing addresses.",
+        "`iterator()` returns `std::unique_ptr<Iterator>`. With a raw pointer, the type does not say who calls `delete`.",
+        "The iterator holds the position (`index_`). If the shelf held it, two iterators used at the same time would interfere with each other.",
+        "`BookShelfIterator` holds a reference to `BookShelf`. It cannot outlive the shelf. Java has no such restriction."
+      ],
+      "lecture_en": [
+        {
+          "title": "1. Iterator",
+          "path": "docs-en/patterns/01_Iterator.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Hiroshi Yuki, \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese), chapter 1",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ]
     },
     {
       "id": "dp02_adapter",
@@ -1733,7 +2764,29 @@
           "path": "docs/patterns/02_Adapter.md"
         }
       ],
-      "chapter": "パターン 2章"
+      "chapter": "パターン 2章",
+      "level_en": "Design Patterns",
+      "level_note_en": "Matches the lecture notes in docs-en/patterns/. Runs alongside the reading group for Hiroshi Yuki's \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese). ROS 2 is not used",
+      "title_en": "Adapter: delegate vs inherit",
+      "chapter_en": "Patterns ch.2",
+      "hints_en": [
+        "The inheritance version uses private inheritance, so call `setPulse(...)` directly, not `driver_.setPulse(...)`.",
+        "If you remove the virtual destructor of `MotorActuator`, releasing through `unique_ptr<MotorActuator>` is undefined behavior.",
+        "A pulse is an `int`. Round it with `std::lround`, not by truncating with `static_cast<int>`.",
+        "50.0 rad/s is equivalent to 5000 pulses, but the driver clamps it to 1000. The Adapter does not clamp."
+      ],
+      "lecture_en": [
+        {
+          "title": "2. Adapter",
+          "path": "docs-en/patterns/02_Adapter.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Hiroshi Yuki, \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese), chapter 2",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ]
     },
     {
       "id": "dp03_template_method",
@@ -1764,7 +2817,30 @@
           "path": "docs/patterns/03_TemplateMethod.md"
         }
       ],
-      "chapter": "パターン 3章"
+      "chapter": "パターン 3章",
+      "level_en": "Design Patterns",
+      "level_note_en": "Matches the lecture notes in docs-en/patterns/. Runs alongside the reading group for Hiroshi Yuki's \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese). ROS 2 is not used",
+      "title_en": "Template Method: NVI and CRTP",
+      "chapter_en": "Patterns ch.3",
+      "hints_en": [
+        "Do not put `virtual` on `read_once()`. The skeleton must not be replaceable. It is the same as a `final` method in Java.",
+        "The virtual function of each step is `private`. You can override a private function (you just cannot call it).",
+        "Only `validate()` is `protected`, because a derived class wants to call the base version.",
+        "Always write `override`. If you drop one `const`, it silently becomes a different function.",
+        "Do not call `read_once()` from the constructor (the derived implementation is not ready yet)."
+      ],
+      "lecture_en": [
+        {
+          "title": "3. Template Method",
+          "path": "docs-en/patterns/03_TemplateMethod.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Hiroshi Yuki, \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese), chapter 3",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ]
     },
     {
       "id": "dp04_factory_method",
@@ -1794,7 +2870,29 @@
           "path": "docs/patterns/04_FactoryMethod.md"
         }
       ],
-      "chapter": "パターン 4章"
+      "chapter": "パターン 4章",
+      "level_en": "Design Patterns",
+      "level_note_en": "Matches the lecture notes in docs-en/patterns/. Runs alongside the reading group for Hiroshi Yuki's \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese). ROS 2 is not used",
+      "title_en": "Factory Method: return unique_ptr",
+      "chapter_en": "Patterns ch.4",
+      "hints_en": [
+        "`return logger;` is enough at the end of `create()`. It is a local variable, so it is moved automatically. Writing `return std::move(logger);` gets in the way of move optimization.",
+        "The return type of `create_logger()` is `std::unique_ptr<Logger>`. If you change it to `std::unique_ptr<MemoryLogger>`, the covariant return type does not work and you get a compile error (returning `std::make_unique<MemoryLogger>(...)` as a `unique_ptr<Logger>` is fine).",
+        "A creation failure is expressed with `nullptr`. Do not throw an exception (microcontrollers cannot use them).",
+        "`register_logger()` takes `const Logger &`. Ownership is not passed."
+      ],
+      "lecture_en": [
+        {
+          "title": "4. Factory Method",
+          "path": "docs-en/patterns/04_FactoryMethod.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Hiroshi Yuki, \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese), chapter 4",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ]
     },
     {
       "id": "dp05_singleton",
@@ -1825,7 +2923,30 @@
           "path": "docs/patterns/05_Singleton.md"
         }
       ],
-      "chapter": "パターン 5章"
+      "chapter": "パターン 5章",
+      "level_en": "Design Patterns",
+      "level_note_en": "Matches the lecture notes in docs-en/patterns/. Runs alongside the reading group for Hiroshi Yuki's \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese). ROS 2 is not used",
+      "title_en": "Singleton: Meyers and init order",
+      "chapter_en": "Patterns ch.5",
+      "hints_en": [
+        "A function-local static is thread-safe since C++11. You do not need to write your own `std::mutex` (magic statics). Writing one only makes it slower.",
+        "`instance()` returns a reference. If it returned a pointer, the caller could not tell whether it may call `delete`.",
+        "In `reset()` you may want to write `*this = UartPort{};`, but it does not compile, because copy assignment and move assignment are `= delete`. Reset the members one by one.",
+        "The four `= delete` lines for copy and move are not decoration. If you remove them, `UartPort port = UartPort::instance();` compiles and the singleton breaks. The `static_assert` at the top of the test guards against this.",
+        "Do not touch hardware inside the constructor, because you cannot tell when it runs (see \"The conclusion for microcontrollers\" in the article)."
+      ],
+      "lecture_en": [
+        {
+          "title": "5. Singleton",
+          "path": "docs-en/patterns/05_Singleton.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Hiroshi Yuki, \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese), chapter 5",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ]
     },
     {
       "id": "dp06_prototype",
@@ -1856,7 +2977,30 @@
           "path": "docs/patterns/06_Prototype.md"
         }
       ],
-      "chapter": "パターン 6章"
+      "chapter": "パターン 6章",
+      "level_en": "Design Patterns",
+      "level_note_en": "Matches the lecture notes in docs-en/patterns/. Runs alongside the reading group for Hiroshi Yuki's \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese). ROS 2 is not used",
+      "title_en": "Prototype: clone, covariant return",
+      "chapter_en": "Patterns ch.6",
+      "hints_en": [
+        "You may want to write `std::unique_ptr<PulseTrain> do_clone()`, but it does not compile. `std::unique_ptr<Base>` → `std::unique_ptr<Derived>` cannot be a covariant return type. So `do_clone()` returns a raw pointer, and `clone()` wraps it.",
+        "Do not `override` `clone()`. It is non-virtual. The one to override is the private `do_clone()`.",
+        "Do not forget `Waveform(other)` in the copy constructor of `PulseTrain`. If you forget it, the base part is default-constructed (you cannot see it in this exercise, but it is a bug when the base holds state).",
+        "`pattern_` is a `std::unique_ptr<double[]>`, so even if you try to write a shallow copy, it does not compile. With a raw pointer member it compiles and crashes with a double free.",
+        "`WaveformLibrary` has its copy `= delete`d because \"if you hold a `std::vector<std::unique_ptr<...>>`, copying is automatically forbidden\" is a lie. Read the comment in the header."
+      ],
+      "lecture_en": [
+        {
+          "title": "6. Prototype",
+          "path": "docs-en/patterns/06_Prototype.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Hiroshi Yuki, \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese), chapter 6",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ]
     },
     {
       "id": "dp07_builder",
@@ -1888,7 +3032,30 @@
           "path": "docs/patterns/07_Builder.md"
         }
       ],
-      "chapter": "パターン 7章"
+      "chapter": "パターン 7章",
+      "level_en": "Design Patterns",
+      "level_note_en": "Matches the lecture notes in docs-en/patterns/. Runs alongside the reading group for Hiroshi Yuki's \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese). ROS 2 is not used",
+      "title_en": "Builder: chaining, ref qualifiers",
+      "chapter_en": "Patterns ch.7",
+      "hints_en": [
+        "If a setter returns `MotorConfigBuilder` (by value), the test \"the chain returns a reference to the same Builder\" catches it by comparing addresses.",
+        "Implement both `build() &&` and `build() const &`. If you implement only one, the other way of calling it is a compile error (`error: 'this' argument to member function 'build' is an lvalue, but function has rvalue ref-qualifier`).",
+        "If you `std::move` in `build() const &`, the Builder breaks and the second `build()` is empty. The lvalue version is a copy.",
+        "If you start writing formatting in the Director, your hand slipped. The Director only calls `make_header` / `make_field` / `make_footer` in order.",
+        "`TelemetryDirector` holds a `TelemetryBuilder &` by reference. It cannot outlive the Builder. Java has no such restriction."
+      ],
+      "lecture_en": [
+        {
+          "title": "7. Builder",
+          "path": "docs-en/patterns/07_Builder.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Hiroshi Yuki, \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese), chapter 7",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ]
     },
     {
       "id": "dp08_abstract_factory",
@@ -1920,7 +3087,30 @@
           "path": "docs/patterns/08_AbstractFactory.md"
         }
       ],
-      "chapter": "パターン 8章"
+      "chapter": "パターン 8章",
+      "level_en": "Design Patterns",
+      "level_note_en": "Matches the lecture notes in docs-en/patterns/. Runs alongside the reading group for Hiroshi Yuki's \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese). ROS 2 is not used",
+      "title_en": "Abstract Factory: kits, templates",
+      "chapter_en": "Patterns ch.8",
+      "hints_en": [
+        "If you pass different buses to `create_motor()` and `create_encoder()`, the product family gets mixed. The test \"parts from the same factory are connected to each other\" catches it.",
+        "If you write `SimulationKitFactory` inside `run_open_loop()`, the design is broken. The only argument is `const ActuatorKitFactory &`.",
+        "The real hardware has a 4x encoder, so the count advances 4 times as much with the same duty. Different families naturally behave differently. Do not try to make them match.",
+        "In the template version, forgetting `typename` in `typename KitTraits::Motor` is a compile error.",
+        "The virtual destructors of `MotorOutput` / `EncoderInput` / `ActuatorKitFactory` are in the header. If you add a base class yourself, always write a virtual destructor."
+      ],
+      "lecture_en": [
+        {
+          "title": "8. Abstract Factory",
+          "path": "docs-en/patterns/08_AbstractFactory.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Hiroshi Yuki, \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese), chapter 8",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ]
     },
     {
       "id": "dp09_bridge",
@@ -1951,7 +3141,29 @@
           "path": "docs/patterns/09_Bridge.md"
         }
       ],
-      "chapter": "パターン 9章"
+      "chapter": "パターン 9章",
+      "level_en": "Design Patterns",
+      "level_note_en": "Matches the lecture notes in docs-en/patterns/. Runs alongside the reading group for Hiroshi Yuki's \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese). ROS 2 is not used",
+      "title_en": "Bridge: Pimpl, incomplete types",
+      "chapter_en": "Patterns ch.9",
+      "hints_en": [
+        "`TelemetryView` does not inherit from `TelemetrySink`. It just holds one as a member. With inheritance, you would need M×N classes for M features × N implementations.",
+        "If you write \"where it goes\" inside `show()`, the Bridge is broken. Do nothing except call `sink()`.",
+        "If you make the destructor of `LinkStats` `= default` in the header, you get `error: invalid application of 'sizeof' to an incomplete type 'LinkStats::Impl'`.",
+        "Create `impl_` in the constructor before you write `impl_->...` in `count()`. If you forget, it is a nullptr reference."
+      ],
+      "lecture_en": [
+        {
+          "title": "9. Bridge",
+          "path": "docs-en/patterns/09_Bridge.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Hiroshi Yuki, \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese), chapter 9",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ]
     },
     {
       "id": "dp10_strategy",
@@ -1982,7 +3194,30 @@
           "path": "docs/patterns/10_Strategy.md"
         }
       ],
-      "chapter": "パターン 10章"
+      "chapter": "パターン 10章",
+      "level_en": "Design Patterns",
+      "level_note_en": "Matches the lecture notes in docs-en/patterns/. Runs alongside the reading group for Hiroshi Yuki's \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese). ROS 2 is not used",
+      "title_en": "Strategy: virtual/function/template",
+      "chapter_en": "Patterns ch.10",
+      "hints_en": [
+        "All three must give the same output. Only the means differ. The algorithm is the same.",
+        "If `VirtualCommander` holds a copy of the Strategy, the test \"the virtual version does not own the Strategy and points to it by reference\" catches it by comparing addresses.",
+        "You may want to make `filter_` a `const VelocityFilter &` (reference), but a reference cannot be re-bound, so you cannot swap it. That is why it is a pointer.",
+        "`VirtualCommander` does not own the Strategy. If you destroy the `ClampFilter` object before the Commander, it is undefined behavior.",
+        "If you add `virtual` to `ClampPolicy`, a `static_assert` fails. A vtable is added and `sizeof` grows."
+      ],
+      "lecture_en": [
+        {
+          "title": "10. Strategy",
+          "path": "docs-en/patterns/10_Strategy.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Hiroshi Yuki, \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese), chapter 10",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ]
     },
     {
       "id": "dp11_composite",
@@ -2013,7 +3248,30 @@
           "path": "docs/patterns/11_Composite.md"
         }
       ],
-      "chapter": "パターン 11章"
+      "chapter": "パターン 11章",
+      "level_en": "Design Patterns",
+      "level_note_en": "Matches the lecture notes in docs-en/patterns/. Runs alongside the reading group for Hiroshi Yuki's \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese). ROS 2 is not used",
+      "title_en": "Composite: tree and ownership",
+      "chapter_en": "Patterns ch.11",
+      "hints_en": [
+        "If you get `error: call to implicitly-deleted copy constructor of 'std::unique_ptr<...>'`, `push_back` is missing a `std::move`. `unique_ptr` cannot be copied.",
+        "After `add(std::move(group))`, `group` is `nullptr`. You cannot use it again.",
+        "You may want to hold the children as `std::vector<DiagnosticEntry>` (by value), but you cannot. It is an abstract class, so it cannot go into a `vector`, and even if it could, slicing would remove the `DiagnosticCheck` part.",
+        "`DiagnosticGroup` has a `unique_ptr` member, so it cannot be copied. The `static_assert` at the top of the test checks this.",
+        "There is no pointer to the parent. If parent and child refer to each other with `shared_ptr`, they form a cycle and are never freed (article 11.5 has a measurement)."
+      ],
+      "lecture_en": [
+        {
+          "title": "11. Composite",
+          "path": "docs-en/patterns/11_Composite.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Hiroshi Yuki, \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese), chapter 11",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ]
     },
     {
       "id": "dp12_decorator",
@@ -2044,7 +3302,30 @@
           "path": "docs/patterns/12_Decorator.md"
         }
       ],
-      "chapter": "パターン 12章"
+      "chapter": "パターン 12章",
+      "level_en": "Design Patterns",
+      "level_note_en": "Matches the lecture notes in docs-en/patterns/. Runs alongside the reading group for Hiroshi Yuki's \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese). ROS 2 is not used",
+      "title_en": "Decorator: nesting and templates",
+      "chapter_en": "Patterns ch.12",
+      "hints_en": [
+        "`SinkDecorator(std::unique_ptr<LogSink> inner) : inner_(inner)` is a compile error. `unique_ptr` cannot be copied. Write `std::move(inner)`.",
+        "`inner()` returns `const LogSink &`. `LogSink` is an abstract class, so you cannot return it by value.",
+        "In `format()`, call the inner one first. If you get the order wrong, the positions of the tags are swapped.",
+        "The output changes with the order of wrapping. That is what a Decorator is. The test checks it.",
+        "If you forget to record in the destructor, \"destroying the outermost one destroys all the inner ones too\" fails."
+      ],
+      "lecture_en": [
+        {
+          "title": "12. Decorator",
+          "path": "docs-en/patterns/12_Decorator.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Hiroshi Yuki, \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese), chapter 12",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ]
     },
     {
       "id": "dp13_visitor",
@@ -2075,7 +3356,30 @@
           "path": "docs/patterns/13_Visitor.md"
         }
       ],
-      "chapter": "パターン 13章"
+      "chapter": "パターン 13章",
+      "level_en": "Design Patterns",
+      "level_note_en": "Matches the lecture notes in docs-en/patterns/. Runs alongside the reading group for Hiroshi Yuki's \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese). ROS 2 is not used",
+      "title_en": "Visitor: double dispatch, variant",
+      "chapter_en": "Patterns ch.13",
+      "hints_en": [
+        "Until you implement `accept`, the `variant` test fails with `C++ exception with description \"vector\"`. `DiagArena::add` stores nothing, so `at()` is simply out of range.",
+        "If `accept` is not virtual, the kind is lost when you call through a base pointer. The test \"the visit for each derived class is chosen even through a base pointer\" checks this.",
+        "If the argument of `visit` is `SensorCheck` instead of `const SensorCheck &`, a copy runs. If you take it by the base type, it slices.",
+        "If you forget the deduction guide of `overloaded`, you get `no viable constructor or deduction guide for deduction of template arguments`.",
+        "A lambda cannot call itself recursively. Prepare a named function in an anonymous namespace and call `std::visit` inside it."
+      ],
+      "lecture_en": [
+        {
+          "title": "13. Visitor",
+          "path": "docs-en/patterns/13_Visitor.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Hiroshi Yuki, \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese), chapter 13",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ]
     },
     {
       "id": "dp14_chain_of_responsibility",
@@ -2106,7 +3410,30 @@
           "path": "docs/patterns/14_ChainOfResponsibility.md"
         }
       ],
-      "chapter": "パターン 14章"
+      "chapter": "パターン 14章",
+      "level_en": "Design Patterns",
+      "level_note_en": "Matches the lecture notes in docs-en/patterns/. Runs alongside the reading group for Hiroshi Yuki's \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese). ROS 2 is not used",
+      "title_en": "Chain of Responsibility: ownership",
+      "chapter_en": "Patterns ch.14",
+      "hints_en": [
+        "After `std::move(next)` in `set_next()`, `next` is empty. Returning `*next` crashes. Put it into `next_` and then return `*next_`.",
+        "If `set_next()` returns `*this`, then in `a.set_next(b).set_next(c)`, b is silently freed. The test \"setNext returns a reference to the next handler itself\" catches it.",
+        "The member `next_` is destroyed after the body of the destructor runs. So the destruction log is in order from the head to the tail.",
+        "If you want to touch `next_` inside `resolve()`, the design is broken. Passing the request on is the job of `support()` only.",
+        "\"Nobody handled it\" is `std::nullopt`. Do not `throw` (microcontrollers usually use `-fno-exceptions`)."
+      ],
+      "lecture_en": [
+        {
+          "title": "14. Chain of Responsibility",
+          "path": "docs-en/patterns/14_ChainOfResponsibility.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Hiroshi Yuki, \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese), chapter 14",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ]
     },
     {
       "id": "dp15_facade",
@@ -2137,7 +3464,30 @@
           "path": "docs/patterns/15_Facade.md"
         }
       ],
-      "chapter": "パターン 15章"
+      "chapter": "パターン 15章",
+      "level_en": "Design Patterns",
+      "level_note_en": "Matches the lecture notes in docs-en/patterns/. Runs alongside the reading group for Hiroshi Yuki's \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese). ROS 2 is not used",
+      "title_en": "Facade: namespace or RAII class",
+      "chapter_en": "Patterns ch.15",
+      "hints_en": [
+        "Even if you `return` in the middle of a constructor, the destructor always runs, because the object is already constructed. So you can write the rollback in the destructor.",
+        "The destructor also runs for an object after `std::move`. It does not mean \"it was moved, so it is gone\". If you do not empty the moved-from object, the power goes off twice.",
+        "If power-on fails, the number of steps that succeeded is 0. Do not call `power_off`. The test \"if power-on fails, no cleanup runs\" checks this.",
+        "`append()` takes `const char *`. `drive()` makes a `std::string`, so use `log_->push_back()` directly (`log_` can be `nullptr`).",
+        "You may want to implement the free-function version by \"just creating a `RobotSession` and discarding it\", but write it so that it rolls back by hand. Feeling the difference from the RAII version is the point of this exercise."
+      ],
+      "lecture_en": [
+        {
+          "title": "15. Facade",
+          "path": "docs-en/patterns/15_Facade.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Hiroshi Yuki, \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese), chapter 15",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ]
     },
     {
       "id": "dp16_mediator",
@@ -2168,7 +3518,30 @@
           "path": "docs/patterns/16_Mediator.md"
         }
       ],
-      "chapter": "パターン 16章"
+      "chapter": "パターン 16章",
+      "level_en": "Design Patterns",
+      "level_note_en": "Matches the lecture notes in docs-en/patterns/. Runs alongside the reading group for Hiroshi Yuki's \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese). ROS 2 is not used",
+      "title_en": "Mediator: cycles and weak_ptr",
+      "chapter_en": "Patterns ch.16",
+      "hints_en": [
+        "Do not call `notify_changed()` from `set_enabled()`. It recurses forever: `widget_changed()` → `update_enabled_states()` → `set_enabled()` → `widget_changed()`. \"The entry called from the Mediator\" and \"the entry called from a Colleague\" are different things.",
+        "Do not touch another Colleague from inside a Colleague. The test \"without the Mediator, effects do not propagate between Colleagues\" catches it.",
+        "Do not keep a `std::shared_ptr` in `set_mediator()`. The test \"a Colleague does not own the Mediator\" checks it with `use_count()`.",
+        "You cannot wire them in the constructor initializer list. To create a Colleague you need the Mediator, and to pass the Mediator you need the Colleague. That is why it is two-step initialization.",
+        "If you report when the value has not changed, the test \"setting the same value again is not reported\" fails."
+      ],
+      "lecture_en": [
+        {
+          "title": "16. Mediator",
+          "path": "docs-en/patterns/16_Mediator.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Hiroshi Yuki, \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese), chapter 16",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ]
     },
     {
       "id": "dp17_observer",
@@ -2199,7 +3572,30 @@
           "path": "docs/patterns/17_Observer.md"
         }
       ],
-      "chapter": "パターン 17章"
+      "chapter": "パターン 17章",
+      "level_en": "Design Patterns",
+      "level_note_en": "Matches the lecture notes in docs-en/patterns/. Runs alongside the reading group for Hiroshi Yuki's \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese). ROS 2 is not used",
+      "title_en": "Observer: lifetimes, RAII tokens",
+      "chapter_en": "Patterns ch.17",
+      "hints_en": [
+        "Do not call `entries.erase()` inside the notification loop. The index of the running loop shifts, and some subscribers are skipped and some are called twice. Only mark them, and delete after the loop ends.",
+        "Do not keep references or iterators. If `subscribe()` is called during a notification, the `std::vector` is reallocated and what you kept becomes invalid. Loop by index.",
+        "Do not forget to reset the re-entrancy flag. To make it return even when `on_sample` throws, it is safe to write a small RAII class on the spot that sets it to false in its destructor.",
+        "Empty the moved-from `Subscription`. If you forget, the subscription is cancelled the moment the moved-from object dies (the same story as `unique_ptr`).",
+        "`registry_` is a `weak_ptr`. If you hold a raw pointer, `~Subscription()` touches a dead object after `SensorHub` has died first."
+      ],
+      "lecture_en": [
+        {
+          "title": "17. Observer",
+          "path": "docs-en/patterns/17_Observer.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Hiroshi Yuki, \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese), chapter 17",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ]
     },
     {
       "id": "dp18_memento",
@@ -2230,7 +3626,30 @@
           "path": "docs/patterns/18_Memento.md"
         }
       ],
-      "chapter": "パターン 18章"
+      "chapter": "パターン 18章",
+      "level_en": "Design Patterns",
+      "level_note_en": "Matches the lecture notes in docs-en/patterns/. Runs alongside the reading group for Hiroshi Yuki's \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese). ROS 2 is not used",
+      "title_en": "Memento: value semantics, friend",
+      "chapter_en": "Patterns ch.18",
+      "hints_en": [
+        "Hold the members of the Memento by value. If you hold them as `const State &`, `State *` or `std::shared_ptr<State>`, it is not a snapshot. When the original changes, the Memento changes with it. `shared_ptr` protects lifetime, not sharing.",
+        "The private constructor of `GainSnapshot` is intentional. C++ has no feature that corresponds to package private in Java, so it is expressed with `friend`. If you touch `saved.kp_` from outside, you get `error: 'kp_' is a private member of 'GainSnapshot'`.",
+        "Do not forbid copying of `GainSnapshot`. The Undo history is stacked in a `std::vector<GainSnapshot>`, so if you delete both copy and move, even `push_back` does not compile.",
+        "`head_` is \"the next position to write\". The latest one is right before `head_`. To keep `std::size_t` from going negative in the subtraction, add `kCapacity` and then take `%`.",
+        "If you want to add a `std::string` to `GainState`, stop. It can no longer be carried with `memcpy`, and the `static_assert` in the header stops the compilation."
+      ],
+      "lecture_en": [
+        {
+          "title": "18. Memento",
+          "path": "docs-en/patterns/18_Memento.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Hiroshi Yuki, \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese), chapter 18",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ]
     },
     {
       "id": "dp19_state",
@@ -2261,7 +3680,30 @@
           "path": "docs/patterns/19_State.md"
         }
       ],
-      "chapter": "パターン 19章"
+      "chapter": "パターン 19章",
+      "level_en": "Design Patterns",
+      "level_note_en": "Matches the lecture notes in docs-en/patterns/. Runs alongside the reading group for Hiroshi Yuki's \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese). ROS 2 is not used",
+      "title_en": "State: enum, State class, variant",
+      "chapter_en": "Patterns ch.19",
+      "hints_en": [
+        "Do not replace the state machine inside `handle()`. `State::handle()` does not receive the `Context`, so that is impossible by design. This is the most important point of this chapter. If you copy `context.changeState(...)` from the Java version into C++, you end up with `delete this`.",
+        "Do not run an action for an input that does not cause a transition. If `on_exit` → `on_enter` runs when `Running` receives `Start` again, the motor stops for a moment and restarts on real hardware.",
+        "Exit comes first, enter comes after. If you reverse them, the motor stop runs after the brake is applied.",
+        "`state_object()` must return the same address no matter how many times you call it. A state object has no members, so one `static` instance is enough (zero heap allocations).",
+        "If the return types differ between branches in a `std::visit` lambda, you get an error. State the return type explicitly, such as `-> std::optional<StateVariant>`."
+      ],
+      "lecture_en": [
+        {
+          "title": "19. State",
+          "path": "docs-en/patterns/19_State.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Hiroshi Yuki, \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese), chapter 19",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ]
     },
     {
       "id": "dp20_flyweight",
@@ -2292,7 +3734,30 @@
           "path": "docs/patterns/20_Flyweight.md"
         }
       ],
-      "chapter": "パターン 20章"
+      "chapter": "パターン 20章",
+      "level_en": "Design Patterns",
+      "level_note_en": "Matches the lecture notes in docs-en/patterns/. Runs alongside the reading group for Hiroshi Yuki's \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese). ROS 2 is not used",
+      "title_en": "Flyweight: weak_ptr pool/constexpr",
+      "chapter_en": "Patterns ch.20",
+      "hints_en": [
+        "Do not put `shared_ptr` into the pool. If you do, the pool keeps holding references and nothing is freed until the process ends. The test looks at `use_count`. With two users, `use_count` is 2. If it becomes 3, the pool is counting.",
+        "Even with `weak_ptr`, the entries of the `map` are not removed automatically, because a `weak_ptr` cannot tell the `map` that it has expired. That is why `sweep_expired()` is needed.",
+        "In `sweep_expired()`, write `it = pool_.erase(it)`. If you `++it` and then `erase`, you touch an invalid iterator.",
+        "Do not put `zero_offset` on the `CalibrationTable` side. The moment you do, sensors of the same model number can no longer share it.",
+        "`Handle` is `std::shared_ptr<const CalibrationTable>`. It has `const`, because if one user changes a shared object, it affects everyone."
+      ],
+      "lecture_en": [
+        {
+          "title": "20. Flyweight",
+          "path": "docs-en/patterns/20_Flyweight.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Hiroshi Yuki, \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese), chapter 20",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ]
     },
     {
       "id": "dp21_proxy",
@@ -2323,7 +3788,30 @@
           "path": "docs/patterns/21_Proxy.md"
         }
       ],
-      "chapter": "パターン 21章"
+      "chapter": "パターン 21章",
+      "level_en": "Design Patterns",
+      "level_note_en": "Matches the lecture notes in docs-en/patterns/. Runs alongside the reading group for Hiroshi Yuki's \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese). ROS 2 is not used",
+      "title_en": "Proxy: operator-> and lazy init",
+      "chapter_en": "Patterns ch.21",
+      "hints_en": [
+        "`error: no viable overloaded '='` / `but method is not marked const` → `operator->` is `const`. Look at `mutable std::unique_ptr<...> real_;` in the header.",
+        "\"The real object is not created until the first access\" fails → the constructor of `CalibrationProxy` creates the real object.",
+        "\"The real object is not re-created on the second and later accesses\" fails → you forgot the `if (!real_)` check and call `make_unique` every time.",
+        "`proxy->write_raw(...)` does not work → `RegisterAccess::operator->()` returns `nullptr`. It is a `friend` of `SafeRegisterProxy`, so it can reach `owner_.file_` directly.",
+        "\"It touched the real object although it rejected the access\" fails → the out-of-range branch calls `file_.read_raw()` / `file_.write_raw()`. On real hardware, this corrupts another peripheral."
+      ],
+      "lecture_en": [
+        {
+          "title": "21. Proxy",
+          "path": "docs-en/patterns/21_Proxy.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Hiroshi Yuki, \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese), chapter 21",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ]
     },
     {
       "id": "dp22_command",
@@ -2354,7 +3842,30 @@
           "path": "docs/patterns/22_Command.md"
         }
       ],
-      "chapter": "パターン 22章"
+      "chapter": "パターン 22章",
+      "level_en": "Design Patterns",
+      "level_note_en": "Matches the lecture notes in docs-en/patterns/. Runs alongside the reading group for Hiroshi Yuki's \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese). ROS 2 is not used",
+      "title_en": "Command: std::function and queue",
+      "chapter_en": "Patterns ch.22",
+      "hints_en": [
+        "The order of `undo()` is the main point. If you undo a macro in forward order, the state breaks for operations with dependencies (such as grab and then lift). Undo from the end.",
+        "Do not forget `undone_.clear()` in `CommandHistory::run()`. If you can redo after undoing and then running another command, you end up in a state that cannot be restored.",
+        "`std::move` `done_.back()` and then `pop_back()`. If you reverse the order, you touch something already released.",
+        "`add()` / `run()` / `push()` take `std::unique_ptr` by value. If you take `const std::unique_ptr<Command> &`, it cannot be copied, so you cannot even stack it.",
+        "A command does not own `RobotArm`. What `RotateCommand` holds is a raw pointer. If it outlives the arm, it dangles (the same problem as Chapter 17, Observer)."
+      ],
+      "lecture_en": [
+        {
+          "title": "22. Command",
+          "path": "docs-en/patterns/22_Command.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Hiroshi Yuki, \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese), chapter 22",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ]
     },
     {
       "id": "dp23_interpreter",
@@ -2385,7 +3896,30 @@
           "path": "docs/patterns/23_Interpreter.md"
         }
       ],
-      "chapter": "パターン 23章"
+      "chapter": "パターン 23章",
+      "level_en": "Design Patterns",
+      "level_note_en": "Matches the lecture notes in docs-en/patterns/. Runs alongside the reading group for Hiroshi Yuki's \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese). ROS 2 is not used",
+      "title_en": "Interpreter: AST, recursion depth",
+      "chapter_en": "Patterns ch.23",
+      "hints_en": [
+        "`evaluate()` does not return a result. It pushes onto `out`. If you make a `std::vector` for each node and concatenate them, allocations run as many times as the depth of the tree.",
+        "How to pass a failure upward. If you do not use `throw`, the standard way is \"put the error in a member, and the function returns `nullptr`\".",
+        "`parse_sequence` stops at both `}` and the end of input. If you forget to stop, the body of `repeat` eats into the outside.",
+        "Check the depth limit at the entry of the recursion. If you check at the exit or in the cleanup, the stack runs out before you get there.",
+        "`variant_ast::VNode` is `std::variant<Command, std::unique_ptr<Repeat>>`. It is a recursive type, so using a variant does not remove the indirection. The elements of a variant must be complete types, so `Repeat` is wrapped in a `unique_ptr`."
+      ],
+      "lecture_en": [
+        {
+          "title": "23. Interpreter",
+          "path": "docs-en/patterns/23_Interpreter.md"
+        }
+      ],
+      "docs_en": [
+        {
+          "title": "Hiroshi Yuki, \"Learning Design Patterns in Java\" (revised and expanded edition, in Japanese), chapter 23",
+          "url": "https://www.hyuki.com/dp/"
+        }
+      ]
     }
   ]
 }
