@@ -3,14 +3,14 @@
 
 #include "drill/counter.hpp"
 
-TEST(CounterTest, add_oneが1増やす)
+TEST(CounterTest, AddOneIncrementsByOne)
 {
   EXPECT_EQ(add_one(0), 1);
   EXPECT_EQ(add_one(5), 6);
   EXPECT_EQ(add_one(-1), 0);
 }
 
-TEST(CounterTest, next_idが順番に増える)
+TEST(CounterTest, NextIdIncreasesInOrder)
 {
   EXPECT_EQ(next_id(), 1);
   EXPECT_EQ(next_id(), 2);

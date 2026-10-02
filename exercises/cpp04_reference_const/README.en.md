@@ -35,8 +35,8 @@ Implement two functions in `src/copycounter.cpp`:
 
 | Test | What it checks |
 | --- | --- |
-| `constReferencePolicyで大文字に変換` (convert to uppercase with constReferencePolicy) | efficient receiving by const reference |
-| `constMemberFunctionが説明を返す` (constMemberFunction returns the description) | the syntax of const member functions |
+| `ConvertsToUppercaseWithConstReference` | efficient receiving by const reference |
+| `ConstMemberFunctionReturnsDescription` | the syntax of const member functions |
 
 ## References
 

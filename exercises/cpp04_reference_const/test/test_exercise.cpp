@@ -3,14 +3,14 @@
 
 #include "drill/copycounter.hpp"
 
-TEST(ReferenceConstTest, constReferencePolicyで大文字に変換)
+TEST(ReferenceConstTest, ConvertsToUppercaseWithConstReference)
 {
   CopyCounter cc;
   std::string result = cc.copy_and_uppercase("hello");
   EXPECT_EQ(result, "HELLO");
 }
 
-TEST(ReferenceConstTest, constMemberFunctionが説明を返す)
+TEST(ReferenceConstTest, ConstMemberFunctionReturnsDescription)
 {
   const CopyCounter cc;
   std::string desc = cc.get_description();

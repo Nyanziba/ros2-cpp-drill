@@ -36,11 +36,11 @@ Vec2 operator*(const Vec2 & v, double s) { ... }
 Vec2 operator*(double s, const Vec2 & v) { ... }
 ```
 
-メンバ関数として書くと、左辺が `double` の場合が書けません。テストの「スカラー倍は左右どちらの順番でも書ける」で両方が要求されます。
+メンバ関数として書くと、左辺が `double` の場合が書けません。テストの `ScalarMultiplicationWorksInEitherOrder` で両方が要求されます。
 
 **`operator<` は `<=` ではなく `<` を使う**
 
-`operator<` で「小さいまたは等しい」という意味で `<=` を使うと、テストの「大小比較は厳密弱順序である」で `std::sort` が未定義動作になります。理由は [10. 演算子オーバーロード](../../docs/cpp/10_演算子オーバーロード.md) の 10.3 節を参照。
+`operator<` で「小さいまたは等しい」という意味で `<=` を使うと、テストの `LessThanIsStrictWeakOrdering` で `std::sort` が未定義動作になります。理由は [10. 演算子オーバーロード](../../docs/cpp/10_演算子オーバーロード.md) の 10.3 節を参照。
 
 ```cpp
 bool operator<(const Vec2 & a, const Vec2 & b) {
@@ -57,7 +57,7 @@ std::ostream & operator<<(std::ostream & os, const Vec2 & v) {
 }
 ```
 
-テストの「ostream演算子は繋げられる」で `oss << "a=" << Vec2{1.0, 2.0} << " b=" << Vec2{3.0, 4.0}` と書き続けているので、各 `<<` が `std::ostream &` を返す必要があります。
+テストの `StreamOperatorCanBeChained` で `oss << "a=" << Vec2{1.0, 2.0} << " b=" << Vec2{3.0, 4.0}` と書き続けているので、各 `<<` が `std::ostream &` を返す必要があります。
 
 **`operator+=` は `Vec2 &` を返し、ムーブではなく `*this` を返す**
 
@@ -69,7 +69,7 @@ Vec2 & Vec2::operator+=(const Vec2 & other) {
 }
 ```
 
-コピーではなく参照を返すこと。テストの「加算代入は自分自身への参照を返す」で `EXPECT_EQ(&returned, &a)` とアドレスを比較して確認されます。
+コピーではなく参照を返すこと。テストの `CompoundAdditionReturnsReferenceToSelf` で `EXPECT_EQ(&returned, &a)` とアドレスを比較して確認されます。
 
 **`operator!=` は `operator==` を使って書く**
 
@@ -89,14 +89,14 @@ bool operator!=(const Vec2 & a, const Vec2 & b) {
 
 | テスト | 見ているところ |
 | --- | --- |
-| `足し算と引き算` | `operator+` と `operator-` の実装 |
-| `スカラー倍は左右どちらの順番でも書ける` | `operator*` が左右両方（`v * 2.0` と `2.0 * v`）で動くか |
-| `加算代入は自分自身への参照を返す` | `operator+=` が `Vec2 &` を返し、同じアドレスを返すか |
-| `等価比較と非等価比較` | `operator==` と `operator!=` の実装、及びどちらの成分が違う場合も検出するか |
-| `大小比較は厳密弱順序である` | `operator<` が `<` を使っており、`a < a` が false、長さが同じなら両方 false |
-| `std_sortで並べられる` | `operator<` が正しく `std::sort` で使える |
-| `ostreamに流せる` | `operator<<` が `(x, y)` の形で出力するか |
-| `ostream演算子は繋げられる` | `operator<<` が `std::ostream &` を返し、`<<` が繋げられるか |
+| `AdditionAndSubtraction` | `operator+` と `operator-` の実装 |
+| `ScalarMultiplicationWorksInEitherOrder` | `operator*` が左右両方（`v * 2.0` と `2.0 * v`）で動くか |
+| `CompoundAdditionReturnsReferenceToSelf` | `operator+=` が `Vec2 &` を返し、同じアドレスを返すか |
+| `EqualityAndInequality` | `operator==` と `operator!=` の実装、及びどちらの成分が違う場合も検出するか |
+| `LessThanIsStrictWeakOrdering` | `operator<` が `<` を使っており、`a < a` が false、長さが同じなら両方 false |
+| `CanBeSortedWithStdSort` | `operator<` が正しく `std::sort` で使える |
+| `CanBeStreamedToOstream` | `operator<<` が `(x, y)` の形で出力するか |
+| `StreamOperatorCanBeChained` | `operator<<` が `std::ostream &` を返し、`<<` が繋げられるか |
 
 ## 参考
 

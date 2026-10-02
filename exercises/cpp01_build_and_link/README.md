@@ -79,8 +79,8 @@ nm -C build/drill_cpp01_build_and_link/CMakeFiles/drill_cpp01_build_and_link_lib
 
 | テスト | 見ているところ |
 | --- | --- |
-| `add_oneが1増やす` | TODO(1) を直してビルドが通ったか |
-| `next_idが順番に増える` | `static` ローカル変数が値を保持しているか |
+| `AddOneIncrementsByOne` | TODO(1) を直してビルドが通ったか |
+| `NextIdIncreasesInOrder` | `static` ローカル変数が値を保持しているか |
 
 ## 参考
 

@@ -3,8 +3,9 @@
 #include <sstream>
 
 #include "drill/registry.hpp"
+#include "drill_i18n.hpp"
 
-TEST(SmartPointersTest, 生きているItemだけが出力される)
+TEST(SmartPointersTest, OnlyAliveItemsArePrinted)
 {
   Registry reg;
 
@@ -21,6 +22,6 @@ TEST(SmartPointersTest, 生きているItemだけが出力される)
   reg.fire();
   std::string output = testing::internal::GetCapturedStdout();
 
-  EXPECT_NE(output.find("id=2"), std::string::npos) << "Item 2 (Beta) が出力されるべき";
-  EXPECT_EQ(output.find("id=1"), std::string::npos) << "Item 1 は削除されたので出力されないべき";
+  EXPECT_NE(output.find("id=2"), std::string::npos) << drill::localized("Item 2 (Beta) が出力されるべき", "Item 2 (Beta) should be printed");
+  EXPECT_EQ(output.find("id=1"), std::string::npos) << drill::localized("Item 1 は削除されたので出力されないべき", "Item 1 was deleted, so it should not be printed");
 }

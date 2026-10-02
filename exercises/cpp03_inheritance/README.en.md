@@ -35,11 +35,11 @@ Implement two sensor classes in `src/sensor.cpp`:
 
 | Test | What it checks |
 | --- | --- |
-| `TemperatureSensorが正しい値を返す` (TemperatureSensor returns the correct value) | the read() implementation of TemperatureSensor |
-| `HumiditySensorが正しい値を返す` (HumiditySensor returns the correct value) | the read() implementation of HumiditySensor |
-| `TemperatureSensorはデフォルトのlabelを使う` (TemperatureSensor uses the default label) | inheriting the default implementation |
-| `HumiditySensorはlabelをoverrideしている` (HumiditySensor overrides label) | the override implementation |
-| `ポリモーフィズムで正しくディスパッチされる` (dispatch is correct with polymorphism) | dynamic dispatch through a base class pointer |
+| `TemperatureSensorReturnsCorrectValue` | the read() implementation of TemperatureSensor |
+| `HumiditySensorReturnsCorrectValue` | the read() implementation of HumiditySensor |
+| `TemperatureSensorUsesDefaultLabel` | inheriting the default implementation |
+| `HumiditySensorOverridesLabel` | the override implementation |
+| `DispatchesPolymorphically` | dynamic dispatch through a base class pointer |
 
 ## References
 
