@@ -65,13 +65,13 @@
 
 | テスト | 見ているもの |
 | --- | --- |
-| `cloneは元とは別のオブジェクトを返す` | アドレスが違うか |
-| `unique_ptr経由でも派生の型が保たれる` | `dynamic_cast` で実体の型 |
-| `SineSweepもcloneで複製できる` | もう一方の派生でも同じか |
-| `cloneした波形は深いコピーになっている` | 元を書き換えても複製が変わらないか |
-| `PulseTrainのコピーコンストラクタが深いコピーを作る` | `clone()` を通さない素のコピー |
-| `複製はバッファを共有しない` | `data()` のアドレス比較 |
-| `duplicateは要素数と型を保つ` / `duplicateした要素は元と共有されない` | ライブラリ丸ごとの複製 |
+| `CloneReturnsDifferentObject` | アドレスが違うか |
+| `DerivedTypeIsPreservedThroughUniquePtr` | `dynamic_cast` で実体の型 |
+| `SineSweepCanAlsoBeCloned` | もう一方の派生でも同じか |
+| `ClonedWaveformIsDeepCopy` | 元を書き換えても複製が変わらないか |
+| `PulseTrainCopyConstructorMakesDeepCopy` | `clone()` を通さない素のコピー |
+| `CloneDoesNotShareBuffer` | `data()` のアドレス比較 |
+| `DuplicatePreservesCountAndTypes` / `DuplicatedElementsAreNotSharedWithOriginal` | ライブラリ丸ごとの複製 |
 
 `static_assert` で、コピーが禁止されているべきクラス（`Waveform` への代入、
 `WaveformLibrary` のコピー）が実際に禁止されていることも見ています。

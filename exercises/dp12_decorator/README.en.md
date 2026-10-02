@@ -42,7 +42,7 @@ Implement it in `src/log_sink.cpp`.
 - `inner()` returns `const LogSink &`. `LogSink` is an abstract class, so it cannot be returned by value
 - In `format()`, **call the inner object first**. If you get the order wrong, the position of the tag is swapped
 - Decorator means the output changes with the order of wrapping. The tests check that
-- If you forget to record in the destructor, "destroying the outermost one destroys all the inner ones" fails
+- If you forget to record in the destructor, `DestroyingOutermostDestroysAllInner` fails
 
 ## Tests
 

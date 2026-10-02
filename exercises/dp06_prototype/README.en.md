@@ -65,13 +65,13 @@ There are 8 tests.
 
 | Test | What it checks |
 | --- | --- |
-| `cloneは元とは別のオブジェクトを返す` (clone returns an object different from the original) | whether the addresses differ |
-| `unique_ptr経由でも派生の型が保たれる` (the derived type is kept even through unique_ptr) | the actual type, with `dynamic_cast` |
-| `SineSweepもcloneで複製できる` (SineSweep can also be copied with clone) | whether it is the same for the other derived class |
-| `cloneした波形は深いコピーになっている` (the cloned waveform is a deep copy) | whether the copy does not change when you change the original |
-| `PulseTrainのコピーコンストラクタが深いコピーを作る` (the copy constructor of PulseTrain makes a deep copy) | a plain copy that does not go through `clone()` |
-| `複製はバッファを共有しない` (the copy does not share the buffer) | comparing the addresses of `data()` |
-| `duplicateは要素数と型を保つ` (duplicate keeps the number of elements and the types) / `duplicateした要素は元と共有されない` (the elements copied by duplicate are not shared with the original) | copying the whole library |
+| `CloneReturnsDifferentObject` | whether the addresses differ |
+| `DerivedTypeIsPreservedThroughUniquePtr` | the actual type, with `dynamic_cast` |
+| `SineSweepCanAlsoBeCloned` | whether it is the same for the other derived class |
+| `ClonedWaveformIsDeepCopy` | whether the copy does not change when you change the original |
+| `PulseTrainCopyConstructorMakesDeepCopy` | a plain copy that does not go through `clone()` |
+| `CloneDoesNotShareBuffer` | comparing the addresses of `data()` |
+| `DuplicatePreservesCountAndTypes` / `DuplicatedElementsAreNotSharedWithOriginal` | copying the whole library |
 
 It also checks with `static_assert` that the classes whose copy should be prohibited (assignment to `Waveform`,
 the copy of `WaveformLibrary`) are actually prohibited.

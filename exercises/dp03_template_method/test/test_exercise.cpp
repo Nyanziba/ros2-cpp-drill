@@ -4,6 +4,8 @@
 #include <vector>
 
 #include "drill/sensor_reader.hpp"
+#include "drill_i18n.hpp"
+#include "drill_i18n.hpp"
 
 namespace
 {
@@ -13,7 +15,7 @@ const std::vector<std::string> kStepsWithoutInitialize = {"fetch_raw", "convert"
 
 }  // namespace
 
-TEST(TemplateMethodTest, 骨格が決められた順番で各段を呼ぶ)
+TEST(TemplateMethodTest, CallsStepsInFixedOrder)
 {
   EncoderReader encoder({0}, 1000.0);
   const auto value = encoder.read_once();
@@ -22,7 +24,7 @@ TEST(TemplateMethodTest, 骨格が決められた順番で各段を呼ぶ)
   EXPECT_EQ(encoder.call_log(), kFullSteps);
 }
 
-TEST(TemplateMethodTest, 初期化は初回の一度だけ走る)
+TEST(TemplateMethodTest, InitializationRunsOnlyOnFirstRead)
 {
   EncoderReader encoder({0, 250}, 1000.0);
   encoder.read_once();
@@ -35,14 +37,14 @@ TEST(TemplateMethodTest, 初期化は初回の一度だけ走る)
   EXPECT_TRUE(encoder.is_initialized());
 }
 
-TEST(TemplateMethodTest, 読み取り前は初期化されていない)
+TEST(TemplateMethodTest, NotInitializedBeforeFirstRead)
 {
   EncoderReader encoder({0}, 1000.0);
   EXPECT_FALSE(encoder.is_initialized());
   EXPECT_TRUE(encoder.call_log().empty());
 }
 
-TEST(TemplateMethodTest, エンコーダがカウント値を角度に変換する)
+TEST(TemplateMethodTest, EncoderConvertsCountsToAngle)
 {
   EncoderReader encoder({0, 250, 1000}, 1000.0);
 
@@ -58,7 +60,7 @@ TEST(TemplateMethodTest, エンコーダがカウント値を角度に変換す�
   EXPECT_DOUBLE_EQ(*third, 360.0);
 }
 
-TEST(TemplateMethodTest, サーミスタがAD値を温度に変換する)
+TEST(TemplateMethodTest, ThermistorConvertsAdcToTemperature)
 {
   ThermistorReader thermistor({200, 400});
 
@@ -71,7 +73,7 @@ TEST(TemplateMethodTest, サーミスタがAD値を温度に変換する)
   EXPECT_NEAR(*second, 20.0, 1e-9);
 }
 
-TEST(TemplateMethodTest, サーミスタは範囲外の温度をnulloptで返す)
+TEST(TemplateMethodTest, ThermistorReturnsNulloptWhenOutOfRange)
 {
   ThermistorReader thermistor({2000});   // 180 degC。上限を超えている
 
@@ -82,7 +84,7 @@ TEST(TemplateMethodTest, サーミスタは範囲外の温度をnulloptで返す
   EXPECT_EQ(thermistor.call_log(), kFullSteps);
 }
 
-TEST(TemplateMethodTest, 差し替えたvalidateが基底ではなく派生の実装で呼ばれる)
+TEST(TemplateMethodTest, OverriddenValidateCallsDerivedImplementation)
 {
   // 同じ 2000 という生値でも、エンコーダ側は範囲判定を持たないので値が返る
   EncoderReader encoder({2000}, 1000.0);
@@ -94,7 +96,7 @@ TEST(TemplateMethodTest, 差し替えたvalidateが基底ではなく派生の�
   EXPECT_FALSE(thermistor.read_once().has_value());
 }
 
-TEST(TemplateMethodTest, 基底クラスのポインタ経由でも同じ手順が走る)
+TEST(TemplateMethodTest, SameStepsRunThroughBasePointer)
 {
   ThermistorReader thermistor({400});
   SensorReader & reader = thermistor;
