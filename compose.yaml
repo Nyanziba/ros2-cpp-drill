@@ -55,6 +55,8 @@ services:
     environment:
       ROS_AUTOMATIC_DISCOVERY_RANGE: LOCALHOST
       ROS_DOMAIN_ID: ${ROS_DOMAIN_ID:-42}
+      # DRILL_LANG=en を付けて起動すると、drill の出力が英語になる（未設定なら日本語）。
+      DRILL_LANG: ${DRILL_LANG:-}
 
     stdin_open: true
     tty: true
@@ -85,6 +87,8 @@ services:
     environment:
       ROS_AUTOMATIC_DISCOVERY_RANGE: LOCALHOST
       ROS_DOMAIN_ID: ${ROS_DOMAIN_ID:-42}
+      # DRILL_LANG=en を付けて起動すると、drill の出力が英語になる（未設定なら日本語）。
+      DRILL_LANG: ${DRILL_LANG:-}
       DISPLAY: ${DISPLAY:-:0}
       QT_X11_NO_MITSHM: 1
     stdin_open: true
