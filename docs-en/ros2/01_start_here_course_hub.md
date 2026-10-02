@@ -33,7 +33,7 @@ The overall picture is in [Overview of the material](../README.md).
 
 ## Map of the whole series
 
-There are 24 articles in total: 22 main articles and 2 supplements (`05b` and `20b`). The numbers are the reading order.
+There are 23 articles in total: 22 main articles and 1 supplement (`05b`). The numbers are the reading order.
 
 **Articles with a `b` are supplements.** You can skip them when you read through the main numbers in order. They help when you actually run into the trouble they cover.
 
@@ -72,7 +72,6 @@ This part collects the knowledge you need to run a real robot: coordinate frames
 18. [18_tf2_and_coordinate_frames](18_tf2_and_coordinate_frames.md)
 19. [19_writing_urdf](19_writing_urdf.md)
 20. [20_ros2_control_overview](20_ros2_control_overview.md)
-20b. [20b_using_ros2_control](20b_using_ros2_control.md) (practical configuration examples and implementation patterns)
 21. [21_sensor_integration](21_sensor_integration.md)
 22. [22_thinking_about_localization](22_thinking_about_localization.md)
 
@@ -84,7 +83,7 @@ Not everyone needs to read everything. We offer two courses, depending on your g
 
 This is for people who want to write and run their own nodes in ROS 2. The goal is that you can write one control package and take charge of one function of a real robot (such as a servo control node). Part 1 and Part 2 alone are enough.
 
-**Full course up to a real robot (Part 1 to Part 3, 24 articles)**
+**Full course up to a real robot (Part 1 to Part 3, 23 articles)**
 
 This is for people who want to work with real robots, including sensors, coordinate frames, and ros2_control.
 Part 3 covers TF2, URDF, ros2_control, sensor integration, and the ideas behind localization.

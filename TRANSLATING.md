@@ -85,7 +85,6 @@
 | `docs/ros2/18_TF2と座標系.md` | `docs-en/ros2/18_tf2_and_coordinate_frames.md` |
 | `docs/ros2/19_URDFの書き方.md` | `docs-en/ros2/19_writing_urdf.md` |
 | `docs/ros2/20_ros2_control概要.md` | `docs-en/ros2/20_ros2_control_overview.md` |
-| `docs/ros2/20b_ros2_controlの使い方.md` | `docs-en/ros2/20b_using_ros2_control.md` |
 | `docs/ros2/21_センサ統合.md` | `docs-en/ros2/21_sensor_integration.md` |
 | `docs/ros2/22_自己位置推定の考え方.md` | `docs-en/ros2/22_thinking_about_localization.md` |
 | `docs/patterns/README.md` | `docs-en/patterns/README.md` |

@@ -99,7 +99,7 @@ The reading (`docs/`) and the exercises (`exercises/`) **match one-to-one, down 
 | **C track** | [docs-en/c/](docs-en/c/README.md) | `c01` to `c12` | People who write microcontroller, drive-train, and CAN code. 12 chapters |
 | **C++ Basics** | [docs-en/cpp-basics/](docs-en/cpp-basics/README.md) | `cppb01` to `cppb10` | People who get stuck on `const` and `static`. 10 chapters |
 | **C++** | [docs-en/cpp/](docs-en/cpp/README.md) | `cpp01` to `cpp12` | Preparation for reading rclcpp. 15 chapters |
-| **ROS 2** | [docs-en/ros2/](docs-en/ros2/01_start_here_course_hub.md) | `01` to `15` | 24 articles |
+| **ROS 2** | [docs-en/ros2/](docs-en/ros2/01_start_here_course_hub.md) | `01` to `15` | 23 articles |
 | **Design Patterns** | [docs-en/patterns/](docs-en/patterns/README.md) | `dp01` to `dp23` | People who design their own libraries. Meant to be read alongside Hiroshi Yuki's *Learning Design Patterns in Java* (in Japanese). 23 chapters |
 
 **Not everyone has to do everything.**
