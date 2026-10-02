@@ -14,6 +14,8 @@ services:
     build:
       context: .
       args:
+        # ROS 2 の版。既定は jazzy。lyrical を試すなら ROS_DISTRO=lyrical docker compose build
+        ROS_DISTRO: ${ROS_DISTRO:-jazzy}
         # ホストと同じ UID/GID でビルドする。Linux でこれを外すと、
         # コンテナが作ったファイルが root 所有になって編集できなくなる。
         #
@@ -29,7 +31,7 @@ services:
         GID: ${DRILL_GID:-1000}
         # GUI（turtlesim / rqt / RViz）を入れるなら 1。イメージが 1GB 以上太る。
         WITH_GUI: ${WITH_GUI:-0}
-    image: ros2-drill:jazzy
+    image: ros2-drill:${ROS_DISTRO:-jazzy}
 
     # リポジトリをそのまま見せる。ホストで編集 → コンテナでテスト。
     volumes:
@@ -75,7 +77,7 @@ services:
   #   Windows (WSL2) : WSLg があればそのまま動きます
   drill-gui:
     profiles: [x11]
-    image: ros2-drill:jazzy
+    image: ros2-drill:${ROS_DISTRO:-jazzy}
     volumes:
       - .:/ws
       - drill-build:/ws/build

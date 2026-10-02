@@ -19,7 +19,7 @@
 | --- | --- |
 | ノード名 | `fibonacci_action_server` |
 | アクション名 | `fibonacci` |
-| 型 | `action_tutorials_interfaces::action::Fibonacci` |
+| 型 | `example_interfaces::action::Fibonacci` |
 | 目標受理 | `handle_goal` で `ACCEPT_AND_EXECUTE` を返す |
 | キャンセル受理 | `handle_cancel` で `ACCEPT` を返す |
 | 実行の開始 | `handle_accepted` で別スレッドに `execute` を投げて `detach()` |
@@ -28,12 +28,12 @@
 `Fibonacci` の中身は次で確認できます。
 
 ```
-$ ros2 interface show action_tutorials_interfaces/action/Fibonacci
+$ ros2 interface show example_interfaces/action/Fibonacci
 int32 order
 ---
 int32[] sequence
 ---
-int32[] partial_sequence
+int32[] sequence
 ```
 
 `---` の上から順に、目標（`Fibonacci::Goal`）、結果（`Fibonacci::Result`）、
@@ -70,11 +70,11 @@ ros2 run drill_10_action_server fibonacci_action_server
 ```bash
 ros2 action list                                                          # /fibonacci が見えるか
 ros2 action info /fibonacci -t
-ros2 action send_goal /fibonacci action_tutorials_interfaces/action/Fibonacci "{order: 5}" --feedback
+ros2 action send_goal /fibonacci example_interfaces/action/Fibonacci "{order: 5}" --feedback
 ```
 
 `--feedback` を付けると、サーバ側の端末に `Publish feedback` のログが、
-クライアント側の端末に途中経過（`partial_sequence`）が何度も表示され、
+クライアント側の端末に途中経過（`sequence`）が何度も表示され、
 最後に `Result: sequence=[0, 1, 1, 2, 3, 5]` のような結果が出れば成功です。
 
 `Ctrl-C` で送信を打ち切るとキャンセル要求になり、サーバ側に

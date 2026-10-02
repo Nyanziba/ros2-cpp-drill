@@ -72,7 +72,7 @@ void FibonacciActionServer::execute(const std::shared_ptr<GoalHandleFibonacci> g
   //      この課題ではテストを速く終わらせるため 20ms 周期にすること。
   //   3. goal_handle から目標を取り出し、order を読む。
   //   4. feedback（Fibonacci::Feedback）と result（Fibonacci::Result）を用意し、
-  //      数列を {0, 1} で始める。feedback には partial_sequence がある。
+  //      数列を {0, 1} で始める。feedback には sequence がある。
   //   5. i = 1 から i < order の間、次を繰り返す。
   //        - キャンセル要求が来ていたら（goal_handle に判定するメンバ関数がある）、
   //          そこまでの数列を result に入れてキャンセル完了を通知し、

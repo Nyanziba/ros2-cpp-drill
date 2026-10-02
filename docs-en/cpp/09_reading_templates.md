@@ -88,7 +88,7 @@ this->create_publisher<std_msgs::msg::String>("topic", 10);
 this->create_subscription<std_msgs::msg::String>("topic", 10, callback);
 this->create_service<example_interfaces::srv::AddTwoInts>("add_two_ints", callback);
 this->create_client<example_interfaces::srv::AddTwoInts>("add_two_ints");
-rclcpp_action::create_server<action_tutorials_interfaces::action::Fibonacci>(...);
+rclcpp_action::create_server<example_interfaces::action::Fibonacci>(...);
 std::make_shared<MinimalPublisher>();
 std::make_unique<std_msgs::msg::String>();
 ```

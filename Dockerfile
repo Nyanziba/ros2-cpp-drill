@@ -3,14 +3,21 @@
 #   docker compose build
 #   docker compose run --rm drill ./drill list
 #
-# ROS 2 Jazzy は Ubuntu 24.04 にしか公式パッケージがありません。macOS でも
-# Windows でも他のディストリでも、中身は Ubuntu 24.04 にして揃えます。
+# ROS 2 は Ubuntu にしか公式パッケージがありません。macOS でも Windows でも
+# 他のディストリでも、中身は Ubuntu にして揃えます。
 #
-# 教材の実測値は g++ 13.3.0 / Ubuntu 24.04 で取ってあります。このイメージの
-# ベースが同じなので、コンパイルエラーの文面も実行結果も本文と一致します。
-# **ここを別のベースに変えると教材の出力とズレます。**
+#   docker compose build                           # Jazzy（既定）
+#   ROS_DISTRO=lyrical docker compose build        # Lyrical
+#
+# 教材の実測値は Jazzy（Ubuntu 24.04 / g++ 13.3）で取ってあります。既定の
+# Jazzy ではコンパイルエラーの文面も実行結果も本文と一致します。Lyrical
+# （Ubuntu 26.04 / g++ 15.2）では出力の文面が変わります。
 
-FROM ros:jazzy-ros-base
+ARG ROS_DISTRO=jazzy
+FROM ros:${ROS_DISTRO}-ros-base
+
+# FROM より前の ARG はここから先では見えないので、もう一度宣言する
+ARG ROS_DISTRO
 
 # apt が対話を求めると build が止まる
 ARG DEBIAN_FRONTEND=noninteractive
@@ -19,8 +26,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 #
 # - build-essential / cmake : ament_cmake が使う
 # - python3-colcon-*        : ビルドとテストの実行
-# - ros-jazzy-*             : 課題の package.xml が依存しているもの
-#   （action-tutorials-interfaces は ros-base に入っていないので明示する）
+# - ros-${ROS_DISTRO}-*             : 課題の package.xml が依存しているもの
+#   （example-interfaces は ros-base に入っていないので明示する）
 # - python3-pytest          : 08_params_yaml と 09_launch が pytest を使う
 # - python3-yaml            : 08_params_yaml のテストが読む
 # - python3-venv            : ./drill read --build が読み物サイトを建てるのに使う
@@ -35,14 +42,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         python3-pytest \
         python3-venv \
         python3-yaml \
-        ros-jazzy-ament-cmake-gtest \
-        ros-jazzy-ament-cmake-pytest \
-        ros-jazzy-action-tutorials-interfaces \
-        ros-jazzy-class-loader \
-        ros-jazzy-example-interfaces \
-        ros-jazzy-rclcpp-action \
-        ros-jazzy-rclcpp-components \
-        ros-jazzy-std-msgs \
+        ros-${ROS_DISTRO}-ament-cmake-gtest \
+        ros-${ROS_DISTRO}-ament-cmake-pytest \
+        ros-${ROS_DISTRO}-class-loader \
+        ros-${ROS_DISTRO}-example-interfaces \
+        ros-${ROS_DISTRO}-rclcpp-action \
+        ros-${ROS_DISTRO}-rclcpp-components \
+        ros-${ROS_DISTRO}-std-msgs \
     && rm -rf /var/lib/apt/lists/*
 
 # GUI が要るとき（ROS 2編の turtlesim / rqt / RViz）だけ入れる。
@@ -55,10 +61,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ARG WITH_GUI=0
 RUN if [ "$WITH_GUI" = "1" ]; then \
         apt-get update && apt-get install -y --no-install-recommends \
-            ros-jazzy-turtlesim \
-            ros-jazzy-rqt-common-plugins \
-            ros-jazzy-rqt-graph \
-            ros-jazzy-rviz2 \
+            ros-${ROS_DISTRO}-turtlesim \
+            ros-${ROS_DISTRO}-rqt-common-plugins \
+            ros-${ROS_DISTRO}-rqt-graph \
+            ros-${ROS_DISTRO}-rviz2 \
         && rm -rf /var/lib/apt/lists/* ; \
     fi
 
@@ -70,7 +76,7 @@ RUN if [ "$WITH_GUI" = "1" ]; then \
 #
 #   docker compose build --build-arg UID=$(id -u) --build-arg GID=$(id -g)
 #
-# ros:jazzy には UID 1000 の ubuntu ユーザが既にいます。要求された UID が
+# ros:<distro> には UID 1000 の ubuntu ユーザが既にいます。要求された UID が
 # 1000 なら作り直さずそれを使い、違うなら番号を付け替えます。
 ARG UID=1000
 ARG GID=1000
@@ -106,7 +112,7 @@ RUN mkdir -p /ws/build /ws/install /ws/log /ws/.venv-docs && \
 # drill は自分で source を探すので必須ではありませんが、
 # コンテナに入って手で ros2 を叩くときに要ります。
 # .bashrc がまだ無い場合に root 所有で作られないよう、最後に chown する。
-RUN echo '. /opt/ros/jazzy/setup.bash' >> /home/ubuntu/.bashrc && \
+RUN echo ". /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/ubuntu/.bashrc && \
     echo '[ -f /ws/install/setup.bash ] && . /ws/install/setup.bash' >> /home/ubuntu/.bashrc && \
     chown "$UID:$GID" /home/ubuntu/.bashrc
 
