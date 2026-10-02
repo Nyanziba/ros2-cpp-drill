@@ -74,7 +74,7 @@ ros2 run drill_05_service_client client 20 22
 ./drill run 05
 ```
 
-テストは課題03の `server` には依存せず、テスト自身がサーバ役（probe ノード）を
+テストは課題04の `server` には依存せず、テスト自身がサーバ役（probe ノード）を
 `create_service<AddTwoInts>("add_two_ints", ...)` で用意します。
 
 | テスト | 見ているところ |

@@ -943,4 +943,4 @@ Executor の再入で詰まることがあります。**再入の問題は 17.5 
 
 ---
 
-前: [16. Mediator](16_Mediator.md) ／ 次: 18. Memento（準備中）
+前: [16. Mediator](16_Mediator.md) ／ 次: [18. Memento](18_Memento.md)

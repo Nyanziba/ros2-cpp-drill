@@ -744,4 +744,4 @@ handlers.push_back([](const Fault & f) -> std::optional<FaultAction> {
 
 ---
 
-前: [13. Visitor](13_Visitor.md) ／ 次: 15. Facade（準備中）
+前: [13. Visitor](13_Visitor.md) ／ 次: [15. Facade](15_Facade.md)

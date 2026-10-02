@@ -613,4 +613,4 @@ ROS 2 では動的確保も例外も使えるので、Virtual Proxy（重いリ�
 
 ---
 
-前: [20. Flyweight](20_Flyweight.md) ／ 次: 22. Command（準備中）
+前: [20. Flyweight](20_Flyweight.md) ／ 次: [22. Command](22_Command.md)

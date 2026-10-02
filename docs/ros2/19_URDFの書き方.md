@@ -171,7 +171,7 @@ mkdir my_robot_description/urdf
 
 内容：
 
-`my_robot_description/urdf/my_robot.urdf`を作成します。台車本体と左右の車輪、キャスターの4リンク構成にします。
+`my_robot_description/urdf/my_robot.urdf`を作成します。台車本体と左右の車輪の3リンク構成にします（キャスターは後述の練習問題で追加します）。
 
 ```xml
 <?xml version="1.0"?>

@@ -241,7 +241,7 @@ value = 42
 const int *cp = &a: 100
 After cp = &b: 200
 int * const p_const = &a: 100
-After *p_const = 150: a = 100
+After *p_const = 150: a = 150
 ```
 
 </details>

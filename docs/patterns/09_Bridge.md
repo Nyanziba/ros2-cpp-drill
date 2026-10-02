@@ -806,4 +806,4 @@ rclcpp は Pimpl を多用します。`rclcpp::Node` を見てください。
 
 ---
 
-前: [8. Abstract Factory](08_AbstractFactory.md) ／ 次: 10. Strategy（準備中）
+前: [8. Abstract Factory](08_AbstractFactory.md) ／ 次: [10. Strategy](10_Strategy.md)

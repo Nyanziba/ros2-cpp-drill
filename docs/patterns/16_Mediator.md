@@ -183,6 +183,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 --- bad ---
 use_count: mediator=2 colleague=2
 --- bad ここまで ---
+--- good ---
 ~GoodMediator
 ~GoodColleague
 --- good ここまで ---
@@ -588,4 +589,4 @@ Mediator を書くのは**1 つのノードの中**、あるいは**ライブラ
 
 ---
 
-前: [15. Facade](15_Facade.md) ／ 次: 17. Observer（準備中）
+前: [15. Facade](15_Facade.md) ／ 次: [17. Observer](17_Observer.md)

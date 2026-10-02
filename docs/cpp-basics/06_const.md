@@ -20,7 +20,7 @@ x = 10;  // エラー
 ```
 
 ```
-error: assignment of read-only variable 'x'
+error: assignment of read-only variable ‘x’
 ```
 
 `const` な値は「変わらないことが保証される」ので、コンパイラが最適化しやすくなります。
@@ -48,7 +48,7 @@ void process(const std::string & s)
 ```
 
 ```
-error: no match for ‘operator=’ (operand types are ‘const std::string’ and ‘const char [9]’)
+error: no match for ‘operator=’ (operand types are ‘const std::string’ {aka ‘const std::__cxx11::basic_string<char>’} and ‘const char [9]’)
 ```
 
 **メッセージは型によって変わります。** ここは `std::string` なので
@@ -138,7 +138,7 @@ std::cout << p.distance() << "\n";  // OK
 エラーメッセージ：
 
 ```
-error: passing 'const Point' as 'this' argument discards qualifiers [-fpermissive]
+error: passing ‘const Point’ as ‘this’ argument discards qualifiers [-fpermissive]
 ```
 
 このルール（**`const` 性の分離**）が非常に重要です。
@@ -339,19 +339,19 @@ after *p2 = 99: a = 99
 
 ## つまずきポイント
 
-**`error: assignment of read-only variable 'x'`**
+**`error: assignment of read-only variable ‘x’`**
 `const` な変数に代入しようとしています。初期化のとき値を決めてください。
 
-**`error: assignment of read-only reference 'n'`** / **`error: no match for ‘operator=’`**
+**`error: assignment of read-only reference ‘n’`** / **`error: no match for ‘operator=’`**
 `const` 参照パラメータを書き換えようとしています。
 意図が「読み専用」なら参照先を書き換えないでください。
 意図が「書き換えたい」なら `const` を外してください。
 
-**`error: passing 'const Point' as 'this' argument discards qualifiers`**
+**`error: passing ‘const Point’ as ‘this’ argument discards qualifiers`**
 `const` オブジェクトから非 `const` メンバ関数を呼んでいます。
 メンバ関数に `const` を付けて、「このメンバ関数は読み専用」にしてください。
 
-**`error: assignment of member '...' in read-only object`**
+**`error: assignment of member ‘...’ in read-only object`**
 `const` メンバ関数の中からメンバを書き換えようとしています。
 メンバが `mutable` でない限り、`const` メンバ関数からは書き込みはできません。
 

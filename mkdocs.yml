@@ -17,9 +17,9 @@ site_dir: site
 # zip を展開して index.html を開くだけで全ページを辿れます。
 use_directory_urls: false
 
-# site_url は意図的に設定していません。
-# 設定すると（空文字を含めて）アセットのパスがルート絶対（/assets/...）になり、
-# zip を展開してローカルで開いたときに CSS も JS も読めなくなります。
+# site_url は canonical リンクと sitemap のために設定しています。
+# 設定してもアセットのパスは相対（../assets/...）のままなので、
+# zip を展開してローカルで開いても CSS も JS も読めます（mkdocs 1.6 で確認）。
 
 theme:
   name: material

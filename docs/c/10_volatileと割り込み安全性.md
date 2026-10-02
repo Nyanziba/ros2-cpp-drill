@@ -325,7 +325,7 @@ Bit manipulation (volatile):
 Initial: 0x00000000
 After |= (1 << 3): 0x00000008
 After |= (1 << 7): 0x00000088
-After |= ~(1 << 3): 0x00000080
+After &= ~(1 << 3): 0x00000080
 
 Note: volatile does NOT guarantee atomicity!
 RMW operations can be interrupted mid-operation.
