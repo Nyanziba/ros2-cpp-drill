@@ -77,10 +77,10 @@ The tests do not depend on the `server` of exercise 04. The test itself prepares
 
 | Test | What it checks |
 | --- | --- |
-| `add_two_intsのクライアントを作れている` (a client for add_two_ints is created) | The basic form of `create_client` and `wait_for_server` |
-| `send_requestで応答のsumが正しい` (the sum in the response from send_request is correct) | Whether the contents of the request arrive correctly (41+1=42) |
-| `負の数でも正しく計算できる` (calculates correctly even with negative numbers) | Whether negative `int64_t` values are handled as they are |
-| `サーバがいないときwait_for_serverがfalseを返す` (wait_for_server returns false when there is no server) | Whether it returns the return value of `wait_for_service` as it is (it must finish within 1 second) |
+| `CanCreateAddTwoIntsClient` | The basic form of `create_client` and `wait_for_server` |
+| `SendRequestReturnsCorrectSum` | Whether the contents of the request arrive correctly (41+1=42) |
+| `HandlesNegativeNumbers` | Whether negative `int64_t` values are handled as they are |
+| `WaitForServerReturnsFalseWhenNoServer` | Whether it returns the return value of `wait_for_service` as it is (it must finish within 1 second) |
 
 ## References
 

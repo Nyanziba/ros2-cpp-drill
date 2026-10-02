@@ -142,10 +142,10 @@ ros2 run intra_process_demo two_node_pipeline
 
 | テスト | 見ているところ |
 | --- | --- |
-| `zero_copyトピックで通信できている` | Publisher / Subscription が動いているか |
-| `送信側と受信側のアドレスが一致する` | `std::move` で publish しているか、購読側が `ConstSharedPtr` か |
-| `dataの16進文字列も同じアドレスを指している` | `data` に正しくアドレスを書き込んでいるか |
-| `複数回publishしても毎回アドレスが一致する` | 毎回きちんとゼロコピーになっているか |
+| `CommunicatesOnZeroCopyTopic` | Publisher / Subscription が動いているか |
+| `PublisherAndSubscriberAddressesMatch` | `std::move` で publish しているか、購読側が `ConstSharedPtr` か |
+| `HexStringInDataPointsToSameAddress` | `data` に正しくアドレスを書き込んでいるか |
+| `AddressesMatchOnEveryRepeatedPublish` | 毎回きちんとゼロコピーになっているか |
 
 ## 参考
 

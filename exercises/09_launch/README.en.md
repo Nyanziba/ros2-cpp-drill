@@ -128,11 +128,11 @@ ros2 topic list
 
 | Test | What it checks |
 | --- | --- |
-| `test_python版でtalkerとlistenerの2ノードを起動している` (test the Python version starts the two nodes talker and listener) | Whether the Python version has two `Node`s (with the correct package/executable) |
-| `test_python版のnamespaceとremapがdemoとchatterになっている` (test the namespace and remap of the Python version are demo and chatter) | The namespace and remap values of the Python version |
-| `test_xml版がpython版と同じ構造になっている` (test the XML version has the same structure as the Python version) | Whether the XML version has the same structure as the Python version |
-| `test_yaml版がpython版と同じ構造になっている` (test the YAML version has the same structure as the Python version) | Whether the YAML version has the same structure as the Python version |
-| `test_3つの書式がすべて等価である` (test all three formats are equivalent) | Whether the structure of all three formats matches exactly |
+| `test_python_launch_starts_talker_and_listener` | Whether the Python version has two `Node`s (with the correct package/executable) |
+| `test_python_launch_has_demo_namespace_and_chatter_remap` | The namespace and remap values of the Python version |
+| `test_xml_launch_matches_python_structure` | Whether the XML version has the same structure as the Python version |
+| `test_yaml_launch_matches_python_structure` | Whether the YAML version has the same structure as the Python version |
+| `test_all_three_formats_are_equivalent` | Whether the structure of all three formats matches exactly |
 
 The tests do not actually start node processes. They use the API of `launch` / `launch_ros`
 to load the launch files, and extract only the values of `package` / `executable` / `namespace` /

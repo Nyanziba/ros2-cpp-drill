@@ -5,6 +5,7 @@
 
 #include "drill/minimal_subscriber.hpp"
 #include "drill_harness.hpp"
+#include "drill_i18n.hpp"
 
 using DrillTest = drill::DrillTest;
 using namespace std::chrono_literals;
@@ -26,7 +27,7 @@ int count_lines_containing(const drill::LogCapture & logs, const std::string & n
 
 }  // namespace
 
-TEST_F(DrillTest, topicを購読してログに出している)
+TEST_F(DrillTest, SubscribesToTopicAndLogs)
 {
   drill::LogCapture logs;
   auto listener = std::make_shared<MinimalSubscriber>();
@@ -40,15 +41,23 @@ TEST_F(DrillTest, topicを購読してログに出している)
   ASSERT_TRUE(
     drill::spin_until(
       {listener, probe}, [&logs]() {return logs.contains("I heard: 'hello drill'");}, 5s, tick))
-    << "\"topic\" に publish しても \"I heard: 'hello drill'\" というログが出ませんでした。\n"
-    << "  - create_subscription を subscription_ に代入しましたか？\n"
-    << "  - トピック名は \"topic\"、型は std_msgs::msg::String、QoS depth は 10 ですか？\n"
-    << "  - topic_callback の中で RCLCPP_INFO(this->get_logger(), \"I heard: '%s'\", "
-       "msg.data.c_str()); を呼んでいますか？\n"
-    << "  実際に出ていたログ:" << logs.dump();
+    << drill::localized(
+    "\"topic\" に publish しても \"I heard: 'hello drill'\" というログが出ませんでした。\n"
+    "  - create_subscription を subscription_ に代入しましたか？\n"
+    "  - トピック名は \"topic\"、型は std_msgs::msg::String、QoS depth は 10 ですか？\n"
+    "  - topic_callback の中で RCLCPP_INFO(this->get_logger(), \"I heard: '%s'\", "
+    "msg.data.c_str()); を呼んでいますか？\n"
+    "  実際に出ていたログ:",
+    "Published to \"topic\" but the log \"I heard: 'hello drill'\" did not appear.\n"
+    "  - Did you assign create_subscription to subscription_?\n"
+    "  - Is the topic name \"topic\", the type std_msgs::msg::String, and the QoS depth 10?\n"
+    "  - Does topic_callback call RCLCPP_INFO(this->get_logger(), \"I heard: '%s'\", "
+    "msg.data.c_str());?\n"
+    "  Logs that were printed:")
+    << logs.dump();
 }
 
-TEST_F(DrillTest, 複数通受信しても毎回ログが出る)
+TEST_F(DrillTest, LogsEveryTimeForMultipleMessages)
 {
   drill::LogCapture logs;
   auto listener = std::make_shared<MinimalSubscriber>();
@@ -66,19 +75,32 @@ TEST_F(DrillTest, 複数通受信しても毎回ログが出る)
     drill::spin_until(
       {listener, probe},
       [&logs]() {return count_lines_containing(logs, "I heard: 'seq-") >= 3;}, 5s, tick))
-    << "\"I heard: 'seq-*'\" というログが 3 件届く前にタイムアウトしました"
-       "（届いた件数: " << count_lines_containing(logs, "I heard: 'seq-") << "）。\n"
-    << "  購読が最初の 1 件で止まっていませんか？ subscription_ をコンストラクタの"
-       "ローカル変数ではなくメンバ変数に代入していますか？\n"
-    << "  実際に出ていたログ:" << logs.dump();
+    << drill::localized(
+    "\"I heard: 'seq-*'\" というログが 3 件届く前にタイムアウトしました（届いた件数: ",
+    "Timed out before 3 \"I heard: 'seq-*'\" logs arrived (logs received: ")
+    << count_lines_containing(logs, "I heard: 'seq-")
+    << drill::localized(
+    "）。\n"
+    "  購読が最初の 1 件で止まっていませんか？ subscription_ をコンストラクタの"
+    "ローカル変数ではなくメンバ変数に代入していますか？\n"
+    "  実際に出ていたログ:",
+    ").\n"
+    "  Does the subscription stop after the first message? Did you assign subscription_ "
+    "to the member variable instead of a local variable in the constructor?\n"
+    "  Logs that were printed:")
+    << logs.dump();
 }
 
-TEST_F(DrillTest, ノード名がminimal_subscriberになっている)
+TEST_F(DrillTest, NodeNameIsMinimalSubscriber)
 {
   auto listener = std::make_shared<MinimalSubscriber>();
 
   EXPECT_STREQ(listener->get_name(), "minimal_subscriber")
-    << "ノード名が \"minimal_subscriber\" になっていません。実際の名前: \""
+    << drill::localized(
+    "ノード名が \"minimal_subscriber\" になっていません。実際の名前: \"",
+    "The node name is not \"minimal_subscriber\". Actual name: \"")
     << listener->get_name() << "\"\n"
-    << "  コンストラクタで Node(\"minimal_subscriber\") を呼んでいますか？";
+    << drill::localized(
+    "  コンストラクタで Node(\"minimal_subscriber\") を呼んでいますか？",
+    "  Does the constructor call Node(\"minimal_subscriber\")?");
 }

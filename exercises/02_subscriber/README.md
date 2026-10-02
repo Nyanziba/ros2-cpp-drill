@@ -55,9 +55,9 @@ ros2 node info /minimal_subscriber
 
 | テスト | 見ているところ |
 | --- | --- |
-| `topicを購読してログに出している` | Subscription が動いていて `I heard: '<本文>'` を出しているか |
-| `複数通受信しても毎回ログが出る` | 購読が最初の 1 件で止まっていないか |
-| `ノード名がminimal_subscriberになっている` | コンストラクタでのノード名指定 |
+| `SubscribesToTopicAndLogs` | Subscription が動いていて `I heard: '<本文>'` を出しているか |
+| `LogsEveryTimeForMultipleMessages` | 購読が最初の 1 件で止まっていないか |
+| `NodeNameIsMinimalSubscriber` | コンストラクタでのノード名指定 |
 
 ## 参考
 

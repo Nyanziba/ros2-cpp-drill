@@ -84,11 +84,11 @@ ros2 service call /add_two_ints example_interfaces/srv/AddTwoInts "{a: 20, b: 22
 
 | テスト | 見ているところ |
 | --- | --- |
-| `add_two_intsサービスを公開している` | `create_service` を `service_` に入れているか |
-| `2つの整数の和を返す` | `response->sum = request->a + request->b;` |
-| `0や負の数でも正しく計算する` | 境界値（0、負数）での計算 |
-| `連続して呼び出しても応答する` | 複数回のリクエストを処理できるか |
-| `公式と同じIncoming_requestログを出している` | `RCLCPP_INFO` の書式 |
+| `ExposesAddTwoIntsService` | `create_service` を `service_` に入れているか |
+| `ReturnsSumOfTwoIntegers` | `response->sum = request->a + request->b;` |
+| `HandlesZeroAndNegativeNumbers` | 境界値（0、負数）での計算 |
+| `RespondsToConsecutiveCalls` | 複数回のリクエストを処理できるか |
+| `LogsSameIncomingRequestAsOfficial` | `RCLCPP_INFO` の書式 |
 
 ## 参考
 

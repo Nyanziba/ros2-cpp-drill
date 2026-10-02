@@ -224,9 +224,9 @@ ros2 component load /ComponentManager composition composition::Talker \
 
 | テスト | 見ているところ |
 | --- | --- |
-| `NodeOptionsがNodeに渡されている` | `options` を `Node(...)` に渡しているか（渡さないとノード名リマップが効かない） |
-| `topicトピックにpublishしている` | Publisher とタイマが動いているか、本文の組み立て |
-| `RCLCPP_COMPONENTS_REGISTER_NODEで登録されている` | 登録マクロが実際に書かれているか（`class_loader` で共有ライブラリを直接読んで確認） |
+| `NodeOptionsArePassedToNode` | `options` を `Node(...)` に渡しているか（渡さないとノード名リマップが効かない） |
+| `PublishesToTopicTopic` | Publisher とタイマが動いているか、本文の組み立て |
+| `RegisteredWithRclcppComponentsRegisterNode` | 登録マクロが実際に書かれているか（`class_loader` で共有ライブラリを直接読んで確認） |
 
 ## 参考
 

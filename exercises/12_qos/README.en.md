@@ -128,10 +128,10 @@ nothing is shown even if you run it after qos_demo has finished publishing
 
 | Test | What it checks |
 | --- | --- |
-| `publisherの実効QoSがTRANSIENT_LOCALかつRELIABLEでdepth1になっている` (the effective QoS of the publisher is TRANSIENT_LOCAL and RELIABLE with depth 1) | The contents of `actual_qos()` |
-| `あとから起動した購読者にも過去にpublishした値が届く` (a subscriber that starts later also receives the value published in the past) | The essence of TRANSIENT_LOCAL (latched delivery) |
-| `新しい値をpublishすれば購読者に届く` (if you publish a new value, it reaches the subscriber) | Whether the normal delivery path is not broken |
-| `VOLATILEで購読すると過去の値は届かない` (subscribing with VOLATILE does not receive past values) | Confirming that durability is decided by "the setting the subscriber requested" |
+| `PublisherEffectiveQosIsTransientLocalReliableDepth1` | The contents of `actual_qos()` |
+| `LateSubscriberReceivesPastPublishedValue` | The essence of TRANSIENT_LOCAL (latched delivery) |
+| `SubscriberReceivesNewlyPublishedValue` | Whether the normal delivery path is not broken |
+| `VolatileSubscriberDoesNotReceivePastValue` | Confirming that durability is decided by "the setting the subscriber requested" |
 
 ## References
 

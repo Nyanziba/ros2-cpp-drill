@@ -79,10 +79,10 @@ ros2 run drill_05_service_client client 20 22
 
 | テスト | 見ているところ |
 | --- | --- |
-| `add_two_intsのクライアントを作れている` | `create_client` と `wait_for_server` の基本形 |
-| `send_requestで応答のsumが正しい` | リクエストの中身が正しく届いているか（41+1=42） |
-| `負の数でも正しく計算できる` | `int64_t` の負値もそのまま扱えているか |
-| `サーバがいないときwait_for_serverがfalseを返す` | `wait_for_service` の戻り値をそのまま返しているか（1 秒以内に終わること） |
+| `CanCreateAddTwoIntsClient` | `create_client` と `wait_for_server` の基本形 |
+| `SendRequestReturnsCorrectSum` | リクエストの中身が正しく届いているか（41+1=42） |
+| `HandlesNegativeNumbers` | `int64_t` の負値もそのまま扱えているか |
+| `WaitForServerReturnsFalseWhenNoServer` | `wait_for_service` の戻り値をそのまま返しているか（1 秒以内に終わること） |
 
 ## 参考
 

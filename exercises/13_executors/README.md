@@ -170,10 +170,10 @@ publish されなくなることが確認できます。
 
 | テスト | 見ているところ |
 | --- | --- |
-| `サブスクライバとクライアントが別のコールバックグループにいる` | 2 つのグループを別々に作っているか |
-| `triggerに21を送るとsumに42がpublishされる` | 一連の動作とデッドロックしていないこと |
-| `連続してtriggerを送っても毎回応答する` | 一度きりの偶然ではなく、構造として解決しているか |
-| `負の値でも正しく計算する` | 境界値でも壊れていないか |
+| `SubscriptionAndClientAreInDifferentCallbackGroups` | 2 つのグループを別々に作っているか |
+| `Trigger21PublishesSum42` | 一連の動作とデッドロックしていないこと |
+| `RespondsToEveryConsecutiveTrigger` | 一度きりの偶然ではなく、構造として解決しているか |
+| `HandlesNegativeValues` | 境界値でも壊れていないか |
 
 ## 参考
 

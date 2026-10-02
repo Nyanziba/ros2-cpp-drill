@@ -157,11 +157,11 @@ ros2 service call /add_three_ints drill_03_custom_interface/srv/AddThreeInts "{a
 
 | Test | What it checks |
 | --- | --- |
-| `Num型がint64のnumという1フィールドで定義されている` (the Num type is defined with one int64 field named num) | The field name and type in `msg/Num.msg` (the compile itself verifies this) |
-| `numトピックにNumがpublishされている` (Num is published to the num topic) | Whether the publisher and the timer are running, and `count_++` |
-| `add_three_intsサービスを公開している` (provides the add_three_ints service) | The definition in `srv/AddThreeInts.srv`, and whether `create_service` is stored in `service_` |
-| `3つの整数の和を返す` (returns the sum of three integers) | `response->sum = request->a + request->b + request->c;`, and the calculation with negative numbers |
-| `公式と同じ書式でIncoming_requestログを出している` (prints the Incoming_request log in the same format as the official one) | The format of `RCLCPP_INFO` (the three-argument version from exercise 04) |
+| `NumMessageHasSingleInt64NumField` | The field name and type in `msg/Num.msg` (the compile itself verifies this) |
+| `PublishesNumOnNumTopic` | Whether the publisher and the timer are running, and `count_++` |
+| `ExposesAddThreeIntsService` | The definition in `srv/AddThreeInts.srv`, and whether `create_service` is stored in `service_` |
+| `ReturnsSumOfThreeIntegers` | `response->sum = request->a + request->b + request->c;`, and the calculation with negative numbers |
+| `LogsIncomingRequestInOfficialFormat` | The format of `RCLCPP_INFO` (the three-argument version from exercise 04) |
 
 ## References
 
