@@ -28,10 +28,10 @@
 
 | テスト | 見ているところ |
 | --- | --- |
-| `Sum` | 配列のループ |
-| `Sum空の配列` | count==0 の処理 |
-| `FindFirst見つかる` | ポインタ返却 |
-| `FindFirst見つからない` | nullptr 返却 |
+| `SumsAllElements` | 配列のループ |
+| `SumOfEmptyArrayIsZero` | count==0 の処理 |
+| `FindFirstReturnsPointerToMatch` | ポインタ返却 |
+| `FindFirstReturnsNullptrWhenNotFound` | nullptr 返却 |
 
 ## 参考
 

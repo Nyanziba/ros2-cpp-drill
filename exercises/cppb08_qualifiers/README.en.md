@@ -58,10 +58,10 @@ Read each message one by one and match it to the TODO it is about.
 
 | Test | What it checks |
 | --- | --- |
-| `Explicitが暗黙変換を止める` (explicit stops the implicit conversion) | whether `std::is_convertible_v<double, Meters>` is false |
-| `Const関数はConstオブジェクトから呼べる` (a const function can be called from a const object) | trailing `const` |
-| `Constexprはコンパイル時に評価される` (constexpr is evaluated at compile time) | whether `static_assert` passes |
-| `Inlineで多重定義を避ける` (inline avoids multiple definitions) | whether two translation units can be linked |
+| `ExplicitBlocksImplicitConversion` | whether `std::is_convertible_v<double, Meters>` is false |
+| `ConstMethodCallableOnConstObject` | trailing `const` |
+| `ConstexprIsEvaluatedAtCompileTime` | whether `static_assert` passes |
+| `InlineAvoidsMultipleDefinition` | whether two translation units can be linked |
 
 ## References
 

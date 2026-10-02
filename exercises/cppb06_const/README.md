@@ -59,8 +59,8 @@ error: no declaration matches ‘int Config::get_limit()’
 
 | テスト | 見ているところ |
 | --- | --- |
-| `ConstCorrect` | `const Config` から `get_limit()` が呼べるか（② の末尾 const） |
-| `戻り値のポインタはconst` | 戻り値の型が `const int *` か（③） |
+| `AllowsCallsOnConstObject` | `const Config` から `get_limit()` が呼べるか（② の末尾 const） |
+| `ReturnsPointerToConst` | 戻り値の型が `const int *` か（③） |
 
 ## 参考
 

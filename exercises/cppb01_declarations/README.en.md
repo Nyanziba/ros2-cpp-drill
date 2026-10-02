@@ -30,9 +30,9 @@ Functions:
 
 | Test | What it checks |
 | --- | --- |
-| `ConstPtrは読み取り専用` (const pointer is read-only) | reading through `const int *` |
-| `非ConstPtrは変更可能` (non-const pointer is writable) | writing through `int *` |
-| `戻り値もConstPtrで正しい` (the return value is also a correct const pointer) | the return value `const int *` |
+| `ReadsThroughConstPointer` | reading through `const int *` |
+| `ModifiesThroughNonConstPointer` | writing through `int *` |
+| `ReturnsConstPointerToOriginal` | the return value `const int *` |
 
 ## References
 

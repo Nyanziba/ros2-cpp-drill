@@ -28,10 +28,10 @@ nullptr チェックとポインタの逆参照を学びます。
 
 | テスト | 見ているところ |
 | --- | --- |
-| `両方がvalidな場合` | 正常系 |
-| `読み込みポインタがnullptr` | nullptr チェック |
-| `書き込みポインタがnullptr` | nullptr チェック |
-| `両方がnullptr` | 両方チェック |
+| `ReadsWhenBothPointersAreValid` | 正常系 |
+| `ReturnsFalseWhenReadPointerIsNull` | nullptr チェック |
+| `ReturnsFalseWhenWritePointerIsNull` | nullptr チェック |
+| `ReturnsFalseWhenBothPointersAreNull` | 両方チェック |
 
 ## 参考
 

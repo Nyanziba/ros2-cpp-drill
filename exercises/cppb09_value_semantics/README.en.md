@@ -30,10 +30,10 @@ Implement the following in `src/data.cpp`.
 
 | Test | What it checks |
 | --- | --- |
-| `CopyCtorが数えられる` (CopyCtor is counted) | copy constructor |
-| `CopyAssignが数えられる` (CopyAssign is counted) | copy assignment operator |
-| `値渡しはコピーが起きる` (pass by value makes a copy) | the cost of pass by value |
-| `ConstRefはコピーが起きない` (ConstRef makes no copy) | the benefit of const& |
+| `CopyConstructorIsCounted` | copy constructor |
+| `CopyAssignmentIsCounted` | copy assignment operator |
+| `PassByValueCopiesTwice` | the cost of pass by value |
+| `PassByConstRefDoesNotCopy` | the benefit of const& |
 
 ## References
 

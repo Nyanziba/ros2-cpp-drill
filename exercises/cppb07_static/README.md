@@ -30,8 +30,8 @@ static の3つの文脈を学びます。
 
 | テスト | 見ているところ |
 | --- | --- |
-| `関数内Staticは値を保持` | 関数内 static |
-| `クラスStaticメンバは共有される` | クラス static メンバと定義 |
+| `FunctionStaticKeepsValue` | 関数内 static |
+| `ClassStaticMemberIsShared` | クラス static メンバと定義 |
 
 ## 参考
 

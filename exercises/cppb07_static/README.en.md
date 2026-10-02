@@ -30,8 +30,8 @@ Implement the following three things in `src/counter.cpp`.
 
 | Test | What it checks |
 | --- | --- |
-| `関数内Staticは値を保持` (static inside a function keeps its value) | static inside a function |
-| `クラスStaticメンバは共有される` (static class members are shared) | static class member and its definition |
+| `FunctionStaticKeepsValue` | static inside a function |
+| `ClassStaticMemberIsShared` | static class member and its definition |
 
 ## References
 

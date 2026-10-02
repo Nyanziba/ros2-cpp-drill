@@ -5,7 +5,7 @@
 
 #include "drill/qualifiers.hpp"
 
-TEST(QualifiersTest, Explicitが暗黙変換を止める)
+TEST(QualifiersTest, ExplicitBlocksImplicitConversion)
 {
   static_assert(
     !std::is_convertible_v<double, Meters>,
@@ -16,13 +16,13 @@ TEST(QualifiersTest, Explicitが暗黙変換を止める)
   EXPECT_DOUBLE_EQ(m.value(), 1.5);
 }
 
-TEST(QualifiersTest, Const関数はConstオブジェクトから呼べる)
+TEST(QualifiersTest, ConstMethodCallableOnConstObject)
 {
   const Meters m(2.5);
   EXPECT_DOUBLE_EQ(m.value(), 2.5);
 }
 
-TEST(QualifiersTest, Constexprはコンパイル時に評価される)
+TEST(QualifiersTest, ConstexprIsEvaluatedAtCompileTime)
 {
   static_assert(square(5) == 25, "square に constexpr を付けてください");
   static_assert(square(0) == 0, "square(0) は 0 です");
@@ -32,7 +32,7 @@ TEST(QualifiersTest, Constexprはコンパイル時に評価される)
   EXPECT_EQ(square(n), 49);
 }
 
-TEST(QualifiersTest, Inlineで多重定義を避ける)
+TEST(QualifiersTest, InlineAvoidsMultipleDefinition)
 {
   // twice() の実体はヘッダにあり、2 つの翻訳単位から include されています。
   EXPECT_EQ(twice(21), 42);      // このファイル側から呼ぶ

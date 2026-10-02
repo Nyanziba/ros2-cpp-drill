@@ -25,7 +25,7 @@ Implement the Tracer class. The constructor and destructor append to a global lo
 
 | Test | What it checks |
 | --- | --- |
-| `スコープを抜けるとき逆順に破棄される` (objects are destroyed in reverse order when leaving the scope) | reverse-order destruction |
+| `DestroysInReverseOrderOnScopeExit` | reverse-order destruction |
 
 ## References
 
