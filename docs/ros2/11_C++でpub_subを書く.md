@@ -40,9 +40,9 @@
 
 模範解答: `spin`はノードのイベントループを回す関数で、タイマーやsubscriberのコールバックを実際に呼び出す役目を持つ。`spin`を呼ばないとノードは起動してすぐプログラムが終了してしまい、コールバックが一度も実行されない。publisherもsubscriberも、コンストラクタでタイマーやsubscriberを登録するだけでは何も起きず、`spin`が待ち受けてこそ動き出す。
 
-**Q3. CMakeLists.txtに`ament_target_dependencies`を書き忘れるとどんなエラーになりますか。**
+**Q3. CMakeLists.txtで`target_link_libraries`に`rclcpp::rclcpp`などの依存を書き忘れるとどんなエラーになりますか。**
 
-模範解答: コンパイル自体は`#include`が通れば進むことがあるが、リンク時に`undefined reference to rclcpp::...`のようなリンカエラーが出ることが多い。`ament_target_dependencies`は該当パッケージ（`rclcpp`や`std_msgs`）のインクルードパスとライブラリをターゲットに紐付ける役目なので、書き忘れるとヘッダは見つかってもシンボルが解決できない。逆に`package.xml`側の依存宣言を忘れると、他の環境でこのパッケージをビルドしようとしたときに依存パッケージが自動で入らず、colconのビルド順序解決にも影響する。
+模範解答: コンパイル自体は`#include`が通れば進むことがあるが、リンク時に`undefined reference to rclcpp::...`のようなリンカエラーが出ることが多い。`target_link_libraries`で渡す依存（`rclcpp::rclcpp`や`${std_msgs_TARGETS}`）は、該当パッケージのインクルードパスとライブラリをターゲットに紐付ける役目なので、書き忘れるとヘッダは見つかってもシンボルが解決できない。逆に`package.xml`側の依存宣言を忘れると、他の環境でこのパッケージをビルドしようとしたときに依存パッケージが自動で入らず、colconのビルド順序解決にも影響する。
 
 ## 本文
 
@@ -214,14 +214,14 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 ```
 
-そのあとに実行ファイルの定義を追加します。ノードごとに`add_executable`と`ament_target_dependencies`のペアが必要です。
+そのあとに実行ファイルの定義を追加します。ノードごとに`add_executable`と`target_link_libraries`のペアが必要です。
 
 ```cmake
 add_executable(talker src/publisher_member_function.cpp)
-ament_target_dependencies(talker rclcpp std_msgs)
+target_link_libraries(talker PUBLIC rclcpp::rclcpp ${std_msgs_TARGETS})
 
 add_executable(listener src/subscriber_member_function.cpp)
-ament_target_dependencies(listener rclcpp std_msgs)
+target_link_libraries(listener PUBLIC rclcpp::rclcpp ${std_msgs_TARGETS})
 
 install(TARGETS
   talker
@@ -229,7 +229,7 @@ install(TARGETS
   DESTINATION lib/${PROJECT_NAME})
 ```
 
-`add_executable`は「このソースファイルからこの名前の実行ファイルを作る」という指定、`ament_target_dependencies`は「このターゲットにこのパッケージのヘッダとライブラリを紐付ける」という指定です。`install`を書かないと`colcon build`は通ってもインストール先（`ros2_ws/install/`以下）に実行ファイルが配置されず、`ros2 run`で見つからないという事態になります。
+`add_executable`は「このソースファイルからこの名前の実行ファイルを作る」という指定、`target_link_libraries`は「このターゲットにこのパッケージのヘッダとライブラリを紐付ける」という指定です。メッセージパッケージは`${std_msgs_TARGETS}`、`rclcpp`は`rclcpp::rclcpp`のように、パッケージごとのターゲット名を渡します。`ament_target_dependencies`は ROS 2 Lyrical で削除されました。古い資料で見かけたら`target_link_libraries`に読み替えてください。`install`を書かないと`colcon build`は通ってもインストール先（`ros2_ws/install/`以下）に実行ファイルが配置されず、`ros2 run`で見つからないという事態になります。
 
 ### 学習内容：ビルドして実行する
 
@@ -273,7 +273,7 @@ talker側に`Publishing: 'Hello, world! 0'`のようなログが500ms間隔で�
 
 - **CMakeLists.txtの編集忘れ**: ソースファイルを追加しても`add_executable`を書かないと`colcon build`は何も問題なく通ってしまいます（新しいノードの存在を知らないだけ）。`ros2 run cpp_pubsub talker`で`Package 'cpp_pubsub' not found`ではなく`No executable found`系のエラーが出たら、まずCMakeLists.txtの`add_executable`と`install`を確認してください。
 - **依存追加漏れ**: `package.xml`に`<depend>rclcpp</depend>`を書き忘れると、単体でビルドしている間は気づきにくいですが、`rosdep`で依存解決する場面やCIでエラーになります。CMakeLists.txt側だけ`find_package`していても`package.xml`との不一致は`colcon build`で警告が出ることがあるので、警告を無視しないでください。
-- **`ament_target_dependencies`の書き忘れ**: ビルドエラーの出方は`undefined reference to `rclcpp::...``のようなリンカエラーです。「コンパイルは通ったのにリンクで落ちる」ときはまずこれを疑ってください。ヘッダの`#include`とライブラリのリンクは別の設定だという点を覚えておくと、この種のエラーで慌てなくなります。
+- **`target_link_libraries`への依存の書き忘れ**: ビルドエラーの出方は`undefined reference to `rclcpp::...``のようなリンカエラーです。「コンパイルは通ったのにリンクで落ちる」ときはまずこれを疑ってください。ヘッダの`#include`とライブラリのリンクは別の設定だという点を覚えておくと、この種のエラーで慌てなくなります。
 - **`source install/setup.bash`を忘れる**: ビルドし直した直後の新しいターミナルでは、そのターミナルにまだ新しい実行ファイルの場所が反映されていません。ノードが変更したはずなのに古い挙動をする場合は、まず`source`を忘れていないか確認してください。
 
 ## 発展

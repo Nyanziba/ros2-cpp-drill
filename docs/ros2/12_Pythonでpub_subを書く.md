@@ -241,7 +241,7 @@ setup(
 <exec_depend>std_msgs</exec_depend>
 ```
 
-C++版では`CMakeLists.txt`に`find_package`と`ament_target_dependencies`を書く必要がありましたが、Pythonの依存解決は`package.xml`の`exec_depend`のみで完結します。コンパイルが要らない分、依存の書き方はC++版よりシンプルです。
+C++版では`CMakeLists.txt`に`find_package`と`target_link_libraries`を書く必要がありましたが、Pythonの依存解決は`package.xml`の`exec_depend`のみで完結します。コンパイルが要らない分、依存の書き方はC++版よりシンプルです。
 
 > コラム: `--dependencies`を付けずに`ros2 pkg create`した場合は、`package.xml`に`<exec_depend>`が入らないので、あとから手で追記する必要があります。依存を追加・削除したときに`package.xml`の更新を忘れるのは、C++・Python問わずROS2初心者が詰まりやすいポイントです。
 

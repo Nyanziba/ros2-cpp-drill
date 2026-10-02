@@ -411,11 +411,13 @@ The `CMakeLists.txt` of each drill exercise is the two steps above, written out 
 # exercises/01_publisher/CMakeLists.txt (excerpt, summarized)
 add_library(minimal_publisher src/minimal_publisher.cpp)   # ① compile it into a library
 target_include_directories(minimal_publisher PUBLIC include) # ② where to look for the .hpp
-ament_target_dependencies(minimal_publisher rclcpp std_msgs) # ③ the includes and libraries of the dependencies
+target_link_libraries(minimal_publisher PUBLIC rclcpp::rclcpp ${std_msgs_TARGETS}) # ③ the includes and libraries of the dependencies
 
 add_executable(talker src/talker_main.cpp)                  # ④ compile main
 target_link_libraries(talker minimal_publisher)              # ⑤ link with ①
 ```
+
+`ament_target_dependencies` was removed in ROS 2 Lyrical. If you see it in older material, read it as `target_link_libraries`.
 
 - If ② is missing, you get a **compile error** (the `.hpp` cannot be found)
 - If ⑤ is missing, you get a **link error** (`undefined reference to MinimalPublisher::...`)

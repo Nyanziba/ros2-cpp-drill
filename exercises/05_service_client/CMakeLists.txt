@@ -15,11 +15,11 @@ add_library(${PROJECT_NAME}_node src/add_two_ints_client.cpp)
 target_include_directories(${PROJECT_NAME}_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
-ament_target_dependencies(${PROJECT_NAME}_node rclcpp example_interfaces)
+target_link_libraries(${PROJECT_NAME}_node PUBLIC rclcpp::rclcpp ${example_interfaces_TARGETS})
 
 add_executable(client src/client_main.cpp)
-target_link_libraries(client ${PROJECT_NAME}_node)
-ament_target_dependencies(client rclcpp example_interfaces)
+target_link_libraries(client PUBLIC ${PROJECT_NAME}_node)
+target_link_libraries(client PUBLIC rclcpp::rclcpp ${example_interfaces_TARGETS})
 
 install(TARGETS client
   DESTINATION lib/${PROJECT_NAME})
@@ -30,7 +30,7 @@ if(BUILD_TESTING)
   ament_add_gtest(test_exercise test/test_exercise.cpp)
   target_include_directories(test_exercise PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../tools)
   target_link_libraries(test_exercise ${PROJECT_NAME}_node)
-  ament_target_dependencies(test_exercise rclcpp example_interfaces)
+  target_link_libraries(test_exercise rclcpp::rclcpp ${example_interfaces_TARGETS})
 endif()
 
 ament_package()

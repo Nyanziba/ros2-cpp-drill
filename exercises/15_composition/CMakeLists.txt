@@ -17,7 +17,7 @@ add_library(${PROJECT_NAME}_node SHARED src/composable_talker.cpp)
 target_include_directories(${PROJECT_NAME}_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
-ament_target_dependencies(${PROJECT_NAME}_node rclcpp rclcpp_components std_msgs)
+target_link_libraries(${PROJECT_NAME}_node PUBLIC rclcpp::rclcpp rclcpp_components::component ${std_msgs_TARGETS})
 
 # PLUGIN の文字列はソース末尾の RCLCPP_COMPONENTS_REGISTER_NODE(ComposableTalker)
 # と一致していなければならない。この呼び出しは 2 つのことをしてくれる。
@@ -47,7 +47,7 @@ if(BUILD_TESTING)
   ament_add_gtest(test_exercise test/test_exercise.cpp)
   target_include_directories(test_exercise PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../tools)
   target_link_libraries(test_exercise ${PROJECT_NAME}_node)
-  ament_target_dependencies(test_exercise rclcpp rclcpp_components std_msgs class_loader)
+  target_link_libraries(test_exercise rclcpp::rclcpp rclcpp_components::component ${std_msgs_TARGETS} class_loader::class_loader)
 
   # テスト「RCLCPP_COMPONENTS_REGISTER_NODE で登録されている」は、ビルドされた
   # 共有ライブラリそのものを class_loader で読み込んで確かめる。そのために

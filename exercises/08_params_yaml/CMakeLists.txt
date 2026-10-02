@@ -10,7 +10,7 @@ find_package(rclcpp REQUIRED)
 
 # 採点対象ではない完成済みノード。--params-file で YAML を読ませて確認するための的。
 add_executable(param_echo src/param_echo.cpp)
-ament_target_dependencies(param_echo rclcpp)
+target_link_libraries(param_echo PUBLIC rclcpp::rclcpp)
 
 install(TARGETS param_echo
   DESTINATION lib/${PROJECT_NAME})

@@ -241,7 +241,7 @@ On the `package.xml` side, we specified `--dependencies rclpy std_msgs` when run
 <exec_depend>std_msgs</exec_depend>
 ```
 
-In the C++ version you had to write `find_package` and `ament_target_dependencies` in `CMakeLists.txt`, but in Python the dependency resolution is complete with only `exec_depend` in `package.xml`. Since no compile is needed, the way to write dependencies is simpler than in the C++ version.
+In the C++ version you had to write `find_package` and `target_link_libraries` in `CMakeLists.txt`, but in Python the dependency resolution is complete with only `exec_depend` in `package.xml`. Since no compile is needed, the way to write dependencies is simpler than in the C++ version.
 
 > Column: If you ran `ros2 pkg create` without `--dependencies`, no `<exec_depend>` is added to `package.xml`, so you need to add it by hand later. Forgetting to update `package.xml` when you add or remove a dependency is a point where ROS 2 beginners often get stuck, in both C++ and Python.
 

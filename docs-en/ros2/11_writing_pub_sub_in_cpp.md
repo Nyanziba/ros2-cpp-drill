@@ -40,9 +40,9 @@ Model answer: `create_wall_timer` calls the callback automatically at the given 
 
 Model answer: `spin` is the function that runs the node's event loop, and its job is to actually call the callbacks of timers and subscribers. If you do not call `spin`, the node starts and the program ends right away, and the callback is never run. For both the publisher and the subscriber, just registering a timer or a subscriber in the constructor does nothing, and they start to work only when `spin` is waiting for events.
 
-**Q3. What kind of error do you get if you forget to write `ament_target_dependencies` in CMakeLists.txt?**
+**Q3. What kind of error do you get if you forget to list dependencies such as `rclcpp::rclcpp` in `target_link_libraries` in CMakeLists.txt?**
 
-Model answer: The compile itself may go on as long as the `#include` works, but you often get a linker error such as `undefined reference to rclcpp::...` at link time. `ament_target_dependencies` has the job of attaching the include paths and libraries of the package (`rclcpp` or `std_msgs`) to the target, so if you forget it, the header is found but the symbols cannot be resolved. Conversely, if you forget the dependency declaration in `package.xml`, when you try to build this package in another environment, the dependency packages are not installed automatically, and it also affects how colcon resolves the build order.
+Model answer: The compile itself may go on as long as the `#include` works, but you often get a linker error such as `undefined reference to rclcpp::...` at link time. The dependencies you pass to `target_link_libraries` (`rclcpp::rclcpp` or `${std_msgs_TARGETS}`) have the job of attaching the include paths and libraries of the package to the target, so if you forget it, the header is found but the symbols cannot be resolved. Conversely, if you forget the dependency declaration in `package.xml`, when you try to build this package in another environment, the dependency packages are not installed automatically, and it also affects how colcon resolves the build order.
 
 ## Main text
 
@@ -214,14 +214,14 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 ```
 
-After that, add the definitions of the executables. For each node you need a pair of `add_executable` and `ament_target_dependencies`.
+After that, add the definitions of the executables. For each node you need a pair of `add_executable` and `target_link_libraries`.
 
 ```cmake
 add_executable(talker src/publisher_member_function.cpp)
-ament_target_dependencies(talker rclcpp std_msgs)
+target_link_libraries(talker PUBLIC rclcpp::rclcpp ${std_msgs_TARGETS})
 
 add_executable(listener src/subscriber_member_function.cpp)
-ament_target_dependencies(listener rclcpp std_msgs)
+target_link_libraries(listener PUBLIC rclcpp::rclcpp ${std_msgs_TARGETS})
 
 install(TARGETS
   talker
@@ -229,7 +229,7 @@ install(TARGETS
   DESTINATION lib/${PROJECT_NAME})
 ```
 
-`add_executable` means "make an executable with this name from this source file", and `ament_target_dependencies` means "attach the headers and libraries of this package to this target". If you do not write `install`, then even if `colcon build` passes, the executables are not placed at the install destination (under `ros2_ws/install/`), and you end up with `ros2 run` not finding them.
+`add_executable` means "make an executable with this name from this source file", and `target_link_libraries` means "attach the headers and libraries of this package to this target". You pass the target name of each package: `${std_msgs_TARGETS}` for a message package, `rclcpp::rclcpp` for `rclcpp`. `ament_target_dependencies` was removed in ROS 2 Lyrical. If you see it in older material, read it as `target_link_libraries`. If you do not write `install`, then even if `colcon build` passes, the executables are not placed at the install destination (under `ros2_ws/install/`), and you end up with `ros2 run` not finding them.
 
 ### What you learn: Build and run
 
@@ -273,7 +273,7 @@ The communication works in either order. This is because the topics of ROS 2 fin
 
 - **Forgetting to edit CMakeLists.txt**: Even if you add a source file, if you do not write `add_executable`, `colcon build` passes without any problem (it simply does not know the new node exists). If `ros2 run cpp_pubsub talker` shows an error of the `No executable found` kind, not `Package 'cpp_pubsub' not found`, first check `add_executable` and `install` in CMakeLists.txt.
 - **Forgetting to add a dependency**: If you forget `<depend>rclcpp</depend>` in `package.xml`, it is hard to notice while you build it alone, but it becomes an error where `rosdep` resolves dependencies and in CI. Even if only the CMakeLists.txt side has `find_package`, a mismatch with `package.xml` can show a warning in `colcon build`, so do not ignore warnings.
-- **Forgetting to write `ament_target_dependencies`**: The build error appears as a linker error such as ``undefined reference to `rclcpp::...` ``. When "the compile passed but the link failed", suspect this first. If you remember that `#include` of a header and linking a library are separate settings, you will not panic at this kind of error.
+- **Forgetting to list dependencies in `target_link_libraries`**: The build error appears as a linker error such as ``undefined reference to `rclcpp::...` ``. When "the compile passed but the link failed", suspect this first. If you remember that `#include` of a header and linking a library are separate settings, you will not panic at this kind of error.
 - **Forgetting `source install/setup.bash`**: In a new terminal right after you rebuilt, the location of the new executable is not yet reflected in that terminal. If a node shows the old behavior even though you changed it, first check whether you forgot `source`.
 
 ## Going further

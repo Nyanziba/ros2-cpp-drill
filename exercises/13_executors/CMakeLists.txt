@@ -16,11 +16,11 @@ add_library(${PROJECT_NAME}_node src/relay_with_service.cpp)
 target_include_directories(${PROJECT_NAME}_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
-ament_target_dependencies(${PROJECT_NAME}_node rclcpp example_interfaces std_msgs)
+target_link_libraries(${PROJECT_NAME}_node PUBLIC rclcpp::rclcpp ${example_interfaces_TARGETS} ${std_msgs_TARGETS})
 
 add_executable(relay_with_service src/relay_with_service_main.cpp)
-target_link_libraries(relay_with_service ${PROJECT_NAME}_node)
-ament_target_dependencies(relay_with_service rclcpp example_interfaces std_msgs)
+target_link_libraries(relay_with_service PUBLIC ${PROJECT_NAME}_node)
+target_link_libraries(relay_with_service PUBLIC rclcpp::rclcpp ${example_interfaces_TARGETS} ${std_msgs_TARGETS})
 
 install(TARGETS relay_with_service
   DESTINATION lib/${PROJECT_NAME})
@@ -31,7 +31,7 @@ if(BUILD_TESTING)
   ament_add_gtest(test_exercise test/test_exercise.cpp)
   target_include_directories(test_exercise PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../tools)
   target_link_libraries(test_exercise ${PROJECT_NAME}_node)
-  ament_target_dependencies(test_exercise rclcpp example_interfaces std_msgs)
+  target_link_libraries(test_exercise rclcpp::rclcpp ${example_interfaces_TARGETS} ${std_msgs_TARGETS})
 endif()
 
 ament_package()

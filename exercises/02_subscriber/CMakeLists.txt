@@ -15,11 +15,11 @@ add_library(${PROJECT_NAME}_node src/minimal_subscriber.cpp)
 target_include_directories(${PROJECT_NAME}_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
-ament_target_dependencies(${PROJECT_NAME}_node rclcpp std_msgs)
+target_link_libraries(${PROJECT_NAME}_node PUBLIC rclcpp::rclcpp ${std_msgs_TARGETS})
 
 add_executable(listener src/listener_main.cpp)
-target_link_libraries(listener ${PROJECT_NAME}_node)
-ament_target_dependencies(listener rclcpp std_msgs)
+target_link_libraries(listener PUBLIC ${PROJECT_NAME}_node)
+target_link_libraries(listener PUBLIC rclcpp::rclcpp ${std_msgs_TARGETS})
 
 install(TARGETS listener
   DESTINATION lib/${PROJECT_NAME})
@@ -30,7 +30,7 @@ if(BUILD_TESTING)
   ament_add_gtest(test_exercise test/test_exercise.cpp)
   target_include_directories(test_exercise PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../tools)
   target_link_libraries(test_exercise ${PROJECT_NAME}_node)
-  ament_target_dependencies(test_exercise rclcpp std_msgs)
+  target_link_libraries(test_exercise rclcpp::rclcpp ${std_msgs_TARGETS})
 endif()
 
 ament_package()
