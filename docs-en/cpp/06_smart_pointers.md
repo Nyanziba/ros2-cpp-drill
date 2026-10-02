@@ -442,7 +442,7 @@ It comes from a macro.
 This is the first line of the `public` section of `rclcpp::Node`.
 
 ```cpp
-// node.hpp:82
+// node.hpp
 RCLCPP_SMART_PTR_DEFINITIONS(Node)
 ```
 
@@ -457,7 +457,7 @@ Nested templates quickly stop fitting in the 100-character line limit, so this i
 Back to the `Node` declaration you saw in chapter 3.
 
 ```cpp
-// node.hpp:79
+// node.hpp
 class Node : public std::enable_shared_from_this<Node>
 ```
 
@@ -758,7 +758,7 @@ From the exercise, you can come back to this chapter with `./drill read`.
 - `/opt/ros/jazzy/include/rclcpp/rclcpp/callback_group.hpp` — holds entities as `weak_ptr`
 - `/opt/ros/jazzy/include/rclcpp/rclcpp/executors/executor_entities_collector.hpp` — nodes are also `weak_ptr`
 - `/opt/ros/jazzy/include/rclcpp/rclcpp/macros.hpp` — `RCLCPP_SMART_PTR_DEFINITIONS` (line 36)
-- `/opt/ros/jazzy/include/rclcpp/rclcpp/node.hpp` — `class Node : public std::enable_shared_from_this<Node>` (line 79)
+- `/opt/ros/jazzy/include/rclcpp/rclcpp/node.hpp` — `class Node : public std::enable_shared_from_this<Node>`
 - [rclcpp design philosophy](../rclcpp_design_philosophy.md) chapter 3 — "Create everything and hold it with shared_ptr". It explains the same story from the rclcpp header side
 - `cppreference` [std::shared_ptr](https://en.cppreference.com/w/cpp/memory/shared_ptr) and [std::weak_ptr](https://en.cppreference.com/w/cpp/memory/weak_ptr)
 

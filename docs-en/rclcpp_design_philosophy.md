@@ -5,6 +5,10 @@ This document explains why calls such as `create_publisher()` and `spin()` in th
 The intended readers can write C++ but are beginners to intermediate users of ROS 2. Read this after you have worked through the beginner and intermediate exercises 01 to 11, and before you go on to the advanced exercises 12 to 15 (QoS, Executors and callback groups, zero-copy, and composition). If you are unsure about C++ itself, read the [C++ lectures](cpp/README.md) first.
 
 Where the text says "in Jazzy", it describes an implementation detail that may change between versions. Everything else is meant to be fairly general design knowledge about rclcpp. Where I want to avoid stating things too firmly, I hedge with phrases such as "it can be read as". Every file I quote is under `/opt/ros/jazzy/include/`, so you can check it yourself with `grep`.
+<!-- only: lyrical -->
+
+**Note for the Lyrical site**: This document was written by reading the Jazzy headers. The Lyrical headers may differ in details such as line numbers (for example, `class Node` in `node.hpp` is on line 79 in Jazzy and on line 80 in Lyrical).
+<!-- /only -->
 
 ## Table of contents
 

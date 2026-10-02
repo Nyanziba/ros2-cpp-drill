@@ -92,7 +92,7 @@ Some chapters use extra options:
   ```
   It uses `_Static_assert`, so the c11 standard is required.
 
-All code and output shown here are values from actually compiling and running with gcc 13.3.0 on Ubuntu 24.04.
+All code and output shown here are values from actually compiling and running with gcc on Ubuntu 24.04 (gcc 13.3.0 for the Jazzy version, 15.2.0 for the Lyrical version).
 
 ## Estimated time
 

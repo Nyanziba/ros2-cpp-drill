@@ -11,6 +11,10 @@ docs-en/cpp-basics/06_const.md   ←→   exercises/cppb06_const
 **If you want to start by running the exercises, see [Getting started](getting-started.md).**
 You can work with Docker, or install directly on Ubuntu.
 
+These materials come in a **Jazzy version (the default) and a Lyrical version**.
+You can switch between them with the switcher at the top of each page of the site.
+The Lyrical version is at <https://nyanziba.github.io/ros2-cpp-drill/lyrical/en/>.
+
 There are two ways to move between them.
 
 ```bash
@@ -47,7 +51,7 @@ focus on "assuming you know the basics, how do you choose in rclcpp".
 These are cross-cutting readings that are not tied to any exercise or chapter.
 
 - [The design philosophy of rclcpp](rclcpp_design_philosophy.md) — why the API is designed this way.
-  Written by actually reading the headers in `/opt/ros/jazzy/include/`
+  Written by actually reading the rclcpp headers (the Jazzy ones)
 - [ROS 2 coding conventions](ros2_coding_conventions.md) — a summary of the official
   Code style and language versions
 - [Presentation slides](slides.md) — slides for presenting these materials.

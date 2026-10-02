@@ -4,6 +4,10 @@
 [Code style and language versions](https://docs.ros.org/en/jazzy/The-ROS2-Project/Contributing/Code-Style-Language-Versions.html)
 （原文: `ros2_documentation/source/The-ROS2-Project/Contributing/Code-Style-Language-Versions.rst`、jazzy ブランチ）
 の要点を日本語でまとめたものです。**これは要約なので、判断に迷う場面では必ず原文を確認してください。**
+<!-- only: lyrical -->
+
+**Lyrical 版のサイトでの注意**: この要約は Jazzy の原文に基づいています。Lyrical の原文では C++ のターゲットが **C++20** になっています（下の表の C++17 は Jazzy のものです）。ほかの点も Lyrical の原文で確かめてください。
+<!-- /only -->
 
 原文が 403 で読めないときは raw を直接読めます。
 

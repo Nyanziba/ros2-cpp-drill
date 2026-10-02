@@ -17,7 +17,7 @@ Part 2 (nodes to actions, and launch) ends here. How to check that what you impl
 
 ### What to prepare
 
-- An environment with Ubuntu 24.04 + ROS 2 Jazzy Jalisco already set up ([02_environment_setup](02_environment_setup.md) finished)
+- An environment with Ubuntu 24.04 + ROS 2 Jazzy already set up ([02_environment_setup](02_environment_setup.md) finished)
 - `rqt_console` (if it is not installed, run `sudo apt install ros-jazzy-rqt-console`)
 - `ros2 doctor` is bundled with ROS 2 itself, so no extra install is needed
 - An environment where pytest works (building an ament_python package includes pytest hooks, so it is usually installed automatically through colcon. To run it alone by hand, use `pip install pytest`)
@@ -456,7 +456,7 @@ From an exercise, you can come back to this chapter with `./drill read`.
 
 ## References
 
-- [ROS 2 Documentation: Jazzy — Testing](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Testing/Testing-Main.html)
-- [ROS 2 Documentation: Jazzy — Logging](https://docs.ros.org/en/jazzy/Concepts/Basic/About-Logging.html)
+- [ROS 2 Jazzy Documentation — Testing](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Testing/Testing-Main.html)
+- [ROS 2 Jazzy Documentation — Logging](https://docs.ros.org/en/jazzy/Concepts/Basic/About-Logging.html)
 - [16_implementing_an_action_server](16_implementing_an_action_server.md)
 - [18_tf2_and_coordinate_frames](18_tf2_and_coordinate_frames.md)

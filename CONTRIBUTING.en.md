@@ -51,12 +51,16 @@ fix: match the output of chapter C 03 to the actual run
 
 ### Prepare your environment
 
-Building the exercises needs ROS 2 Jazzy (Ubuntu 24.04). **Using Docker is the most reliable way.**
+Building the exercises needs ROS 2 Jazzy (Ubuntu 24.04) or ROS 2 Lyrical (Ubuntu 26.04). **Using Docker is the most reliable way.**
 The steps are in [README](README.en.md) and [Getting started](docs-en/getting-started.md).
 
 ```bash
 docker compose build
 docker compose run --rm drill ./drill verify     # test all exercises
+
+# For the Lyrical version, put ROS_DISTRO=lyrical in front (without it, you get the Jazzy image)
+ROS_DISTRO=lyrical docker compose build
+ROS_DISTRO=lyrical docker compose run --rm drill ./drill verify
 ```
 
 To check the readings site on your machine, do this:
@@ -66,6 +70,8 @@ python3 -m venv .venv-docs
 .venv-docs/bin/pip install -r docs-requirements.txt
 .venv-docs/bin/mkdocs build --strict                    # Japanese version → site/
 .venv-docs/bin/mkdocs build --strict -f mkdocs.en.yml   # English version → site/en/ (always after the Japanese version)
+.venv-docs/bin/mkdocs build --strict -f mkdocs.lyrical.yml      # Lyrical version, Japanese → site/lyrical/
+.venv-docs/bin/mkdocs build --strict -f mkdocs.lyrical.en.yml   # Lyrical version, English → site/lyrical/en/ (always after the Lyrical Japanese version)
 ```
 
 ## The most important rule: output is measured
@@ -73,9 +79,11 @@ python3 -m venv .venv-docs
 **Every compile error, warning, and run result in the readings must be output you actually ran.**
 Do not include output written from a guess or memory, or output edited by hand.
 
-- **The environment is Ubuntu 24.04 / g++ 13.3.0 / ROS 2 Jazzy.** The Docker image in this repository is this environment.
+- **The environment is Ubuntu 24.04 / g++ 13.3.0 / ROS 2 Jazzy for the Jazzy version (the text), and Ubuntu 26.04 / g++ 15.2.0 / ROS 2 Lyrical for the Lyrical version.**
+  The Docker image in this repository is this environment (use `ROS_DISTRO=lyrical` for Lyrical).
   - The existing output was taken on x86_64. On an Apple Silicon Mac,
-    build an x86_64 image with `docker build --platform linux/amd64 -t ros2-drill:jazzy-amd64 .` and measure with it.
+    build an x86_64 image with `docker build --platform linux/amd64 -t ros2-drill:jazzy-amd64 .` and measure with it
+    (for Lyrical, `docker build --platform linux/amd64 --build-arg ROS_DISTRO=lyrical -t ros2-drill:lyrical-amd64 .`).
     Run results are almost the same on arm64, but some things can change with the architecture, such as the sign of `char`.
   - If you measured in another environment (example: Apple clang on macOS), **state that environment in the text**
     (the Design Patterns track has places that say "measured with Apple clang / arm64").
@@ -100,6 +108,34 @@ Put a marker that says how to measure right before each output block. `tools/mea
   and `env=static reason="..."` for things you cannot run (GUI, a real robot, and so on). The details are at the top of `tools/measure.py`.
 - When you add an output or change code, run `python3 tools/measure.py --write <page>` to measure again and write the result,
   and `python3 tools/measure.py --check <page>` to make sure nothing differs. CI (measure.yml) runs the same check.
+
+### Lyrical output and writing per version
+
+There is one text, and the output it shows is the Jazzy one. The Lyrical site is built with `mkdocs.lyrical.yml` / `mkdocs.lyrical.en.yml`,
+and `hooks/drill_version.py` swaps in the output and the version names.
+
+- **Lyrical output lives in `outputs/lyrical/`.** Make it with `python3 tools/measure.py --write --distro lyrical`,
+  and check that it matches the markers in the text with `python3 tools/measure.py --check --distro lyrical`.
+  `env=clang` and `env=static` do not depend on the version, so they are not measured for Lyrical. CI (measure.yml) checks both Jazzy and Lyrical.
+- **Write the text so that it does not depend on the version, as a rule.** For example, write "some error lines appear" instead of "three error lines appear",
+  or "the `error:` lines in the output above", so that the sentence does not rely on a number or wording that changes with the version.
+- **Use `<!-- only: ... -->` only for sentences where the version name or number is the point.** Use it per paragraph,
+  and never inside a code block or in the middle of a table row. Put it in the same place, in the same way, in the Japanese and English versions.
+
+  ```markdown
+  <!-- only: jazzy -->
+  A paragraph shown only in the Jazzy version
+  <!-- /only -->
+  <!-- only: lyrical -->
+  A paragraph shown only in the Lyrical version
+  <!-- /only -->
+  ```
+
+- Words that differ only by the version name (`/opt/ros/jazzy`, `ros-jazzy-`, `docs.ros.org/en/jazzy/`, `ROS 2 Jazzy`, `Ubuntu 24.04`, `g++ 13.3.0`, `g++ 13.3`,
+  `ros2-drill:jazzy`) need no separate writing; the hook replaces them. The list is `drill_replacements` in `mkdocs.lyrical.yml`.
+- The structure of `docs.ros.org` changed in Lyrical (for example, Installation is under `Get-Started/Installation/`). A replaced URL may not open,
+  so after you add a link, check that it also opens on the Lyrical site.
+- The "(gcc 13.3)" Compiler Explorer links run on a real gcc 13.3 at the link target, so they stay as they are in both versions.
 
 The code in the C++ chapters has a [Compiler Explorer](https://godbolt.org/) link (`▶ Run in your browser`).
 **If you change the code, make the link again.** Paste the new code into Compiler Explorer,
@@ -227,7 +263,7 @@ The PR template has the same items.
 
 - [ ] All output shown is the result of an actual run (if the environment differs from the default, it is stated in the text)
 - [ ] If I changed code, I also made the output and the Compiler Explorer link again
-- [ ] `mkdocs build --strict` passes (also the English `-f mkdocs.en.yml` if I changed the readings)
+- [ ] `mkdocs build --strict` passes (also the English `-f mkdocs.en.yml` and the Lyrical `-f mkdocs.lyrical.yml` / `-f mkdocs.lyrical.en.yml` if I changed the readings)
 - [ ] If I changed an exercise, I checked that it fails when unsolved and passes with the sample solution
 - [ ] I fixed the English version too (or wrote "English version not done" in the PR)
 - [ ] Only one topic in one PR

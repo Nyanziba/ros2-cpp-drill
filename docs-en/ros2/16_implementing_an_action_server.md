@@ -17,7 +17,7 @@ The prerequisite is that you have finished reading [06_services](06_services.md)
 
 ### What to prepare
 
-- An environment with Ubuntu 24.04 + ROS 2 Jazzy Jalisco already set up ([02_environment_setup](02_environment_setup.md) finished)
+- An environment with Ubuntu 24.04 + ROS 2 Jazzy already set up ([02_environment_setup](02_environment_setup.md) finished)
 - `ros-jazzy-example-interfaces` (it contains the Fibonacci action type. If it is not installed, run `sudo apt install ros-jazzy-example-interfaces`)
 - A set of `ament_cmake` packages to build your own action definition (we assume you have a Colcon workspace at hand from [15_parameters_and_launch_in_practice](15_parameters_and_launch_in_practice.md))
 - Three terminals (server, client, and one for checking with `ros2 action`)

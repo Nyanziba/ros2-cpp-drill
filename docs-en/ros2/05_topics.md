@@ -16,7 +16,7 @@ The prerequisite is that you have read [04_nodes](04_nodes.md). If you do not kn
 
 ### Things to prepare
 
-- An environment with Ubuntu 24.04 + ROS 2 Jazzy Jalisco already set up ([02_environment_setup](02_environment_setup.md) done)
+- An environment with Ubuntu 24.04 + ROS 2 Jazzy already set up ([02_environment_setup](02_environment_setup.md) done)
 - The `ros-jazzy-turtlesim` package (if it is not installed, run `sudo apt install ros-jazzy-turtlesim`)
 - A screen where you can open two or three terminals side by side (tmux or window splitting are both fine)
 

@@ -15,9 +15,9 @@ In the lectures so far, you started nodes one by one with `ros2 run`. From now o
 
 ### What to prepare
 
-- A terminal with Ubuntu 24.04 + ROS 2 Jazzy Jalisco set up
+- A terminal with Ubuntu 24.04 + ROS 2 Jazzy set up
 - `ros-jazzy-turtlesim` (you should already have it from 03)
-- The `ros-jazzy-rosbag2*` packages (normally included in the Jazzy desktop install. Check beforehand that `ros2 bag --help` works)
+- The `ros-jazzy-rosbag2*` packages (normally included in the desktop install. Check beforehand that `ros2 bag --help` works)
 - A screen where you can open three or more terminals side by side
 
 ### Oral quiz
@@ -145,7 +145,7 @@ ros2 bag record -a -o all_topics_bag
 
 `-a` means "target all running topics", and `-o` gives the name of the output directory. Stop recording with Ctrl+C.
 
-Note that **in Jazzy the default recording format is `mcap`** (`ros2 bag record --help` shows `-s {mcap,sqlite3} ... defaults to 'mcap'`). Many materials for Humble and earlier, and many web articles, assume that a `.db3` (sqlite3) file is created, so do not panic if the extension of the output file is different. If you really want to keep sqlite3, add `-s sqlite3`.
+Note that **the default recording format is `mcap`** (`ros2 bag record --help` shows `-s {mcap,sqlite3} ... defaults to 'mcap'`). Many materials for Humble and earlier, and many web articles, assume that a `.db3` (sqlite3) file is created, so do not panic if the extension of the output file is different. If you really want to keep sqlite3, add `-s sqlite3`.
 
 To record with topics specified, do the following.
 ```bash
@@ -349,7 +349,14 @@ Hint: Here are three points where you can get stuck in real operation.
 
 **The output path is relative to the directory where you ran `ros2 launch`.** It is not the place where the launch file is. If you write a relative path such as `-o mimic_bag`, the place where the bag is created changes with where you typed `ros2 launch`. If you are unsure, use an absolute path.
 
-**Add `--topics`.** The style that lists topic names as positional arguments (`ros2 bag record -o foo /topic_a`) also works, but Jazzy shows a deprecation warning.
+**Add `--topics`.** The style that lists topic names as positional arguments (`ros2 bag record -o foo /topic_a`) also works, but depending on the version it shows a deprecation warning.
+
+<!-- only: jazzy -->
+In Jazzy, the following warning appears.
+<!-- /only -->
+<!-- only: lyrical -->
+In this version no warning appears, so the following output is empty.
+<!-- /only -->
 
 <!-- measure: env=ros cmd="timeout -s INT 3 ros2 bag record -o /tmp/positional_bag /chatter" filter="grep WARN" -->
 ```
@@ -391,7 +398,7 @@ ros2 launch mimic_record_launch.py record:=false
 
 ### Starting it as a node instead of ExecuteProcess
 
-`ros2 bag record` is a CLI command, but what is inside rosbag2 is a ROS node. In Jazzy it is published as components.
+`ros2 bag record` is a CLI command, but what is inside rosbag2 is a ROS node. It is also published as components.
 
 ```bash
 ros2 component types | grep rosbag

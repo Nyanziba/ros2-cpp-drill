@@ -238,7 +238,7 @@ g++ -std=c++17 sorterr.cpp -o sorterr 2>&1 | wc -l
 
 [⚠ See this error in your browser (gcc 13.3)](https://godbolt.org/z/9d56fKxaM)
 
-It prints **78 lines**. But the real cause is just one: "`Point` has no `operator<`".
+It prints **as many lines as the output above shows**. But the real cause is just one: "`Point` has no `operator<`".
 
 Let us fix a procedure for reading.
 
@@ -256,7 +256,7 @@ g++ -std=c++17 sorterr.cpp 2>&1 | grep "error:"
 ```
 
 **It became 3 lines.** All 3 have the same cause (`Point` has no `operator<`).
-The other 75 lines are `note:` (a list of candidates), `In instantiation of` (the call path), and so on.
+The other lines are `note:` (a list of candidates), `In instantiation of` (the call path), and so on.
 
 **Step 2: Find the lines that show your own file name.**
 
@@ -290,7 +290,7 @@ In summary:
 
 **`-fmax-errors=1` is worth remembering.**
 Often, fixing only the first error makes the rest disappear in a chain,
-so 78 lines become 28 lines, which is easier to read.
+so the long output becomes much shorter, which is easier to read.
 
 ```bash
 g++ -std=c++17 -fmax-errors=1 sorterr.cpp
@@ -312,7 +312,7 @@ and **just comparing the type in `<>` with the lambda argument type** fixes it.
 
 **② The number of `_1` does not match** (chapter 7)
 
-This is the 22-line error of `std::bind`. You can narrow it down with the same procedure.
+This is the error of `std::bind` with more than 20 lines. You can narrow it down with the same procedure.
 
 **③ A missing header include**
 
@@ -351,7 +351,7 @@ static_assert(ec::kNoPathFound == GetPathResult::NO_PATH_FOUND);
 
 ## Try it yourself
 
-**You will practice narrowing a 78-line error down to 3 lines.** This is the skill you use most in real work.
+**You will practice narrowing a long error down to 3 lines.** This is the skill you use most in real work.
 
 ```cpp
 // tmplerr.cpp
@@ -394,7 +394,7 @@ g++ -std=c++17 -fmax-errors=1 tmplerr.cpp 2>&1 | wc -l
 ```
 
 **Check that the result of `grep "error:"` is 3 lines (all with the same cause).**
-In the 78 lines of output, those 3 lines are the only meaningful information.
+In the long output, those 3 lines are the only meaningful information.
 
 There are 2 ways to fix it. Try both.
 

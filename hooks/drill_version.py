@@ -27,15 +27,36 @@ ENVIRONMENT = re.compile(r"\benv=(\S+)")
 ONLY_BLOCK = re.compile(r"<!--\s*only:\s*(\w+)\s*-->\n?(.*?)<!--\s*/only\s*-->\n?", re.S)
 
 
+def on_config(config):
+    """左のナビの見出しは本文ではなく設定（nav）から来るので、ここで同じ置き換えを掛ける。"""
+    distro = config["extra"].get("drill_distro", DEFAULT_DISTRO)
+    if distro != DEFAULT_DISTRO and config["nav"]:
+        config["nav"] = replaced_nav(config["nav"], config["extra"].get("drill_replacements", []))
+    return config
+
+
+def replaced_nav(nav, replacements):
+    """nav（文字列・辞書・リストの入れ子）の見出しに置き換えを掛けた、新しい nav を返す。"""
+    if isinstance(nav, list):
+        return [replaced_nav(item, replacements) for item in nav]
+    if isinstance(nav, dict):
+        return {replaced_text(title, replacements): replaced_nav(value, replacements) for title, value in nav.items()}
+    return nav          # ページのパスは置き換えない
+
+
+def replaced_text(text, replacements):
+    for before, after in replacements:
+        text = text.replace(before, after)
+    return text
+
+
 def on_page_markdown(markdown, page, config, files):
     distro = config["extra"].get("drill_distro", DEFAULT_DISTRO)
     markdown = keep_only_blocks_for(distro, markdown)
     if distro == DEFAULT_DISTRO:
         return markdown
     markdown = replace_measured_outputs(markdown, distro, page, config)
-    for before, after in config["extra"].get("drill_replacements", []):
-        markdown = markdown.replace(before, after)
-    return markdown
+    return replaced_text(markdown, config["extra"].get("drill_replacements", []))
 
 
 def keep_only_blocks_for(distro, markdown):

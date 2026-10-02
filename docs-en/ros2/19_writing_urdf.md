@@ -17,7 +17,7 @@ The prerequisite is that you have finished reading [18_tf2_and_coordinate_frames
 
 ### What to prepare
 
-- An environment with Ubuntu 24.04 + ROS 2 Jazzy Jalisco already set up ([02_environment_setup](02_environment_setup.md) finished)
+- An environment with Ubuntu 24.04 + ROS 2 Jazzy already set up ([02_environment_setup](02_environment_setup.md) finished)
 - `ros-jazzy-joint-state-publisher-gui` and `ros-jazzy-xacro` (if they are not installed, run `sudo apt install ros-jazzy-joint-state-publisher-gui ros-jazzy-xacro`)
 - An environment where RViz2 can start (a GUI must appear. For attendees over SSH, check X forwarding or VNC beforehand)
 - A workspace for practice (finish [10_workspaces_and_colcon](10_workspaces_and_colcon.md) first)

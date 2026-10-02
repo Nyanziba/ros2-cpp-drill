@@ -19,7 +19,7 @@
 
 ### 準備物
 
-- Ubuntu 24.04 + ROS 2 Jazzy Jaliscoがセットアップ済みの環境
+- Ubuntu 24.04 + ROS 2 Jazzyがセットアップ済みの環境
 - [10_ワークスペースとcolcon](10_ワークスペースとcolcon.md)で作成済みのワークスペース
 - 本講習用パッケージ（Python、ament_python）。当日新規作成でもよいが、`ros2 pkg create --build-type ament_python speed_param_demo`を事前に1回試して詰まりどころを把握しておく
 - YAMLファイルのインデントミスで`--params-file`が無視される事故が起きやすいので、教える人の手元にも動作確認済みのYAMLを用意しておく

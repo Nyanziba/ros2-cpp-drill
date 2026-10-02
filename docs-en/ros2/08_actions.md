@@ -19,7 +19,7 @@ The estimated time is 1 hour. The target audience is new students. You need to k
 
 What to prepare:
 
-- An environment with Ubuntu 24.04 / ROS 2 Jazzy Jalisco installed
+- An environment with Ubuntu 24.04 / ROS 2 Jazzy installed
 - The `ros-jazzy-turtlesim` package (you should already have it from `sudo apt install ros-jazzy-turtlesim`)
 - An environment where you can place two or more terminals side by side (tmux is recommended but not required)
 

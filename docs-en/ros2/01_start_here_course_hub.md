@@ -4,7 +4,7 @@
 
 Welcome to the ROS 2 course. This article has no main content. It is a hub that only gives you a map of the whole series and directions. Read it first, and decide where you should start.
 
-The assumed environment is Ubuntu 24.04 / ROS 2 Jazzy Jalisco. We do not guarantee that things work on other distributions or operating systems.
+The assumed environment is Ubuntu 24.04 / ROS 2 Jazzy. We do not guarantee that things work on other distributions or operating systems.
 
 ## Target readers
 

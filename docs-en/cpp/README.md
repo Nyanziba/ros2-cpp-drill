@@ -84,7 +84,12 @@ The "Try it yourself" in each chapter is a single file, and you can compile it w
 g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 ```
 
+<!-- only: jazzy -->
 `-std=c++17` is required. ROS 2 Jazzy targets C++17, so this course also uses C++17.
+<!-- /only -->
+<!-- only: lyrical -->
+`-std=c++17` is required. The ament of ROS 2 Lyrical asks for C++20 by default (`ament_ros_cxx_standard` in `ament_ros_core` requires `cxx_std_20`), but this course does not use ROS 2 and sticks to C++17.
+<!-- /only -->
 `-Wall -Wextra -Wpedantic` are also enabled in the `CMakeLists.txt` of every exercise in the drill,
 and we use them here so that you get used to writing under the same conditions from the start.
 

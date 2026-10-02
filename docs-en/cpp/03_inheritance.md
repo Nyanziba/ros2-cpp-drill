@@ -182,7 +182,7 @@ private.cpp:14:15: note: declared private here
 In `rclcpp::Node` too, all the real data is `private`.
 
 ```cpp
-// /opt/ros/jazzy/include/rclcpp/rclcpp/node.hpp:1633 onward
+// /opt/ros/jazzy/include/rclcpp/rclcpp/node.hpp
 private:
   RCLCPP_DISABLE_COPY(Node)
 
@@ -209,7 +209,7 @@ The third access level is `protected`. "Not visible from outside, but visible fr
 `rclcpp::Node` also has a `protected` section.
 
 ```cpp
-// /opt/ros/jazzy/include/rclcpp/rclcpp/node.hpp:1620
+// /opt/ros/jazzy/include/rclcpp/rclcpp/node.hpp
 protected:
   /// Construct a sub-node, which will extend the namespace of all entities created with it.
   Node(
@@ -273,7 +273,7 @@ In the example above, `Base()` had no arguments, so it was called automatically.
 Look at the constructor of `rclcpp::Node`.
 
 ```cpp
-// /opt/ros/jazzy/include/rclcpp/rclcpp/node.hpp:91
+// /opt/ros/jazzy/include/rclcpp/rclcpp/node.hpp
 explicit Node(
   const std::string & node_name,
   const NodeOptions & options = NodeOptions());
@@ -584,10 +584,10 @@ What happens if you do not write `override`? **It is not an error.**
 so it passes as "a completely new function that does not override".
 Then, if you call through `Shape *`, the base `area() const` is called,
 and because it is pure virtual... in this case the class stays abstract and the compile fails,
-but if the base has a default implementation, **a wrong function is called silently.**
+but if the base has a default implementation, **a wrong function is called without any error.**
 
 Forgetting `const`, a one-character difference in an argument type, the presence or absence of `&`.
-All of these become "a different function". `override` is the only way to detect them mechanically.
+All of these become "a different function". `override` is what turns them into compile errors.
 
 In the same way, when you **do not want to derive any further**, add `final`.
 
@@ -745,7 +745,7 @@ The rule is simple. **Make the destructor of a class that may be inherited `virt
 Of course `rclcpp::Node` does this.
 
 ```cpp
-// /opt/ros/jazzy/include/rclcpp/rclcpp/node.hpp:109
+// /opt/ros/jazzy/include/rclcpp/rclcpp/node.hpp
 virtual ~Node();
 ```
 
@@ -773,7 +773,7 @@ it does not work with a `delete` on a raw pointer either. Writing `virtual ~` is
 Look at the first line of the `private` section of `rclcpp::Node`.
 
 ```cpp
-// /opt/ros/jazzy/include/rclcpp/rclcpp/node.hpp:1634
+// /opt/ros/jazzy/include/rclcpp/rclcpp/node.hpp
 private:
   RCLCPP_DISABLE_COPY(Node)
 ```
@@ -1055,7 +1055,7 @@ g++ -std=c++17 -Wall -Wextra inherit.cpp -o inherit && ./inherit
 
 [▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/K3KMoec61)
 
-**No warning appears even with `-Wall -Wextra`.** This is the reason to write `override`.
+**This trap is not a compile error even with `-Wall -Wextra`.** This is the reason to write `override`.
 
 After you check it, add `override` to `Imu::read()`.
 It becomes a compile error. Read the error message, and fix it by adding `const`.
@@ -1195,7 +1195,7 @@ From the exercise side, you can come back to this chapter with `./drill read`.
 
 ## References
 
-- `/opt/ros/jazzy/include/rclcpp/rclcpp/node.hpp` — `class Node : public std::enable_shared_from_this<Node>` (line 79), `virtual ~Node();` (line 109), `protected:` (line 1620), `RCLCPP_DISABLE_COPY(Node)` (line 1634)
+- `/opt/ros/jazzy/include/rclcpp/rclcpp/node.hpp` — `class Node : public std::enable_shared_from_this<Node>`, `virtual ~Node();`, `protected:`, `RCLCPP_DISABLE_COPY(Node)`
 - `/opt/ros/jazzy/include/rclcpp/rclcpp/macros.hpp` — the definition of `RCLCPP_DISABLE_COPY` (line 26)
 - [rclcpp design philosophy](../rclcpp_design_philosophy.md) Chapter 2 — that `Node` is a bundle of interfaces. The background of "you do not have to inherit"
 - `cppreference` [Derived classes](https://en.cppreference.com/w/cpp/language/derived_class) and [virtual function specifier](https://en.cppreference.com/w/cpp/language/virtual)

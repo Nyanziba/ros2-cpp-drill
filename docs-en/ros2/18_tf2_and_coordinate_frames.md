@@ -18,7 +18,7 @@ The prerequisites are the content up to [17_testing_and_debugging](17_testing_an
 
 ### What to prepare
 
-- An environment with Ubuntu 24.04 + ROS 2 Jazzy Jalisco already set up ([02_environment_setup](02_environment_setup.md) finished)
+- An environment with Ubuntu 24.04 + ROS 2 Jazzy already set up ([02_environment_setup](02_environment_setup.md) finished)
 - The `ros-jazzy-turtlesim` package
 - The `ros-jazzy-turtle-tf2-py` package (`sudo apt install ros-jazzy-turtle-tf2-py`. It contains the official TF2 demo for turtlesim)
 - The `ros-jazzy-tf2-tools` package (it contains `view_frames`. `sudo apt install ros-jazzy-tf2-tools`)

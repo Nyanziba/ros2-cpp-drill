@@ -4,7 +4,7 @@
 
 In the previous article, [05_topics](05_topics.md), we covered how to pass continuously flowing data with pub/sub. This time we cover the other means of communication, services. When you finish this article, you can call the turtle with `ros2 service call`, and you can explain in your own words "how to choose between topics and services".
 
-The assumed environment is Ubuntu 24.04 / ROS 2 Jazzy Jalisco.
+The assumed environment is Ubuntu 24.04 / ROS 2 Jazzy.
 
 ## Lecture goals / how to proceed
 

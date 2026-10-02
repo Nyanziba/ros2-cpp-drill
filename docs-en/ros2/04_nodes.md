@@ -8,12 +8,12 @@ Last time, we ran turtlesim and looked at how nodes and topics connect on the sc
 
 - Time needed: about 40 minutes (assume a little under 1 hour for self-study)
 - Audience: people learning this for the first time who have finished [03_getting_a_feel_with_turtlesim_and_rqt](03_getting_a_feel_with_turtlesim_and_rqt.md)
-- Prerequisites: ROS 2 Jazzy Jalisco is installed, and the turtlesim package works (`ros2 run turtlesim turtlesim_node` succeeds)
+- Prerequisites: ROS 2 Jazzy is installed, and the turtlesim package works (`ros2 run turtlesim turtlesim_node` succeeds)
 
 ## Using this as a course
 
 Things to prepare:
-- A PC (one per person) with Ubuntu 24.04 + ROS 2 Jazzy Jalisco installed
+- A PC (one per person) with Ubuntu 24.04 + ROS 2 Jazzy installed
 - The `turtlesim` package (installed with `sudo apt install ros-jazzy-turtlesim`. It may be missing in an environment with only ros-base, so check beforehand)
 - An environment where you can work with two or more terminals side by side (tmux or tabs are both fine)
 

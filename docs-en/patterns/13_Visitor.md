@@ -499,7 +499,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic not_exhaustive.cpp -o not_exhaustive 2>&
 
 </details>
 
-There are 5 errors and the output runs to dozens of lines, so `grep -m1` in the command extracts only the first `error:` line.
+There are many errors and the output runs long, so `grep -m1` in the command extracts only the first `error:` line.
 
 <!-- measure: files=not_exhaustive.cpp -->
 ```

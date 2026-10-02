@@ -17,7 +17,7 @@ The prerequisite is that you have finished reading [21_sensor_integration](21_se
 
 ### What to prepare
 
-- An environment with Ubuntu 24.04 + ROS 2 Jazzy Jalisco set up
+- An environment with Ubuntu 24.04 + ROS 2 Jazzy set up
 - The localization package adopted on the real robot, and an environment where you can check the `map → odom → base_link` TF
 - If possible, a recorded rosbag (one that contains odom/imu/scan/map). If you have none, the session will be mostly lecture
 - A whiteboard or paper. Keep time to draw the coordinate transform diagram by hand

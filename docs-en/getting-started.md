@@ -21,17 +21,36 @@ For any other OS, choose Docker.
 Install [Docker](https://docs.docker.com/get-started/get-docker/), then
 clone this repository.
 
+<!-- only: jazzy -->
 ```bash
 git clone https://github.com/Nyanziba/ros2-cpp-drill.git
 cd ros2-cpp-drill
 docker compose build          # first time only. Takes 10 to 20 minutes
 ```
+<!-- /only -->
+<!-- only: lyrical -->
+```bash
+git clone https://github.com/Nyanziba/ros2-cpp-drill.git
+cd ros2-cpp-drill
+ROS_DISTRO=lyrical docker compose build          # first time only
+```
+
+**For the Lyrical version, put `ROS_DISTRO=lyrical` in front of every command that uses `docker compose`.**
+Without it, the Jazzy image is used. In Windows PowerShell, run `$env:ROS_DISTRO = "lyrical"` once first.
+<!-- /only -->
 
 Check that it works.
 
+<!-- only: jazzy -->
 ```bash
 docker compose run --rm drill ./drill list
 ```
+<!-- /only -->
+<!-- only: lyrical -->
+```bash
+ROS_DISTRO=lyrical docker compose run --rm drill ./drill list
+```
+<!-- /only -->
 
 If you see the list of exercises and your progress, it worked.
 
@@ -39,9 +58,16 @@ To get English output from drill, set `DRILL_LANG=en`, for example `DRILL_LANG=e
 
 **The container uses the source files on the host as they are.** Edit them in your usual editor.
 
+<!-- only: jazzy -->
 ```bash
 docker compose run --rm drill ./drill watch cppb01
 ```
+<!-- /only -->
+<!-- only: lyrical -->
+```bash
+ROS_DISTRO=lyrical docker compose run --rm drill ./drill watch cppb01
+```
+<!-- /only -->
 
 This re-runs the tests every time you save.
 
@@ -58,8 +84,14 @@ This re-runs the tests every time you save.
 
 ## Install directly (Ubuntu 24.04)
 
+<!-- only: jazzy -->
 Follow the [official ROS 2 Jazzy instructions](https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html)
 to install it, then do this.
+<!-- /only -->
+<!-- only: lyrical -->
+Follow the [official ROS 2 Lyrical instructions](https://docs.ros.org/en/lyrical/Get-Started/Installation/Ubuntu-Install-Debs.html)
+to install it, then do this.
+<!-- /only -->
 
 ```bash
 git clone https://github.com/Nyanziba/ros2-cpp-drill.git
@@ -70,9 +102,16 @@ source /opt/ros/jazzy/setup.bash   # drill also finds it automatically if you do
 
 If the packages that the exercises depend on are missing, install them.
 
+<!-- only: jazzy -->
 ```bash
 sudo apt install ros-jazzy-example-interfaces ros-jazzy-action-tutorials-interfaces
 ```
+<!-- /only -->
+<!-- only: lyrical -->
+```bash
+sudo apt install ros-lyrical-ament-cmake-gtest ros-lyrical-ament-cmake-pytest ros-lyrical-class-loader ros-lyrical-example-interfaces ros-lyrical-rclcpp-action ros-lyrical-rclcpp-components ros-lyrical-std-msgs
+```
+<!-- /only -->
 
 ## Solve the first exercise
 

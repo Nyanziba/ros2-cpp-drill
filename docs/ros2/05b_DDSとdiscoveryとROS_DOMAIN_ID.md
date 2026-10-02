@@ -27,7 +27,7 @@
 
 ### 準備物
 
-- Ubuntu 24.04 + ROS 2 Jazzy Jaliscoがセットアップ済みの環境（[02_環境構築](02_環境構築.md)完了）
+- Ubuntu 24.04 + ROS 2 Jazzyがセットアップ済みの環境（[02_環境構築](02_環境構築.md)完了）
 - `ros-jazzy-demo-nodes-cpp`パッケージ（未インストールなら`sudo apt install ros-jazzy-demo-nodes-cpp`）
 - ターミナルを2枚以上開ける画面
 - `ss`コマンド（`iproute2`パッケージ。Ubuntu 24.04には標準で入っています）
@@ -101,7 +101,7 @@ ros2 doctor --report
 middleware name    : rmw_fastrtps_cpp
 ```
 
-**Jazzyの既定はFast DDS（`rmw_fastrtps_cpp`）です。** eProsima社の実装で、apt でROS2を入れると一緒に入ってきます。
+**既定はFast DDS（`rmw_fastrtps_cpp`）です。** eProsima社の実装で、apt でROS2を入れると一緒に入ってきます。
 
 別の実装に切り替えることもできます。
 

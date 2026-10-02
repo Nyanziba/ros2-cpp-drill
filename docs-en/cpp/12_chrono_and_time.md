@@ -402,7 +402,7 @@ Both are equivalent.
 
 </details>
 
-The value after `Loop took` changes with the environment you run it in (it was measured here on Ubuntu 24.04 / g++ 13.3 / x86_64 in Docker).
+The value after `Loop took` changes with the environment you run it in (it was measured here on x86_64 in Docker).
 
 **Key points to check:**
 1. `2s` is `2`, but converted to milliseconds it becomes `2000` (1000 times larger)

@@ -5,6 +5,9 @@
 **📖 読み物はここで読めます → <https://nyanziba.github.io/ros2-cpp-drill/>**
 （章送り・トラックのタブ・日本語の全文検索つき。インストール不要）
 
+**ROS 2 は Jazzy 版（既定）と Lyrical 版があります。** サイトのページ最上部の切替で行き来できます。
+Lyrical 版の URL は <https://nyanziba.github.io/ros2-cpp-drill/lyrical/> です。
+
 **コード例はブラウザでそのまま動かせます。** C++ の章のコード例には
 Compiler Explorer へのリンクが付いているので、`g++` が無くても読み進められます。
 「**予想: …**」の答えは畳んであるので、**予想してから開いてください。**
@@ -36,16 +39,20 @@ cd ros2-cpp-drill
 | | 向いている人 | 手間 |
 | --- | --- | --- |
 | **Docker** | Ubuntu 以外（macOS / Windows / 他のディストリ）、環境を汚したくない人 | `docker compose build` 1 回（10〜20 分） |
-| **直接入れる** | Ubuntu 24.04 を使っていて、ROS 2 も入れる人 | ROS 2 Jazzy のインストールが必要 |
+| **直接入れる** | Ubuntu 24.04（Jazzy）または 26.04（Lyrical）を使っていて、ROS 2 も入れる人 | 使う版の ROS 2 のインストールが必要 |
 
 ```bash
-# Docker の場合
+# Docker の場合（Jazzy 版。既定）
 docker compose build
 docker compose run --rm drill        # コンテナの中に入る
 ./drill list
+
+# Lyrical 版は、docker compose の前に ROS_DISTRO=lyrical を付ける
+ROS_DISTRO=lyrical docker compose build
+ROS_DISTRO=lyrical docker compose run --rm drill
 ```
 
-ROS 2 Jazzy は **Ubuntu 24.04 にしか公式パッケージがありません。**
+ROS 2 の公式パッケージ（deb）があるのは **Ubuntu だけです**（Jazzy は 24.04、Lyrical は 26.04）。
 それ以外の OS なら Docker を選んでください。
 詳しい手順は [はじめかた](docs/はじめかた.md) にあります。
 
@@ -123,30 +130,42 @@ rclcpp は `shared_ptr`・ラムダ・`std::move`・テンプレートに強く�
 
 **この教材に載っているコンパイルエラー・実行結果は、すべて実際に走らせた出力です。**
 予想と実測が食い違った箇所は実測に合わせてあります。
-環境は Ubuntu 24.04 / g++ 13.3.0 / ROS 2 Jazzy です。
+環境は、Jazzy 版が Ubuntu 24.04 / g++ 13.3.0 / ROS 2 Jazzy、
+Lyrical 版が Ubuntu 26.04 / g++ 15.2.0 / ROS 2 Lyrical です。
 
 各章の「手元で試す」は**予想してから実行する**ことを前提に書いています。
 外したところがその人の穴なので、飛ばさないでください。
 
 ## 動作環境
 
-- ROS 2 Jazzy（`/opt/ros/jazzy`）
-- Ubuntu 24.04 / g++ 13 / CMake 3.28
+| | Jazzy 版（既定） | Lyrical 版 |
+| --- | --- | --- |
+| ROS 2 | Jazzy（`/opt/ros/jazzy`） | Lyrical（`/opt/ros/lyrical`） |
+| OS / g++ / CMake | Ubuntu 24.04 / g++ 13.3.0 / CMake 3.28 | Ubuntu 26.04 / g++ 15.2.0 / CMake 4.2.3 |
+
 - Python 3（ランナー用。追加ライブラリは不要）
 
 **Ubuntu 以外なら Docker が使えます。** 次の節のとおりです。
 
 ## Ubuntu 以外で動かす（Docker）
 
-ROS 2 Jazzy は Ubuntu 24.04 にしか公式パッケージがありません。
-macOS でも Windows でも他のディストリでも、コンテナの中身を Ubuntu 24.04 に
-揃えれば同じように動きます。arm64（Apple Silicon）でも動きます。
+ROS 2 の公式パッケージ（deb）は Ubuntu にしかありません。
+macOS でも Windows でも他のディストリでも、コンテナの中身を Ubuntu
+（Jazzy は 24.04、Lyrical は 26.04）に揃えれば同じように動きます。arm64（Apple Silicon）でも動きます。
 
 ```bash
 docker compose build                          # 初回だけ（10〜20 分）
 docker compose run --rm drill ./drill list
 docker compose run --rm drill ./drill watch cppb01
 docker compose run --rm drill                 # bash に入る
+```
+
+**Lyrical 版は、`docker compose` を使うコマンドの先頭に毎回 `ROS_DISTRO=lyrical` を付けます**
+（`compose.yaml` が、イメージを `ros2-drill:${ROS_DISTRO:-jazzy}` にします。付けないと Jazzy のイメージです）。
+
+```bash
+ROS_DISTRO=lyrical docker compose build
+ROS_DISTRO=lyrical docker compose run --rm drill ./drill list
 ```
 
 **ソースはホスト側をそのまま見ています。** 編集は普段のエディタでどうぞ。
@@ -195,10 +214,10 @@ CI（`.github/workflows/docker.yml`）が毎回イメージを組んで、**未�
 
 ## はじめかた
 
-Ubuntu 24.04 に ROS 2 Jazzy が入っている場合です。それ以外は上の Docker へ。
+Ubuntu 24.04 に ROS 2 Jazzy が入っている場合（Lyrical 版は Ubuntu 26.04 に ROS 2 Lyrical）です。それ以外は上の Docker へ。
 
 ```bash
-source /opt/ros/jazzy/setup.bash   # 未 source でも drill が自動で探します
+source /opt/ros/jazzy/setup.bash   # 未 source でも drill が自動で探します（Lyrical なら /opt/ros/lyrical/setup.bash）
 ./drill list                       # 課題一覧と進捗
 ./drill watch                      # 最初の未完了課題を監視しながら進める
 ```
@@ -269,8 +288,8 @@ source /path/to/ros2-drill/completion/drill.bash
 Squiggles are disabled for this translation unit.
 ```
 
-**ROS 2 のヘッダは `/opt/ros/jazzy/include/<パッケージ名>/<パッケージ名>/...` と
-1 段深いところにあります。** `#include "rclcpp/rclcpp.hpp"` を解決するには
+**ROS 2 のヘッダは `/opt/ros/jazzy/include/<パッケージ名>/<パッケージ名>/...`
+（Lyrical なら `/opt/ros/lyrical/include/...`）と 1 段深いところにあります。** `#include "rclcpp/rclcpp.hpp"` を解決するには
 `/opt/ros/jazzy/include` ではなくその下の各パッケージのディレクトリが要るので、
 `**` で再帰的に拾っています。
 
@@ -280,6 +299,8 @@ Squiggles are disabled for this translation unit.
 ### Ubuntu 以外なら Dev Container
 
 `/opt/ros/jazzy` がホストに無いと IntelliSense は効きません。
+同梱の `.vscode/c_cpp_properties.json` が見に行くのは `/opt/ros/jazzy/include` だけです。
+Lyrical をホストに入れて使うなら、その設定の `jazzy` を `lyrical` に直してください。
 `.devcontainer/` を同梱しているので、**「Dev Containers: Reopen in Container」**
 を実行すればコンテナの中で開けます。`compose.yaml` をそのまま使うので、
 ドリルを走らせる環境と同じものが開きます。

@@ -17,7 +17,7 @@ The prerequisites are [18_tf2_and_coordinate_frames](18_tf2_and_coordinate_frame
 
 ### What to prepare
 
-- An environment with Ubuntu 24.04 + ROS 2 Jazzy Jalisco set up
+- An environment with Ubuntu 24.04 + ROS 2 Jazzy set up
 - A bag file, or a real LiDAR/IMU (whichever is available. If you have no real device, replace it with bag playback)
 - `ros-jazzy-rviz2` and `ros-jazzy-pointcloud-to-laserscan` (`sudo apt install ros-jazzy-pointcloud-to-laserscan`)
 - If you use the Livox driver, build `livox_ros_driver2` beforehand (avoid building on the day, because it takes time)

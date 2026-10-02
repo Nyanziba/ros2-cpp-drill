@@ -6,7 +6,7 @@ In [06_services](06_services.md) you used `ros2 service call` as the user of a s
 
 We use Python. You should already have the package layout of rclpy and how to write `setup.py` from [12_writing_pub_sub_in_python](12_writing_pub_sub_in_python.md), so you can read this as a continuation. The official tutorial also has a C++ version, but in most cases the body of a service server is a thin layer that "just calls higher-level logic with the received values", and it is common to write this layer in Python. If you want to write it in C++, see the `rclcpp` version of the tutorial.
 
-We assume Ubuntu 24.04 / ROS 2 Jazzy Jalisco.
+We assume Ubuntu 24.04 / ROS 2 Jazzy.
 
 ## Lecture goals
 
@@ -31,7 +31,7 @@ Model answer: `call_async` immediately returns a `Future` object. At the moment 
 
 **Q2. What happens if you call a service client of the same node synchronously inside a callback function (in the form that waits for the Future to complete by blocking, with `spin_until_future_complete`)?**
 
-Model answer: It does not work. `spin_until_future_complete` is a function that spins the executor in a blocking way and waits for the Future to complete. But if the caller is already spinning that executor and you call it from inside a callback, the next spin that is needed to receive the response cannot be run. The rclpy of Jazzy detects this re-entry and guards against it, so instead of freezing silently, `RuntimeError: Executor is already spinning` is raised and the node terminates abnormally (the guard itself is `Executor._enter_spin` in `/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py`). It is especially easy to step on with a single-threaded executor.
+Model answer: It does not work. `spin_until_future_complete` is a function that spins the executor in a blocking way and waits for the Future to complete. But if the caller is already spinning that executor and you call it from inside a callback, the next spin that is needed to receive the response cannot be run. The rclpy of Jazzy and later detects this re-entry and guards against it, so instead of freezing silently, `RuntimeError: Executor is already spinning` is raised and the node terminates abnormally (the guard itself is `Executor._enter_spin` in `/opt/ros/jazzy/lib/python3.*/site-packages/rclpy/executors.py`). It is especially easy to step on with a single-threaded executor.
 
 **Q3. What happens if you start only the client and call `call_async` while you have not implemented the server?**
 
@@ -242,7 +242,7 @@ class BadExample(Node):
         self.get_logger().info(f'sum: {future.result().sum}')
 ```
 
-`timer_callback` is already called by the spin of the executor. If you call `spin_until_future_complete` again inside it, the next spin is needed to receive the response, but you keep waiting without being able to move inside the current spin. With a single-threaded executor, while one callback is running, the other callbacks (subscription callbacks and the completion handling of the Future) are not run. In other words, if you wait synchronously for a service of the same node from inside a callback, that node itself can never get into a state where it can receive the answer. The rclpy of Jazzy detects this situation and raises `RuntimeError: Executor is already spinning`, so in practice it does not "freeze", but **it raises an exception on the spot and crashes**. This is kinder than hanging silently, but in any case this way of writing does not work.
+`timer_callback` is already called by the spin of the executor. If you call `spin_until_future_complete` again inside it, the next spin is needed to receive the response, but you keep waiting without being able to move inside the current spin. With a single-threaded executor, while one callback is running, the other callbacks (subscription callbacks and the completion handling of the Future) are not run. In other words, if you wait synchronously for a service of the same node from inside a callback, that node itself can never get into a state where it can receive the answer. The rclpy of Jazzy and later detects this situation and raises `RuntimeError: Executor is already spinning`, so in practice it does not "freeze", but **it raises an exception on the spot and crashes**. This is kinder than hanging silently, but in any case this way of writing does not work.
 
 The correct fix is one of the following.
 
@@ -256,7 +256,7 @@ The correct fix is one of the following.
 
 <details markdown="1"><summary>Answer</summary>
 
-You can check the broken version by starting the server and running `BadExample` with `rclpy.spin(node)`. At the first call of `timer_callback`, `RuntimeError: Executor is already spinning` is raised, and the process crashes with `[ros2run]: Process exited with failure 1`. Materials for Humble and earlier sometimes explain that it "freezes", but in Jazzy a guard is in place, so it fails right away with an error.
+You can check the broken version by starting the server and running `BadExample` with `rclpy.spin(node)`. At the first call of `timer_callback`, `RuntimeError: Executor is already spinning` is raised, and the process crashes with `[ros2run]: Process exited with failure 1`. Materials for Humble and earlier sometimes explain that it "freezes", but in Jazzy and later a guard is in place, so it fails right away with an error.
 
 The skeleton of the rewritten version is as follows.
 

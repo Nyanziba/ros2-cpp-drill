@@ -27,7 +27,7 @@ The prerequisite is that you have read up to [05_topics](05_topics.md).
 
 ### Things to prepare
 
-- An environment with Ubuntu 24.04 + ROS 2 Jazzy Jalisco already set up ([02_environment_setup](02_environment_setup.md) done)
+- An environment with Ubuntu 24.04 + ROS 2 Jazzy already set up ([02_environment_setup](02_environment_setup.md) done)
 - The `ros-jazzy-demo-nodes-cpp` package (if it is not installed, run `sudo apt install ros-jazzy-demo-nodes-cpp`)
 - A screen where you can open two or more terminals
 - The `ss` command (the `iproute2` package. It is installed by default on Ubuntu 24.04)
@@ -101,7 +101,7 @@ It appears in the `RMW MIDDLEWARE` section.
 middleware name    : rmw_fastrtps_cpp
 ```
 
-**The default of Jazzy is Fast DDS (`rmw_fastrtps_cpp`).** It is an implementation by eProsima, and it comes along when you install ROS 2 with apt.
+**The default is Fast DDS (`rmw_fastrtps_cpp`).** It is an implementation by eProsima, and it comes along when you install ROS 2 with apt.
 
 You can also switch to another implementation.
 

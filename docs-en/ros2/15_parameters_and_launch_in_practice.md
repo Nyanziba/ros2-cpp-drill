@@ -19,7 +19,7 @@ The prerequisite is that you have finished [12_writing_pub_sub_in_python](12_wri
 
 ### What to prepare
 
-- An environment with Ubuntu 24.04 + ROS 2 Jazzy Jalisco already set up
+- An environment with Ubuntu 24.04 + ROS 2 Jazzy already set up
 - The workspace created in [10_workspaces_and_colcon](10_workspaces_and_colcon.md)
 - A package for this lecture (Python, ament_python). You can create it on the day, but try `ros2 pkg create --build-type ament_python speed_param_demo` once beforehand to learn where people get stuck
 - Indentation mistakes in YAML files often cause `--params-file` to be ignored, so keep a YAML file that you have tested on the teacher's machine too

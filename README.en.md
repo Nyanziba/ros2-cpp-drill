@@ -4,6 +4,9 @@
 (Japanese version: <https://nyanziba.github.io/ros2-cpp-drill/>)
 (Chapter navigation, track tabs, and full-text search. No installation needed.)
 
+**ROS 2 comes in a Jazzy version (the default) and a Lyrical version.** You can switch between them with the switcher at the top of each page of the site.
+The Lyrical version is at <https://nyanziba.github.io/ros2-cpp-drill/lyrical/en/> (Japanese: <https://nyanziba.github.io/ros2-cpp-drill/lyrical/>).
+
 **English version:** All tracks are translated. Comments in the exercise source code and the test failure messages stay in Japanese.
 
 **You can run the code examples in your browser.** The code examples in the C++ chapters
@@ -38,16 +41,20 @@ Building the exercises needs `colcon` and `ament_cmake`. Choose one of the follo
 | | Good for | Effort |
 | --- | --- | --- |
 | **Docker** | Anyone not on Ubuntu (macOS / Windows / other distros), or anyone who wants to keep their system clean | One `docker compose build` (10 to 20 minutes) |
-| **Install directly** | Anyone on Ubuntu 24.04 who will also install ROS 2 | Requires installing ROS 2 Jazzy |
+| **Install directly** | Anyone on Ubuntu 24.04 (Jazzy) or 26.04 (Lyrical) who will also install ROS 2 | Requires installing the ROS 2 version you use |
 
 ```bash
-# With Docker
+# With Docker (the Jazzy version, the default)
 docker compose build
 docker compose run --rm drill        # enter the container
 ./drill list
+
+# For the Lyrical version, put ROS_DISTRO=lyrical in front of docker compose
+ROS_DISTRO=lyrical docker compose build
+ROS_DISTRO=lyrical docker compose run --rm drill
 ```
 
-ROS 2 Jazzy has official packages **only for Ubuntu 24.04.**
+The official ROS 2 packages (deb) exist **only for Ubuntu** (24.04 for Jazzy, 26.04 for Lyrical).
 On any other OS, choose Docker.
 See [Getting started](docs-en/getting-started.md) for detailed steps.
 
@@ -125,23 +132,27 @@ For the big picture, see [Overview of the materials](docs-en/README.md).
 
 **Every compile error and execution result in this material is real output from an actual run.**
 Where my prediction and the real result differed, I changed the text to match the real result.
-The environment is Ubuntu 24.04 / g++ 13.3.0 / ROS 2 Jazzy.
+The environment is Ubuntu 24.04 / g++ 13.3.0 / ROS 2 Jazzy for the Jazzy version,
+and Ubuntu 26.04 / g++ 15.2.0 / ROS 2 Lyrical for the Lyrical version.
 
 The "Try it yourself" section in each chapter is written on the assumption that you **predict first, then run**.
 The places where you were wrong are your gaps, so do not skip them.
 
 ## Requirements
 
-- ROS 2 Jazzy (`/opt/ros/jazzy`)
-- Ubuntu 24.04 / g++ 13 / CMake 3.28
+| | Jazzy version (default) | Lyrical version |
+| --- | --- | --- |
+| ROS 2 | Jazzy (`/opt/ros/jazzy`) | Lyrical (`/opt/ros/lyrical`) |
+| OS / g++ / CMake | Ubuntu 24.04 / g++ 13.3.0 / CMake 3.28 | Ubuntu 26.04 / g++ 15.2.0 / CMake 4.2.3 |
+
 - Python 3 (for the runner. No extra libraries are needed)
 
 **If you are not on Ubuntu, you can use Docker.** See the next section.
 
 ## Run on a non-Ubuntu OS (Docker)
 
-ROS 2 Jazzy has official packages only for Ubuntu 24.04.
-If the inside of the container is Ubuntu 24.04, it works the same way on
+The official ROS 2 packages (deb) exist only for Ubuntu.
+If the inside of the container is Ubuntu (24.04 for Jazzy, 26.04 for Lyrical), it works the same way on
 macOS, Windows, and other distros. It also works on arm64 (Apple Silicon).
 
 ```bash
@@ -149,6 +160,14 @@ docker compose build                          # first time only (10 to 20 minute
 docker compose run --rm drill ./drill list
 docker compose run --rm drill ./drill watch cppb01
 docker compose run --rm drill                 # enter bash
+```
+
+**For the Lyrical version, put `ROS_DISTRO=lyrical` in front of every command that uses `docker compose`**
+(`compose.yaml` names the image `ros2-drill:${ROS_DISTRO:-jazzy}`. Without it, you get the Jazzy image).
+
+```bash
+ROS_DISTRO=lyrical docker compose build
+ROS_DISTRO=lyrical docker compose run --rm drill ./drill list
 ```
 
 **The container reads the source directly from the host.** Edit with your usual editor.
@@ -197,10 +216,10 @@ CI (`.github/workflows/docker.yml`) builds the image every time and checks both 
 
 ## Getting started
 
-This is for when ROS 2 Jazzy is installed on Ubuntu 24.04. For other cases, use Docker above.
+This is for when ROS 2 Jazzy is installed on Ubuntu 24.04 (for the Lyrical version, ROS 2 Lyrical on Ubuntu 26.04). For other cases, use Docker above.
 
 ```bash
-source /opt/ros/jazzy/setup.bash   # drill finds it automatically even if you did not source it
+source /opt/ros/jazzy/setup.bash   # drill finds it automatically even if you did not source it (for Lyrical, /opt/ros/lyrical/setup.bash)
 ./drill list                       # exercise list and progress
 ./drill watch                      # work while watching the first unfinished exercise
 ```
@@ -271,7 +290,8 @@ Without it, `rclcpp` and everything else gets red underlines, and you see this.
 Squiggles are disabled for this translation unit.
 ```
 
-**ROS 2 headers are one level deeper, at `/opt/ros/jazzy/include/<package name>/<package name>/...`.**
+**ROS 2 headers are one level deeper, at `/opt/ros/jazzy/include/<package name>/<package name>/...`
+(`/opt/ros/lyrical/include/...` for Lyrical).**
 To resolve `#include "rclcpp/rclcpp.hpp"`, you need the directory of each package below
 `/opt/ros/jazzy/include`, not `/opt/ros/jazzy/include` itself, so
 the config picks them up recursively with `**`.
@@ -282,6 +302,8 @@ They exist only in `install/`. Pass `./drill run 03` and they go away.
 ### Dev Container if you are not on Ubuntu
 
 If the host has no `/opt/ros/jazzy`, IntelliSense does not work.
+The `.vscode/c_cpp_properties.json` in this repository looks only at `/opt/ros/jazzy/include`.
+If you install Lyrical on the host and use it, change `jazzy` to `lyrical` in that file.
 `.devcontainer/` is included, so run **"Dev Containers: Reopen in Container"**
 to open the project inside the container. It uses `compose.yaml` as is,
 so you get the same environment that runs the drill.

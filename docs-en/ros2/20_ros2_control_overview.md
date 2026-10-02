@@ -17,7 +17,7 @@ The prerequisite is that you have finished [19_writing_urdf](19_writing_urdf.md)
 
 ### What to prepare
 
-- An environment with Ubuntu 24.04 + ROS 2 Jazzy Jalisco set up (finished [02_environment_setup](02_environment_setup.md))
+- An environment with Ubuntu 24.04 + ROS 2 Jazzy set up (finished [02_environment_setup](02_environment_setup.md))
 - The `ros-jazzy-ros2-control` and `ros-jazzy-ros2-controllers` packages (`sudo apt install ros-jazzy-ros2-control ros-jazzy-ros2-controllers`)
 - A workspace to clone `ros2_control_demos` into (finished [10_workspaces_and_colcon](10_workspaces_and_colcon.md))
 - Gazebo is not needed. This demo runs on mock hardware, so you do not have to wait for a simulator to be installed
@@ -105,6 +105,7 @@ Content:
 
 Clone the demos under src in your workspace.
 
+<!-- only: jazzy -->
 ```bash
 cd ~/ros2_ws/src
 git clone -b jazzy https://github.com/ros-controls/ros2_control_demos.git
@@ -112,6 +113,18 @@ cd ~/ros2_ws
 colcon build --packages-up-to ros2_control_demo_example_2
 source install/setup.bash
 ```
+<!-- /only -->
+<!-- only: lyrical -->
+```bash
+cd ~/ros2_ws/src
+git clone https://github.com/ros-controls/ros2_control_demos.git
+cd ~/ros2_ws
+colcon build --packages-up-to ros2_control_demo_example_2
+source install/setup.bash
+```
+
+At the time of writing, ros2_control_demos has no lyrical branch (checked with `git ls-remote --heads`). The commands above take the default branch. We have not checked that `ros2_control_demo_example_2` works as it is on Lyrical, so check the repository's README for support.
+<!-- /only -->
 
 The diffbot example (`ros2_control_demo_example_2`) runs on mock hardware, so you need neither a real robot nor Gazebo. The URDF only specifies a mock hardware plugin inside the `<ros2_control>` tag, so you can check the behavior of controller_manager and diff_drive_controller as it is.
 
@@ -179,7 +192,12 @@ Next is [21_sensor_integration](21_sensor_integration.md), which covers how to b
 
 ## References
 
+<!-- only: jazzy -->
 - [ros2_control official docs (control.ros.org)](https://control.ros.org/jazzy/index.html)
+<!-- /only -->
+<!-- only: lyrical -->
+- [ros2_control official docs (control.ros.org)](https://control.ros.org/lyrical/index.html)
+<!-- /only -->
 - [ROS 2 Documentation: Jazzy — ros2_control pages](https://docs.ros.org/en/jazzy/p/ros2_control/)
 - [ros2_control_demos (GitHub)](https://github.com/ros-controls/ros2_control_demos)
 - [19_writing_urdf](19_writing_urdf.md)

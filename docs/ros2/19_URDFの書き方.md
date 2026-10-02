@@ -17,7 +17,7 @@
 
 ### 準備物
 
-- Ubuntu 24.04 + ROS 2 Jazzy Jaliscoがセットアップ済みの環境（[02_環境構築](02_環境構築.md)完了）
+- Ubuntu 24.04 + ROS 2 Jazzyがセットアップ済みの環境（[02_環境構築](02_環境構築.md)完了）
 - `ros-jazzy-joint-state-publisher-gui`、`ros-jazzy-xacro`（未インストールなら`sudo apt install ros-jazzy-joint-state-publisher-gui ros-jazzy-xacro`）
 - RViz2が起動できる環境（GUIが出ること。SSH経由の受講なら事前にX転送かVNCを確認しておく）
 - 練習用ワークスペース（[10_ワークスペースとcolcon](10_ワークスペースとcolcon.md)を先に済ませておく）
