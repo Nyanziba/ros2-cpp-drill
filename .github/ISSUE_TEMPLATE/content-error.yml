@@ -1,0 +1,31 @@
+name: 内容の誤り / Content error
+description: 誤字、説明の誤り、リンク切れ、英訳の誤り / Typos, wrong explanations, broken links, translation errors
+labels: ["documentation"]
+body:
+  - type: input
+    id: page
+    attributes:
+      label: ページと節 / Page and section
+      description: URL か、ファイルと見出し / A URL, or the file and heading
+    validations:
+      required: true
+  - type: dropdown
+    id: language
+    attributes:
+      label: どちらの版ですか / Which version
+      options:
+        - 日本語版 / Japanese
+        - 英語版 / English
+        - 両方 / Both
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: 何が誤っているか / What is wrong
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: 直しかたの案（あれば） / Suggested fix (optional)
