@@ -19,7 +19,7 @@ Fill in the TODOs in `src/fibonacci_action_server.cpp`. The specification is the
 | --- | --- |
 | Node name | `fibonacci_action_server` |
 | Action name | `fibonacci` |
-| Type | `action_tutorials_interfaces::action::Fibonacci` |
+| Type | `example_interfaces::action::Fibonacci` |
 | Accepting a goal | `handle_goal` returns `ACCEPT_AND_EXECUTE` |
 | Accepting a cancel | `handle_cancel` returns `ACCEPT` |
 | Starting execution | `handle_accepted` starts `execute` on another thread and calls `detach()` |
@@ -28,12 +28,12 @@ Fill in the TODOs in `src/fibonacci_action_server.cpp`. The specification is the
 You can check the contents of `Fibonacci` like this.
 
 ```
-$ ros2 interface show action_tutorials_interfaces/action/Fibonacci
+$ ros2 interface show example_interfaces/action/Fibonacci
 int32 order
 ---
 int32[] sequence
 ---
-int32[] partial_sequence
+int32[] sequence
 ```
 
 From the top, separated by `---`, these are the goal (`Fibonacci::Goal`), the result (`Fibonacci::Result`), and
@@ -69,11 +69,11 @@ In another terminal:
 ```bash
 ros2 action list                                                          # can you see /fibonacci?
 ros2 action info /fibonacci -t
-ros2 action send_goal /fibonacci action_tutorials_interfaces/action/Fibonacci "{order: 5}" --feedback
+ros2 action send_goal /fibonacci example_interfaces/action/Fibonacci "{order: 5}" --feedback
 ```
 
 With `--feedback`, the `Publish feedback` log appears in the server terminal, and
-the progress (`partial_sequence`) appears many times in the client terminal.
+the progress (`sequence`) appears many times in the client terminal.
 If a result such as `Result: sequence=[0, 1, 1, 2, 3, 5]` appears at the end, it works.
 
 If you stop the sending with `Ctrl-C`, it becomes a cancel request, and the server prints the logs
