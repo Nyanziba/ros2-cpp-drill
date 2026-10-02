@@ -97,7 +97,7 @@ fork して、`exercises/` と `docs/` を差し替えれば、そのまま自�
 | **C言語編** | [docs/c/](docs/c/README.md) | `c01`〜`c12` | マイコン・足回り・CAN を書く人。全12章 |
 | **C++入門編** | [docs/cpp-basics/](docs/cpp-basics/README.md) | `cppb01`〜`cppb10` | `const` や `static` で手が止まる人。全10章 |
 | **C++編** | [docs/cpp/](docs/cpp/README.md) | `cpp01`〜`cpp12` | rclcpp を読む準備。全15章 |
-| **ROS 2編** | [docs/ros2/](docs/ros2/01_この記事からスタート_ROS2講習ハブ.md) | `01`〜`15` | 全24本 |
+| **ROS 2編** | [docs/ros2/](docs/ros2/01_この記事からスタート_ROS2講習ハブ.md) | `01`〜`15` | 全23本 |
 | **デザインパターン編** | [docs/patterns/](docs/patterns/README.md) | `dp01`〜`dp23` | 自分たちのライブラリを設計する人。結城本と並べて読む。全23章 |
 
 **全員が全部やる必要はありません。**

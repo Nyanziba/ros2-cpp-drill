@@ -166,7 +166,6 @@ nav:
       - "ROS2講習18: TF2と座標系": ros2/18_TF2と座標系.md
       - "ROS2講習19: URDFの書き方": ros2/19_URDFの書き方.md
       - "ROS2講習20: ros2_control概要": ros2/20_ros2_control概要.md
-      - "ROS2講習20b: ros2_controlの使い方（差動二輪の足回りを例に）": ros2/20b_ros2_controlの使い方.md
       - "ROS2講習21: センサ統合": ros2/21_センサ統合.md
       - "ROS2講習22: 自己位置推定の考え方": ros2/22_自己位置推定の考え方.md
   - デザインパターン編:

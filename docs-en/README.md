@@ -26,7 +26,7 @@ Each chapter ends with a "Matching exercise" section, so you can also go the oth
 | --- | --- | --- | --- |
 | **C++ Basics** | [cpp-basics/](cpp-basics/README.md) | `cppb01` to `cppb10` | People who get stuck on `const` and `static`. 10 chapters |
 | **C++** | [cpp/](cpp/README.md) | `cpp01` to `cpp12` | Preparation for reading rclcpp. 15 chapters |
-| **ROS 2** | [ros2/](ros2/01_start_here_course_hub.md) | `01` to `15` | 24 articles in total |
+| **ROS 2** | [ros2/](ros2/01_start_here_course_hub.md) | `01` to `15` | 23 articles in total |
 
 **C++ Basics and C++ do not use ROS 2.** They need only `g++` and gtest.
 

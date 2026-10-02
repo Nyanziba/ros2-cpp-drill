@@ -149,7 +149,6 @@ nav:
       - "ROS 2 Lecture 18: TF2 and coordinate frames": ros2/18_tf2_and_coordinate_frames.md
       - "ROS 2 Lecture 19: Writing URDF": ros2/19_writing_urdf.md
       - "ROS 2 Lecture 20: ros2_control overview": ros2/20_ros2_control_overview.md
-      - "ROS 2 Lecture 20b: Using ros2_control (a differential drive base as the example)": ros2/20b_using_ros2_control.md
       - "ROS 2 Lecture 21: Sensor integration": ros2/21_sensor_integration.md
       - "ROS 2 Lecture 22: How to think about localization": ros2/22_thinking_about_localization.md
   - Design Patterns:
