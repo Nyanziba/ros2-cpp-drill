@@ -219,9 +219,9 @@ is the biggest advantage of components.
 
 | Test | What it checks |
 | --- | --- |
-| `NodeOptionsがNodeに渡されている` (NodeOptions is passed to Node) | Whether `options` is passed to `Node(...)` (if not, node name remapping does not work) |
-| `topicトピックにpublishしている` (publishes to the topic `topic`) | Whether the Publisher and the timer are running, and the building of the message text |
-| `RCLCPP_COMPONENTS_REGISTER_NODEで登録されている` (is registered with RCLCPP_COMPONENTS_REGISTER_NODE) | Whether the registration macro is actually written (checked by loading the shared library directly with `class_loader`) |
+| `NodeOptionsArePassedToNode` | Whether `options` is passed to `Node(...)` (if not, node name remapping does not work) |
+| `PublishesToTopicTopic` | Whether the Publisher and the timer are running, and the building of the message text |
+| `RegisteredWithRclcppComponentsRegisterNode` | Whether the registration macro is actually written (checked by loading the shared library directly with `class_loader`) |
 
 ## References
 

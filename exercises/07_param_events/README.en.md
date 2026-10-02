@@ -95,10 +95,10 @@ should appear.
 
 | Test | What it checks |
 | --- | --- |
-| `an_int_paramが整数型で既定値0で宣言されている` (an_int_param is declared as an integer with default value 0) | The type and the default value in `declare_parameter()` |
-| `an_int_paramをsetするとlatest_valueが更新される` (setting an_int_param updates latest_value) | Whether the callback is actually called |
-| `公式と同じcbログを出している` (prints the same cb log as the official one) | The format of `RCLCPP_INFO` |
-| `2回目の変更でもコールバックが呼ばれる` (the callback is called on the second change too) | Whether you keep holding the handle |
+| `AnIntParamIsDeclaredAsIntegerWithDefaultZero` | The type and the default value in `declare_parameter()` |
+| `SettingAnIntParamUpdatesLatestValue` | Whether the callback is actually called |
+| `LogsSameCbMessageAsOfficial` | The format of `RCLCPP_INFO` |
+| `CallbackFiresOnSecondChangeToo` | Whether you keep holding the handle |
 
 ## References
 

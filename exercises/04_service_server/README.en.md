@@ -83,11 +83,11 @@ it works.
 
 | Test | What it checks |
 | --- | --- |
-| `add_two_intsサービスを公開している` (provides the add_two_ints service) | Whether `create_service` is stored in `service_` |
-| `2つの整数の和を返す` (returns the sum of two integers) | `response->sum = request->a + request->b;` |
-| `0や負の数でも正しく計算する` (calculates correctly even with 0 or negative numbers) | Calculation at boundary values (0, negative numbers) |
-| `連続して呼び出しても応答する` (responds even when called repeatedly) | Whether it can handle multiple requests |
-| `公式と同じIncoming_requestログを出している` (prints the same Incoming_request log as the official one) | The format of `RCLCPP_INFO` |
+| `ExposesAddTwoIntsService` | Whether `create_service` is stored in `service_` |
+| `ReturnsSumOfTwoIntegers` | `response->sum = request->a + request->b;` |
+| `HandlesZeroAndNegativeNumbers` | Calculation at boundary values (0, negative numbers) |
+| `RespondsToConsecutiveCalls` | Whether it can handle multiple requests |
+| `LogsSameIncomingRequestAsOfficial` | The format of `RCLCPP_INFO` |
 
 ## References
 
