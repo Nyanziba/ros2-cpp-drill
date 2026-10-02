@@ -5,7 +5,7 @@
 #include "drill/counter.h"
 #include "drill/counter.h"
 
-TEST(SplitCompileTest, カウンタが進む)
+TEST(SplitCompileTest, AdvancesCounterByStep)
 {
   struct Counter c;
   counter_init(&c, 10, 3);
@@ -16,7 +16,7 @@ TEST(SplitCompileTest, カウンタが進む)
   EXPECT_EQ(counter_value(&c), 16);
 }
 
-TEST(SplitCompileTest, 負のstepでも動く)
+TEST(SplitCompileTest, WorksWithNegativeStep)
 {
   struct Counter c;
   counter_init(&c, 0, -5);
@@ -24,7 +24,7 @@ TEST(SplitCompileTest, 負のstepでも動く)
   EXPECT_EQ(counter_value(&c), -5);
 }
 
-TEST(SplitCompileTest, ファイルスコープStaticが呼び出し回数を数える)
+TEST(SplitCompileTest, FileScopeStaticCountsCalls)
 {
   // 上の 2 つのテストでは呼んでいないので、ここが 1 回目から始まります。
   EXPECT_EQ(counter_call_count(), 1);

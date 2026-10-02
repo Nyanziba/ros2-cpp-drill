@@ -4,7 +4,7 @@
 
 #include "drill/fixed_width.h"
 
-TEST(FixedWidthTest, 符号なし8ビット整数の加算で自動wrap)
+TEST(FixedWidthTest, AddsUint8WithWraparound)
 {
   EXPECT_EQ(add_modulo_256(100, 100), 200);
   EXPECT_EQ(add_modulo_256(200, 100), 44);  // 300 % 256 = 44
@@ -12,7 +12,7 @@ TEST(FixedWidthTest, 符号なし8ビット整数の加算で自動wrap)
   EXPECT_EQ(add_modulo_256(0, 0), 0);
 }
 
-TEST(FixedWidthTest, 符号付き16ビット整数の加算で飽和)
+TEST(FixedWidthTest, AddsInt16WithSaturation)
 {
   EXPECT_EQ(saturate_add(100, 200), 300);
   EXPECT_EQ(saturate_add(-100, -200), -300);
@@ -24,7 +24,7 @@ TEST(FixedWidthTest, 符号付き16ビット整数の加算で飽和)
   EXPECT_EQ(saturate_add(-32000, -1000), INT16_MIN);
 }
 
-TEST(FixedWidthTest, 最上位ビット判定)
+TEST(FixedWidthTest, ChecksHighBit)
 {
   EXPECT_EQ(check_high_bit(0x80), 1);  // 10000000
   EXPECT_EQ(check_high_bit(0xFF), 1);  // 11111111

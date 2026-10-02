@@ -109,13 +109,13 @@ Both work. In C, dereferencing a function pointer is done implicitly.
 
 | Test | What it checks |
 | --- | --- |
-| `コントローラー作成と破棄` (creating and destroying the controller) | Allocation in `create`, the NULL check, and initializing all handlers |
-| `ハンドラーを登録できる` (can register a handler) | `register_handler` and `is_null` |
-| `登録されたハンドラーが呼ばれる` (the registered handler is called) | Calling through a function pointer |
-| `未登録のスロットを呼んでも落ちない` (calling an unregistered slot does not crash) | **The importance of the NULL check** |
-| `ハンドラーを複数登録して正しく呼び分ける` (register several handlers and call the right one) | The basics of table-driven programming |
-| `ハンドラーを NULL で削除できる` (can remove a handler with NULL) | Unregistering by registering NULL again |
-| `ハンドラーを上書きできる` (can overwrite a handler) | Registering again to the same slot |
+| `CreatesAndDestroysController` | Allocation in `create`, the NULL check, and initializing all handlers |
+| `RegistersHandler` | `register_handler` and `is_null` |
+| `CallsRegisteredHandler` | Calling through a function pointer |
+| `DoesNotCrashOnUnregisteredSlot` | **The importance of the NULL check** |
+| `DispatchesToCorrectHandler` | The basics of table-driven programming |
+| `RemovesHandlerWithNull` | Unregistering by registering NULL again |
+| `OverwritesHandler` | Registering again to the same slot |
 
 ## References
 

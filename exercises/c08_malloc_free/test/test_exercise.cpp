@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 #include "drill/malloc_free.h"
 
-TEST(DynamicArrayTest, 配列を確保できる)
+TEST(DynamicArrayTest, AllocatesArray)
 {
   int * arr = create_array(10);
   ASSERT_NE(arr, nullptr);
@@ -16,7 +16,7 @@ TEST(DynamicArrayTest, 配列を確保できる)
   free_array(arr);
 }
 
-TEST(DynamicArrayTest, 異なるサイズで動く)
+TEST(DynamicArrayTest, WorksWithDifferentSizes)
 {
   int * arr1 = create_array(1);
   int * arr2 = create_array(100);
@@ -39,7 +39,7 @@ TEST(DynamicArrayTest, 異なるサイズで動く)
   free_array(arr3);
 }
 
-TEST(LinkedListTest, リストを作成できる)
+TEST(LinkedListTest, CreatesList)
 {
   struct Node * head = create_linked_list(5);
   ASSERT_NE(head, nullptr);
@@ -56,7 +56,7 @@ TEST(LinkedListTest, リストを作成できる)
   free_linked_list(head);
 }
 
-TEST(LinkedListTest, 長さ1のリスト)
+TEST(LinkedListTest, CreatesListOfLengthOne)
 {
   struct Node * head = create_linked_list(1);
   ASSERT_NE(head, nullptr);
@@ -66,7 +66,7 @@ TEST(LinkedListTest, 長さ1のリスト)
   free_linked_list(head);
 }
 
-TEST(LinkedListTest, 長さ10のリスト)
+TEST(LinkedListTest, CreatesListOfLengthTen)
 {
   struct Node * head = create_linked_list(10);
   ASSERT_NE(head, nullptr);
@@ -82,7 +82,7 @@ TEST(LinkedListTest, 長さ10のリスト)
   free_linked_list(head);
 }
 
-TEST(LinkedListTest, 複数のリストを独立して管理)
+TEST(LinkedListTest, ManagesMultipleListsIndependently)
 {
   struct Node * list1 = create_linked_list(3);
   struct Node * list2 = create_linked_list(5);

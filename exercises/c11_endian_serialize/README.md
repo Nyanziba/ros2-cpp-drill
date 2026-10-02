@@ -68,17 +68,17 @@ memcpy(&u32, &f, sizeof(u32));
 
 | テスト | 見ているところ |
 | --- | --- |
-| `float_1_0_往復` | 1.0f の往復変換（基本） |
-| `float_2_5_往復` | 小数値の往復変換 |
-| `float_負数_往復` | 負の浮動小数点数 |
-| `float_ゼロ_往復` | ゼロの扱い |
-| `float_オフセット付き_往復` | オフセット指定での読み書き |
-| `uint32_往復` | 32 ビット整数の往復変換 |
-| `uint32_オフセット付き_往復` | オフセット指定での読み書き |
-| `uint32_ゼロ_往復` | uint32_t ゼロ |
-| `速度目標コマンド構築` | ペイロード構築の基本 |
-| `速度目標コマンド構築_負の速度` | 負の速度値 |
-| `速度目標コマンド往路` | ペイロード構築と復元 |
+| `RoundTripsFloatOnePointZero` | 1.0f の往復変換（基本） |
+| `RoundTripsFloatTwoPointFive` | 小数値の往復変換 |
+| `RoundTripsNegativeFloat` | 負の浮動小数点数 |
+| `RoundTripsFloatZero` | ゼロの扱い |
+| `RoundTripsFloatWithOffset` | オフセット指定での読み書き |
+| `RoundTripsUint32` | 32 ビット整数の往復変換 |
+| `RoundTripsUint32WithOffset` | オフセット指定での読み書き |
+| `RoundTripsUint32Zero` | uint32_t ゼロ |
+| `BuildsSpeedTargetCommand` | ペイロード構築の基本 |
+| `BuildsSpeedTargetCommandWithNegativeSpeed` | 負の速度値 |
+| `RoundTripsSpeedTargetCommand` | ペイロード構築と復元 |
 
 ## 参考
 

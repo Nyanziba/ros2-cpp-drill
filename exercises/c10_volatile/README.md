@@ -117,14 +117,14 @@ if (state == STATE_IDLE) {
 
 | テスト | 見ているところ |
 | --- | --- |
-| `初期化と状態確認` | `machine_init` と状態確認関数 |
-| `IDLE_から_RUNNING_に遷移` | `machine_start` |
-| `RUNNING_から_STOPPED_に遷移` | `machine_stop` |
-| `複数回の状態遷移` | 複数回の状態変更が正しく動作 |
-| `外部から状態が変更されたことを検出できる` | **volatile の重要性** — 外部からの変更を正しく見る |
-| `外部から複数回の変更を検出できる` | 複数回の外部変更 |
-| `ポーリングループで状態を監視できる` | 典型的なポーリングパターン |
-| `get_state_は毎回読み込みをしている` | volatile による毎回の読み込み保証 |
+| `InitializesToIdle` | `machine_init` と状態確認関数 |
+| `TransitionsFromIdleToRunning` | `machine_start` |
+| `TransitionsFromRunningToStopped` | `machine_stop` |
+| `HandlesMultipleTransitions` | 複数回の状態変更が正しく動作 |
+| `DetectsExternalChange` | **volatile の重要性** — 外部からの変更を正しく見る |
+| `DetectsRepeatedExternalChanges` | 複数回の外部変更 |
+| `WatchesStateInPollingLoop` | 典型的なポーリングパターン |
+| `GetStateReadsEveryTime` | volatile による毎回の読み込み保証 |
 
 ## 参考
 

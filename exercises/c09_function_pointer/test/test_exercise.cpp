@@ -21,7 +21,7 @@ static void handler_toggle(int led_id, int state)
   g_call_count++;
 }
 
-TEST(FunctionPointerTest, コントローラー作成と破棄)
+TEST(FunctionPointerTest, CreatesAndDestroysController)
 {
   struct LedController * ctrl = led_controller_create();
   ASSERT_NE(ctrl, nullptr);
@@ -34,7 +34,7 @@ TEST(FunctionPointerTest, コントローラー作成と破棄)
   led_controller_destroy(ctrl);
 }
 
-TEST(FunctionPointerTest, ハンドラーを登録できる)
+TEST(FunctionPointerTest, RegistersHandler)
 {
   struct LedController * ctrl = led_controller_create();
   ASSERT_NE(ctrl, nullptr);
@@ -49,7 +49,7 @@ TEST(FunctionPointerTest, ハンドラーを登録できる)
   led_controller_destroy(ctrl);
 }
 
-TEST(FunctionPointerTest, 登録されたハンドラーが呼ばれる)
+TEST(FunctionPointerTest, CallsRegisteredHandler)
 {
   struct LedController * ctrl = led_controller_create();
   ASSERT_NE(ctrl, nullptr);
@@ -73,7 +73,7 @@ TEST(FunctionPointerTest, 登録されたハンドラーが呼ばれる)
   led_controller_destroy(ctrl);
 }
 
-TEST(FunctionPointerTest, 未登録のスロットを呼んでも落ちない)
+TEST(FunctionPointerTest, DoesNotCrashOnUnregisteredSlot)
 {
   struct LedController * ctrl = led_controller_create();
   ASSERT_NE(ctrl, nullptr);
@@ -91,7 +91,7 @@ TEST(FunctionPointerTest, 未登録のスロットを呼んでも落ちない)
   led_controller_destroy(ctrl);
 }
 
-TEST(FunctionPointerTest, ハンドラーを複数登録して正しく呼び分ける)
+TEST(FunctionPointerTest, DispatchesToCorrectHandler)
 {
   struct LedController * ctrl = led_controller_create();
   ASSERT_NE(ctrl, nullptr);
@@ -114,7 +114,7 @@ TEST(FunctionPointerTest, ハンドラーを複数登録して正しく呼び分
   led_controller_destroy(ctrl);
 }
 
-TEST(FunctionPointerTest, ハンドラーをNULLで削除できる)
+TEST(FunctionPointerTest, RemovesHandlerWithNull)
 {
   struct LedController * ctrl = led_controller_create();
   ASSERT_NE(ctrl, nullptr);
@@ -137,7 +137,7 @@ TEST(FunctionPointerTest, ハンドラーをNULLで削除できる)
   led_controller_destroy(ctrl);
 }
 
-TEST(FunctionPointerTest, ハンドラーを上書きできる)
+TEST(FunctionPointerTest, OverwritesHandler)
 {
   struct LedController * ctrl = led_controller_create();
   ASSERT_NE(ctrl, nullptr);

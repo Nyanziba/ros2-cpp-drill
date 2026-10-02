@@ -6,7 +6,7 @@ extern "C" {
 #include "drill/endian_serialize.h"
 }
 
-TEST(EndianTest, float_1_0_往復)
+TEST(EndianTest, RoundTripsFloatOnePointZero)
 {
   uint8_t data[8] = {0};
   write_float_le(1.0f, data, 0);
@@ -22,7 +22,7 @@ TEST(EndianTest, float_1_0_往復)
   EXPECT_FLOAT_EQ(f, 1.0f);
 }
 
-TEST(EndianTest, float_2_5_往復)
+TEST(EndianTest, RoundTripsFloatTwoPointFive)
 {
   uint8_t data[8] = {0};
   write_float_le(2.5f, data, 0);
@@ -38,7 +38,7 @@ TEST(EndianTest, float_2_5_往復)
   EXPECT_FLOAT_EQ(f, 2.5f);
 }
 
-TEST(EndianTest, float_負数_往復)
+TEST(EndianTest, RoundTripsNegativeFloat)
 {
   uint8_t data[8] = {0};
   write_float_le(-1.0f, data, 0);
@@ -54,7 +54,7 @@ TEST(EndianTest, float_負数_往復)
   EXPECT_FLOAT_EQ(f, -1.0f);
 }
 
-TEST(EndianTest, float_ゼロ_往復)
+TEST(EndianTest, RoundTripsFloatZero)
 {
   uint8_t data[8] = {0};
   write_float_le(0.0f, data, 0);
@@ -70,7 +70,7 @@ TEST(EndianTest, float_ゼロ_往復)
   EXPECT_FLOAT_EQ(f, 0.0f);
 }
 
-TEST(EndianTest, float_オフセット付き_往復)
+TEST(EndianTest, RoundTripsFloatWithOffset)
 {
   uint8_t data[8] = {0};
   // offset 2 から書き込む
@@ -88,7 +88,7 @@ TEST(EndianTest, float_オフセット付き_往復)
   EXPECT_FLOAT_EQ(f, 1.0f);
 }
 
-TEST(EndianTest, uint32_往復)
+TEST(EndianTest, RoundTripsUint32)
 {
   uint8_t data[8] = {0};
   uint32_t original = 0x12345678;
@@ -105,7 +105,7 @@ TEST(EndianTest, uint32_往復)
   EXPECT_EQ(restored, original);
 }
 
-TEST(EndianTest, uint32_オフセット付き_往復)
+TEST(EndianTest, RoundTripsUint32WithOffset)
 {
   uint8_t data[8] = {0};
   uint32_t original = 0xdeadbeef;
@@ -121,7 +121,7 @@ TEST(EndianTest, uint32_オフセット付き_往復)
   EXPECT_EQ(restored, original);
 }
 
-TEST(EndianTest, uint32_ゼロ_往復)
+TEST(EndianTest, RoundTripsUint32Zero)
 {
   uint8_t data[8] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
   write_uint32_le(0, data, 1);
@@ -135,7 +135,7 @@ TEST(EndianTest, uint32_ゼロ_往復)
   EXPECT_EQ(restored, 0u);
 }
 
-TEST(EndianTest, 速度目標コマンド構築)
+TEST(EndianTest, BuildsSpeedTargetCommand)
 {
   uint8_t payload[8];
   build_speed_target_command(3, 1.0f, payload);
@@ -155,7 +155,7 @@ TEST(EndianTest, 速度目標コマンド構築)
   EXPECT_EQ(payload[7], 0);
 }
 
-TEST(EndianTest, 速度目標コマンド構築_負の速度)
+TEST(EndianTest, BuildsSpeedTargetCommandWithNegativeSpeed)
 {
   uint8_t payload[8];
   build_speed_target_command(1, -2.5f, payload);
@@ -175,7 +175,7 @@ TEST(EndianTest, 速度目標コマンド構築_負の速度)
   EXPECT_EQ(payload[7], 0);
 }
 
-TEST(EndianTest, 速度目標コマンド往路)
+TEST(EndianTest, RoundTripsSpeedTargetCommand)
 {
   uint8_t payload[8];
   float original_speed = 5.0f;

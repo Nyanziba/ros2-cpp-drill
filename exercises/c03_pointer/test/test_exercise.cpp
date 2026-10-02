@@ -3,7 +3,7 @@
 
 #include "drill/pointer.h"
 
-TEST(PointerTest, 2つの変数を交換する)
+TEST(PointerTest, SwapsTwoVariables)
 {
   int a = 10;
   int b = 20;
@@ -12,7 +12,7 @@ TEST(PointerTest, 2つの変数を交換する)
   EXPECT_EQ(b, 10);
 }
 
-TEST(PointerTest, swap時にNULLチェック)
+TEST(PointerTest, SwapReturnsMinusOneOnNull)
 {
   int a = 10;
   EXPECT_EQ(swap_values(NULL, &a), -1);
@@ -21,7 +21,7 @@ TEST(PointerTest, swap時にNULLチェック)
   EXPECT_EQ(a, 10);  // 変更されていない
 }
 
-TEST(PointerTest, multiplyで値を2倍にする)
+TEST(PointerTest, MultiplyDoublesValue)
 {
   int result = 0;
   EXPECT_EQ(multiply(5, &result), 0);
@@ -34,12 +34,12 @@ TEST(PointerTest, multiplyで値を2倍にする)
   EXPECT_EQ(result, 0);
 }
 
-TEST(PointerTest, multiplyでNULLチェック)
+TEST(PointerTest, MultiplyReturnsMinusOneOnNull)
 {
   EXPECT_EQ(multiply(5, NULL), -1);
 }
 
-TEST(PointerTest, tripleで値を3倍にする)
+TEST(PointerTest, TripleTriplesValue)
 {
   int p = 5;
   EXPECT_EQ(triple_pointer(&p), 0);
@@ -50,7 +50,7 @@ TEST(PointerTest, tripleで値を3倍にする)
   EXPECT_EQ(p, -6);
 }
 
-TEST(PointerTest, tripleでNULLチェック)
+TEST(PointerTest, TripleReturnsMinusOneOnNull)
 {
   EXPECT_EQ(triple_pointer(NULL), -1);
 }
