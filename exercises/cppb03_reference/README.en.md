@@ -28,9 +28,9 @@ Implement swap_values() and largest() in `src/swapper.cpp`.
 
 | Test | What it checks |
 | --- | --- |
-| `参照経由のSwap` (swap through references) | changes through references |
-| `参照を返して呼び出し元を変更` (return a reference and change the caller's value) | reference return values |
-| `等しい場合は最初の方` (if equal, return the first one) | edge case |
+| `SwapsTwoVariablesByReference` | changes through references |
+| `ReturnsReferenceSoCallerCanModify` | reference return values |
+| `ReturnsFirstWhenEqual` | edge case |
 
 ## References
 

@@ -58,10 +58,10 @@ explicit Pair::Pair(int a, int b) { }   // error: ‘explicit’ outside class d
 
 | テスト | 見ているところ |
 | --- | --- |
-| `Explicitが暗黙変換を止める` | `std::is_convertible_v<double, Meters>` が false か |
-| `Const関数はConstオブジェクトから呼べる` | 末尾 `const` |
-| `Constexprはコンパイル時に評価される` | `static_assert` が通るか |
-| `Inlineで多重定義を避ける` | 2 つの翻訳単位からリンクできるか |
+| `ExplicitBlocksImplicitConversion` | `std::is_convertible_v<double, Meters>` が false か |
+| `ConstMethodCallableOnConstObject` | 末尾 `const` |
+| `ConstexprIsEvaluatedAtCompileTime` | `static_assert` が通るか |
+| `InlineAvoidsMultipleDefinition` | 2 つの翻訳単位からリンクできるか |
 
 ## 参考
 

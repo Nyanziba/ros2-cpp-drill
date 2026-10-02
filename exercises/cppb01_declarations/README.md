@@ -30,9 +30,9 @@ const とポインタの組み合わせを理解します。
 
 | テスト | 見ているところ |
 | --- | --- |
-| `ConstPtrは読み取り専用` | const int * の読み出し |
-| `非ConstPtrは変更可能` | int * への書き込み |
-| `戻り値もConstPtrで正しい` | const int * の戻り値 |
+| `ReadsThroughConstPointer` | const int * の読み出し |
+| `ModifiesThroughNonConstPointer` | int * への書き込み |
+| `ReturnsConstPointerToOriginal` | const int * の戻り値 |
 
 ## 参考
 

@@ -30,10 +30,10 @@
 
 | テスト | 見ているところ |
 | --- | --- |
-| `CopyCtorが数えられる` | コピーコンストラクタ |
-| `CopyAssignが数えられる` | コピー代入演算子 |
-| `値渡しはコピーが起きる` | 値渡しのコスト |
-| `ConstRefはコピーが起きない` | const& のメリット |
+| `CopyConstructorIsCounted` | コピーコンストラクタ |
+| `CopyAssignmentIsCounted` | コピー代入演算子 |
+| `PassByValueCopiesTwice` | 値渡しのコスト |
+| `PassByConstRefDoesNotCopy` | const& のメリット |
 
 ## 参考
 

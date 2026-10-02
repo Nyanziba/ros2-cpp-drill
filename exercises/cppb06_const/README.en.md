@@ -59,8 +59,8 @@ so forgetting it does not show up as "a test turns red". It shows up as "does no
 
 | Test | What it checks |
 | --- | --- |
-| `ConstCorrect` | whether `get_limit()` can be called on a `const Config` (trailing const of ②) |
-| `戻り値のポインタはconst` (the returned pointer is const) | whether the return type is `const int *` (③) |
+| `AllowsCallsOnConstObject` | whether `get_limit()` can be called on a `const Config` (trailing const of ②) |
+| `ReturnsPointerToConst` | whether the return type is `const int *` (③) |
 
 ## References
 

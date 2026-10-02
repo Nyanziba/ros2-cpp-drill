@@ -28,9 +28,9 @@
 
 | テスト | 見ているところ |
 | --- | --- |
-| `参照経由のSwap` | 参照による変更 |
-| `参照を返して呼び出し元を変更` | 参照の戻り値 |
-| `等しい場合は最初の方` | エッジケース |
+| `SwapsTwoVariablesByReference` | 参照による変更 |
+| `ReturnsReferenceSoCallerCanModify` | 参照の戻り値 |
+| `ReturnsFirstWhenEqual` | エッジケース |
 
 ## 参考
 

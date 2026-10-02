@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 #include "drill/config.hpp"
 
-TEST(ConstTest, ConstCorrect)
+TEST(ConstTest, AllowsCallsOnConstObject)
 {
   const int val = 100;
   const Config cfg(val);
@@ -15,7 +15,7 @@ TEST(ConstTest, ConstCorrect)
   EXPECT_EQ(*p, 100);
 }
 
-TEST(ConstTest, 戻り値のポインタはconst)
+TEST(ConstTest, ReturnsPointerToConst)
 {
   int val = 50;
   Config cfg(val);
