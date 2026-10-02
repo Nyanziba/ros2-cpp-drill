@@ -204,7 +204,8 @@ and in `exercises.json` they are the `*_en` fields. **The Japanese version is th
 
 - If you fix the Japanese version, **please fix the English version in the same PR if you can.** The rules, the file name table, and the glossary
   are in [TRANSLATING.md](TRANSLATING.md).
-- If English is hard for you, fix only the Japanese version and write "English version not done" in the PR body. A maintainer will follow up.
+- If English is hard for you, fix only the Japanese version and write "English not updated" in the PR body. A maintainer will follow up.
+- For a PR that changes only the Japanese version, CI (translation-drift) shows a warning. It does not fail, but the summary asks you to write "English not updated" if you have not.
 - When you translate code in the English version, [measure](#the-most-important-rule-output-is-measured) the output again too.
 
 ## Checklist before you send
@@ -215,6 +216,6 @@ The PR template has the same items.
 - [ ] If I changed code, I also made the output and the Compiler Explorer link again
 - [ ] `mkdocs build --strict` passes (also the English `-f mkdocs.en.yml` if I changed the readings)
 - [ ] If I changed an exercise, I checked that it fails when unsolved and passes with the sample solution
-- [ ] I fixed the English version too (or wrote "English version not done" in the PR)
+- [ ] I fixed the English version too (or wrote "English not updated" in the PR)
 - [ ] `python3 tools/check_docs.py` passes (it checks the JA/EN page structure, the exercise data, and the templates)
 - [ ] Only one topic in one PR

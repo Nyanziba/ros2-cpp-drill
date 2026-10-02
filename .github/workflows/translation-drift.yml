@@ -1,0 +1,27 @@
+name: translation-drift
+
+# 日本語版だけが変わった PR に警告を出す。日本語版が正で英語版はその翻訳なので、
+# 英語版が古くなっても誰も気づかないのを防ぐ。警告だけで落とさない
+# （英語が難しい人は PR の本文に「英語版は未対応」と書けばよい）。
+on:
+  pull_request:
+
+# 読むだけでよい。PR にコメントは書かず、アノテーションと要約に出す。
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      # base...head の差分を取るのに履歴が要る。
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 日本語版だけ変わったファイルを探す
+        # PR の本文は利用者が自由に書ける。スクリプトの引数やシェルに直接
+        # 展開するとコマンドが注入されるので、環境変数で渡す。
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: python3 tools/check_translation_drift.py origin/${{ github.base_ref }} HEAD
