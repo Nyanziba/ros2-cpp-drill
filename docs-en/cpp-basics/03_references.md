@@ -61,6 +61,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic basics03_uninit.cpp -o basics03_uninit
 </details>
 
 Compiler message:
+<!-- measure: filter="grep -o 'error:.*'" -->
 ```
 error: ‘r’ declared as reference but not initialized
 ```
@@ -109,6 +110,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic basics03_null.cpp -o basics03_null
 </details>
 
 Compiler message:
+<!-- measure: filter="grep -o 'error:.*'" -->
 ```
 error: invalid initialization of non-const reference of type ‘int&’ from an rvalue of type ‘std::nullptr_t’
 ```
@@ -251,6 +253,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic -c basics03_dangling.cpp
 
 The compiler should give a warning:
 
+<!-- measure: filter="grep -o 'warning:.*'" -->
 ```
 warning: reference to local variable ‘local’ returned [-Wreturn-local-addr]
 ```
@@ -365,7 +368,12 @@ Output:
 
 <details markdown="1"><summary>Answer (actual output)</summary>
 
+<!-- measure: -->
 ```
+basics03_practice.cpp: In lambda function:
+basics03_practice.cpp:46:33: warning: parameter ‘n’ set but not used [-Wunused-but-set-parameter]
+   46 |   auto modify_by_value = [](int n) {
+      |                             ~~~~^
 === References ===
 
 --- 1. A reference is an alias ---
@@ -373,8 +381,8 @@ int x = 10;
 int & ref = x;
 x = 10
 ref = 10
-&x = 0x7ffffffc5a10
-&ref = 0x7ffffffc5a10 (the same address!)
+&x = 0x7ffffffc59e0
+&ref = 0x7ffffffc59e0 (the same address!)
 
 --- 2. Change through a reference ---
 After ref = 20; x also changed
