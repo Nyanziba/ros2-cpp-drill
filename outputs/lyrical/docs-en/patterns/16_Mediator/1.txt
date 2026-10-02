@@ -1,0 +1,7 @@
+--- bad ---
+use_count: mediator=2 colleague=2
+--- end of bad ---
+--- good ---
+~GoodMediator
+~GoodColleague
+--- end of good ---

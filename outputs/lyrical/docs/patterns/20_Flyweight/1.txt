@@ -1,0 +1,12 @@
+[strong]
+  + Table(gyro)
+  same? 1  use_count=3
+  利用者は全員いなくなった
+  - ~Table(gyro)
+  プールが死んだ
+[weak]
+  + Table(gyro)
+  same? 1  use_count=2
+  - ~Table(gyro)
+  利用者は全員いなくなった
+  pool.size()=1

@@ -1,0 +1,3 @@
+low_voltage -> reduce_duty
+over_current -> cut_output
+unhandled

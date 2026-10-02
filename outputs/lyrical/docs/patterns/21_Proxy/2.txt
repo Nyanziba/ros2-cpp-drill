@@ -1,0 +1,20 @@
+copy_elision.cpp: In function ‘A make()’:
+copy_elision.cpp:9:19: error: use of deleted function ‘A::A(const A&)’
+    9 | A make() { return A{}; }
+      |                   ^~~
+copy_elision.cpp:6:3: note: declared here
+    6 |   A(const A &) = delete;
+      |   ^
+copy_elision.cpp:9:19: note: use ‘-fdiagnostics-all-candidates’ to display considered candidates
+    9 | A make() { return A{}; }
+      |                   ^~~
+copy_elision.cpp: In function ‘int main()’:
+copy_elision.cpp:13:14: error: use of deleted function ‘A::A(const A&)’
+   13 |   A a = make();
+      |              ^
+copy_elision.cpp:6:3: note: declared here
+    6 |   A(const A &) = delete;
+      |   ^
+copy_elision.cpp:13:14: note: use ‘-fdiagnostics-all-candidates’ to display considered candidates
+   13 |   A a = make();
+      |              ^

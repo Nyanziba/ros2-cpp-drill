@@ -1,0 +1,5 @@
+  [motor] duty=0.5
+Leaving the scope
+  Logger destroyed
+Empty tag: nullptr
+created_count = 1

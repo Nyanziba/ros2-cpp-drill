@@ -1,0 +1,28 @@
+# ROS 2 Lyrical 版（英語）。英語版（mkdocs.en.yml）の設定を引き継ぎ、違うところだけ上書きする。
+# 建てる順番は mkdocs.lyrical.yml の説明を参照（Lyrical 版 日本語の後に建てる）。
+INHERIT: mkdocs.en.yml
+
+site_name: ROS 2 Drill (Lyrical edition) — C++ and ROS 2 course
+site_url: https://nyanziba.github.io/ros2-cpp-drill/lyrical/en/
+site_dir: site/lyrical/en
+
+extra:
+  drill_version_label: "ROS 2 distro:"
+  drill_versions:
+    - name: Jazzy
+      link: ../../en/index.html
+    - name: Lyrical
+      link: index.html
+      current: true
+  drill_distro: lyrical
+  # Lyrical 版で置き換える語。版の名前と環境だけ（Compiler Explorer の「gcc 13.3」はリンク先が
+  # 実際に gcc 13.3 で動くので置き換えない）。版で中身が変わる文は <!-- only: ... --> で書き分ける。
+  drill_replacements:
+    - ["/opt/ros/jazzy", "/opt/ros/lyrical"]
+    - ["ros-jazzy-", "ros-lyrical-"]
+    - ["docs.ros.org/en/jazzy/", "docs.ros.org/en/lyrical/"]
+    - ["ROS 2 Jazzy", "ROS 2 Lyrical"]
+    - ["Ubuntu 24.04", "Ubuntu 26.04"]
+    - ["g++ 13.3.0", "g++ 15.2.0"]
+    - ["g++ 13.3", "g++ 15.2"]
+    - ["ros2-drill:jazzy", "ros2-drill:lyrical"]

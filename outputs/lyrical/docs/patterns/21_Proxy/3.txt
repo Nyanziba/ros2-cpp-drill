@@ -1,0 +1,3 @@
+duty=500 raw=500
+duty=999 raw=999
+sizeof(DutyRegister)=8

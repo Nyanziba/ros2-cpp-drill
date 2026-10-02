@@ -1,0 +1,1 @@
+novirt.cpp:7:7: warning: ‘class Sink’ has virtual functions and accessible non-virtual destructor [-Wnon-virtual-dtor]

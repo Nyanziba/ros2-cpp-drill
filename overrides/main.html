@@ -1,0 +1,17 @@
+{#- ページ最上部に ROS 2 の版（Jazzy / Lyrical）の切替を出す。
+    リンクは各 mkdocs の設定の extra.drill_versions に、そのサイトの最上位からの相対パスで書く。 -#}
+{% extends "base.html" %}
+
+{% block announce %}
+  {%- if config.extra.drill_versions -%}
+    {{ config.extra.drill_version_label }}
+    {% for version in config.extra.drill_versions -%}
+      {%- if version.current -%}
+        <strong>{{ version.name }}</strong>
+      {%- else -%}
+        <a href="{{ base_url }}/{{ version.link }}">{{ version.name }}</a>
+      {%- endif -%}
+      {%- if not loop.last %} ｜ {% endif -%}
+    {%- endfor %}
+  {%- endif -%}
+{% endblock %}

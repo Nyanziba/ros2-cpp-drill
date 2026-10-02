@@ -13,6 +13,11 @@ on:
       - 'docs-en/**'
       - 'mkdocs.yml'
       - 'mkdocs.en.yml'
+      - 'mkdocs.lyrical.yml'
+      - 'mkdocs.lyrical.en.yml'
+      - 'hooks/**'
+      - 'overrides/**'
+      - 'outputs/**'
       - 'docs-requirements.txt'
       - '.github/workflows/docs.yml'
   pull_request:
@@ -21,6 +26,11 @@ on:
       - 'docs-en/**'
       - 'mkdocs.yml'
       - 'mkdocs.en.yml'
+      - 'mkdocs.lyrical.yml'
+      - 'mkdocs.lyrical.en.yml'
+      - 'hooks/**'
+      - 'overrides/**'
+      - 'outputs/**'
       - 'docs-requirements.txt'
   workflow_dispatch:
 
@@ -56,12 +66,21 @@ jobs:
       - name: 英語版をビルド（警告をエラーにする）
         run: mkdocs build --strict -f mkdocs.en.yml
 
+      # Lyrical 版は site/lyrical/ と site/lyrical/en/ に出る。Jazzy 版の後に、日本語・英語の順で建てる。
+      # 出力は outputs/lyrical/ のファイルを hooks/drill_version.py が差し込む（無ければここで落ちる）。
+      - name: Lyrical 版をビルド（警告をエラーにする）
+        run: |
+          mkdocs build --strict -f mkdocs.lyrical.yml
+          mkdocs build --strict -f mkdocs.lyrical.en.yml
+
       - name: 生成されたページ数を確認
         run: |
           count=$(find site -name '*.html' | wc -l)
           echo "生成された HTML: ${count} ページ"
           test "$count" -ge 50
           test -f site/en/index.html
+          test -f site/lyrical/index.html
+          test -f site/lyrical/en/index.html
 
       # Pages 用の tar と、普通にダウンロードできる zip の両方を置く。
       # 前者は deploy ジョブが使い、後者はオフラインで配りたいとき用。

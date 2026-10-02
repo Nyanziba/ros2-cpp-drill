@@ -1,0 +1,7 @@
+[out] v=1
+[out] 0: v=1
+[out] v=1
+[out] v=1
+[out] 0: v=1
+[out] 1: v=1
+sizeof(View)=16 sizeof(RepeatView)=24

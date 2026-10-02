@@ -1,0 +1,3 @@
+/usr/bin/x86_64-linux-gnu-ld.bfd: file2.o: in function `add_one(int)':
+file2.cpp:(.text+0x0): multiple definition of `add_one(int)'; file1.o:file1.cpp:(.text+0x0): first defined here
+collect2: error: ld returned 1 exit status

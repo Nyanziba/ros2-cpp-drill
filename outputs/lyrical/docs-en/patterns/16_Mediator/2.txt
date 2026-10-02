@@ -1,0 +1,7 @@
+incomplete.cpp: In member function ‘void PanelWidget::notify_changed()’:
+incomplete.cpp:7:36: error: invalid use of incomplete type ‘class PanelMediator’
+    7 |   void notify_changed() { mediator_->widget_changed(this); }
+      |                                    ^~
+incomplete.cpp:2:7: note: forward declaration of ‘class PanelMediator’
+    2 | class PanelMediator;
+      |       ^~~~~~~~~~~~~

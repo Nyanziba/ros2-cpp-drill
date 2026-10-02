@@ -1,0 +1,4 @@
+strncpy_trap.c: In function ‘main’:
+strncpy_trap.c:14:3: warning: ‘strncpy’ output truncated before terminating nul copying 4 bytes from a string of the same length [-Wstringop-truncation]
+   14 |   strncpy(buf, "test", 4);   /* 4 文字だけコピー。NUL を置く余裕を渡していない */
+      |   ^~~~~~~~~~~~~~~~~~~~~~~

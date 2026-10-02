@@ -1,0 +1,1 @@
+warning: reference to local variable ‘local’ returned [-Wreturn-local-addr]

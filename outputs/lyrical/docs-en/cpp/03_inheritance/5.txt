@@ -1,0 +1,2 @@
+area of circle = 3.14159
+area of shape = 4

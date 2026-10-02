@@ -1,0 +1,65 @@
+basics03_practice.cpp: In lambda function:
+basics03_practice.cpp:46:33: warning: parameter ‘n’ set but not used [-Wunused-but-set-parameter]
+   46 |   auto modify_by_value = [](int n) {
+      |                             ~~~~^
+=== 参照 ===
+
+--- 1. 参照は別名 ---
+int x = 10;
+int & ref = x;
+x = 10
+ref = 10
+&x = 0x7ffffffc0a30
+&ref = 0x7ffffffc0a30 (同じアドレス！)
+
+--- 2. 参照を通して変更 ---
+ref = 20; で x も変わった
+x = 20
+ref = 20
+
+--- 3. 参照は初期化必須 ---
+試験: int & r; (初期化なし) はエラー
+error: ‘r’ declared as reference but not initialized
+（実際に試してみてください）
+
+--- 4. 参照は再束縛できない ---
+int y = 30;
+int & ref2 = x;  // ref2 は x を指す
+ref2 = y;  // これは y の『値』を x に代入！
+結果: x = 30 (y の値 30 が入った)
+     y = 30 (そのまま)
+ref2 は相変わらず x の別名です
+
+--- 5. 参照は null にできない ---
+参照は必ず何らかのオブジェクトを指す
+int & null_ref = nullptr;  // これはエラー
+error: invalid initialization of non-const reference of type ‘int&’ from an rvalue of type ‘std::nullptr_t’
+
+--- 6. 値渡しと参照渡しの違い ---
+before modify_by_value: a = 1
+after modify_by_value:  a = 1 (変わらない)
+
+before modify_by_ref:  b = 1
+after modify_by_ref:   b = 999 (変わった！)
+
+--- 7. const 参照（読み取り専用の別名） ---
+const int & const_ref = original;
+const_ref = 100
+const_ref = 999;  // エラー（const）
+original = 200;  // OK（const_ref 経由ではなく直接）
+const_ref = 200 (original の変化を見る)
+
+--- 8. 一時値への const 参照 ---
+const int & temp_ref = 42;
+temp_ref = 42
+一時値は const 参照なら生きている
+（非 const 参照だとエラー）
+
+--- 9. 関数から参照を返す（ダングリングの危険） ---
+試験: 次のコードはダングリング参照を作る
+const int & dangerous_ref = [](const int & x) -> const int & {
+  int local = x + 1;
+  return local;  // local は関数を抜けると破棄される！
+} (original);
+コンパイラが警告するはずです
+warning: reference to local variable ‘local’ returned

@@ -1,0 +1,6 @@
+same object? 1
+build() const &
+copied buffer moved? 0
+build() &&
+moved buffer moved?  1
+constexpr: 20 5

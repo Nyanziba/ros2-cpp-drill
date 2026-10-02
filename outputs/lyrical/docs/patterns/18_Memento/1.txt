@@ -1,0 +1,2 @@
+値で持った Memento      : 起動時の軌道
+shared_ptr で持った Memento: 調整後の軌道

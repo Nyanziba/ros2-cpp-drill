@@ -1,0 +1,3 @@
+arr = 0x7ffffffc0a00
+&arr[0] = 0x7ffffffc0a00
+p = 0x7ffffffc0a00

@@ -1,0 +1,19 @@
+== Fixed-width integers and overflow ==
+uint8_t: 255 (max)
+After ++: 0 (wrapped to 0)
+
+== Integer promotion ==
+a = 200, b = 100
+a + b = 300 (promoted to int)
+
+== Size of fixed-width types ==
+uint8_t: 1 bytes
+uint16_t: 2 bytes
+uint32_t: 4 bytes
+int8_t: 1 bytes
+int16_t: 2 bytes
+
+== Signedness matters ==
+int8_t(-1) vs uint8_t(255)
+As int: -1 vs 255
+Equal? yes

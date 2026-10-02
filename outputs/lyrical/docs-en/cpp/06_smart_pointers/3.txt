@@ -1,0 +1,4 @@
+alive: use_count = 1
+lock succeeded: 42
+expired = 1
+lock failed (it is gone)

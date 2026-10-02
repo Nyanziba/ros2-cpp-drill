@@ -1,0 +1,1 @@
+error: no match for ‘operator=’ (operand types are ‘const std::string’ {aka ‘const std::__cxx11::basic_string<char>’} and ‘const char [9]’)

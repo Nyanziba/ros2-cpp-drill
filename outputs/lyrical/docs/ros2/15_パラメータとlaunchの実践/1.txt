@@ -1,0 +1,4 @@
+$ ros2 launch speed_param_demo speed_param_launch.py
+[speed_node-1] [INFO] [1790953776.987545714] [speed_node]: max_speed = 2.0
+$ ros2 launch speed_param_demo speed_param_launch.py namespace:=robot1
+[speed_node-1] [INFO] [1790953781.090463299] [robot1.speed_node]: max_speed = 1.0

@@ -1,0 +1,2 @@
+/usr/bin/x86_64-linux-gnu-ld.bfd: file2.o:(.bss+0x0): multiple definition of `counter'; file1.o:(.bss+0x0): first defined here
+collect2: error: ld returned 1 exit status

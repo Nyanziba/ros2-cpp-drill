@@ -1,0 +1,3 @@
+int_p = 0x7ffffffc09d8
+int_p + 1 = 0x7ffffffc09dc
+差分: 4 バイト（sizeof(int) = 4）

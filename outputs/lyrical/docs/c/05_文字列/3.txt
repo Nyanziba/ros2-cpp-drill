@@ -1,0 +1,7 @@
+strcpy_overflow.c: In function ‘main’:
+strcpy_overflow.c:7:5: warning: ‘__builtin_memcpy’ writing 6 bytes into a region of size 5 overflows the destination [-Wstringop-overflow=]
+    7 |     strcpy(buffer, "hello");  // 'h' 'e' 'l' 'l' 'o' '\0' → 6 バイト必要
+      |     ^~~~~~~~~~~~~~~~~~~~~~~
+strcpy_overflow.c:6:10: note: destination object ‘buffer’ of size 5
+    6 |     char buffer[5];
+      |          ^~~~~~

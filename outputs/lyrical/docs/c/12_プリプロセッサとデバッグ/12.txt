@@ -1,0 +1,25 @@
+preprocessor_demo.c: In function ‘main’:
+preprocessor_demo.c:49:28: warning: operation on ‘i’ may be undefined [-Wsequence-point]
+   49 |     int result = SQ_MACRO(i++);
+      |                            ^
+preprocessor_demo.c:11:29: note: in definition of macro ‘SQ_MACRO’
+   11 | #define SQ_MACRO(x) ((x) * (x))
+      |                             ^
+== Macro expansion pitfalls ==
+DOUBLE_BROKEN(1 + 2) = 5 (should be 5, not 6)
+DOUBLE_FIXED(1 + 2) = 6 (should be 6)
+
+== Multi-statement macro ==
+[LOG] Hello
+      (logged)
+
+== assert ==
+assert(1 == 1) passed
+
+== sizeof check ==
+sizeof(CANPayload) = 8 (should be 8)
+
+== SQ(i++) pitfall (undefined behavior) ==
+Before: i = 0
+After SQ_MACRO(i++): i = 2, result = 0
+(Note: SQ_MACRO(i++) is undefined behavior; do not use in real code)

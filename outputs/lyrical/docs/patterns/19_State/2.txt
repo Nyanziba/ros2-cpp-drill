@@ -1,0 +1,19 @@
+transition_check.cpp: In function ‘int main()’:
+transition_check.cpp:34:27: error: no matching function for call to ‘go<Ev::Start>(Faulted&)’
+   34 |   auto bad = go<Ev::Start>(faulted);   // 異常状態から走行へ。書けない
+      |              ~~~~~~~~~~~~~^~~~~~~~~
+transition_check.cpp:34:27: note: there is 1 candidate
+transition_check.cpp:21:34: note: candidate 1: ‘template<Ev E, class From> typename Transition<From, E>::To go(const From&)’
+   21 | typename Transition<From, E>::To go(const From &)
+      |                                  ^~
+transition_check.cpp:21:34: note: template argument deduction/substitution failed:
+transition_check.cpp: In substitution of ‘template<Ev E, class From> typename Transition<From, E>::To go(const From&) [with Ev E = Ev::Start; From = Faulted]’:
+transition_check.cpp:34:27:   required from here
+   34 |   auto bad = go<Ev::Start>(faulted);   // 異常状態から走行へ。書けない
+      |              ~~~~~~~~~~~~~^~~~~~~~~
+transition_check.cpp:21:34: error: invalid use of incomplete type ‘struct Transition<Faulted, Ev::Start>’
+   21 | typename Transition<From, E>::To go(const From &)
+      |                                  ^~
+transition_check.cpp:12:8: note: declaration of ‘struct Transition<Faulted, Ev::Start>’
+   12 | struct Transition;                                          // 宣言のみ。定義しない
+      |        ^~~~~~~~~~

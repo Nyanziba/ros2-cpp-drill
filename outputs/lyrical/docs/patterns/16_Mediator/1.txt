@@ -1,0 +1,7 @@
+--- bad ---
+use_count: mediator=2 colleague=2
+--- bad ここまで ---
+--- good ---
+~GoodMediator
+~GoodColleague
+--- good ここまで ---

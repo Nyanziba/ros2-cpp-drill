@@ -1,0 +1,70 @@
+=== Pointers 2 (arrays and choosing between them) ===
+
+--- 1. Automatic conversion from array to pointer (decay) ---
+int arr[3]{10, 20, 30};
+arr (array name used as a value) = 0x7ffffffc08b8 (pointer to the first element)
+&arr[0] = 0x7ffffffc08b8 (same)
+sizeof(arr) = 12 (whole: 3 × 4 bytes)
+sizeof(ptr_to_arr) = 8 (8 bytes, depends on the architecture)
+
+--- 2. Pointer arithmetic (the address moves by the type size) ---
+int iarr[4]{100, 200, 300, 400};
+int * ip = &iarr[0];
+ip         = 0x7ffffffc08d0 (&iarr[0])
+ip+1       = 0x7ffffffc08d4 (+ 4 bytes, sizeof(int))
+ip+2       = 0x7ffffffc08d8 (+ 8 bytes)
+ip+3       = 0x7ffffffc08dc (+ 12 bytes)
+
+Check the values too:
+*ip        = 100
+*(ip+1)    = 200
+*(ip+2)    = 300
+*(ip+3)    = 400
+
+--- 3. With char*, it moves 1 byte ---
+char carr[4]{'a', 'b', 'c', 'd'};
+char * cp = &carr[0];
+cp         = 0x7ffffffc08e4 (&carr[0])
+cp+1       = 0x7ffffffc08e5 (+ 1 byte, sizeof(char))
+cp+2       = 0x7ffffffc08e6 (+ 2 bytes)
+cp+3       = 0x7ffffffc08e7 (+ 3 bytes)
+
+--- 4. Out-of-bounds access (caught with -fsanitize=address) ---
+(It is safer to run this in a separate program)
+int small[2]{1, 2};
+int * p = &small[0];
+std::cout << *(p+2);  // Out of bounds!
+Compile: g++ -fsanitize=address ...
+Then AddressSanitizer reports it
+
+--- 5. Passing an array to a function (the size is lost) ---
+int arr5[3]{5, 10, 15};
+print_array(arr5, 3);
+Inside the function:
+  arr[0] = 5
+  arr[1] = 10
+  arr[2] = 15
+Note: the size information is lost, so you must pass it separately
+
+--- 6. Use std::string or std::vector (modern C++) ---
+Instead of raw pointers:
+  - std::vector<int> (knows its own size)
+  - std::string (no need to care about null termination)
+are recommended
+
+--- 7. Reference vs pointer: which to use ---
++------------------+----------+----------+----------+
+| Situation        | Ref      | Pointer  | Reason   |
++------------------+----------+----------+----------+
+| Always exists    | ○ best  | △        | Simple   |
+| May be null      | ×       | ○ needed | Can be null |
+| Needs reseating  | ×       | ○ needed | Switching |
+| Array walking    | △       | ○ needed | Arithmetic |
++------------------+----------+----------+----------+
+
+--- 8. Summary: toward smart pointers ---
+In modern C++ you almost never use a raw pointer (int*) directly
+Instead:
+  - std::unique_ptr<T> (one owner)
+  - std::shared_ptr<T> (multiple owners)
+are used (see C++ chapter 6)

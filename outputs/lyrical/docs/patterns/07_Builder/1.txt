@@ -1,0 +1,7 @@
+build_rvalue_only.cpp: In function ‘int main()’:
+build_rvalue_only.cpp:46:36: error: passing ‘MotorConfigBuilder’ as ‘this’ argument discards qualifiers [-fpermissive]
+   46 |   const auto config = builder.build();
+      |                       ~~~~~~~~~~~~~^~
+build_rvalue_only.cpp:36:28: note:   in call to ‘std::optional<MotorConfig> MotorConfigBuilder::build() &&’
+   36 | std::optional<MotorConfig> MotorConfigBuilder::build() &&
+      |                            ^~~~~~~~~~~~~~~~~~

@@ -1,0 +1,10 @@
+config.cpp: In constructor ‘Config::Config(int)’:
+config.cpp:5:3: error: uninitialized const member in ‘const int’ [-fpermissive]
+    5 |   Config(int limit)
+      |   ^~~~~~
+config.cpp:10:13: note: ‘const int Config::limit_’ should be initialized
+   10 |   const int limit_;
+      |             ^~~~~~
+config.cpp:7:12: error: assignment of read-only member ‘Config::limit_’
+    7 |     limit_ = limit;    // ← エラー
+      |     ~~~~~~~^~~~~~~

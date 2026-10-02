@@ -1,0 +1,11 @@
+== static in function ==
+request 1: 1001
+request 2: 1002
+request 3: 1003
+
+== static in class ==
+instances: 1
+instances: 2
+Total instances created: 2
+app: hello
+system: world

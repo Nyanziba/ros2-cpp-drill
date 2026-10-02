@@ -1,0 +1,1 @@
+/usr/include/c++/15/variant:1129:14: error: no type named ‘type’ in ‘struct std::invoke_result<overloaded<main()::<lambda(const SensorV&)> >, const MotorV&>’

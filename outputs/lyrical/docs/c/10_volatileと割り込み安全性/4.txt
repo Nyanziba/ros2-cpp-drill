@@ -1,0 +1,6 @@
+increment_counter:
+	movl	counter(%rip), %eax
+	addl	$1, %eax
+	movl	%eax, counter(%rip)
+	ret
+	.size	increment_counter, .-increment_counter

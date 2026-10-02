@@ -1,0 +1,4 @@
+Round trip succeeded
+original value: 3.14
+bytes: c3 f5 48 40
+recovered value: 3.14

@@ -1,0 +1,19 @@
+wait_without_volatile:
+	pushq	%rbp
+	movq	%rsp, %rbp
+	subq	$16, %rsp
+	movl	$0, -4(%rbp)
+	movl	$0, -8(%rbp)
+	jmp	.L2
+.L3:
+	addl	$1, -8(%rbp)
+.L2:
+	cmpl	$0, -4(%rbp)
+	je	.L3
+	leaq	.LC0(%rip), %rax
+	movq	%rax, %rdi
+	call	puts@PLT
+	nop
+	leave
+	ret
+	.size	wait_without_volatile, .-wait_without_volatile

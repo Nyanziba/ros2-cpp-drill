@@ -1,0 +1,7 @@
+slicing.cpp: In function ‘int main()’:
+slicing.cpp:14:7: error: ‘LegacyDriver’ is an inaccessible base of ‘PrivateAdapter’
+   14 |   tune(priv);           // 通らない
+      |   ~~~~^~~~~~
+slicing.cpp:6:24: note: initializing argument 1 of ‘void tune(LegacyDriver)’
+    6 | void tune(LegacyDriver driver) { driver.setPulse(0); }   // 値渡し
+      |           ~~~~~~~~~~~~~^~~~~~

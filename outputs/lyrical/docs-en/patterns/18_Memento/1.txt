@@ -1,0 +1,2 @@
+Memento held by value      : startup trajectory
+Memento held by shared_ptr: tuned trajectory

@@ -1,0 +1,1 @@
+Extracted: type=1, device=5, cmd=7

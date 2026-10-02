@@ -1,0 +1,6 @@
+Bad  root.use_count = 2
+--- left the scope of Bad ---
+Good root.use_count = 1
+~Good root
+~Good leaf
+--- left the scope of Good ---

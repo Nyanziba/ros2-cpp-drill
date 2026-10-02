@@ -1,0 +1,8 @@
+=== Copy constructor: Value b = a; ===
+Value(10)
+Value copy constructor, x=10
+
+=== Copy assignment: b = a; ===
+Value(20)
+Value(99)
+operator=, x=20

@@ -1,0 +1,12 @@
+== const オブジェクト ==
+r.area() = 12
+access_count: 1
+
+== const 参照パラメータ ==
+area: 12
+
+== const ポインタ ==
+pointee is const: *p1 = 10, can move pointer
+now p1 points to b: *p1 = 20
+pointer is const: *p2 = 10, can modify pointee
+after *p2 = 99: a = 99

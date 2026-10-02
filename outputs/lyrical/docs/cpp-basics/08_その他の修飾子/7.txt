@@ -1,0 +1,14 @@
+=== inline ===
+add_one(10) = 11
+
+=== explicit ===
+enabled
+disabled
+
+=== mutable ===
+value: 42
+value: 42
+access count: 2
+
+=== constexpr ===
+factorial(5) = 120

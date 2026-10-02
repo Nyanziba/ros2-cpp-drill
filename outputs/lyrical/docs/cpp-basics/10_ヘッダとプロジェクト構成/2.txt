@@ -1,0 +1,3 @@
+/usr/bin/x86_64-linux-gnu-ld.bfd: no_definition.o: in function `main':
+no_definition.cpp:(.text+0x17): undefined reference to `add(int, int)'
+collect2: error: ld returned 1 exit status

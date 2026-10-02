@@ -1,0 +1,9 @@
+  allocated 4
+address of a: 0x55555556b020
+copy:
+  copy (with allocation)
+address of b: 0x55555556c050
+move:
+  move (no allocation)
+address of c: 0x55555556b020
+size of a: 0

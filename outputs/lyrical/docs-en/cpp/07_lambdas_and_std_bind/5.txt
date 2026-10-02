@@ -1,0 +1,5 @@
+  x=1
+  x=2
+total=3
+  stored 1
+  stored 2

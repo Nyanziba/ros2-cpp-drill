@@ -1,0 +1,53 @@
+=== Practice: reading declarations ===
+
+1. int x
+   Reading: x is an int
+   x = 10
+
+2. int * p = &x
+   Reading: p is a pointer to int
+   p (address) = 0x7ffffffc08f0
+   *p (pointed-to value) = 10
+   After *p = 20; x also changed: 20
+
+3. const int * q
+   Reading: q is a pointer to (const int)
+   q (address) = 0x7ffffffc08f4
+   *q (pointed-to value, read only) = 100
+   Test: this would be an error, so the line is removed
+   // *q = 99;   <- not allowed
+
+4. int * const r = &val
+   Reading: r is a const (pointer to int)
+   r (address) = 0x7ffffffc08f8
+   *r (pointed-to value) = 50
+   After *r = 60; val also changed: 60
+   Test: r itself cannot be reseated
+   // r = &x;   <- not allowed
+
+5. const int * const s = &val2
+   Reading: s is a const (pointer to const int)
+   s (address) = 0x7ffffffc08fc
+   *s (pointed-to value, read only) = 200
+   Test: neither is allowed
+   // *s = 99;   <- not allowed (the pointed-to value is const)
+   // s = &x;    <- not allowed (the pointer is const)
+
+=== The left-right rule of const ===
+
+const int * and int const * have the same meaning
+  const int * a = &const_val;    // the pointed-to value is const
+  int const * b = &const_val;    // the pointed-to value is const
+  Result: in both, the pointed-to value cannot be changed
+
+int * const means the pointer itself is const
+  int * const c = &val;
+  Result: the pointer itself cannot be reseated
+
+=== Applied: an array of pointers ===
+
+int * array[] = {&v1, &v2, &v3};
+Reading: array is an array of (pointer to int)
+  array[0] = 0x7ffffffc0900 -> *array[0] = 1
+  array[1] = 0x7ffffffc0904 -> *array[1] = 2
+  array[2] = 0x7ffffffc0908 -> *array[2] = 3

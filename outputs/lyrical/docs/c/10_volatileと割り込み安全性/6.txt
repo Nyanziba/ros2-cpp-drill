@@ -1,0 +1,6 @@
+access_uart:
+	movl	1073758212, %eax
+	movl	$65, 1073758208
+	movl	1073758212, %eax
+	ret
+	.size	access_uart, .-access_uart

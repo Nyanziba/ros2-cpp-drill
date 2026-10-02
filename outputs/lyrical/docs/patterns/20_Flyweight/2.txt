@@ -1,0 +1,2 @@
+sizeof(kRom) = 128
+offset = -40.000000

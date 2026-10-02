@@ -1,0 +1,10 @@
+abstract.cpp: In function ‘int main()’:
+abstract.cpp:36:9: error: cannot declare variable ‘s’ to be of abstract type ‘Shape’
+   36 |   Shape s;   // エラー
+      |         ^
+abstract.cpp:6:7: note:   because the following virtual functions are pure within ‘Shape’:
+    6 | class Shape
+      |       ^~~~~
+abstract.cpp:10:18: note:     ‘virtual double Shape::area() const’
+   10 |   virtual double area() const = 0;             // = 0 は「中身は派生が書く」
+      |                  ^~~~

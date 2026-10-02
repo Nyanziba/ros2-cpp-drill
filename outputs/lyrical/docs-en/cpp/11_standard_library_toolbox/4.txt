@@ -1,0 +1,6 @@
+optional_to_int.cpp: In function ‘int main()’:
+optional_to_int.cpp:7:11: error: cannot convert ‘std::optional<int>’ to ‘int’ in initialization
+    7 |   int y = x;  // error
+      |           ^
+      |           |
+      |           std::optional<int>

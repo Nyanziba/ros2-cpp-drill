@@ -1,0 +1,2 @@
+sizeof(my_arr) = 20
+sizeof(my_ptr) = 8

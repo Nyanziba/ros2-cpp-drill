@@ -29,6 +29,8 @@ validation:
 
 theme:
   name: material
+  # 版の切替をページ最上部に出すための上書き（overrides/main.html）
+  custom_dir: overrides
   language: ja
   # Google Fonts を取りに行かせない。オフラインでもそのまま読めるように
   # 外部への通信をゼロにして、システムフォントで描画させます。
@@ -69,6 +71,13 @@ plugins:
 # 言語切替（右上の地球アイコン）。英語版は mkdocs.en.yml で site/en/ に建てる。
 # リンクはページからの相対で解決されるので、site/ から見た各言語のトップ。
 extra:
+  drill_version_label: "ROS 2 の版:"
+  drill_versions:
+    - name: Jazzy
+      link: index.html
+      current: true
+    - name: Lyrical
+      link: lyrical/index.html
   alternate:
     - name: 日本語
       link: index.html
@@ -76,6 +85,11 @@ extra:
     - name: English
       link: en/index.html
       lang: en
+
+# 本文を ROS 2 の版（Jazzy / Lyrical）に合わせて組み立てる。Jazzy 版（このファイル）では
+# <!-- only: lyrical --> の部分を消すだけ。Lyrical 版は mkdocs.lyrical.yml を参照。
+hooks:
+  - hooks/drill_version.py
 
 markdown_extensions:
   - meta

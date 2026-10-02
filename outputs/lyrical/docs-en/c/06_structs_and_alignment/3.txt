@@ -1,0 +1,3 @@
+_Alignof(char) = 1
+_Alignof(int) = 4
+_Alignof(struct unordered) = 4

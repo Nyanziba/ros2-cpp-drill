@@ -1,0 +1,7 @@
+private_call.cpp: In member function ‘virtual void Imu::setup()’:
+private_call.cpp:13:18: error: ‘virtual void Sensor::setup()’ is private within this context
+   13 |     Sensor::setup();     // private なのでエラー。派生から基底版を呼ぶ道は閉じている
+      |     ~~~~~~~~~~~~~^~
+private_call.cpp:5:16: note: declared private here
+    5 |   virtual void setup() { }       // private
+      |                ^~~~~

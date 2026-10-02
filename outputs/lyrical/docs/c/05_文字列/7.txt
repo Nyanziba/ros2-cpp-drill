@@ -1,0 +1,7 @@
+snprintf_truncate.c: In function ‘main’:
+snprintf_truncate.c:7:57: warning: ‘hello world’ directive output truncated writing 11 bytes into a region of size 10 [-Wformat-truncation=]
+    7 |     int written = snprintf(buf, sizeof(buf), "hello world");
+      |                                               ~~~~~~~~~~^
+snprintf_truncate.c:7:19: note: ‘snprintf’ output 12 bytes into a destination of size 10
+    7 |     int written = snprintf(buf, sizeof(buf), "hello world");
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -1,0 +1,12 @@
+[strong]
+  + Table(gyro)
+  same? 1  use_count=3
+  All users are gone
+  - ~Table(gyro)
+  The pool died
+[weak]
+  + Table(gyro)
+  same? 1  use_count=2
+  - ~Table(gyro)
+  All users are gone
+  pool.size()=1

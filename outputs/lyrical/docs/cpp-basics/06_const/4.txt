@@ -1,0 +1,1 @@
+error: passing ‘const Point’ as ‘this’ argument discards qualifiers [-fpermissive]

@@ -1,0 +1,10 @@
+name_clash.cpp: In function ‘int main()’:
+name_clash.cpp:13:5: error: request for member ‘reset’ is ambiguous
+   13 |   a.reset();
+      |     ^~~~~
+name_clash.cpp:4:28: note: candidates are: ‘void LegacyDriver::reset()’
+    4 | struct LegacyDriver { void reset() {} };
+      |                            ^~~~~
+name_clash.cpp:3:68: note:                 ‘void MotorActuator::reset()’
+    3 |                        virtual void set_velocity(double) = 0; void reset() {} };
+      |                                                                    ^~~~~

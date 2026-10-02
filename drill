@@ -714,6 +714,7 @@ def site_page(path):
     """docs/ か docs-en/ の .md に対応する、サイト内の HTML 相対パス。外なら None。
 
     docs/X.md -> X.html、docs-en/X.md -> en/X.html（README.md は index.html）。
+    ROS_DISTRO が lyrical なら、頭に lyrical/ が付く（Lyrical 版のサイト）。
     """
     resolved = path.resolve()
     for source_dir, site_prefix in (("docs", ""), ("docs-en", "en")):
@@ -723,7 +724,8 @@ def site_page(path):
             continue
         html = rel.with_name("index.html") if rel.name == "README.md" \
             else rel.with_suffix(".html")
-        return Path(site_prefix) / html
+        distro_prefix = "lyrical" if SITE_DISTRO == "lyrical" else ""
+        return Path(distro_prefix) / site_prefix / html
     return None
 
 
@@ -767,6 +769,10 @@ def page_url(path):
 
 DOCS_VENV = ROOT / ".venv-docs"
 ENGLISH_MKDOCS_CONFIG = ROOT / "mkdocs.en.yml"
+# Lyrical 版のサイト（site/lyrical/ と site/lyrical/en/）。ROS の公式イメージは中で ROS_DISTRO を
+# 設定するので、Lyrical のコンテナでは Lyrical 版のページを開く。手元（未設定）では Jazzy 版。
+SITE_DISTRO = os.environ.get("ROS_DISTRO", "jazzy")
+LYRICAL_MKDOCS_CONFIGS = (ROOT / "mkdocs.lyrical.yml", ROOT / "mkdocs.lyrical.en.yml")
 
 
 def find_mkdocs():
@@ -824,6 +830,13 @@ def build_site():
                                "  The English site build (site/en/) failed.")))
         if IS_ENGLISH:
             return False
+    # Lyrical 版は Jazzy 版の後に建てる（Jazzy 版の日本語のビルドが site/ を作り直すため）。
+    if SITE_DISTRO == "lyrical":
+        for config in LYRICAL_MKDOCS_CONFIGS:
+            if subprocess.call([mkdocs, "build", "-f", str(config)], cwd=ROOT) != 0:
+                print(red(localized(f"  Lyrical 版（{config.name}）のビルドに失敗しました。",
+                                    f"  The Lyrical site build ({config.name}) failed.")))
+                return False
     print(green(localized("  site/ を作りました。", "  Built site/.")))
     return True
 

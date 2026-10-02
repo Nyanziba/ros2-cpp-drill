@@ -1,0 +1,13 @@
+=================================================================
+==14==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7bfffcbd0028 at pc 0x555555555354 bp 0x7ffffffc0890 sp 0x7ffffffc0880
+READ of size 4 at 0x7bfffcbd0028 thread T0
+    #0 0x555555555353 in main (/w/basics05_oob+0x1353) (BuildId: ce4b6774b70f6466fb22beb5144d9ea6541c1514)
+    #1 0x7ffffeabe600  (/usr/lib/x86_64-linux-gnu/libc.so.6+0x2a600) (BuildId: 066527e430a32768d82741e00b81eebb1a872294)
+    #2 0x7ffffeabe717 in __libc_start_main (/usr/lib/x86_64-linux-gnu/libc.so.6+0x2a717) (BuildId: 066527e430a32768d82741e00b81eebb1a872294)
+    #3 0x555555555144 in _start (/w/basics05_oob+0x1144) (BuildId: ce4b6774b70f6466fb22beb5144d9ea6541c1514)
+
+Address 0x7bfffcbd0028 is located in stack of thread T0 at offset 40 in frame
+    #0 0x555555555218 in main (/w/basics05_oob+0x1218) (BuildId: ce4b6774b70f6466fb22beb5144d9ea6541c1514)
+
+  This frame has 1 object(s):
+    [32, 40) 'arr' (line 5) <== Memory access at offset 40 overflows this variable

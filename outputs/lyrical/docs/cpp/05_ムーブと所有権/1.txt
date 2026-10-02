@@ -1,0 +1,2 @@
+take (size 3)
+after move, size = 3

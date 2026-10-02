@@ -384,7 +384,7 @@ nm -C mp.o | grep timer_callback
 
 </details>
 
-<!-- measure: env=ros files=drill/minimal_publisher.hpp,minimal_publisher.cpp cmd="g++ -std=c++17 -I. $(find /opt/ros/jazzy/include -maxdepth 1 -mindepth 1 -type d -printf '-I%p ') -c minimal_publisher.cpp -o mp.o && nm -C mp.o | grep timer_callback" filter="grep ' T '" -->
+<!-- measure: env=ros files=drill/minimal_publisher.hpp,minimal_publisher.cpp cmd="g++ -std=c++17 -I. $(find /opt/ros/$ROS_DISTRO/include -maxdepth 1 -mindepth 1 -type d -printf '-I%p ') -c minimal_publisher.cpp -o mp.o && nm -C mp.o | grep timer_callback" filter="grep ' T '" -->
 ```
 00000000000004b4 T MinimalPublisher::timer_callback()
 ```

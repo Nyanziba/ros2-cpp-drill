@@ -1,0 +1,9 @@
+12:00:00 [INFO] moving
+~Border(12:00:00)
+~Border([INFO])
+~Plain
+----
+[INFO] 12:00:00 moving
+~Border([INFO])
+~Border(12:00:00)
+~Plain

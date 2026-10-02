@@ -1,0 +1,1 @@
+error: invalid initialization of non-const reference of type ‘int&’ from an rvalue of type ‘std::nullptr_t’

@@ -1,0 +1,2 @@
+by_value: Base
+by_ref:   Derived

@@ -1,0 +1,8 @@
+=== Declaration vs Definition ===
+add(10, 20) = 30
+subtract(20, 10) = 10
+
+=== Translation Units ===
+Each .cpp file is compiled independently.
+The linker combines the object files.
+Use 'g++ -c file.cpp' to compile to .o, then link with other .o files.

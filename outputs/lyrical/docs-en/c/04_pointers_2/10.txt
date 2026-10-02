@@ -1,0 +1,40 @@
+=================================================================
+==20==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7bfffcfd0034 at pc 0x555555556560 bp 0x7ffffffc0600 sp 0x7ffffffc05f0
+READ of size 4 at 0x7bfffcfd0034 thread T0
+    #0 0x55555555655f in out_of_bounds_demo /w/pointer_arithmetic.c:22
+    #1 0x555555556eb7 in main /w/pointer_arithmetic.c:66
+    #2 0x7ffffeeb2600  (/usr/lib/x86_64-linux-gnu/libc.so.6+0x2a600) (BuildId: 066527e430a32768d82741e00b81eebb1a872294)
+    #3 0x7ffffeeb2717 in __libc_start_main (/usr/lib/x86_64-linux-gnu/libc.so.6+0x2a717) (BuildId: 066527e430a32768d82741e00b81eebb1a872294)
+    #4 0x5555555561e4 in _start (/w/pointer_arithmetic_asan+0x21e4) (BuildId: 40261a02ba7d3eb1a69be49d7c964acaef533c3d)
+
+Address 0x7bfffcfd0034 is located in stack of thread T0 at offset 52 in frame
+    #0 0x555555556341 in out_of_bounds_demo /w/pointer_arithmetic.c:17
+
+  This frame has 1 object(s):
+    [32, 52) 'arr' (line 18) <== Memory access at offset 52 overflows this variable
+HINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork
+      (longjmp and C++ exceptions *are* supported)
+SUMMARY: AddressSanitizer: stack-buffer-overflow /w/pointer_arithmetic.c:22 in out_of_bounds_demo
+Shadow bytes around the buggy address:
+  0x7bfffcfcfd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bfffcfcfe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bfffcfcfe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bfffcfcff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bfffcfcff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x7bfffcfd0000: f1 f1 f1 f1 00 00[04]f3 f3 f3 f3 f3 f3 f3 f3 f3
+  0x7bfffcfd0080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bfffcfd0100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bfffcfd0180: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bfffcfd0200: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bfffcfd0280: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9

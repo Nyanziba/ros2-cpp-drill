@@ -1,0 +1,14 @@
+wait_with_volatile:
+	movl	$0, -12(%rsp)
+	.p2align 3
+	.p2align 4
+	.p2align 3
+.L2:
+	movl	-12(%rsp), %eax
+	testl	%eax, %eax
+	je	.L2
+	leaq	.LC0(%rip), %rsi
+	movl	$2, %edi
+	xorl	%eax, %eax
+	jmp	__printf_chk@PLT
+	.size	wait_with_volatile, .-wait_with_volatile

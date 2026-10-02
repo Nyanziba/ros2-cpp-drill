@@ -1,0 +1,12 @@
+In file included from /usr/include/c++/15/memory:80,
+                 from pimpl_bad.cpp:2:
+/usr/include/c++/15/bits/unique_ptr.h: In instantiation of ‘void std::default_delete<_Tp>::operator()(_Tp*) const [with _Tp = LinkStats::Impl]’:
+/usr/include/c++/15/bits/unique_ptr.h:398:17:   required from ‘std::unique_ptr<_Tp, _Dp>::~unique_ptr() [with _Tp = LinkStats::Impl; _Dp = std::default_delete<LinkStats::Impl>]’
+  398 |           get_deleter()(std::move(__ptr));
+      |           ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+pimpl_bad.cpp:4:7:   required from here
+    4 | class LinkStats
+      |       ^~~~~~~~~
+/usr/include/c++/15/bits/unique_ptr.h:90:23: error: invalid application of ‘sizeof’ to incomplete type ‘LinkStats::Impl’
+   90 |         static_assert(sizeof(_Tp)>0,
+      |                       ^~~~~~~~~~~

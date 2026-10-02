@@ -1,0 +1,6 @@
+set_gpio_bit3:
+	movl	gpio(%rip), %eax
+	orl	$8, %eax
+	movl	%eax, gpio(%rip)
+	ret
+	.size	set_gpio_bit3, .-set_gpio_bit3

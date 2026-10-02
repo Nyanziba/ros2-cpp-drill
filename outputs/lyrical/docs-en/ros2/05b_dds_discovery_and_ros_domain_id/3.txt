@@ -1,0 +1,5 @@
+Warning: ROS_AUTOMATIC_DISCOVERY_RANGE=OFF with no ROS_STATIC_PEERS configured.
+No discovery mechanism is available. Results will be empty.
+Either:
+  - Set ROS_STATIC_PEERS to specify peers explicitly, or
+  - Change ROS_AUTOMATIC_DISCOVERY_RANGE to LOCALHOST or SUBNET

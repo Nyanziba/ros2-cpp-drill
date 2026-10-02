@@ -1,0 +1,4 @@
+生存中 use_count = 1
+lock 成功: 42
+expired = 1
+lock 失敗（もう無い）

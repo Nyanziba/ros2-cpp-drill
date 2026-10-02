@@ -1,0 +1,5 @@
+no_literals.cpp: In function ‘int main()’:
+no_literals.cpp:6:16: error: unable to find numeric literal operator ‘operator""ms’
+    6 |   auto delay = 500ms;  // エラー
+      |                ^~~~~
+no_literals.cpp:6:16: note: use ‘-fext-numeric-literals’ to enable more built-in suffixes

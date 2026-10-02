@@ -1,0 +1,9 @@
+override_const.cpp:11:8: error: ‘bool Imu::check(double)’ marked ‘override’, but does not override
+   11 |   bool check(double value) override { return value > 0.0; }   // dropped const. Added override
+      |        ^~~~~
+override_const.cpp:5:16: warning: ‘virtual bool Sensor::check(double) const’ was hidden [-Woverloaded-virtual=]
+    5 |   virtual bool check(double value) const { return value == value; }
+      |                ^~~~~
+override_const.cpp:11:8: note:   by ‘bool Imu::check(double)’
+   11 |   bool check(double value) override { return value > 0.0; }   // dropped const. Added override
+      |        ^~~~~

@@ -1,0 +1,2 @@
+sizeof(data) = 20
+sizeof(arr) = 8

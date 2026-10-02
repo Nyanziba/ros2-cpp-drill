@@ -1,0 +1,35 @@
+try.cpp: In function ‘void pass_by_value(Data)’:
+try.cpp:47:25: warning: unused parameter ‘d’ [-Wunused-parameter]
+   47 | void pass_by_value(Data d) {
+      |                    ~~~~~^
+try.cpp: In function ‘void pass_by_const_ref(const Data&)’:
+try.cpp:51:37: warning: unused parameter ‘d’ [-Wunused-parameter]
+   51 | void pass_by_const_ref(const Data & d) {
+      |                        ~~~~~~~~~~~~~^
+try.cpp: In function ‘void show_returning()’:
+try.cpp:74:8: warning: variable ‘d’ set but not used [-Wunused-but-set-variable]
+   74 |   Data d = create_data();
+      |        ^
+== COPY SEMANTICS ==
+Creating a(10):
+[constructor] x=10
+
+Copy: Data b = a;
+[copy constructor] x=10
+
+Now a and b are independent:
+a: value=10
+b: value=10
+
+== PASSING BY VALUE vs CONST& ==
+Pass by value - creates copy:
+[constructor] x=20
+[copy constructor] x=20
+
+Pass by const& - no copy:
+[constructor] x=30
+
+== RETURNING BY VALUE (C++17) ==
+Call create_data() and assign:
+[constructor] x=40
+Only constructor, no copy or move!

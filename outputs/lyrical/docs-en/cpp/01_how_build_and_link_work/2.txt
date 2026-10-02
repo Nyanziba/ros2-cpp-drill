@@ -1,0 +1,9 @@
+In file included from b.hpp:2,
+                 from main.cpp:3:
+a.hpp:2:8: error: redefinition of ‘struct Point’
+    2 | struct Point { int x; int y; };
+      |        ^~~~~
+In file included from main.cpp:2:
+a.hpp:2:8: note: previous definition of ‘struct Point’
+    2 | struct Point { int x; int y; };
+      |        ^~~~~

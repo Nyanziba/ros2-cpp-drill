@@ -1,0 +1,6 @@
+final_setup.cpp:11:8: error: virtual function ‘virtual void Imu::setup()’ overriding final function
+   11 |   void setup() override { }         // final を差し替えようとした
+      |        ^~~~~
+final_setup.cpp:5:16: note: overridden function is ‘virtual void Sensor::setup()’
+    5 |   virtual void setup() final { }    // ここから先は差し替え禁止
+      |                ^~~~~

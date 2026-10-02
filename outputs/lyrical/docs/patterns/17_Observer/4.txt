@@ -1,0 +1,8 @@
+fn.cpp: In function ‘int main()’:
+fn.cpp:11:13: error: no match for ‘operator==’ (operand types are ‘std::function<void(int)>’ and ‘main()::<lambda(int)>’)
+   11 |     if (*it == cb) { callbacks_.erase(it); break; }   // これを書きたい
+      |         ~~~ ^~ ~~
+      |         |      |
+      |         |      main()::<lambda(int)>
+      |         std::function<void(int)>
+...

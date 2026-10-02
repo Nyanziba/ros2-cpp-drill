@@ -1,0 +1,6 @@
+covariant_clone.cpp:13:30: error: invalid covariant return type for ‘virtual std::unique_ptr<SineSweep> SineSweep::clone() const’
+   13 |   std::unique_ptr<SineSweep> clone() const override    // here
+      |                              ^~~~~
+covariant_clone.cpp:7:37: note: overridden function is ‘virtual std::unique_ptr<Waveform> Waveform::clone() const’
+    7 |   virtual std::unique_ptr<Waveform> clone() const = 0;
+      |                                     ^~~~~

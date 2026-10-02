@@ -1,0 +1,3 @@
+/usr/include/c++/15/bits/predefined_ops.h:45:23: error: no match for ‘operator<’ (operand types are ‘Point’ and ‘Point’)
+/usr/include/c++/15/bits/predefined_ops.h:98:22: error: no match for ‘operator<’ (operand types are ‘Point’ and ‘Point’)
+/usr/include/c++/15/bits/predefined_ops.h:69:22: error: no match for ‘operator<’ (operand types are ‘Point’ and ‘Point’)

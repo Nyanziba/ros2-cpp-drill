@@ -1,0 +1,2 @@
+accel = 3
+speed = 10

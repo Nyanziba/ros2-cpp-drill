@@ -1,0 +1,5 @@
+node (kind lost)
+node (kind lost)
+sensor 11800mV
+motor fault=3
+sizeof(NodeV) = 8

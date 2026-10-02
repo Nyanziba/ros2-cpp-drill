@@ -1,0 +1,3 @@
+NULL 関数ポインタを呼び出します...
+Segmentation fault
+Exit code: 139

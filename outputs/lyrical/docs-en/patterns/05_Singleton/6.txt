@@ -1,0 +1,2 @@
+main finished
+[log alive=1] Closed the Uart

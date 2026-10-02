@@ -1,0 +1,12 @@
+no_guide.cpp: In function ‘int main()’:
+no_guide.cpp:26:89: error: class template argument deduction failed:
+   26 |       [](const MotorSample & m) { std::cout << "motor fault=" << m.fault_bits << "\n"; }},
+      |                                                                                         ^
+no_guide.cpp:26:89: error: no matching function for call to ‘overloaded(main()::<lambda(const SensorSample&)>, main()::<lambda(const MotorSample&)>)’
+no_guide.cpp:26:89: note: there are 2 candidates
+no_guide.cpp:12:8: note: candidate 1: ‘template<class ... Ts> overloaded() -> overloaded<Ts>’
+   12 | struct overloaded : Ts ...
+      |        ^~~~~~~~~~
+no_guide.cpp:12:8: note: candidate expects 0 arguments, 2 provided
+no_guide.cpp:12:8: note: candidate 2: ‘template<class ... Ts> overloaded(overloaded<Ts>) -> overloaded<Ts>’
+no_guide.cpp:12:8: note: candidate expects 1 argument, 2 provided

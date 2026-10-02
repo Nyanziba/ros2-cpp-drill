@@ -1,0 +1,8 @@
+note: declared here
+error: use of deleted function ‘MinimalPublisher::MinimalPublisher(const MinimalPublisher&)’
+note: ‘MinimalPublisher::MinimalPublisher(const MinimalPublisher&)’ is implicitly deleted because the default definition would be ill-formed:
+error: use of deleted function ‘rclcpp::Node::Node(const rclcpp::Node&)’
+note: declared here
+note: in definition of macro ‘RCLCPP_DISABLE_COPY’
+note: use ‘-fdiagnostics-all-candidates’ to display considered candidates
+note: use ‘-fdiagnostics-all-candidates’ to display considered candidates

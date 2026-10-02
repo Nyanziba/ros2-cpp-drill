@@ -1,0 +1,47 @@
+=== スコープと寿命 ===
+
+--- 1. ブロックスコープ ---
+[ctor] a created
+a is alive in inner block
+[dtor] a destroyed
+a is now dead (exited block)
+
+--- 2. 生成順と破棄順（逆順） ---
+[ctor] x created
+[ctor] y created
+[ctor] z created
+x, y, z all alive here
+[dtor] z destroyed
+z was destroyed (reverse order: z -> y -> x)
+[dtor] y destroyed
+y was destroyed
+[dtor] x destroyed
+x was destroyed
+
+--- 3. return により破棄される ---
+[ctor] before_return created
+about to return...
+[dtor] before_return destroyed
+before was destroyed when block ended
+
+--- 4. シャドーイング（内側の変数が外側を隠す） ---
+outer x = 1
+inner x = 2
+back to outer x = 1
+
+--- 5. 複数変数の逆順破棄 ---
+[ctor] first created
+[ctor] second created
+[ctor] third created
+all three alive here
+[dtor] third destroyed
+[dtor] second destroyed
+[dtor] first destroyed
+destroyed in reverse: third, second, first
+
+--- 6. 関数スコープ ---
+calling function:
+[ctor] func_local created
+inside function
+[dtor] func_local destroyed
+function returned, func_local was destroyed

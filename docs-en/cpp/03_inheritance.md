@@ -335,7 +335,7 @@ g++ -std=c++17 -I. -c minimal_publisher.cpp -o mp.o   # the rclcpp include paths
 
 </details>
 
-<!-- measure: env=ros files=drill/minimal_publisher.hpp,minimal_publisher.cpp cmd="g++ -std=c++17 -I. $(find /opt/ros/jazzy/include -maxdepth 1 -mindepth 1 -type d -printf '-I%p ') -c minimal_publisher.cpp -o mp.o" filter="grep -oE '(error|note):.*'" -->
+<!-- measure: env=ros files=drill/minimal_publisher.hpp,minimal_publisher.cpp cmd="g++ -std=c++17 -I. $(find /opt/ros/$ROS_DISTRO/include -maxdepth 1 -mindepth 1 -type d -printf '-I%p ') -c minimal_publisher.cpp -o mp.o" filter="grep -oE '(error|note):.*'" -->
 ```
 error: no matching function for call to ‘rclcpp::Node::Node()’
 note: candidate: ‘rclcpp::Node::Node(const rclcpp::Node&, const std::string&)’
@@ -852,7 +852,7 @@ g++ -std=c++17 -I. -c minimal_publisher.cpp -o mp.o   # the rclcpp include paths
 
 </details>
 
-<!-- measure: env=ros files=drill/minimal_publisher.hpp,minimal_publisher.cpp cmd="g++ -std=c++17 -I. $(find /opt/ros/jazzy/include -maxdepth 1 -mindepth 1 -type d -printf '-I%p ') -c minimal_publisher.cpp -o mp.o" filter="grep -oE '(error|note):.*'" -->
+<!-- measure: env=ros files=drill/minimal_publisher.hpp,minimal_publisher.cpp cmd="g++ -std=c++17 -I. $(find /opt/ros/$ROS_DISTRO/include -maxdepth 1 -mindepth 1 -type d -printf '-I%p ') -c minimal_publisher.cpp -o mp.o" filter="grep -oE '(error|note):.*'" -->
 ```
 error: use of deleted function ‘MinimalPublisher::MinimalPublisher(const MinimalPublisher&)’
 note: ‘MinimalPublisher::MinimalPublisher(const MinimalPublisher&)’ is implicitly deleted because the default definition would be ill-formed:
