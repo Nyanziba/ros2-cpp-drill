@@ -21,6 +21,12 @@ use_directory_urls: false
 # 設定してもアセットのパスは相対（../assets/...）のままなので、
 # zip を展開してローカルで開いても CSS も JS も読めます（mkdocs 1.6 で確認）。
 
+# 見出しアンカー（#...）の不一致も警告にする。既定は INFO なので、
+# 指定しないと --strict でも落ちない（mkdocs 1.6）。
+validation:
+  links:
+    anchors: warn
+
 theme:
   name: material
   language: ja
