@@ -115,5 +115,5 @@ ros2 action send_goal /fibonacci example_interfaces/action/Fibonacci "{order: 5}
 
 - 公式: [Writing an action server and client (C++)](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Writing-an-Action-Server-Client/Cpp.html)
 - 公式: [Creating an action](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Creating-an-Action.html)
-- ローカルの実装例: `/opt/ros/jazzy/share/action_tutorials_cpp/`
+- 公式の実装例（ros2/demos の action_tutorials_cpp）: <https://github.com/ros2/demos/tree/rolling/action_tutorials/action_tutorials_cpp>
 - 仕組みの解説: [docs/rclcpp-の設計思想.md](../../docs/rclcpp-の設計思想.md)

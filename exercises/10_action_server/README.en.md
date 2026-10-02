@@ -113,5 +113,5 @@ If you stop the sending with `Ctrl-C`, it becomes a cancel request, and the serv
 
 - Official: [Writing an action server and client (C++)](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Writing-an-Action-Server-Client/Cpp.html)
 - Official: [Creating an action](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Creating-an-Action.html)
-- Local example implementation: `/opt/ros/jazzy/share/action_tutorials_cpp/`
+- Official example implementation (action_tutorials_cpp in ros2/demos): <https://github.com/ros2/demos/tree/rolling/action_tutorials/action_tutorials_cpp>
 - How it works: [docs-en/rclcpp_design_philosophy.md](../../docs-en/rclcpp_design_philosophy.md)
