@@ -574,4 +574,4 @@ and that the variant types satisfy `static_assert(!std::is_polymorphic_v<...>)`
 
 ---
 
-Previous: [12. Decorator](12_Decorator.md) / Next: 14. Chain of Responsibility (coming soon)
+Previous: [12. Decorator](12_Decorator.md) / Next: [14. Chain of Responsibility](14_ChainOfResponsibility.md)

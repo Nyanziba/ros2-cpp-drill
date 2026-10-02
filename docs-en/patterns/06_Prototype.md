@@ -263,7 +263,7 @@ PulseTrain b = a;      // The "value" of pattern_ is copied = two objects point 
                        // Both destructors call delete[] = double free
 ```
 
-If you run it on your machine, **it compiles with zero warnings, and crashes with SIGABRT at run time** (exit code 133).
+If you run it on your machine, **it compiles with zero warnings, and crashes at run time** (SIGABRT, exit code 134 with g++ on Linux; SIGTRAP, exit code 133 with Apple clang on macOS).
 This is a way of breaking that cannot happen in Java.
 
 A `std::unique_ptr` member **makes the language stop this.**
@@ -546,7 +546,7 @@ There is almost no case where you look for `clone()`.
 | --- | --- |
 | `error: virtual function 'clone' has a different return type` | You tried to use a covariant return type with `unique_ptr`. Use the NVI version of 6.3 |
 | You made a copy, but changing the original also changes the copy | Shallow copy. The contents of the pointer member are not copied |
-| SIGABRT at run time (exit code 133) | Double free of a raw pointer member. Use `unique_ptr` |
+| Crash at run time (SIGABRT, exit code 134; SIGTRAP, exit code 133 with clang on macOS) | Double free of a raw pointer member. Use `unique_ptr` |
 | You called `clone()` but `name()` returns the base one | `do_clone()` does `new` of the base. Use `new Derived(*this)` |
 | You took it by value and the derived information disappeared | Slicing. Make the base an abstract class, or make the copy `protected` |
 | You wrote the copy constructor and the move stopped working | Rule of Five. State the move explicitly with `= default` |
@@ -586,4 +586,4 @@ They also use `static_assert` to check that classes that should not be copyable 
 
 ---
 
-Previous: [5. Singleton](05_Singleton.md) / Next: 7. Builder (coming soon)
+Previous: [5. Singleton](05_Singleton.md) / Next: [7. Builder](07_Builder.md)

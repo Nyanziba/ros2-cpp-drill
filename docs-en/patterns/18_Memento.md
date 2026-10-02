@@ -501,4 +501,4 @@ and that the ring buffer drops the oldest items first when it exceeds the capaci
 
 ---
 
-Previous: [17. Observer](17_Observer.md) / Next: 19. State (coming soon)
+Previous: [17. Observer](17_Observer.md) / Next: [19. State](19_State.md)

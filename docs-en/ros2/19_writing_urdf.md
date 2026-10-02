@@ -171,7 +171,7 @@ mkdir my_robot_description/urdf
 
 Details:
 
-Create `my_robot_description/urdf/my_robot.urdf`. It has the cart body, the left and right wheels, and a caster, as four links.
+Create `my_robot_description/urdf/my_robot.urdf`. It has the cart body and the left and right wheels, as three links (the caster is added in the practice problem below).
 
 ```xml
 <?xml version="1.0"?>

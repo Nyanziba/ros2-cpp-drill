@@ -551,4 +551,4 @@ They also use `static_assert` to check that "the products of the template versio
 
 ---
 
-Previous: [7. Builder](07_Builder.md) / Next: 9. Bridge (coming soon)
+Previous: [7. Builder](07_Builder.md) / Next: [9. Bridge](09_Bridge.md)

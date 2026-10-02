@@ -611,4 +611,4 @@ The tests check
 
 ---
 
-Previous: [20. Flyweight](20_Flyweight.md) / Next: 22. Command (coming soon)
+Previous: [20. Flyweight](20_Flyweight.md) / Next: [22. Command](22_Command.md)

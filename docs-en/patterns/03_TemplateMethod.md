@@ -607,4 +607,4 @@ Check this against change 3 in 3.1.
 
 ---
 
-Previous: [2. Adapter](02_Adapter.md) / Next: 4. Factory Method (coming soon)
+Previous: [2. Adapter](02_Adapter.md) / Next: [4. Factory Method](04_FactoryMethod.md)

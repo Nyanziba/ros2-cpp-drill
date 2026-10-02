@@ -943,4 +943,4 @@ There are 10 tests. They check not only that notifications arrive, but also that
 
 ---
 
-Previous: [16. Mediator](16_Mediator.md) / Next: 18. Memento (coming soon)
+Previous: [16. Mediator](16_Mediator.md) / Next: [18. Memento](18_Memento.md)

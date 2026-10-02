@@ -153,7 +153,7 @@ by_value.push_back(Check{100});            // it compiles
 by_value[0].size();                        // ?
 ```
 
-Measured result (we run the whole program in 11.9).
+Measured result (we run the whole program in 11.8).
 
 ```
 vector<Entry>            : 0
@@ -240,7 +240,7 @@ struct Good
 };
 ```
 
-This is the result of measuring with logs in the destructors (the code is in the second half of 11.9).
+This is the result of measuring with logs in the destructors (the code is in the second half of 11.8).
 
 ```
 Bad  root.use_count = 2
@@ -319,7 +319,7 @@ class Group;
 ```
 
 If you hold the children in a `std::tuple`, you can do recursive aggregation with zero virtual functions and zero dynamic allocation.
-It works only when the shape of the tree is decided at compile time, but it is powerful on microcontrollers (11.8).
+It works only when the shape of the tree is decided at compile time, but it is powerful on microcontrollers (11.9).
 
 ## 11.8 Try it yourself
 
@@ -623,4 +623,4 @@ You do not write a single `delete`. If you feel like writing one, the design is 
 
 ---
 
-Previous: [10. Strategy](10_Strategy.md) / Next: 12. Decorator (coming soon)
+Previous: [10. Strategy](10_Strategy.md) / Next: [12. Decorator](12_Decorator.md)

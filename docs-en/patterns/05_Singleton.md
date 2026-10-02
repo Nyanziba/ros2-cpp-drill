@@ -746,4 +746,4 @@ prohibited by `static_assert`, that the constructor runs only once, and that
 
 ---
 
-Previous: [4. Factory Method](04_FactoryMethod.md) / Next: 6. Prototype (coming soon)
+Previous: [4. Factory Method](04_FactoryMethod.md) / Next: [6. Prototype](06_Prototype.md)

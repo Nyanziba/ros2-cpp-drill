@@ -806,4 +806,4 @@ What happens if you delete them is what you confirmed in 9.5.
 
 ---
 
-Previous: [8. Abstract Factory](08_AbstractFactory.md) / Next: 10. Strategy (coming soon)
+Previous: [8. Abstract Factory](08_AbstractFactory.md) / Next: [10. Strategy](10_Strategy.md)

@@ -156,7 +156,7 @@ int main()
 
 [⚠ See this error in your browser (gcc 13.3)](https://godbolt.org/z/98ffMj7M1)
 
-As we saw in the previous chapter, this gives an 84-line error, and it is 1 line if you narrow it down with `grep "error:"`.
+As we saw in the previous chapter, this gives a 78-line error, and it is 3 lines (all with the same cause) if you narrow it down with `grep "error:"`. One of those lines is this one.
 
 ```
 error: no match for ‘operator<’ (operand types are ‘Point’ and ‘Point’)
