@@ -27,6 +27,37 @@ ID は "01" でも "01_publisher" でも "publisher" でも構いません。
 zsh の場合は ./drill completion zsh の出力を使ってください。
 """
 
+# DRILL_LANG=en のときに ./drill --help で出す英語版。
+HELP_EN = """The runner for the ROS 2 drill (ros2-drill).
+
+It builds each exercise with colcon and runs its tests (gtest for C++, pytest for
+launch/YAML files) to decide pass or fail.
+
+Usage:
+    ./drill list             Show all exercises and your progress
+    ./drill run [ID]         Build and test an exercise (default: the next unfinished one)
+    ./drill watch [ID]       Re-run the tests automatically when you save
+    ./drill hint ID          Show hints
+    ./drill doc ID           Show the official documentation pages for an exercise
+    ./drill read [ID]        Open the matching lecture notes
+                             --web   Open in a browser (offers to build the site if missing)
+                             --build Rebuild the site, then open it in a browser
+    ./drill solution ID      Show the solution
+    ./drill reset ID         Restore an exercise to its starting state
+    ./drill verify           Test all exercises in order
+    ./drill completion [SH]  Print the tab completion script (bash / zsh)
+
+ID can be "01", "01_publisher" or "publisher".
+
+To enable tab completion, add this line to ~/.bashrc:
+
+    source /path/to/ros2-drill/completion/drill.bash
+
+For zsh, use the output of ./drill completion zsh.
+
+Set DRILL_LANG=en to get English output (for example: DRILL_LANG=en ./drill list).
+"""
+
 import json
 import os
 import shutil
@@ -41,6 +72,10 @@ EXERCISES_DIR = ROOT / "exercises"
 SOLUTIONS_DIR = ROOT / "solutions"
 TEMPLATES_DIR = ROOT / "templates"
 CONFIG = ROOT / "exercises.json"
+
+# DRILL_LANG=en で出力を英語にする。LANG は見ない（Docker の C.UTF-8 などで
+# 日本語の受講者が突然英語になるのを避けるため）。
+IS_ENGLISH = os.environ.get("DRILL_LANG", "").lower().startswith("en")
 
 MARKER = "I AM NOT DONE"
 GTEST_TARGET = "test_exercise"
@@ -88,8 +123,20 @@ def cyan(t):
     return _c("36", t)
 
 
+def localized(japanese, english):
+    """利用者向けの文言を言語に合わせて選ぶ。"""
+    return english if IS_ENGLISH else japanese
+
+
+def field(exercise, key, default=None):
+    """課題の項目を返す。英語モードでは <key>_en があればそちらを使う。"""
+    if IS_ENGLISH and f"{key}_en" in exercise:
+        return exercise[f"{key}_en"]
+    return exercise.get(key, default)
+
+
 def die(msg):
-    print(red(f"エラー: {msg}"), file=sys.stderr)
+    print(red(f"{localized('エラー', 'Error')}: {msg}"), file=sys.stderr)
     sys.exit(1)
 
 
@@ -115,7 +162,7 @@ def rule(title):
 
 def load_exercises():
     if not CONFIG.exists():
-        die(f"{CONFIG} が見つかりません。")
+        die(localized(f"{CONFIG} が見つかりません。", f"{CONFIG} not found."))
     return json.loads(CONFIG.read_text(encoding="utf-8"))["exercises"]
 
 
@@ -134,7 +181,7 @@ def lecture_ref(ex):
     Docs と Drill を 1 対 1 で対応させているので、課題の進捗がそのまま
     「どこまで読んだか」の目安になる。list と doc の両方から使う。
     """
-    lecture = ex.get("lecture") or []
+    lecture = field(ex, "lecture") or []
     if not lecture:
         return None
     ref = lecture[0]
@@ -188,10 +235,15 @@ def resolve(exercises, token):
         if len(matches) == 1:
             return matches[0]
         if len(matches) > 1:
-            die(
-                f"課題の指定が曖昧です: " + ", ".join(m["id"] for m in matches) +
-                "\n       もっと詳しく指定してください（例: " + short_id(matches[0]) + "）")
-    die(f"課題 '{token}' が見つかりません。./drill list で一覧を確認してください。")
+            candidates = ", ".join(m["id"] for m in matches)
+            die(localized(
+                f"課題の指定が曖昧です: {candidates}\n"
+                f"       もっと詳しく指定してください（例: {short_id(matches[0])}）",
+                f"The exercise is ambiguous: {candidates}\n"
+                f"       Please be more specific (for example: {short_id(matches[0])})"))
+    die(localized(
+        f"課題 '{token}' が見つかりません。./drill list で一覧を確認してください。",
+        f"Exercise '{token}' not found. Run ./drill list to see all exercises."))
 
 
 # ---------------------------------------------------------------- ROS 環境
@@ -232,10 +284,11 @@ def ros_run(argv, capture=True, overlay=None):
     if not env.get("ROS_DISTRO"):
         setup = find_ros_setup()
         if setup is None:
-            die(
+            die(localized(
                 "ROS 2 が見つかりません。\n"
-                "  source /opt/ros/jazzy/setup.bash を実行してから、もう一度お試しください。"
-            )
+                "  source /opt/ros/jazzy/setup.bash を実行してから、もう一度お試しください。",
+                "ROS 2 not found.\n"
+                "  Run source /opt/ros/jazzy/setup.bash and try again."))
         prelude.append(str(setup))
     if overlay is not None and Path(overlay).exists():
         prelude.append(str(overlay))
@@ -262,27 +315,37 @@ BUILD_ARGS = ["--executor", "sequential", "--parallel-workers", "1"]
 
 def build(ex):
     """課題をビルドする。成功したら True。"""
-    print(dim("  ビルド中..."), flush=True)
+    print(dim(localized("  ビルド中...", "  Building...")), flush=True)
     code, out = ros_run(
         ["colcon", "build", "--packages-select", ex["package"]] + BUILD_ARGS)
     if code != 0:
-        print(red("  ✗ ビルドに失敗しました"))
+        print(red(localized("  ✗ ビルドに失敗しました", "  ✗ Build failed")))
         print()
         if any(rel.endswith((".msg", ".srv", ".action")) for rel in ex["sources"]):
-            print(yellow("  この課題は、インターフェース定義（.msg / .srv）が未完成のうちは"))
-            print(yellow("  ビルドが通りません。定義したフィールドが C++ の型に生えないので、"))
-            print(yellow("  「has no member named ...」というエラーが大量に出ます。"))
-            print(yellow("  まず定義ファイルを書いてください。エラーの数は気にしなくて大丈夫です。"))
+            print(yellow(localized(
+                "  この課題は、インターフェース定義（.msg / .srv）が未完成のうちは\n"
+                "  ビルドが通りません。定義したフィールドが C++ の型に生えないので、\n"
+                "  「has no member named ...」というエラーが大量に出ます。\n"
+                "  まず定義ファイルを書いてください。エラーの数は気にしなくて大丈夫です。",
+                "  This exercise does not build until the interface definition (.msg / .srv)\n"
+                "  is finished. The fields do not exist in the C++ types yet, so you will\n"
+                "  see many \"has no member named ...\" errors.\n"
+                "  Write the definition file first. Do not worry about the number of errors.")))
             print()
         lines = out.splitlines()
         head = lines[:40]
         for line in head:
             print("  " + line)
         if len(lines) > len(head):
-            print(dim(f"  … 以下 {len(lines) - len(head)} 行省略（全文は log/latest_build/ にあります）"))
+            print(dim(localized(
+                f"  … 以下 {len(lines) - len(head)} 行省略（全文は log/latest_build/ にあります）",
+                f"  ... {len(lines) - len(head)} more lines omitted (full log: log/latest_build/)")))
         print()
-        print(dim("  まずはビルドを通すところから。型名やセミコロンを確認しましょう。"))
-        print(dim("  「undefined reference」が出ている場合は、関数の中身が空のままです。"))
+        print(dim(localized(
+            "  まずはビルドを通すところから。型名やセミコロンを確認しましょう。\n"
+            "  「undefined reference」が出ている場合は、関数の中身が空のままです。",
+            "  First, make the build pass. Check type names and semicolons.\n"
+            "  If you see \"undefined reference\", a function body is still empty.")))
         return False
     return True
 
@@ -293,7 +356,7 @@ def run_tests(ex):
     if kind == "gtest":
         binary = ROOT / "build" / ex["package"] / GTEST_TARGET
         if not binary.exists():
-            die(f"テスト実行ファイルが見つかりません: {binary}")
+            die(localized(f"テスト実行ファイルが見つかりません: {binary}", f"Test executable not found: {binary}"))
         argv = [str(binary)]
         if _COLOR:
             argv.append("--gtest_color=yes")
@@ -316,36 +379,42 @@ def run_tests(ex):
         mutant = ROOT / "build" / ex["package"] / "test_mutant"
         for path in (correct, mutant):
             if not path.exists():
-                die(f"テスト実行ファイルが見つかりません: {path}")
+                die(localized(f"テスト実行ファイルが見つかりません: {path}", f"Test executable not found: {path}"))
 
-        print(dim("  [1/2] 正しい実装に対して、あなたのテストを実行します"))
+        print(dim(localized("  [1/2] 正しい実装に対して、あなたのテストを実行します", "  [1/2] Running your tests against the correct implementation")))
         argv = [str(correct)] + (["--gtest_color=yes"] if _COLOR else [])
         code_correct, _ = ros_run(argv, capture=False)
         passed_correct = code_correct == 0
         print()
 
-        print(dim("  [2/2] わざとバグを入れた実装に対して、同じテストを実行します"))
-        print(dim("        （ここで落ちれば「バグを検出できるテスト」になっています）"))
+        print(dim(localized(
+            "  [2/2] わざとバグを入れた実装に対して、同じテストを実行します\n"
+            "        （ここで落ちれば「バグを検出できるテスト」になっています）",
+            "  [2/2] Running the same tests against an implementation with a bug on purpose\n"
+            "        (If they fail here, your tests can catch the bug.)")))
         code_mutant, out = ros_run([str(mutant)], capture=True)
         detected = code_mutant != 0
         if detected:
-            print(green("  ✓ バグを検出しました"))
+            print(green(localized("  ✓ バグを検出しました", "  ✓ The bug was detected")))
         else:
-            print(red("  ✗ バグ入りの実装なのに、あなたのテストは全部通ってしまいました"))
+            print(red(localized("  ✗ バグ入りの実装なのに、あなたのテストは全部通ってしまいました", "  ✗ The implementation has a bug, but all of your tests passed")))
             print()
             for line in out.splitlines()[-15:]:
                 print("  " + line)
             print()
-            print(dim("  テストが assert していない、または観点が足りていません。"))
-            print(dim("  README の「検出すべきバグ」を読み直してください。"))
+            print(dim(localized(
+                "  テストが assert していない、または観点が足りていません。\n"
+                "  README の「検出すべきバグ」を読み直してください。",
+                "  Your tests do not assert enough, or they miss a case.\n"
+                "  Read the \"bugs to detect\" section of the README again.")))
         return passed_correct and detected
-    die(f"未知のテスト種別: {kind}")
+    die(localized(f"未知のテスト種別: {kind}", f"Unknown test kind: {kind}"))
 
 
 def check(ex, announce=True):
     """1 課題をビルドしてテストする。合格なら True。"""
     if announce:
-        rule(f"{ex['level']} {ex['id']}: {ex['title']}")
+        rule(f"{field(ex, 'level')} {ex['id']}: {field(ex, 'title')}")
     if not build(ex):
         return False
     print()
@@ -355,28 +424,31 @@ def check(ex, announce=True):
 def report(ex, passed, exercises):
     print()
     if not passed:
-        print(red(f"  ✗ 課題 {ex['id']} は未完了です"))
-        print(dim(f"     課題文:   {exercise_dir(ex) / 'README.md'}"))
+        print(red(localized(f"  ✗ 課題 {ex['id']} は未完了です",
+                            f"  ✗ Exercise {ex['id']} is not finished")))
+        readme_name = "README.en.md" if IS_ENGLISH and (exercise_dir(ex) / "README.en.md").exists() \
+            else "README.md"
+        print(dim(f"     {localized('課題文:  ', 'Task:    ')} {exercise_dir(ex) / readme_name}"))
         for src in sources(ex):
-            print(dim(f"     編集する: {src}"))
-        print(dim(f"     ヒント:   ./drill hint {short_id(ex)}"))
+            print(dim(f"     {localized('編集する:', 'Edit:    ')} {src}"))
+        print(dim(f"     {localized('ヒント:  ', 'Hints:   ')} ./drill hint {short_id(ex)}"))
         return
 
-    print(green("  ✓ すべてのテストに合格しました！"))
+    print(green(localized("  ✓ すべてのテストに合格しました！", "  ✓ All tests passed!")))
     remaining = [s for s in sources(ex) if MARKER in s.read_text(encoding="utf-8")]
     if remaining:
         print()
-        print(yellow("  次に進むには、下の行を削除してください:"))
+        print(yellow(localized("  次に進むには、下の行を削除してください:", "  To move on, delete the line below:")))
         print(cyan(f"      // {MARKER}"))
         for src in remaining:
-            print(dim(f"      （{src}）"))
+            print(dim(f"      ({src})" if IS_ENGLISH else f"      （{src}）"))
     else:
         nxt = next((e for e in exercises if not is_done(e)), None)
         if nxt:
-            print(dim(f"     次の課題: ./drill run {short_id(nxt)}   ({nxt['title']})"))
+            print(dim(f"     {localized('次の課題:', 'Next:')} ./drill run {short_id(nxt)}   ({field(nxt, 'title')})"))
         else:
             print()
-            print(green(bold("  🎉 全課題クリアです。おつかれさまでした！")))
+            print(green(bold(localized("  🎉 全課題クリアです。おつかれさまでした！", "  🎉 You finished every exercise. Great work!"))))
 
 
 # ---------------------------------------------------------------- コマンド
@@ -384,14 +456,15 @@ def report(ex, passed, exercises):
 
 def cmd_list(exercises, _args):
     print()
-    print(bold("  ROS 2 練習帳"))
+    print(bold(localized("  ROS 2 練習帳", "  ROS 2 Drill")))
     current = next((e for e in exercises if not is_done(e)), None)
     level = None
     for ex in exercises:
-        if ex["level"] != level:
-            level = ex["level"]
+        if field(ex, "level") != level:
+            level = field(ex, "level")
             print()
-            print(bold(f"  【{level}】") + dim(f"  {ex.get('level_note', '')}"))
+            print(bold(f"  【{level}】" if not IS_ENGLISH else f"  [{level}]")
+                  + dim(f"  {field(ex, 'level_note', '')}"))
         done = is_done(ex)
         if done:
             mark, label = green("✓"), ex["id"]
@@ -399,16 +472,16 @@ def cmd_list(exercises, _args):
             mark, label = yellow("▶"), bold(ex["id"])
         else:
             mark, label = " ", dim(ex["id"])
-        suffix = dim("  ← 今ここ") if ex is current else ""
-        chapter = ex.get("chapter", "")
+        suffix = dim(localized("  ← 今ここ", "  <- you are here")) if ex is current else ""
+        chapter = field(ex, "chapter", "")
         ch = dim(f"[{chapter}]") if chapter else ""
         # label は色付きなのでエスケープを含む。幅計算は素の id で行う。
         id_pad = " " * max(0, 22 - disp_width(ex["id"]))
-        print(f"    {mark} {label}{id_pad} {pad(ex['title'], 34)} {ch}{suffix}")
+        print(f"    {mark} {label}{id_pad} {pad(field(ex, 'title'), 34)} {ch}{suffix}")
     done_count = sum(1 for e in exercises if is_done(e))
     print()
-    print(dim(f"  進捗: {done_count} / {len(exercises)}"))
-    print(dim("  [ ] 内が対応する講習資料の章です。./drill read ID でその章を開けます。"))
+    print(dim(f"  {localized('進捗', 'Progress')}: {done_count} / {len(exercises)}"))
+    print(dim(localized("  [ ] 内が対応する講習資料の章です。./drill read ID でその章を開けます。", "  The text in [ ] is the matching chapter of the lecture notes. Run ./drill read ID to open it.")))
     print()
     return 0
 
@@ -416,7 +489,7 @@ def cmd_list(exercises, _args):
 def cmd_run(exercises, args):
     ex = resolve(exercises, args[0] if args else None)
     if ex is None:
-        print(green("全課題クリア済みです。./drill verify で通しで確認できます。"))
+        print(green(localized("全課題クリア済みです。./drill verify で通しで確認できます。", "You have finished every exercise. Run ./drill verify to test them all in one go.")))
         return 0
     passed = check(ex)
     report(ex, passed, exercises)
@@ -430,49 +503,49 @@ def cmd_verify(exercises, _args):
             failed = ex
             report(ex, False, exercises)
             break
-        print(green(f"\n  ✓ {ex['id']} 合格"))
+        print(green(f"\n  ✓ {ex['id']} {localized('合格', 'passed')}"))
     print()
     if failed:
-        print(red(f"  {failed['id']} で止まりました。"))
+        print(red(localized(f"  {failed['id']} で止まりました。", f"  Stopped at {failed['id']}.")))
         return 1
-    print(green(bold("  全課題のテストに合格しています。")))
+    print(green(bold(localized("  全課題のテストに合格しています。", "  All exercises pass."))))
     print()
     return 0
 
 
 def cmd_hint(exercises, args):
     if not args:
-        die("課題 ID を指定してください（例: ./drill hint 01）")
+        die(localized("課題 ID を指定してください（例: ./drill hint 01）", "Please give an exercise ID (for example: ./drill hint 01)"))
     ex = resolve(exercises, args[0])
-    rule(f"ヒント — {ex['id']}: {ex['title']}")
-    for line in ex.get("hints", ["（ヒントは用意されていません）"]):
+    rule(f"{localized('ヒント', 'Hints')} — {ex['id']}: {field(ex, 'title')}")
+    for line in field(ex, "hints", [localized("（ヒントは用意されていません）", "(No hints are available.)")]):
         print("  " + line)
     print()
-    print(dim(f"  公式ドキュメント: ./drill doc {short_id(ex)}"))
-    print(dim(f"  行き詰まったら:   ./drill solution {short_id(ex)}"))
+    print(dim(f"  {localized('公式ドキュメント:', 'Official docs:   ')} ./drill doc {short_id(ex)}"))
+    print(dim(f"  {localized('行き詰まったら:  ', 'If you are stuck:')} ./drill solution {short_id(ex)}"))
     print()
     return 0
 
 
 def cmd_doc(exercises, args):
     if not args:
-        die("課題 ID を指定してください（例: ./drill doc 01）")
+        die(localized("課題 ID を指定してください（例: ./drill doc 01）", "Please give an exercise ID (for example: ./drill doc 01)"))
     ex = resolve(exercises, args[0])
-    rule(f"参考資料 — {ex['id']}: {ex['title']}")
+    rule(f"{localized('参考資料', 'References')} — {ex['id']}: {field(ex, 'title')}")
 
-    lecture = ex.get("lecture", [])
+    lecture = field(ex, "lecture", [])
     if lecture:
-        print(bold("  対応する講習資料"))
+        print(bold(localized("  対応する講習資料", "  Matching lecture notes")))
         for ref in lecture:
             path = (ROOT / ref["path"]).resolve()
-            mark = "" if path.exists() else dim("  ← 見つかりません")
+            mark = "" if path.exists() else dim(localized("  ← 見つかりません", "  <- not found"))
             print(f"    {ref['title']}{mark}")
             print(cyan(f"      {path}"))
         print()
 
-    docs = ex.get("docs", [])
+    docs = field(ex, "docs", [])
     if docs:
-        print(bold("  公式ドキュメント"))
+        print(bold(localized("  公式ドキュメント", "  Official documentation")))
         for doc in docs:
             print(f"    {doc['title']}")
             print(cyan(f"      {doc['url']}"))
@@ -482,12 +555,12 @@ def cmd_doc(exercises, args):
 
 def cmd_solution(exercises, args):
     if not args:
-        die("課題 ID を指定してください（例: ./drill solution 01）")
+        die(localized("課題 ID を指定してください（例: ./drill solution 01）", "Please give an exercise ID (for example: ./drill solution 01)"))
     ex = resolve(exercises, args[0])
     base = SOLUTIONS_DIR / ex["id"]
     if not base.exists():
-        die(f"解答例が見つかりません: {base}")
-    rule(f"解答例 — {ex['id']}: {ex['title']}")
+        die(localized(f"解答例が見つかりません: {base}", f"Solution not found: {base}"))
+    rule(f"{localized('解答例', 'Solution')} — {ex['id']}: {field(ex, 'title')}")
     for rel in ex["sources"]:
         path = base / rel
         if not path.exists():
@@ -500,33 +573,35 @@ def cmd_solution(exercises, args):
 
 def cmd_reset(exercises, args):
     if not args:
-        die("課題 ID を指定してください（例: ./drill reset 01）")
+        die(localized("課題 ID を指定してください（例: ./drill reset 01）", "Please give an exercise ID (for example: ./drill reset 01)"))
     ex = resolve(exercises, args[0])
     base = TEMPLATES_DIR / ex["id"]
     if not base.exists():
-        die(f"テンプレートが見つかりません: {base}")
-    answer = input(f"{ex['id']} を初期状態に戻します。書きかけのコードは失われます。よろしいですか？ [y/N] ")
+        die(localized(f"テンプレートが見つかりません: {base}", f"Template not found: {base}"))
+    answer = input(localized(
+        f"{ex['id']} を初期状態に戻します。書きかけのコードは失われます。よろしいですか？ [y/N] ",
+        f"This restores {ex['id']} to its starting state. Your unfinished code will be lost. Continue? [y/N] "))
     if answer.strip().lower() not in ("y", "yes"):
-        print("中止しました。")
+        print(localized("中止しました。", "Cancelled."))
         return 1
     for rel in ex["sources"]:
         src, dst = base / rel, exercise_dir(ex) / rel
         if src.exists():
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(src, dst)
-    print(green(f"  {ex['id']} を初期状態に戻しました。"))
+    print(green(localized(f"  {ex['id']} を初期状態に戻しました。", f"  Restored {ex['id']} to its starting state.")))
     return 0
 
 
 def cmd_watch(exercises, args):
     ex = resolve(exercises, args[0] if args else None)
     if ex is None:
-        print(green("全課題クリア済みです。"))
+        print(green(localized("全課題クリア済みです。", "You have finished every exercise.")))
         return 0
     print()
-    print(bold("  watch モード（Ctrl-C で終了）"))
+    print(bold(localized("  watch モード（Ctrl-C で終了）", "  watch mode (Ctrl-C to quit)")))
     for src in sources(ex):
-        print(dim(f"  監視中: {src}"))
+        print(dim(localized(f"  監視中: {src}", f"  Watching: {src}")))
 
     def fingerprint(exercise):
         return tuple(s.stat().st_mtime if s.exists() else 0.0 for s in sources(exercise))
@@ -546,12 +621,12 @@ def cmd_watch(exercises, args):
                     if nxt is None:
                         return 0
                     ex, last = nxt, None
-                    print(dim(f"\n  次の課題に移りました: {nxt['id']}"))
+                    print(dim(localized(f"\n  次の課題に移りました: {nxt['id']}", f"\n  Moving on to the next exercise: {nxt['id']}")))
                     continue
-                print(dim("\n  保存すると自動で再テストします..."))
+                print(dim(localized("\n  保存すると自動で再テストします...", "\n  Tests will run again when you save...")))
             time.sleep(0.5)
     except KeyboardInterrupt:
-        print("\n終了しました。")
+        print(localized("\n終了しました。", "\nStopped."))
         return 0
 
 
@@ -635,8 +710,25 @@ def _emit_candidates(candidates, cur):
         print("\n".join(matched))
 
 
+def site_page(path):
+    """docs/ か docs-en/ の .md に対応する、サイト内の HTML 相対パス。外なら None。
+
+    docs/X.md -> X.html、docs-en/X.md -> en/X.html（README.md は index.html）。
+    """
+    resolved = path.resolve()
+    for source_dir, site_prefix in (("docs", ""), ("docs-en", "en")):
+        try:
+            rel = resolved.relative_to((ROOT / source_dir).resolve())
+        except ValueError:
+            continue
+        html = rel.with_name("index.html") if rel.name == "README.md" \
+            else rel.with_suffix(".html")
+        return Path(site_prefix) / html
+    return None
+
+
 def page_url(path):
-    """docs/ の .md に対応するページの URL を返す。無ければ (None, 理由)。
+    """docs/ か docs-en/ の .md に対応するページの URL を返す。無ければ (None, 理由)。
 
     探す順番:
       1. DRILL_DOCS_URL（自分でサイトを建てている人の指定を最優先）
@@ -646,12 +738,11 @@ def page_url(path):
     MkDocs は use_directory_urls: false で建てているので、.md はそのまま
     .html になります。ただし README.md だけは index.html です。
     """
-    try:
-        rel = path.resolve().relative_to((ROOT / "docs").resolve())
-    except ValueError:
-        return None, f"{path} は docs/ の外にあります"
-    html = rel.with_name("index.html") if rel.name == "README.md" \
-        else rel.with_suffix(".html")
+    page = site_page(path)
+    if page is None:
+        return None, localized(f"{path} は docs/ の外にあります",
+                               f"{path} is outside docs/ and docs-en/")
+    html = page
     href = "/".join(html.parts)
 
     base = os.environ.get("DRILL_DOCS_URL", "").rstrip("/")
@@ -666,13 +757,16 @@ def page_url(path):
         return f"{SITE_URL.rstrip('/')}/{href}", None
 
     # 手元にサイトが無い。別のサイトで配信しているトラックならそちらを開く。
-    if MIRROR_URL and rel.parts and rel.parts[0] in MIRROR_TRACKS:
+    # 英語ページは en/ の下にあるので、トラック名は en/ を除いた先頭で見る。
+    track_parts = html.parts[1:] if html.parts[:1] == ("en",) else html.parts
+    if MIRROR_URL and track_parts and track_parts[0] in MIRROR_TRACKS:
         return f"{MIRROR_URL.rstrip('/')}/{href}", "mirror"
 
-    return None, "サイトがまだありません"
+    return None, localized("サイトがまだありません", "The site has not been built yet")
 
 
 DOCS_VENV = ROOT / ".venv-docs"
+ENGLISH_MKDOCS_CONFIG = ROOT / "mkdocs.en.yml"
 
 
 def find_mkdocs():
@@ -691,35 +785,46 @@ def build_site():
     """
     mkdocs = find_mkdocs()
     if mkdocs is None:
-        print(dim("  mkdocs が無いので .venv-docs/ に用意します（初回だけ・数十秒）"))
+        print(dim(localized("  mkdocs が無いので .venv-docs/ に用意します（初回だけ・数十秒）",
+                            "  mkdocs is missing, so I will set it up in .venv-docs/ (first time only, tens of seconds)")))
         sys.stdout.flush()
         code = subprocess.call([sys.executable, "-m", "venv", str(DOCS_VENV)])
         if code != 0:
             # 失敗すると中途半端なディレクトリが残る。消しておかないと
             # 次回 find_mkdocs が「あるのに動かない」状態を踏む。
             shutil.rmtree(DOCS_VENV, ignore_errors=True)
-            print(red("  仮想環境を作れませんでした。"))
-            print(yellow("  Ubuntu では python3-venv が別パッケージです:"))
+            print(red(localized("  仮想環境を作れませんでした。", "  Could not create a virtual environment.")))
+            print(yellow(localized("  Ubuntu では python3-venv が別パッケージです:",
+                                   "  On Ubuntu, python3-venv is a separate package:")))
             print(yellow("    sudo apt install python3-venv"))
-            print(dim("  入れられない場合は、公開サイトを指定する手もあります:"))
+            print(dim(localized("  入れられない場合は、公開サイトを指定する手もあります:",
+                                "  If you cannot install it, you can point to a published site instead:")))
             print(dim("    DRILL_DOCS_URL=https://example.com/docs ./drill read --web"))
             return False
         req = ROOT / "docs-requirements.txt"
         code = subprocess.call(
             [str(DOCS_VENV / "bin" / "pip"), "install", "-q", "-r", str(req)])
         if code != 0:
-            print(red("  依存のインストールに失敗しました。"))
+            print(red(localized("  依存のインストールに失敗しました。", "  Failed to install the dependencies.")))
             return False
         mkdocs = str(DOCS_VENV / "bin" / "mkdocs")
 
-    print(dim("  サイトをビルドしています..."))
+    print(dim(localized("  サイトをビルドしています...", "  Building the site...")))
     sys.stdout.flush()
     # --strict は付けない。読むために建てるだけなので、リンク切れ 1 つで
     # 読めなくなるほうが困る（CI のほうで --strict を掛けている）。
+    # 順番が重要: 日本語のビルドが site/ を作り直すので、英語（site/en/）は後に建てる。
     if subprocess.call([mkdocs, "build"], cwd=ROOT) != 0:
-        print(red("  ビルドに失敗しました。"))
+        print(red(localized("  日本語版のビルドに失敗しました。", "  The Japanese site build failed.")))
         return False
-    print(green("  site/ を作りました。"))
+    # 英語版の失敗で日本語の利用者まで巻き込まない。英語モードのときだけ失敗扱いにする。
+    if ENGLISH_MKDOCS_CONFIG.exists() and \
+            subprocess.call([mkdocs, "build", "-f", str(ENGLISH_MKDOCS_CONFIG)], cwd=ROOT) != 0:
+        print(yellow(localized("  英語版（site/en/）のビルドに失敗しました。",
+                               "  The English site build (site/en/) failed.")))
+        if IS_ENGLISH:
+            return False
+    print(green(localized("  site/ を作りました。", "  Built site/.")))
     return True
 
 
@@ -751,11 +856,11 @@ def open_in_browser(url, rel_hint=None):
         # site/ はバインドマウントの上にあるので、ホスト側から開ける
         # 相対パスを案内する。
         if rel_hint:
-            print(dim("  コンテナの中なのでブラウザは開けません。"))
-            print(dim("  ホスト側でリポジトリ直下から開いてください:"))
+            print(dim(localized("  コンテナの中なのでブラウザは開けません。", "  You are inside a container, so I cannot open a browser.")))
+            print(dim(localized("  ホスト側でリポジトリ直下から開いてください:", "  On the host, open this from the repository root:")))
             print(cyan(f"    {rel_hint}"))
         else:
-            print(dim("  コンテナの中なのでブラウザは開けません。上の URL を開いてください。"))
+            print(dim(localized("  コンテナの中なのでブラウザは開けません。上の URL を開いてください。", "  You are inside a container, so I cannot open a browser. Open the URL above.")))
         return 0
 
     sys.stdout.flush()          # ブラウザ側が先に何か書いても順番が崩れないように
@@ -766,7 +871,7 @@ def open_in_browser(url, rel_hint=None):
             return 0
     except Exception:
         pass
-    print(dim("  ブラウザを開けませんでした。上の URL を開いてください。"))
+    print(dim(localized("  ブラウザを開けませんでした。上の URL を開いてください。", "  Could not open a browser. Open the URL above.")))
     return 0
 
 
@@ -788,14 +893,15 @@ def cmd_read(exercises, args):
 
     ex = resolve(exercises, rest[0] if rest else None)
     if ex is None:
-        print(green("全課題クリア済みです。"))
+        print(green(localized("全課題クリア済みです。", "You have finished every exercise.")))
         return 0
     ref = lecture_ref(ex)
     if ref is None:
-        die(f"{ex['id']} には対応する講習資料が登録されていません。")
+        die(localized(f"{ex['id']} には対応する講習資料が登録されていません。",
+                      f"No lecture notes are registered for {ex['id']}."))
     title, path, exists = ref
     if not exists:
-        die(f"資料が見つかりません: {path}")
+        die(localized(f"資料が見つかりません: {path}", f"Lecture notes not found: {path}"))
     print(dim(f"  {ex['id']}  →  {title}"))
 
     if web:
@@ -805,28 +911,23 @@ def cmd_read(exercises, args):
         if url is None:
             # 手元にも配信先にも無いトラック。
             print(yellow(f"  {why}"))
-            if ask_yes("いま作りますか？（数十秒）") and build_site():
+            if ask_yes(localized("いま作りますか？（数十秒）", "Build it now? (tens of seconds)")) and build_site():
                 url, why = page_url(path)
             else:
-                print(dim("  作るときは ./drill read --build "
-                          + short_id(ex) + " です。"))
-                print(dim("  公開サイトがあるなら "
-                          "DRILL_DOCS_URL=... を指定してください。"))
+                print(dim(localized(
+                    f"  作るときは ./drill read --build {short_id(ex)} です。",
+                    f"  To build it, run ./drill read --build {short_id(ex)}.")))
+                print(dim(localized(
+                    "  公開サイトがあるなら DRILL_DOCS_URL=... を指定してください。",
+                    "  If you have a published site, set DRILL_DOCS_URL=...")))
         elif why == "mirror":
             print(dim("  " + MIRROR_NOTE))
-            print(dim("  " + MIRROR_NOTE2 + " ./drill read --build "
-                      + short_id(ex) + " で。"))
+            print(dim("  " + MIRROR_NOTE2 + localized(" ./drill read --build ", " Run ./drill read --build ")
+                      + short_id(ex) + localized(" で。", ".")))
         if url:
-            rel = None
-            if url.startswith("file://"):
-                try:
-                    rel = "site/" + str(Path(path).resolve()
-                                        .relative_to((ROOT / "docs").resolve())
-                                        .with_suffix(".html"))
-                except ValueError:
-                    rel = None
-            return open_in_browser(url, rel)
-        print(dim("  代わりに手元の Markdown を開きます。"))
+            page = site_page(path) if url.startswith("file://") else None
+            return open_in_browser(url, f"site/{page}" if page else None)
+        print(dim(localized("  代わりに手元の Markdown を開きます。", "  I will open the local Markdown file instead.")))
         print()
 
     print(cyan(f"  {path}"))
@@ -879,7 +980,8 @@ def cmd_completion(_exercises, args):
     if shell == "zsh":
         print(ZSH_COMPLETION, end="")
         return 0
-    die(f"未知のシェル: {shell}（bash または zsh を指定してください）")
+    die(localized(f"未知のシェル: {shell}（bash または zsh を指定してください）",
+              f"Unknown shell: {shell} (use bash or zsh)"))
 
 
 COMMANDS = {
@@ -899,12 +1001,12 @@ COMMANDS = {
 
 def main(argv):
     if argv and argv[0] in ("-h", "--help", "help"):
-        print(__doc__)
+        print(HELP_EN if IS_ENGLISH else __doc__)
         return 0
     name = argv[0] if argv else "list"
     if name not in COMMANDS:
-        print(__doc__)
-        die(f"不明なコマンド: {name}")
+        print(HELP_EN if IS_ENGLISH else __doc__)
+        die(localized(f"不明なコマンド: {name}", f"Unknown command: {name}"))
     return COMMANDS[name](load_exercises(), argv[1:])
 
 
