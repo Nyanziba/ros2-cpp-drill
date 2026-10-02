@@ -203,7 +203,7 @@ static std::optional<RobotSession> create(StartupConfig config);   // nullopt on
 
 a factory like this and make the constructor `private`; then
 the invariant "if a `RobotSession` exists, startup is done" is guaranteed by the type.
-**For a club library, this one causes fewer accidents.**
+**For a team library, this one causes fewer accidents.**
 The exercise uses the `is_ready()` approach so that the tests can observe the rollback on failure.
 
 ## 15.4 Who owns what
@@ -800,7 +800,7 @@ bool init(int battery_mv)
 }
 ```
 
-What actually happens in club code is "the error recovery code calls `init()` again".
+What actually happens in your team's code is "the error recovery code calls `init()` again".
 **Write one line in the header comment about which specification you chose.**
 
 ## 15.10 Conclusion for ROS 2 (supplement)

@@ -353,7 +353,7 @@ Like `rclcpp` in C++, `rclpy` has a mechanism to run many callbacks concurrently
 
 ## Wrapping up
 
-Even with the same `talker`/`listener` structure, you probably felt that the amount of code and the feel of writing are quite different between the C++ version and the Python version. It is not that one is better. ROS 2 is designed on the premise that you choose between them according to the processing. First, let's become able to write both. If you do not understand something, ask a senior student.
+Even with the same `talker`/`listener` structure, you probably felt that the amount of code and the feel of writing are quite different between the C++ version and the Python version. It is not that one is better. ROS 2 is designed on the premise that you choose between them according to the processing. First, let's become able to write both. If you do not understand something, ask someone experienced or check the official documentation.
 
 Next is [13_custom_interfaces](13_custom_interfaces.md), which covers how to use a message type that you define yourself, instead of an existing type such as `std_msgs/msg/String`.
 

@@ -149,7 +149,7 @@ If the 2 functions share the same state, that is **state that should be in a cla
 A class with `execute()` and `undo()` is shorter than 2 `std::function`s side by side.
 
 **"Always consider the option of not making a class" is the response to section 0.5 (before you use them) of this course.**
-Before you write 5 Command classes in a club library, ask whether you really need undo.
+Before you write 5 Command classes in a team library, ask whether you really need undo.
 
 ## 22.3 The command queue, and who owns it
 
@@ -254,7 +254,7 @@ The most dangerous way is to implement `undo()` as "do nothing" and let it pass 
 - Do not push that command to the history (call `execute()` directly, not `run()`)
 - Add `bool is_undoable() const`, and `CommandHistory::undo()` stops there
 
-For a club library, the former is enough. If you decide at the start, as a design rule, that
+For a team library, the former is enough. If you decide at the start, as a design rule, that
 **"a command that moves real hardware cannot be undone"**, you will not agonize later.
 
 Also, **when the state is huge and the inverse operation is a pain**, the standard way is to use both.

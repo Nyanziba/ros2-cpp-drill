@@ -8,7 +8,7 @@ The assumed environment is Ubuntu 24.04 / ROS 2 Jazzy Jalisco.
 
 ## Lecture goals / how to proceed
 
-- Audience: new members who have finished [05_topics](05_topics.md)
+- Audience: people learning this for the first time who have finished [05_topics](05_topics.md)
 - Time needed: about 1 to 1.5 hours of self-study
 - Prerequisites: you can use the `ros2 topic` commands, and you can start turtlesim
 - Goal: understand how services work, and call any service with `ros2 service call`
@@ -184,7 +184,7 @@ Note that services are blocking. If you implement an operation that takes a long
 
 ## Summary
 
-You have touched the two communication methods, topics and services, so you have covered half of the basic means of communication in ROS 2. Next time, in [07_parameters](07_parameters.md), we cover how to change a node's setting values while it is running. If there is anything you do not understand, ask a senior member.
+You have touched the two communication methods, topics and services, so you have covered half of the basic means of communication in ROS 2. Next time, in [07_parameters](07_parameters.md), we cover how to change a node's setting values while it is running. If there is anything you do not understand, ask someone experienced or check the official documentation.
 
 ### Matching exercise
 

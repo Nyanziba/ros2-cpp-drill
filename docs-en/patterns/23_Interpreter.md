@@ -10,7 +10,7 @@
 
 ## 23.1 First, the decision not to use it
 
-Chapter 23 of the book is an interesting chapter, but **there are almost no cases where you write your own parser in a club library.**
+Chapter 23 of the book is an interesting chapter, but **there are almost no cases where you write your own parser in a team library.**
 Let us get rid of that first.
 
 Before you use Interpreter, ask these 3 questions in order.
@@ -590,7 +590,7 @@ that the `variant` version matches the class version, and even that
 
 ## 23.14 Summary of this chapter
 
-- **First, the decision not to use it.** For settings, use YAML/JSON. There are almost no cases to write your own parser in a club
+- **First, the decision not to use it.** For settings, use YAML/JSON. There are almost no cases to write your own parser in a team
 - What is worth learning is the shape "**evaluate a tree recursively.**" Behavior trees and scene graphs have the same shape
 - A syntax tree is a tree of `std::unique_ptr`. It is **the tree with the simplest ownership**, and you do not need `shared_ptr`
 - **Do not give `parse()` to the node.** If you separate the parser and the AST, the responsibilities split and you can test
@@ -652,7 +652,7 @@ If you had skipped writing them yourself, `std::function` would have stayed just
 
 ### What to do next
 
-When you finish reading, do a **design review of your club's library.** Look at 2 points.
+When you finish reading, do a **design review of your team's library.** Look at 2 points.
 
 1. **Which of these 23 does the current code use?** It has no name, but
    it is actually Strategy or Observer. Once it has a name, reviews get faster

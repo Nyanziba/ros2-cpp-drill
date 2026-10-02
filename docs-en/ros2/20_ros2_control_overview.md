@@ -173,7 +173,7 @@ This article does not give a conclusion on whether to adopt ros2_control on your
 
 ## Conclusion
 
-ros2_control is a mechanism that assumes a URDF exists. If you touch it without that prerequisite, you will get stuck on "why does it not work?", so keep the order and start from [19_writing_urdf](19_writing_urdf.md). If you do not understand something, ask a senior member.
+ros2_control is a mechanism that assumes a URDF exists. If you touch it without that prerequisite, you will get stuck on "why does it not work?", so keep the order and start from [19_writing_urdf](19_writing_urdf.md). If you do not understand something, ask someone experienced or check the official documentation.
 
 Next is [21_sensor_integration](21_sensor_integration.md), which covers how to bring LiDAR and IMU into ROS 2.
 

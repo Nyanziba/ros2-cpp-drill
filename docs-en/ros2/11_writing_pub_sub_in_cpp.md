@@ -282,7 +282,7 @@ Once the talker and the listener work, modify an existing node and write a node 
 
 ## Wrapping up
 
-Pub/sub in C++ is the most basic form for writing a ROS 2 node. The structure of the talker/listener you wrote here (inheriting from Node, create_publisher/create_subscription, registering in the constructor, running with spin) appears again and again in any node you write from now on. If you do not understand something, ask a senior student.
+Pub/sub in C++ is the most basic form for writing a ROS 2 node. The structure of the talker/listener you wrote here (inheriting from Node, create_publisher/create_subscription, registering in the constructor, running with spin) appears again and again in any node you write from now on. If you do not understand something, ask someone experienced or check the official documentation.
 
 Next is [12_writing_pub_sub_in_python](12_writing_pub_sub_in_python.md), where you write the same thing in Python. Compare what is different and what is the same as C++.
 

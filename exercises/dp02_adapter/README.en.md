@@ -4,7 +4,7 @@ Hiroshi Yuki's *Learning Design Patterns in Java*, chapter 2, Adapter. You write
 
 ## Subject
 
-You adapt `LegacyMotorDriver` (a raw driver) written by a senior colleague three years ago
+You adapt `LegacyMotorDriver` (a raw driver) written by a former team member three years ago
 to the team's common interface `MotorActuator` (units are rad/s and rad).
 
 | Role | Class |

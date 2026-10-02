@@ -227,7 +227,7 @@ Integrating point clouds from several LiDARs/cameras on one robot (extrinsic cal
 
 ## Conclusion
 
-In sensor integration, the worst state is "it looks like it works, but it is actually not connected". Make a habit of checking these three in order: the topic is flowing, the frame_id is correct, and tf is connected. If you do not understand something, ask a senior member.
+In sensor integration, the worst state is "it looks like it works, but it is actually not connected". Make a habit of checking these three in order: the topic is flowing, the frame_id is correct, and tf is connected. If you do not understand something, ask someone experienced or check the official documentation.
 
 Next is [22_thinking_about_localization](22_thinking_about_localization.md), where we actually estimate the position using the sensor values prepared here.
 

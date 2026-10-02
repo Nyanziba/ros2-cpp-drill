@@ -164,7 +164,7 @@ as "a place to put code in front of access".
 | Can you use it on a microcontroller? | Costs a vtable | Nothing that costs |
 
 **It depends on "do you need to pass it as the real object?"** If you do not, use the `operator->` version.
-And in club libraries, you usually do not need to.
+And in team libraries, you usually do not need to.
 
 ## 21.3 The `operator->` chain (drill-down) — a rule unique to C++
 

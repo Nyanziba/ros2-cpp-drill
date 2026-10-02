@@ -6,7 +6,7 @@ Last time, in [02_environment_setup](02_environment_setup.md), you built an envi
 
 ## Lecture goals / how to proceed
 
-- Audience: new members who have finished [02_environment_setup](02_environment_setup.md)
+- Audience: people learning this for the first time who have finished [02_environment_setup](02_environment_setup.md)
 - Time needed: 30 to 40 minutes
 - Prerequisites: basic terminal use (you can proceed by copy and paste)
 - Goal: operate turtlesim and check how nodes and topics are connected in rqt_graph
@@ -191,7 +191,7 @@ For services too, this time you only called them from the GUI, and in later lect
 
 ## Summary
 
-turtlesim looks like a toy, but the concepts of nodes, topics, and services you saw here are used consistently all the way to real robot control. Do not rush. Watch how the arrows in rqt_graph behave many times. If something is unclear, ask a senior member.
+turtlesim looks like a toy, but the concepts of nodes, topics, and services you saw here are used consistently all the way to real robot control. Do not rush. Watch how the arrows in rqt_graph behave many times. If something is unclear, ask someone experienced or check the official documentation.
 
 ## References
 

@@ -4,8 +4,8 @@
 
 ## 題材
 
-3 年前の先輩が書いた `LegacyMotorDriver`（生ドライバ）を、
-部内共通インタフェース `MotorActuator`（単位は rad/s と rad）に合わせます。
+3 年前にチームの以前のメンバーが書いた `LegacyMotorDriver`（生ドライバ）を、
+チーム共通インタフェース `MotorActuator`（単位は rad/s と rad）に合わせます。
 
 | 役 | クラス |
 | --- | --- |

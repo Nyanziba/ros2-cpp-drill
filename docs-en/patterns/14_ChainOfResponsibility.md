@@ -196,7 +196,7 @@ In Java, the reference to `tail` remains inside `head`, so the GC does not colle
 
 You may choose the raw-pointer version only when **all handlers are in static storage**
 (the microcontroller version in 14.7 is exactly that). A convention such as "the caller guarantees the lifetime"
-written only in a comment will not be kept in club teamwork.
+written only in a comment will not be kept in team development.
 
 ### (b) Own the next with `unique_ptr`
 
@@ -399,7 +399,7 @@ So the decision is as follows.
 - In **an environment where exceptions can be used (ROS 2 / PC), and the goal is to propagate a fault**, first think about whether a chain of `catch` is enough
 - If **exceptions cannot be used, or you want to treat "handled / not handled" as a value**, write this pattern yourself
 
-Microcontrollers are the latter. That is why this chapter matters for the club.
+Microcontrollers are the latter. That is why this chapter matters for your project.
 
 `std::variant` + `std::visit` is "branching by type", but **it does not pass requests along**
 (overload resolution picks exactly one). The use is different.

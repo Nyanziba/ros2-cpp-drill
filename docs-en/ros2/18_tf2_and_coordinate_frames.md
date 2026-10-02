@@ -177,7 +177,7 @@ Localization is, in the end, "someone keeps publishing the `map` → `odom` tran
 
 ## Conclusion
 
-TF2 is one of the most behind-the-scenes mechanisms in robot software, but almost every function, such as navigation, sensor integration, and arm control, stands on top of TF2. If you get into the habit here of checking "which frames are connected how right now" with `view_frames`, debugging in later articles will be faster. If anything is unclear, ask a senior member.
+TF2 is one of the most behind-the-scenes mechanisms in robot software, but almost every function, such as navigation, sensor integration, and arm control, stands on top of TF2. If you get into the habit here of checking "which frames are connected how right now" with `view_frames`, debugging in later articles will be faster. If anything is unclear, ask someone experienced or check the official documentation.
 
 Next, in [19_writing_urdf](19_writing_urdf.md), we cover how to describe the shape and frame structure of a robot in XML.
 

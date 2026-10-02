@@ -8,17 +8,17 @@ When you finish this article, ROS 2 Jazzy Jalisco will run on your PC (or WSL2),
 
 ## Lecture goals / how to proceed
 
-- Audience: new members who touch ROS 2 for the first time
+- Audience: people touching ROS 2 for the first time
 - Prerequisites: basic Linux command-line use (`cd`, `ls`, `sudo`, and so on)
 - Time needed: about 30 minutes if you already have the environment, 1 to 2 hours (including download time) if you start from installing Ubuntu
-- How to proceed: run the steps in the text from the top, and finish the last check alone. If you get stuck, look at "Common pitfalls" first, and ask a senior member if it is still not fixed.
+- How to proceed: run the steps in the text from the top, and finish the last check alone. If you get stuck, look at "Common pitfalls" first, and if it is still not fixed, ask someone experienced or check the official documentation.
 
 ## Using this as a course
 
 ### Things to prepare
 
-- A USB drive with the Ubuntu 24.04 installer, or a Windows machine for WSL2 (check beforehand whether the club PCs can handle it)
-- An internet connection (`apt install` downloads close to several GB. Avoid times when the club Wi-Fi is slow)
+- A USB drive with the Ubuntu 24.04 installer, or a Windows machine for WSL2 (check beforehand whether the PC you will use can handle it)
+- An internet connection (`apt install` downloads close to several GB. Avoid times when your Wi-Fi is slow)
 - Run through the same steps once on your own PC for checking. Steps sometimes change when versions go up
 
 ### Oral exam (with model answers)
@@ -61,7 +61,7 @@ The OS supported by ROS 2 Jazzy Jalisco is Ubuntu 24.04 (Noble Numbat). First, p
 2. **Ubuntu 24.04 on WSL2 (second choice)**. For people who want to keep using Windows. You can develop on the command line without problems, but the GUI display (WSLg) is sometimes unstable. See "Common pitfalls" below for details.
 3. **Docker (for Mac)**. macOS cannot install ROS 2 directly, so you work in an Ubuntu 24.04 Docker container. You need extra X11 forwarding settings, so for lectures that use the GUI a lot, borrowing a Linux machine can be faster.
 
-Hint: Installing native Ubuntu is easy if you follow the official Ubuntu installer. If you are unsure about partitioning, ask a senior member to check.
+Hint: Installing native Ubuntu is easy if you follow the official Ubuntu installer. If you are unsure about partitioning, ask someone experienced to check.
 
 ### Task 2: Install ROS 2 Jazzy with apt
 
@@ -188,7 +188,7 @@ If you see output that matches the talker's log, such as `I heard: [Hello World:
 
 ### Task: talker/listener works in both terminals
 
-This is the goal of this article. When you have confirmed that the logs above flow in both terminals without problems, report to your instructor.
+This is the goal of this article. When you have confirmed that the logs above flow in both terminals without problems, report to whoever is teaching you, if there is someone.
 
 <details markdown="1"><summary>Answer (steps to check if you are stuck)</summary>
 
@@ -209,7 +209,7 @@ This is the goal of this article. When you have confirmed that the logs above fl
 
 ### About ROS_DOMAIN_ID
 
-By default, `ros2 topic list` and `talker`/`listener` communicate as everyone on the same network belonging to the same "domain". So if several people start `talker` at the same time on the same club Wi-Fi, your nodes may appear mixed with each other.
+By default, `ros2 topic list` and `talker`/`listener` communicate as everyone on the same network belonging to the same "domain". So if several people start `talker` at the same time on the same Wi-Fi, your nodes may appear mixed with each other.
 
 To avoid this, you can separate domains with the environment variable `ROS_DOMAIN_ID`.
 
@@ -223,7 +223,7 @@ This is important in real operation. When several robots are on the same network
 
 ## Summary
 
-Now you have an environment where ROS 2 Jazzy runs. In the next article, you use a simulator called turtlesim to touch what nodes and topics are, and get a feel for them. If any part still does not work, ask a senior member before you move on.
+Now you have an environment where ROS 2 Jazzy runs. In the next article, you use a simulator called turtlesim to touch what nodes and topics are, and get a feel for them. If any part still does not work, ask someone experienced or check the official documentation before you move on.
 
 Next: [03_getting_a_feel_with_turtlesim_and_rqt](03_getting_a_feel_with_turtlesim_and_rqt.md)
 

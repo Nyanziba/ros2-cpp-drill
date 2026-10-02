@@ -9,7 +9,7 @@ As a prerequisite, we assume you have finished [04_nodes](04_nodes.md) and [05_t
 ## Lecture goals / how to proceed
 
 - Time needed: about 30 minutes
-- Audience: new members who have read Part 1 up to 04
+- Audience: people learning this for the first time who have read Part 1 up to 04
 - Prerequisites: basic operation of the `ros2 node` and `ros2 topic` commands
 - Goal: type the whole `ros2 param` set (list/get/set/dump/load) yourself, and reach a state where you can change the setting values of a running node
 
@@ -98,7 +98,7 @@ ros2 param set /turtlesim background_b 128
 
 > Column: Why parameterizing matters in competition robots
 >
-> If you hard-code control gains and maximum speed in the code, then at the test-run site, when you think "I want it to move a bit faster" or "it is vibrating, so I want to lower Kp", you need to fix the code, rebuild, and redeploy. If you parameterize them, one `ros2 param set` or rewriting one line of YAML is enough. This difference is big in on-site adjustment the day before the competition.
+> If you hard-code control gains and maximum speed in the code, then at the test-run site, when you think "I want it to move a bit faster" or "it is vibrating, so I want to lower Kp", you need to fix the code, rebuild, and redeploy. If you parameterize them, one `ros2 param set` or rewriting one line of YAML is enough. This difference is big in on-site adjustment the day before the contest.
 
 ### Task 3: Write parameters to YAML and load them
 
@@ -130,7 +130,7 @@ Even if you change a value at runtime with `ros2 param set`, it may not be refle
 
 ## Summary
 
-Parameters are the basic means of separating code from tuning values in competition robot development. If you parameterize control gains and robot dimensions, adjustment at the test-run site becomes much faster. Next, go on to [08_actions](08_actions.md). If there is anything you do not understand, ask a senior member.
+Parameters are the basic means of separating code from tuning values in competition robot development. If you parameterize control gains and robot dimensions, adjustment at the test-run site becomes much faster. Next, go on to [08_actions](08_actions.md). If there is anything you do not understand, ask someone experienced or check the official documentation.
 
 ### Matching exercise
 

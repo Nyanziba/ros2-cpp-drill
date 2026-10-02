@@ -410,7 +410,7 @@ Let me stress one point about robot competitions. After a test run, a situation 
 
 **And this is not solved by "being careful".** As you did in Exercise 5, build the recording into the bringup launch with `ExecuteProcess`. If you make it so that starting always records, you do not need to remember on the day of the test run.
 
-Next we enter Part 2, package development. So far you only combined existing nodes, but from now on you write nodes yourself. Let's start with how to make a workspace in [10_workspaces_and_colcon](10_workspaces_and_colcon.md). If something is unclear, ask a senior student.
+Next we enter Part 2, package development. So far you only combined existing nodes, but from now on you write nodes yourself. Let's start with how to make a workspace in [10_workspaces_and_colcon](10_workspaces_and_colcon.md). If something is unclear, ask someone experienced or check the official documentation.
 
 ### Matching exercise
 

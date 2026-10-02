@@ -1,6 +1,6 @@
 # 11. Endianness and serialization
 
-> **Goal of this chapter**: In communication and log storage that handle byte sequences, it is important to decide "from which byte you pack a value that has several bytes (`float` or `uint32_t`)". After you understand the difference between little endian and big endian, and how to measure it, you learn how to convert safely between values and byte sequences with `memcpy`. The purpose is to understand why our team's CAN protocol implementation uses this pattern: "avoid pointer casts (`*(uint32_t *)&f`), pay attention to the signedness of `char`, and use `memcpy`".
+> **Goal of this chapter**: In communication and log storage that handle byte sequences, it is important to decide "from which byte you pack a value that has several bytes (`float` or `uint32_t`)". After you understand the difference between little endian and big endian, and how to measure it, you learn how to convert safely between values and byte sequences with `memcpy`. The purpose is to understand why the implementation of the example CAN protocol (fictional) uses this pattern: "avoid pointer casts (`*(uint32_t *)&f`), pay attention to the signedness of `char`, and use `memcpy`".
 
 ## 11.1 What is byte order?
 
@@ -18,7 +18,7 @@ Big endian (the high-order byte comes first):
 x[0] = 0x12, x[1] = 0x34, x[2] = 0x56, x[3] = 0x78
 ```
 
-**In communication and file storage, if you do not make clear which byte order you send to the other side, it will not work.** Our team's CAN protocol states in its specification that it is "fixed little endian".
+**In communication and file storage, if you do not make clear which byte order you send to the other side, it will not work.** The example CAN protocol (fictional) states in its specification that it is "fixed little endian".
 
 ## 11.2 Measure your own environment
 
@@ -132,9 +132,9 @@ Measured value (good example): `0x0000ff80`
 
 **The difference is `0xFF000000` — the upper 3 bytes were filled with 1 by sign extension.**
 
-## 11.6 Learning from our team's CAN implementation
+## 11.6 Learning from the implementation of the example CAN protocol (fictional)
 
-In our team's motor driver and CAN protocol implementation (`TEXNITIS_CAN`), a `float` such as a target speed is packed into a CAN message. The specification is "Byte 0 = Port ID, Bytes 1-4 = float (LE), Bytes 5-7 = zero padding".
+In the motor driver and CAN protocol implementation used as the example in this chapter (fictional, `EXAMPLE_CAN`), a `float` such as a target speed is packed into a CAN message. The specification is "Byte 0 = Port ID, Bytes 1-4 = float (LE), Bytes 5-7 = zero padding".
 
 The core functions of the implementation (the C++ original, rewritten in C):
 
@@ -167,7 +167,7 @@ float read_float_le(const unsigned char data[8], size_t offset) {
 
 **Why it uses `memcpy`:** `float` and `uint32_t` are originally unrelated types. If you lie about the type with a pointer cast, you break the compiler's optimization rule (strict aliasing) and get unexpected behavior. `memcpy` is a copy of a byte sequence, so it is safe independently of the type system.
 
-**Round-trip test (verifying our team's implementation):**
+**Round-trip test (verifying the example implementation):**
 
 ```c
 float original = 3.14f;

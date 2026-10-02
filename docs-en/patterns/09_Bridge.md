@@ -343,7 +343,7 @@ What changes?
 | Size of the class | Always the size of one pointer | Changes each time you add a member |
 | Ship the library as .so | **Users do not need to rebuild** even if you change the implementation (the ABI does not change) | The size changes = the ABI breaks |
 
-For a club library, the first row is the one that matters.
+For your team's library, the first row is the one that matters.
 Suppose 30 .cpp files include `link_stats.hpp`.
 Without Pimpl, every time you add one member to the statistics, 30 files are recompiled.
 With Pimpl, it is 1 file.
@@ -367,7 +367,7 @@ The **costs** are also clear.
 - The code is spread over 2 places. For a small class, the harm is bigger than the benefit
 
 **Decision rule**: Use Pimpl if the header is included by many .cpp files
-and the implementation is still changing. **In club code, "you do not need it" is the right answer in most cases.**
+and the implementation is still changing. **In your own code, "you do not need it" is the right answer in most cases.**
 
 ## 9.7 Virtual if you want to swap the implementation, non-virtual if you only want to hide it
 

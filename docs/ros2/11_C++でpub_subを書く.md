@@ -282,7 +282,7 @@ talkerとlistenerが動いたら、既存のノードを改造して`cmd_vel`を
 
 ## おわりに
 
-C++でのpub/subはROS2のノードを書く上でいちばん基本の型です。ここで書いたtalker/listenerの構造（Node継承、create_publisher/create_subscription、コンストラクタでの登録、spinでの実行）は今後どんなノードを書いても繰り返し出てきます。わからなければ先輩に聞きましょう。
+C++でのpub/subはROS2のノードを書く上でいちばん基本の型です。ここで書いたtalker/listenerの構造（Node継承、create_publisher/create_subscription、コンストラクタでの登録、spinでの実行）は今後どんなノードを書いても繰り返し出てきます。わからなければ、周りの経験者に聞くか、公式ドキュメントで確かめましょう。
 
 次は[12_Pythonでpub_subを書く](12_Pythonでpub_subを書く.md)で、同じ内容をPythonで書きます。C++とどこが違ってどこが同じか、書き比べてみてください。
 

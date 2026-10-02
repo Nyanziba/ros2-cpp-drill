@@ -82,7 +82,7 @@ auto sensor  = builder->with_address(0x68)->build();
 
 Something that `Imu sensor{0x68};` can do has become three lines.
 The only thing you gain from this code is "you can switch the sensor type with a string at run time".
-**In a club library, is there really a case where you choose the sensor type by a string at run time?**
+**In your team's library, is there really a case where you choose the sensor type by a string at run time?**
 If it is decided at compile time, you do not need a Factory.
 
 ## 0.4 Notifications loop in Observer

@@ -13,7 +13,7 @@ This course is a **separate track from C++ Basics, C++, and ROS 2**.
 You can read it from the top without having read those tracks. In the other direction, the
 other tracks are complete without this one. **There is no required order.**
 
-The theme is "designing your own library for your club", not reading rclcpp.
+The theme is "designing your own library as a team", not reading rclcpp.
 Notes about rclcpp appear only as **supplements** at the end of each chapter.
 
 ## Why do we need a separate course?
@@ -31,7 +31,7 @@ Hiroshi Yuki's book is written in Java. Java and C++ differ in assumptions that 
 | Every method is virtual | A function is not virtual unless you write `virtual`. **Forgetting it is an immediate bug** |
 
 If you copy the Java version without closing this gap, you get **code that runs, but whose lifetimes are broken**.
-This is the accident you least want in a club library.
+This is the accident you least want in your team's library.
 
 ## How to use this course
 
@@ -134,7 +134,7 @@ It means how you change the form when you adopt the pattern in real work, after 
 
 ## Microcontrollers and ROS 2 give different conclusions
 
-In a club, you write for **both microcontrollers and ROS 2**. The two have different assumptions,
+In robot development, you often write for **both microcontrollers and ROS 2**. The two have different assumptions,
 so every article ends with the conclusion for both. Here is a summary of the differences first.
 
 | Topic | Microcontroller | ROS 2 (on Linux) |

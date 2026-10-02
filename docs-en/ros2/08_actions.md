@@ -181,7 +181,7 @@ This action mechanism is actually used in autonomous navigation stacks. move_bas
 
 ## Wrapping up
 
-You now have all three: topics, services, and actions. With this, you have touched the basic communication methods of ROS 2. If you do not understand something, ask a senior student.
+You now have all three: topics, services, and actions. With this, you have touched the basic communication methods of ROS 2. If you do not understand something, ask someone experienced or check the official documentation.
 
 Next is [09_launch_and_ros2_bag](09_launch_and_ros2_bag.md), which covers starting many nodes at once and recording and replaying logs.
 

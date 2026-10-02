@@ -43,7 +43,7 @@ memcpy(&u32, &f, sizeof(u32));
 
 ### `build_speed_target_command`
 
-The specification of the **speed target command** of our team's CAN protocol:
+The specification of the **speed target command** of the example CAN protocol (fictional):
 
 - **Byte 0**: Port ID (1-8, use the received value as it is)
 - **Byte 1-4**: Target speed (`float`, LE)
@@ -83,4 +83,3 @@ The specification of the **speed target command** of our team's CAN protocol:
 ## References
 
 - [C track: 11. Endianness and serialization](../../docs-en/c/11_endianness_and_serialization.md)
-- [TEXNITIS CAN protocol specification](https://github.com/TEXNITIS-YONELAB/CAN_protocol/)
