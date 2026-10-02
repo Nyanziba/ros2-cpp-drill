@@ -1,0 +1,88 @@
+name: exercises
+
+# 全課題について、次の 2 点を機械的に確かめるワークフロー。
+#   1. 未解答の課題は **落ちる**（テストが機能している）
+#   2. 解答例を当てた課題は **通る**（ビルドもテストも最後まで動く）
+#
+# docker.yml は環境が動くかを 2 問だけで見ている。こちらは課題そのものの
+# 健全性を見る。課題を足す・直すたびに、全問を人の手で回さなくて済むようにする。
+# 中身は tools/verify_exercises.py。落ちた課題の ID と理由は表で出る。
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'exercises/**'
+      - 'templates/**'
+      - 'solutions/**'
+      - 'tools/**'
+      - 'exercises.json'
+      - 'drill'
+      - 'Dockerfile'
+      - 'compose.yaml'
+      - '.github/workflows/exercises.yml'
+  pull_request:
+    paths:
+      - 'exercises/**'
+      - 'templates/**'
+      - 'solutions/**'
+      - 'tools/**'
+      - 'exercises.json'
+      - 'drill'
+      - 'Dockerfile'
+      - 'compose.yaml'
+      - '.github/workflows/exercises.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: verify (${{ matrix.track }})
+    runs-on: ubuntu-latest
+    # ROS 2 の課題は 1 問ごとに colcon でビルドするので重い。
+    # 余裕を持たせて、止まったときだけ打ち切る。
+    timeout-minutes: 120
+    strategy:
+      # 1 つのトラックが落ちても、他のトラックの結果は見たい。
+      fail-fast: false
+      matrix:
+        track: [c, cppb, cpp, dp, ros2]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      # runner のユーザは UID 1001。1000 決め打ちで組むと、生成物が
+      # runner から触れなくなる。docker.yml と同じ理由。
+      - id: ids
+        run: |
+          echo "uid=$(id -u)" >> "$GITHUB_OUTPUT"
+          echo "gid=$(id -g)" >> "$GITHUB_OUTPUT"
+          printf 'DRILL_UID=%s\nDRILL_GID=%s\n' "$(id -u)" "$(id -g)" > .env
+
+      # キャッシュは docker.yml と共有する。matrix の 5 ジョブが同じ層を
+      # 使うので、2 回目以降はほぼ待たずに済む。
+      # tag は compose.yaml の image: と同じにする（同名があれば compose は build し直さない）。
+      - name: イメージをビルド
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: ros2-drill:jazzy
+          build-args: |
+            UID=${{ steps.ids.outputs.uid }}
+            GID=${{ steps.ids.outputs.gid }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # -T は TTY を割り当てない（CI には TTY が無い）。
+      # 期待に反した課題が 1 つでもあれば終了コード 1 で落ちる。
+      - name: 課題を確かめる（${{ matrix.track }}）
+        run: >-
+          docker compose run --rm -T drill
+          python3 tools/verify_exercises.py --track ${{ matrix.track }}
+
+      - name: 後片付け
+        if: always()
+        run: docker compose down -v
