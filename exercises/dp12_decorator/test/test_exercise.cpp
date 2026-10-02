@@ -113,9 +113,9 @@ TEST(DecoratorTest, TemplateVersionHasNoVirtualFunctions)
 {
   using StaticSink = StaticLevelTag<StaticTimestampTag<StaticPlainMessage>>;
 
-  static_assert(!std::is_polymorphic_v<StaticPlainMessage>, "vtable があってはいけません");
-  static_assert(!std::is_polymorphic_v<StaticSink>, "vtable があってはいけません");
-  static_assert(std::is_polymorphic_v<LevelTag>, "unique_ptr 版はこちらが多態です");
+  static_assert(!std::is_polymorphic_v<StaticPlainMessage>, "vtable があってはいけません / There must be no vtable");
+  static_assert(!std::is_polymorphic_v<StaticSink>, "vtable があってはいけません / There must be no vtable");
+  static_assert(std::is_polymorphic_v<LevelTag>, "unique_ptr 版はこちらが多態です / The unique_ptr version is the polymorphic one");
 
   // vtable ポインタが無いので、メンバの合計より大きくなりません。
   EXPECT_LT(sizeof(StaticPlainMessage), sizeof(LevelTag));

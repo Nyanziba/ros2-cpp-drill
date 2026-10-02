@@ -184,10 +184,10 @@ TEST(ChainOfResponsibilityTest, HandlerIsNotCopyable)
 {
   static_assert(
     !std::is_copy_constructible<FaultHandler>::value,
-    "連鎖のノードはコピーできてはいけません");
+    "連鎖のノードはコピーできてはいけません / A chain node must not be copyable");
   static_assert(
     std::has_virtual_destructor<FaultHandler>::value,
-    "基底クラスには仮想デストラクタが必要です");
+    "基底クラスには仮想デストラクタが必要です / The base class needs a virtual destructor");
 
   // 連鎖が 1 段だけでも動くこと（next_ が nullptr のときの経路）。
   const auto lone = make_over_current_handler("lone", 20000);

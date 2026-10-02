@@ -17,27 +17,27 @@
 
 static_assert(
   !std::is_copy_constructible<UartPort>::value,
-  "UartPort はコピー構築できてはいけません（コピーコンストラクタを = delete に）");
+  "UartPort はコピー構築できてはいけません（コピーコンストラクタを = delete に） / UartPort must not be copy-constructible (make the copy constructor = delete)");
 static_assert(
   !std::is_copy_assignable<UartPort>::value,
-  "UartPort はコピー代入できてはいけません（コピー代入演算子を = delete に）");
+  "UartPort はコピー代入できてはいけません（コピー代入演算子を = delete に） / UartPort must not be copy-assignable (make the copy assignment operator = delete)");
 static_assert(
   !std::is_move_constructible<UartPort>::value,
-  "UartPort はムーブ構築できてはいけません");
+  "UartPort はムーブ構築できてはいけません / UartPort must not be move-constructible");
 static_assert(
   !std::is_move_assignable<UartPort>::value,
-  "UartPort はムーブ代入できてはいけません");
+  "UartPort はムーブ代入できてはいけません / UartPort must not be move-assignable");
 
 // 外から勝手に作れないこと。
 static_assert(
   !std::is_default_constructible<UartPort>::value,
-  "UartPort は外から構築できてはいけません（コンストラクタを private に）");
+  "UartPort は外から構築できてはいけません（コンストラクタを private に） / UartPort must not be constructible from outside (make the constructor private)");
 
 // instance() はポインタではなく参照を返す。
 // 参照なら「呼び出し側は解放しない」ことが型に書かれています。
 static_assert(
   std::is_same<decltype(UartPort::instance()), UartPort &>::value,
-  "instance() は UartPort & を返してください");
+  "instance() は UartPort & を返してください / instance() must return UartPort &");
 
 namespace
 {

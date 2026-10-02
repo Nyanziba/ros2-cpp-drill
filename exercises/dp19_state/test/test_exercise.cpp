@@ -234,7 +234,7 @@ TEST(StateTest, StateObjectIsUniqueAndKeepsAddress)
   // 自分自身を差し替える手段がそもそも無い、ということを型でも確認します。
   static_assert(
     std::is_same_v<decltype(&State::handle), const State * (State::*)(MachineEvent) const>,
-    "State::handle は Context を受け取らず、遷移先を戻り値で返すだけにしてください");
+    "State::handle は Context を受け取らず、遷移先を戻り値で返すだけにしてください / State::handle must not take a Context. It should only return the next state");
 
   for (const MachineState id : kAllStates) {
     const State * const first = state_object(id);
@@ -277,13 +277,13 @@ TEST(StateTest, OriginalStateObjectStaysAliveAfterTransition)
 
 TEST(StateTest, VariantVersionIsNonPolymorphicAndUsesNoHeap)
 {
-  static_assert(!std::is_polymorphic_v<StoppedState>, "variant の状態に vtable は要りません");
-  static_assert(!std::is_polymorphic_v<IdleState>, "variant の状態に vtable は要りません");
-  static_assert(!std::is_polymorphic_v<RunningState>, "variant の状態に vtable は要りません");
-  static_assert(!std::is_polymorphic_v<FaultedState>, "variant の状態に vtable は要りません");
-  static_assert(!std::is_polymorphic_v<VariantStateMachine>, "Context にも vtable は要りません");
-  static_assert(std::is_trivially_destructible_v<StateVariant>, "デストラクタも要りません");
-  static_assert(sizeof(StateVariant) <= 8, "状態はすべて直和型の中に収まります");
+  static_assert(!std::is_polymorphic_v<StoppedState>, "variant の状態に vtable は要りません / The states of the variant need no vtable");
+  static_assert(!std::is_polymorphic_v<IdleState>, "variant の状態に vtable は要りません / The states of the variant need no vtable");
+  static_assert(!std::is_polymorphic_v<RunningState>, "variant の状態に vtable は要りません / The states of the variant need no vtable");
+  static_assert(!std::is_polymorphic_v<FaultedState>, "variant の状態に vtable は要りません / The states of the variant need no vtable");
+  static_assert(!std::is_polymorphic_v<VariantStateMachine>, "Context にも vtable は要りません / The Context needs no vtable either");
+  static_assert(std::is_trivially_destructible_v<StateVariant>, "デストラクタも要りません / No destructor is needed either");
+  static_assert(sizeof(StateVariant) <= 8, "状態はすべて直和型の中に収まります / All states fit inside the sum type");
 
   // 型だけでなく、id_of() が std::visit で正しく振り分けられているかも見ます。
   EXPECT_EQ(id_of(StateVariant{IdleState{}}), MachineState::Idle);

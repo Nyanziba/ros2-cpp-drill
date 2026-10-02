@@ -39,7 +39,7 @@ explicit Pair::Pair(int a, int b) { }   // error: ‘explicit’ outside class d
 
 | メッセージ | 対応する TODO |
 | --- | --- |
-| `static assertion failed: Meters のコンストラクタに explicit を…` | (1) |
+| `static assertion failed: Meters のコンストラクタに explicit を付けてください / Add explicit to the Meters constructor` | (1) |
 | `passing ‘const Meters’ as ‘this’ argument discards qualifiers` | (2) |
 | `non-constant condition for static assertion` | (3) |
 | `multiple definition of ‘twice(int)’` | (4) |

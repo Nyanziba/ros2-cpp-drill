@@ -214,19 +214,19 @@ TEST(FacadeTest, SessionTypeProperties)
 {
   static_assert(
     !std::is_copy_constructible<RobotSession>::value,
-    "起動済みのハードウェア 1 台を表す型はコピーできてはいけません");
+    "起動済みのハードウェア 1 台を表す型はコピーできてはいけません / A type that represents one started piece of hardware must not be copyable");
   static_assert(
     !std::is_copy_assignable<RobotSession>::value,
-    "コピー代入も禁止です");
+    "コピー代入も禁止です / Copy assignment is also prohibited");
   static_assert(
     std::is_move_constructible<RobotSession>::value,
-    "関数から返せるようにムーブ構築は許します");
+    "関数から返せるようにムーブ構築は許します / Move construction is allowed so it can be returned from a function");
   static_assert(
     !std::is_convertible<StartupConfig, RobotSession>::value,
-    "コンストラクタは explicit です。StartupConfig から暗黙変換されてはいけません");
+    "コンストラクタは explicit です。StartupConfig から暗黙変換されてはいけません / The constructor is explicit. It must not convert implicitly from StartupConfig");
   static_assert(
     !std::is_move_assignable<RobotSession>::value,
-    "ムーブ代入は禁止です");
+    "ムーブ代入は禁止です / Move assignment is prohibited");
 
   // 型の性質だけでは実装の有無が分からないので、1 つだけ実挙動も見ておく。
   Log log;

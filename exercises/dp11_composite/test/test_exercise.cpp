@@ -15,20 +15,20 @@
 // unique_ptr のメンバを持つクラスはコピーできません。ムーブだけできます。
 static_assert(
   !std::is_copy_constructible<drill::DiagnosticGroup>::value,
-  "DiagnosticGroup がコピー構築できてしまっています");
+  "DiagnosticGroup がコピー構築できてしまっています / DiagnosticGroup can be copy-constructed");
 static_assert(
   !std::is_copy_assignable<drill::DiagnosticGroup>::value,
-  "DiagnosticGroup がコピー代入できてしまっています");
+  "DiagnosticGroup がコピー代入できてしまっています / DiagnosticGroup can be copy-assigned");
 static_assert(
   std::is_move_constructible<drill::DiagnosticGroup>::value,
-  "DiagnosticGroup がムーブ構築できません");
+  "DiagnosticGroup がムーブ構築できません / DiagnosticGroup cannot be move-constructed");
 static_assert(
   std::is_move_assignable<drill::DiagnosticGroup>::value,
-  "DiagnosticGroup がムーブ代入できません");
+  "DiagnosticGroup がムーブ代入できません / DiagnosticGroup cannot be move-assigned");
 // 基底ポインタで delete するので仮想デストラクタが要ります。
 static_assert(
   std::has_virtual_destructor<drill::DiagnosticEntry>::value,
-  "DiagnosticEntry の仮想デストラクタがありません");
+  "DiagnosticEntry の仮想デストラクタがありません / DiagnosticEntry has no virtual destructor");
 
 namespace
 {

@@ -50,21 +50,21 @@ static_assert(
   std::is_same_v<
     decltype(std::declval<MotorConfigBuilder &>().motor_id(std::uint8_t{0})),
     MotorConfigBuilder &>,
-  "セッタは MotorConfigBuilder & を返してください。値で返すとチェーンのたびにコピーされます");
+  "セッタは MotorConfigBuilder & を返してください。値で返すとチェーンのたびにコピーされます / Setters must return MotorConfigBuilder &. Returning by value copies at every step of the chain");
 
 static_assert(
   std::is_same_v<
     decltype(std::declval<MotorConfigBuilder &>().name(std::string{})),
     MotorConfigBuilder &>,
-  "セッタは MotorConfigBuilder & を返してください");
+  "セッタは MotorConfigBuilder & を返してください / Setters must return MotorConfigBuilder &");
 
 /// マイコン向けの constexpr Builder。組み立てがコンパイル時に終わることの証明。
 constexpr ControlLimits kDriveLimits =
   ControlLimitsBuilder{}.max_velocity(20.0F).max_accel(80.0F).build();
 
-static_assert(kDriveLimits.max_velocity_rad_per_sec == 20.0F, "constexpr で組み立てられていません");
-static_assert(kDriveLimits.max_accel_rad_per_sec2 == 80.0F, "constexpr で組み立てられていません");
-static_assert(kDriveLimits.max_current_ampere == 5.0F, "設定していない項目は既定値のはずです");
+static_assert(kDriveLimits.max_velocity_rad_per_sec == 20.0F, "constexpr で組み立てられていません / It is not built as a constexpr");
+static_assert(kDriveLimits.max_accel_rad_per_sec2 == 80.0F, "constexpr で組み立てられていません / It is not built as a constexpr");
+static_assert(kDriveLimits.max_current_ampere == 5.0F, "設定していない項目は既定値のはずです / Items you did not set must keep their default values");
 
 // --- 結城本の形（Director + Builder） --------------------------------------
 

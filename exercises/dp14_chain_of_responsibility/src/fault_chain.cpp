@@ -18,8 +18,8 @@ FaultHandler::~FaultHandler()
 {
   // TODO: destruction_log_ が非 nullptr なら、そこに name_ を push_back してください。
   //
-  // これで「先頭を破棄すると連鎖全体が破棄される」ことをテストから観測できます。
-  // 注意: 何もしないとテスト「先頭を破棄すると連鎖全体が破棄される」が落ちます。
+  // これで「先頭を破棄すると連鎖全体が破棄される」ことをテスト DestroyingHeadDestroysWholeChain から観測できます。
+  // 注意: 何もしないとテスト DestroyingHeadDestroysWholeChain が落ちます。
   (void)destruction_log_;
 }
 

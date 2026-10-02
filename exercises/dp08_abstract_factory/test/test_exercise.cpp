@@ -98,12 +98,12 @@ TEST(AbstractFactoryTest, CallerOwnsCreatedProducts)
     std::is_same<
       decltype(std::declval<const ActuatorKitFactory &>().create_motor()),
       std::unique_ptr<MotorOutput>>::value,
-    "create_motor は std::unique_ptr<MotorOutput> を返すこと");
+    "create_motor は std::unique_ptr<MotorOutput> を返すこと / create_motor must return std::unique_ptr<MotorOutput>");
   static_assert(
     std::is_same<
       decltype(std::declval<const ActuatorKitFactory &>().create_encoder()),
       std::unique_ptr<EncoderInput>>::value,
-    "create_encoder は std::unique_ptr<EncoderInput> を返すこと");
+    "create_encoder は std::unique_ptr<EncoderInput> を返すこと / create_encoder must return std::unique_ptr<EncoderInput>");
 
   SimulationBus bus;
   const SimulationKitFactory factory{bus};
@@ -152,14 +152,14 @@ TEST(AbstractFactoryTest, TemplateVersionMatchesRuntimeVersion)
 TEST(AbstractFactoryTest, TemplateVersionPartsHaveNoVtable)
 {
   // Core クラスは仮想関数を持ちません。だから vtable ポインタも持ちません。
-  static_assert(!std::is_polymorphic<SimMotorCore>::value, "Core に vtable があります");
-  static_assert(!std::is_polymorphic<SimEncoderCore>::value, "Core に vtable があります");
-  static_assert(!std::is_polymorphic<HwMotorCore>::value, "Core に vtable があります");
-  static_assert(!std::is_polymorphic<HwEncoderCore>::value, "Core に vtable があります");
+  static_assert(!std::is_polymorphic<SimMotorCore>::value, "Core に vtable があります / Core has a vtable");
+  static_assert(!std::is_polymorphic<SimEncoderCore>::value, "Core に vtable があります / Core has a vtable");
+  static_assert(!std::is_polymorphic<HwMotorCore>::value, "Core に vtable があります / Core has a vtable");
+  static_assert(!std::is_polymorphic<HwEncoderCore>::value, "Core に vtable があります / Core has a vtable");
 
   // 参照 1 つぶん。vtable ポインタは乗っていない。
-  static_assert(sizeof(SimMotorCore) == sizeof(void *), "Core が参照 1 つより大きいです");
-  static_assert(sizeof(HwMotorCore) == sizeof(void *), "Core が参照 1 つより大きいです");
+  static_assert(sizeof(SimMotorCore) == sizeof(void *), "Core が参照 1 つより大きいです / Core is larger than one reference");
+  static_assert(sizeof(HwMotorCore) == sizeof(void *), "Core が参照 1 つより大きいです / Core is larger than one reference");
 
   // その Core を使って、テンプレート版が実際に動くこと。
   HardwareRegisterFile registers;

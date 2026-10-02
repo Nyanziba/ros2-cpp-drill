@@ -154,7 +154,7 @@ TEST(CommandTest, MacroCommandIsTreatedAsOneCommand)
   // MacroCommand は Command でもある（Composite）。
   static_assert(
     std::is_base_of<Command, MacroCommand>::value,
-    "MacroCommand は Command を実装している必要があります");
+    "MacroCommand は Command を実装している必要があります / MacroCommand must implement Command");
 
   CommandHistory history;
   history.run(std::move(macro));
@@ -245,13 +245,13 @@ TEST(CommandTest, MicrocontrollerCommandIsPodAndCanBeQueuedFromInterrupt)
   // 動的確保も仮想関数も無いこと。ISR から触るのでこれが条件です。
   static_assert(
     std::is_trivially_copyable<MotorCommand>::value,
-    "MotorCommand は trivially copyable でなければなりません");
+    "MotorCommand は trivially copyable でなければなりません / MotorCommand must be trivially copyable");
   static_assert(
     !std::is_polymorphic<MotorCommand>::value,
-    "MotorCommand に vtable があってはいけません");
+    "MotorCommand に vtable があってはいけません / MotorCommand must not have a vtable");
   static_assert(
     sizeof(MotorCommand) <= 4,
-    "MotorCommand が大きすぎます。enum + 引数だけにしてください");
+    "MotorCommand が大きすぎます。enum + 引数だけにしてください / MotorCommand is too large. Keep only an enum and its arguments");
 
   RobotArm arm;
   MotorCommandRing ring;

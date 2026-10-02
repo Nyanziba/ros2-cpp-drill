@@ -423,7 +423,7 @@ struct GainState
 
 static_assert(
   std::is_trivially_copyable<GainState>::value,
-  "GainState is saved with memcpy, so it must be trivially copyable");
+  "GainState は memcpy で保存するので trivially copyable でなければなりません / GainState is saved with memcpy, so it must be trivially copyable");
 
 // 2. Fixed-length ring buffer. Zero dynamic allocation
 class GainHistory

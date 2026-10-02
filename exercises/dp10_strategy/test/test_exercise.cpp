@@ -154,15 +154,15 @@ TEST(StrategyTest, ResetRestoresPreviousValue)
 TEST(StrategyTest, TemplateVersionHasNoVirtualFunctions)
 {
   // 仮想関数版は多態。vtable がある。
-  static_assert(std::is_polymorphic_v<ClampFilter>, "ClampFilter は多態のはず");
-  static_assert(std::is_polymorphic_v<SlewRateFilter>, "SlewRateFilter は多態のはず");
+  static_assert(std::is_polymorphic_v<ClampFilter>, "ClampFilter は多態のはず / ClampFilter must be polymorphic");
+  static_assert(std::is_polymorphic_v<SlewRateFilter>, "SlewRateFilter は多態のはず / SlewRateFilter must be polymorphic");
 
   // ポリシー版は多態でない。vtable が無い。
-  static_assert(!std::is_polymorphic_v<ClampPolicy>, "ClampPolicy に virtual を付けないでください");
-  static_assert(!std::is_polymorphic_v<SlewRatePolicy>, "SlewRatePolicy に virtual を付けないでください");
+  static_assert(!std::is_polymorphic_v<ClampPolicy>, "ClampPolicy に virtual を付けないでください / Do not add virtual to ClampPolicy");
+  static_assert(!std::is_polymorphic_v<SlewRatePolicy>, "SlewRatePolicy に virtual を付けないでください / Do not add virtual to SlewRatePolicy");
   static_assert(
     !std::is_polymorphic_v<StaticCommander<ClampPolicy>>,
-    "StaticCommander に virtual を付けないでください");
+    "StaticCommander に virtual を付けないでください / Do not add virtual to StaticCommander");
 
   // vtable ポインタが無いぶん、ポリシーの方が小さい。
   EXPECT_LT(sizeof(ClampPolicy), sizeof(ClampFilter))

@@ -119,12 +119,12 @@ TEST(ProxyTest, ArrowOperatorReturnsConstPointer)
   static_assert(
     std::is_same<decltype(std::declval<const CalibrationProxy &>().operator->()),
                  const CalibrationTable *>::value,
-    "CalibrationProxy::operator-> は const CalibrationTable * を返します");
+    "CalibrationProxy::operator-> は const CalibrationTable * を返します / CalibrationProxy::operator-> returns const CalibrationTable *");
 
   // Proxy はコピーできない（本体を二重に持つのか共有するのかが曖昧になるため）。
   static_assert(
     !std::is_copy_constructible<CalibrationProxy>::value,
-    "CalibrationProxy はコピー禁止です");
+    "CalibrationProxy はコピー禁止です / CalibrationProxy must not be copied");
 
   // 型が合っていても、中身が nullptr では Proxy になりません。
   CalibrationTable::reset_load_count();
@@ -200,17 +200,17 @@ TEST(ProxyTest, ArrowOperatorChainsThroughTemporaryObject)
   static_assert(
     std::is_same<decltype(std::declval<SafeRegisterProxy &>().operator->()),
                  RegisterAccess>::value,
-    "SafeRegisterProxy::operator-> は RegisterAccess を値で返します");
+    "SafeRegisterProxy::operator-> は RegisterAccess を値で返します / SafeRegisterProxy::operator-> returns RegisterAccess by value");
   static_assert(
     std::is_same<decltype(std::declval<const RegisterAccess &>().operator->()),
                  RegisterFile *>::value,
-    "RegisterAccess::operator-> は RegisterFile * を返します");
+    "RegisterAccess::operator-> は RegisterFile * を返します / RegisterAccess::operator-> returns RegisterFile *");
 
   // コピーもムーブもできないのに値で返せるのは C++17 の保証されたコピー省略のため。
   static_assert(
-    !std::is_copy_constructible<RegisterAccess>::value, "RegisterAccess はコピー禁止です");
+    !std::is_copy_constructible<RegisterAccess>::value, "RegisterAccess はコピー禁止です / RegisterAccess must not be copied");
   static_assert(
-    !std::is_move_constructible<RegisterAccess>::value, "RegisterAccess はムーブ禁止です");
+    !std::is_move_constructible<RegisterAccess>::value, "RegisterAccess はムーブ禁止です / RegisterAccess must not be moved");
 
   RegisterFile file;
   SafeRegisterProxy proxy{file};

@@ -9,7 +9,7 @@ TEST(QualifiersTest, ExplicitBlocksImplicitConversion)
 {
   static_assert(
     !std::is_convertible_v<double, Meters>,
-    "Meters のコンストラクタに explicit を付けてください");
+    "Meters のコンストラクタに explicit を付けてください / Add explicit to the Meters constructor");
 
   // explicit を付けても、明示的な構築はもちろん通ります。
   Meters m(1.5);
@@ -24,8 +24,8 @@ TEST(QualifiersTest, ConstMethodCallableOnConstObject)
 
 TEST(QualifiersTest, ConstexprIsEvaluatedAtCompileTime)
 {
-  static_assert(square(5) == 25, "square に constexpr を付けてください");
-  static_assert(square(0) == 0, "square(0) は 0 です");
+  static_assert(square(5) == 25, "square に constexpr を付けてください / Add constexpr to square");
+  static_assert(square(0) == 0, "square(0) は 0 です / square(0) must be 0");
 
   // constexpr にしても、実行時の引数で普通に呼べます。
   int n = 7;

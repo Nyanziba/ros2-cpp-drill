@@ -341,13 +341,13 @@ TEST(ObserverTest, SubscriptionIsMovableButNotCopyable)
 {
   static_assert(
     !std::is_copy_constructible<Subscription>::value,
-    "Subscription はコピーできてはいけません。購読は 1 つしかありません");
+    "Subscription はコピーできてはいけません。購読は 1 つしかありません / Subscription must not be copyable. There is only one subscription");
   static_assert(
     !std::is_copy_assignable<Subscription>::value,
-    "Subscription はコピー代入できてはいけません");
+    "Subscription はコピー代入できてはいけません / Subscription must not be copy-assignable");
   static_assert(
     std::is_nothrow_move_constructible<Subscription>::value,
-    "Subscription はムーブできる必要があります");
+    "Subscription はムーブできる必要があります / Subscription must be movable");
 
   SensorHub hub;
   std::vector<std::string> log;

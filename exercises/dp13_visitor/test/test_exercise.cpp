@@ -201,18 +201,18 @@ TEST(VisitorTest, VariantVersionBuildsReportForSingleLeaf)
 TEST(VisitorTest, VariantVersionTypesAreNotPolymorphic)
 {
   // GoF 版は vtable を持つ。
-  static_assert(std::is_polymorphic_v<SensorCheck>, "GoF 版は多態のはず");
-  static_assert(std::is_polymorphic_v<CheckGroup>, "GoF 版は多態のはず");
+  static_assert(std::is_polymorphic_v<SensorCheck>, "GoF 版は多態のはず / The GoF version must be polymorphic");
+  static_assert(std::is_polymorphic_v<CheckGroup>, "GoF 版は多態のはず / The GoF version must be polymorphic");
 
   // variant 版は仮想関数を 1 つも持たない = vtable ポインタも accept も無い。
-  static_assert(!std::is_polymorphic_v<SensorSample>, "variant 版に仮想関数は不要");
-  static_assert(!std::is_polymorphic_v<MotorSample>, "variant 版に仮想関数は不要");
-  static_assert(!std::is_polymorphic_v<GroupSample>, "variant 版に仮想関数は不要");
-  static_assert(!std::is_polymorphic_v<DiagValue>, "std::variant 自体も多態ではない");
+  static_assert(!std::is_polymorphic_v<SensorSample>, "variant 版に仮想関数は不要 / The variant version needs no virtual functions");
+  static_assert(!std::is_polymorphic_v<MotorSample>, "variant 版に仮想関数は不要 / The variant version needs no virtual functions");
+  static_assert(!std::is_polymorphic_v<GroupSample>, "variant 版に仮想関数は不要 / The variant version needs no virtual functions");
+  static_assert(!std::is_polymorphic_v<DiagValue>, "std::variant 自体も多態ではない / std::variant itself is not polymorphic either");
 
   // variant はノードごとのヒープ確保をしない。中身を直接持つので、
   // 最大メンバ + 判別子ぶんの大きさになる。
-  static_assert(sizeof(DiagValue) >= sizeof(SensorSample), "variant は中身を直接持つ");
+  static_assert(sizeof(DiagValue) >= sizeof(SensorSample), "variant は中身を直接持つ / variant holds its contents directly");
 
   // 仮想関数が無くても、種類ごとの処理は std::visit で選び分けられている。
   DiagArena arena;

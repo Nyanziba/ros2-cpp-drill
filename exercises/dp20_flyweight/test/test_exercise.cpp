@@ -198,10 +198,10 @@ TEST(FlyweightTest, RomTableIsConstexprWithNoRuntimeAllocation)
 {
   // コンパイル時に引けている＝実行時には何も起きていない。
   constexpr const CalibrationSpec * ntc = find_spec("NTC-10K");
-  static_assert(ntc != nullptr, "find_spec がコンパイル時に評価できていません");
-  static_assert(ntc->offset == -40.0, "ROM の値が違います");
-  static_assert(find_spec("NO-SUCH-SENSOR") == nullptr, "未知の型番は nullptr のはず");
-  static_assert(std::size(drill::kCalibrationRom) == 4, "ROM の要素数");
+  static_assert(ntc != nullptr, "find_spec がコンパイル時に評価できていません / find_spec cannot be evaluated at compile time");
+  static_assert(ntc->offset == -40.0, "ROM の値が違います / The ROM value is wrong");
+  static_assert(find_spec("NO-SUCH-SENSOR") == nullptr, "未知の型番は nullptr のはず / An unknown model must give nullptr");
+  static_assert(std::size(drill::kCalibrationRom) == 4, "ROM の要素数 / Number of ROM elements");
 
   // 実行時に引いても確保は 1 回も走らない。
   const std::size_t before = g_allocation_count;

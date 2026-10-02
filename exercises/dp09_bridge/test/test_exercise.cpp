@@ -124,7 +124,7 @@ TEST(PimplTest, HeaderDoesNotExposeImplementationDetails)
   // Impl に何個メンバを足しても、このサイズは変わりません。
   static_assert(
     sizeof(LinkStats) == sizeof(std::unique_ptr<void *>),
-    "LinkStats はポインタ 1 個分のはずです。実装をヘッダに書いていませんか");
+    "LinkStats はポインタ 1 個分のはずです。実装をヘッダに書いていませんか / LinkStats must be the size of one pointer. Did you put the implementation in the header?");
 
   LinkStats stats;
   EXPECT_EQ(stats.count(), 0u);
@@ -134,10 +134,10 @@ TEST(PimplTest, HeaderDoesNotExposeImplementationDetails)
 
 TEST(PimplTest, MovableButNotCopyable)
 {
-  static_assert(std::is_move_constructible<LinkStats>::value, "ムーブ構築できるはずです");
-  static_assert(std::is_move_assignable<LinkStats>::value, "ムーブ代入できるはずです");
-  static_assert(!std::is_copy_constructible<LinkStats>::value, "コピーは禁止のはずです");
-  static_assert(!std::is_copy_assignable<LinkStats>::value, "コピー代入は禁止のはずです");
+  static_assert(std::is_move_constructible<LinkStats>::value, "ムーブ構築できるはずです / It must be move-constructible");
+  static_assert(std::is_move_assignable<LinkStats>::value, "ムーブ代入できるはずです / It must be move-assignable");
+  static_assert(!std::is_copy_constructible<LinkStats>::value, "コピーは禁止のはずです / Copying must be prohibited");
+  static_assert(!std::is_copy_assignable<LinkStats>::value, "コピー代入は禁止のはずです / Copy assignment must be prohibited");
 
   LinkStats stats;
   stats.add_sample(2.0);

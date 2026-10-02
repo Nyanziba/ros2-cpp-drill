@@ -3798,7 +3798,7 @@
         "`RealObjectIsNotCreatedUntilFirstAccess` fails → the constructor of `CalibrationProxy` creates the real object.",
         "`RealObjectIsNotRecreatedOnLaterAccess` fails → you forgot the `if (!real_)` check and call `make_unique` every time.",
         "`proxy->write_raw(...)` does not work → `RegisterAccess::operator->()` returns `nullptr`. It is a `friend` of `SafeRegisterProxy`, so it can reach `owner_.file_` directly.",
-        "\"It touched the real object although it rejected the access\" fails → the out-of-range branch calls `file_.read_raw()` / `file_.write_raw()`. On real hardware, this corrupts another peripheral."
+        "The failure message \"The request was rejected but the real object (RegisterFile) was touched\" means → the out-of-range branch calls `file_.read_raw()` / `file_.write_raw()`. On real hardware, this corrupts another peripheral."
       ],
       "lecture_en": [
         {

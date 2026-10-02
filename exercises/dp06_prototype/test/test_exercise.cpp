@@ -18,34 +18,34 @@
 // 基底への代入はスライシングそのもの。禁止されていること。
 static_assert(
   !std::is_copy_assignable<Waveform>::value,
-  "Waveform への代入はスライシングになるので禁止されていなければいけません");
+  "Waveform への代入はスライシングになるので禁止されていなければいけません / Assignment to Waveform causes slicing, so it must be prohibited");
 
 // std::unique_ptr<Waveform> をメンバに持つ vector があるので、
 // WaveformLibrary の暗黙のコピーはコンパイラが delete します。
 // 「丸ごと複製」は duplicate() を通してだけできる、という設計です。
 static_assert(
   !std::is_copy_constructible<WaveformLibrary>::value,
-  "WaveformLibrary はコピー構築できてはいけません（unique_ptr メンバがあるため）");
+  "WaveformLibrary はコピー構築できてはいけません（unique_ptr メンバがあるため） / WaveformLibrary must not be copy-constructible (it has a unique_ptr member)");
 static_assert(
   !std::is_copy_assignable<WaveformLibrary>::value,
-  "WaveformLibrary はコピー代入できてはいけません");
+  "WaveformLibrary はコピー代入できてはいけません / WaveformLibrary must not be copy-assignable");
 
 // ただしムーブはできる。duplicate() が値で返せるのはこれがあるから。
 static_assert(
   std::is_move_constructible<WaveformLibrary>::value,
-  "WaveformLibrary はムーブ構築できなければいけません");
+  "WaveformLibrary はムーブ構築できなければいけません / WaveformLibrary must be move-constructible");
 
 // PulseTrain は「値としてコピーできる」ことに意味がある型。
 // 型が分かっているなら clone() ではなくコピーコンストラクタを使うべきです。
 static_assert(
   std::is_copy_constructible<PulseTrain>::value,
-  "PulseTrain はコピー構築できなければいけません");
+  "PulseTrain はコピー構築できなければいけません / PulseTrain must be copy-constructible");
 
 // clone() は unique_ptr<Waveform> を返す。生ポインタを返してはいけません。
 static_assert(
   std::is_same<
     decltype(std::declval<const Waveform &>().clone()), std::unique_ptr<Waveform>>::value,
-  "clone() は std::unique_ptr<Waveform> を返してください");
+  "clone() は std::unique_ptr<Waveform> を返してください / clone() must return std::unique_ptr<Waveform>");
 
 namespace
 {

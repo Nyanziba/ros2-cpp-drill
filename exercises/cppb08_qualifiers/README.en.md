@@ -39,7 +39,7 @@ Read each message one by one and match it to the TODO it is about.
 
 | Message | Matching TODO |
 | --- | --- |
-| `static assertion failed: Meters のコンストラクタに explicit を…` (the message text is in Japanese: "add explicit to the Meters constructor ...") | (1) |
+| `static assertion failed: Meters のコンストラクタに explicit を付けてください / Add explicit to the Meters constructor` (the message is in Japanese and English) | (1) |
 | `passing ‘const Meters’ as ‘this’ argument discards qualifiers` | (2) |
 | `non-constant condition for static assertion` | (3) |
 | `multiple definition of ‘twice(int)’` | (4) |

@@ -165,6 +165,9 @@ solutions/<id>/...          # 解答例（./drill solution で表示する）
 - ROS 2 を使うテストは、共通ヘルパ [`tools/drill_harness.hpp`](tools/drill_harness.hpp) を使います。
 - テストの失敗メッセージは、**次に何を確かめればよいか**が分かるように書きます
   （例: 「`create_publisher<std_msgs::msg::String>("topic", 10)` を `publisher_` に入れましたか？」）。
+- テスト名（`TEST(Suite, 名前)` や pytest の `def test_...`）は、日英共通の**英語の識別子**にします（例: `SwapsTwoVariables`）。
+- 失敗メッセージは `drill::localized("日本語", "English")`（[`tools/drill_i18n.hpp`](tools/drill_i18n.hpp)）で囲みます。`DRILL_LANG` で日英が切り替わります。
+- `static_assert` はコンパイル時に出るので切り替えられません。メッセージは `"日本語 / English"` の 1 つの文字列にします。
 
 ### exercises.json に登録する
 

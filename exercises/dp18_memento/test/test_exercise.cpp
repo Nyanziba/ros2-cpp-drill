@@ -135,15 +135,15 @@ TEST(MementoTest, MementoContentsAreHiddenFromOthers)
   // GainTuner 以外からは呼べません。Java の package private に対応するのが friend です。
   static_assert(
     !std::is_constructible<GainSnapshot, double, double, double, std::string>::value,
-    "GainSnapshot のコンストラクタが public になっています");
+    "GainSnapshot のコンストラクタが public になっています / The GainSnapshot constructor is public");
   static_assert(
     !std::is_default_constructible<GainSnapshot>::value,
-    "GainSnapshot がデフォルト構築できてしまいます");
+    "GainSnapshot がデフォルト構築できてしまいます / GainSnapshot can be default-constructed");
 
   // Caretaker はコピーと保持だけできればよい。
   static_assert(
     std::is_copy_constructible<GainSnapshot>::value,
-    "GainSnapshot はコピーできる必要があります（Undo スタックに積むため）");
+    "GainSnapshot はコピーできる必要があります（Undo スタックに積むため） / GainSnapshot must be copyable (it is pushed onto the undo stack)");
 
   // narrow interface は label() だけ。中身は Originator を通してしか観測できない。
   GainTuner tuner = make_tuner();
@@ -158,7 +158,7 @@ TEST(MementoTest, PodStateCanBeSavedAndRestored)
 {
   static_assert(
     std::is_trivially_copyable<GainState>::value,
-    "GainState は memcpy で保存するので trivially copyable でなければなりません");
+    "GainState は memcpy で保存するので trivially copyable でなければなりません / GainState is saved with memcpy, so it must be trivially copyable");
 
   GainTuner tuner = make_tuner();
 
