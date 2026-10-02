@@ -6,7 +6,7 @@
 docs-en/cpp-basics/06_const.md   ←→   exercises/cppb06_const
 ```
 
-> All tracks are translated. Comments in the exercise source code and the test failure messages stay in Japanese.
+> All tracks are translated. Comments in the exercise source code stay in Japanese. Test names are in English, and test failure messages switch to English with `DRILL_LANG=en`.
 
 **If you want to start by running the exercises, see [Getting started](getting-started.md).**
 You can work with Docker, or install directly on Ubuntu.

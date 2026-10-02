@@ -36,8 +36,8 @@ TEST_F(DrillTest, CommunicatesOnZeroCopyTopic)
   ASSERT_TRUE(
     drill::spin_until({talker, listener}, [&listener]() {return listener->count() >= 1;}, 3s))
     << drill::localized(
-    "\"zero_copy\" に 8 秒待っても届きませんでした（受信 ",
-    "Nothing arrived on \"zero_copy\" after waiting 8 seconds (received ")
+    "\"zero_copy\" に 3 秒待っても届きませんでした（受信 ",
+    "Nothing arrived on \"zero_copy\" after waiting 3 seconds (received ")
     << listener->count()
     << drill::localized(
     " 件）。\n"
