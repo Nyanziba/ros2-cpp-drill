@@ -1,6 +1,8 @@
 // このファイルは編集しません（採点用）。
 #include <gtest/gtest.h>
 
+#include "drill_i18n.hpp"
+
 #include <memory>
 #include <string>
 #include <type_traits>
@@ -81,18 +83,18 @@ public:
 
 }  // namespace
 
-TEST(VisitorTest, 集計Visitorが木全体のNGを数える)
+TEST(VisitorTest, CountingVisitorCountsFailuresInWholeTree)
 {
   const std::unique_ptr<CheckGroup> root = make_gof_tree();
 
   FailureCountVisitor counter;
   root->accept(counter);
 
-  EXPECT_EQ(counter.checked_count(), 4) << "葉を 4 つ訪問するはずです";
-  EXPECT_EQ(counter.failure_count(), 2) << "NG は motor_r と temp の 2 つです";
+  EXPECT_EQ(counter.checked_count(), 4) << drill::localized("葉を 4 つ訪問するはずです", "It should visit 4 leaves");
+  EXPECT_EQ(counter.failure_count(), 2) << drill::localized("NG は motor_r と temp の 2 つです", "There are 2 NG results: motor_r and temp");
 }
 
-TEST(VisitorTest, 整形Visitorがインデント付きレポートを作る)
+TEST(VisitorTest, ReportVisitorBuildsIndentedReport)
 {
   const std::unique_ptr<CheckGroup> root = make_gof_tree();
 
@@ -102,7 +104,7 @@ TEST(VisitorTest, 整形Visitorがインデント付きレポートを作る)
   EXPECT_EQ(reporter.text(), std::string(kExpectedReport));
 }
 
-TEST(VisitorTest, 同じ木に2種類のVisitorを当てられる)
+TEST(VisitorTest, TwoVisitorsCanVisitSameTree)
 {
   const std::unique_ptr<CheckGroup> root = make_gof_tree();
 
@@ -116,7 +118,7 @@ TEST(VisitorTest, 同じ木に2種類のVisitorを当てられる)
   EXPECT_EQ(reporter.text(), std::string(kExpectedReport));
 }
 
-TEST(VisitorTest, 基底ポインタ経由でも派生ごとのvisitが選ばれる)
+TEST(VisitorTest, VisitIsChosenPerDerivedClassViaBasePointer)
 {
   // accept() が仮想でないと、ここは全部「基底の accept」に落ちて種類が消えます。
   const SensorCheck sensor{"bat", 11800, 13000};
@@ -131,10 +133,10 @@ TEST(VisitorTest, 基底ポインタ経由でも派生ごとのvisitが選ばれ
 
   const std::vector<std::string> expected = {"sensor:bat", "motor:motor_r"};
   EXPECT_EQ(recorder.log, expected)
-    << "accept() の中で visitor.visit(*this) を呼べていますか（二重ディスパッチ）";
+    << drill::localized("accept() の中で visitor.visit(*this) を呼べていますか（二重ディスパッチ）", "Does accept() call visitor.visit(*this)? (double dispatch)");
 }
 
-TEST(VisitorTest, acceptの訪問順は深さ優先で追加順)
+TEST(VisitorTest, AcceptVisitsDepthFirstInInsertionOrder)
 {
   const std::unique_ptr<CheckGroup> root = make_gof_tree();
 
@@ -147,7 +149,7 @@ TEST(VisitorTest, acceptの訪問順は深さ優先で追加順)
   EXPECT_EQ(recorder.log, expected);
 }
 
-TEST(VisitorTest, 空のグループでも落ちない)
+TEST(VisitorTest, EmptyGroupDoesNotCrash)
 {
   const CheckGroup empty{"empty"};
 
@@ -161,7 +163,7 @@ TEST(VisitorTest, 空のグループでも落ちない)
   EXPECT_EQ(reporter.text(), "[empty]\n");
 }
 
-TEST(VisitorTest, variant版が同じ集計結果を返す)
+TEST(VisitorTest, VariantVersionReturnsSameCount)
 {
   DiagArena arena;
   const std::size_t root = make_variant_tree(arena);
@@ -174,7 +176,7 @@ TEST(VisitorTest, variant版が同じ集計結果を返す)
   EXPECT_EQ(count_failures(arena, root), counter.failure_count());
 }
 
-TEST(VisitorTest, variant版が同じレポートを返す)
+TEST(VisitorTest, VariantVersionReturnsSameReport)
 {
   DiagArena arena;
   const std::size_t root = make_variant_tree(arena);
@@ -187,7 +189,7 @@ TEST(VisitorTest, variant版が同じレポートを返す)
   EXPECT_EQ(make_report(arena, root), reporter.text());
 }
 
-TEST(VisitorTest, variant版の葉ひとつでもレポートが作れる)
+TEST(VisitorTest, VariantVersionBuildsReportForSingleLeaf)
 {
   DiagArena arena;
   const std::size_t only = arena.add(MotorSample{"motor_r", 3U});
@@ -196,7 +198,7 @@ TEST(VisitorTest, variant版の葉ひとつでもレポートが作れる)
   EXPECT_EQ(count_failures(arena, only), 1);
 }
 
-TEST(VisitorTest, variant版の型は多態でない)
+TEST(VisitorTest, VariantVersionTypesAreNotPolymorphic)
 {
   // GoF 版は vtable を持つ。
   static_assert(std::is_polymorphic_v<SensorCheck>, "GoF 版は多態のはず");
@@ -220,7 +222,7 @@ TEST(VisitorTest, variant版の型は多態でない)
   EXPECT_EQ(make_report(arena, index), "bat 11800mV OK\n");
 }
 
-TEST(VisitorTest, variant版はget_ifで中身を取り出せる)
+TEST(VisitorTest, VariantVersionAllowsGetIf)
 {
   // -fno-exceptions のマイコンではこちらを使う（std::get は throw しうる）。
   DiagArena arena;
@@ -228,7 +230,7 @@ TEST(VisitorTest, variant版はget_ifで中身を取り出せる)
 
   const DiagValue & value = arena.at(index);
   const SensorSample * const sensor = std::get_if<SensorSample>(&value);
-  ASSERT_NE(sensor, nullptr) << "add() が値を保存できていません";
+  ASSERT_NE(sensor, nullptr) << drill::localized("add() が値を保存できていません", "add() does not store the value");
   EXPECT_EQ(sensor->name, "bat");
   EXPECT_EQ(std::get_if<MotorSample>(&value), nullptr);
 }

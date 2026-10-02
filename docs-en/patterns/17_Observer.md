@@ -991,7 +991,7 @@ In the third iteration, it reads **out of the range** of the already shrunk `vec
 
 The compiler gives no warning. The program also exits normally.
 **You will never find this kind of breakage unless you write a test.**
-The exercise test "does not crash even if another observer is removed during notification" checks this.
+The exercise test `UnsubscribingOtherObserverDuringNotifyDoesNotCrash` checks this.
 
 Note that this output changes depending on the environment (of course, since it reads out of range).
 **"I got a different result on my machine" is evidence of undefined behavior, not a counterargument.**

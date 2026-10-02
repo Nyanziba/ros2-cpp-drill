@@ -1,6 +1,8 @@
 // このファイルは編集しません（採点用）。
 #include <gtest/gtest.h>
 
+#include "drill_i18n.hpp"
+
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -137,7 +139,7 @@ private:
 
 }  // namespace
 
-TEST(ObserverTest, 複数の観測者に登録順で通知が届く)
+TEST(ObserverTest, NotifiesMultipleObserversInSubscriptionOrder)
 {
   SensorHub hub;
   std::vector<std::string> log;
@@ -155,23 +157,23 @@ TEST(ObserverTest, 複数の観測者に登録順で通知が届く)
   hub.publish(120);
 
   const std::vector<std::string> expected = {"display:120", "logger:120", "control:120"};
-  EXPECT_EQ(log, expected) << "登録順に通知されていません";
+  EXPECT_EQ(log, expected) << drill::localized("登録順に通知されていません", "Observers were not notified in the order they subscribed");
 }
 
-TEST(ObserverTest, 観測者が先に死んでもSubjectが壊れない)
+TEST(ObserverTest, SubjectSurvivesObserverDestroyedFirst)
 {
   SensorHub hub;
   std::vector<std::string> log;
 
   {
     const SelfManagedObserver observer{hub, &log};
-    ASSERT_EQ(hub.observer_count(), 1u) << "subscribe() が購読を登録していません";
+    ASSERT_EQ(hub.observer_count(), 1u) << drill::localized("subscribe() が購読を登録していません", "subscribe() did not register the subscription");
     hub.publish(10);
   }
   // observer はここで死んだ。トークンも一緒に死んだので購読は自動で切れているはず。
 
   EXPECT_EQ(hub.observer_count(), 0u)
-    << "観測者が死んだのに購読が残っています。宙に浮いたポインタです";
+    << drill::localized("観測者が死んだのに購読が残っています。宙に浮いたポインタです", "The observer is gone but its subscription remains. This is a dangling pointer");
 
   // ここで落ちたら、死んだオブジェクトを呼んでいます。
   hub.publish(20);
@@ -180,7 +182,7 @@ TEST(ObserverTest, 観測者が先に死んでもSubjectが壊れない)
   EXPECT_EQ(log, expected);
 }
 
-TEST(ObserverTest, 明示的に購読解除できる)
+TEST(ObserverTest, CanUnsubscribeExplicitly)
 {
   SensorHub hub;
   std::vector<std::string> log;
@@ -192,7 +194,7 @@ TEST(ObserverTest, 明示的に購読解除できる)
   const Subscription logger_sub = hub.subscribe(&logger);
 
   hub.publish(1);
-  ASSERT_EQ(log.size(), 2u) << "2 つの観測者に通知が届いていません";
+  ASSERT_EQ(log.size(), 2u) << drill::localized("2 つの観測者に通知が届いていません", "The 2 observers were not notified");
 
   EXPECT_TRUE(display_sub.active());
   display_sub.reset();
@@ -206,10 +208,10 @@ TEST(ObserverTest, 明示的に購読解除できる)
   hub.publish(2);
 
   const std::vector<std::string> expected = {"logger:2"};
-  EXPECT_EQ(log, expected) << "解除済みの観測者に通知が来ています";
+  EXPECT_EQ(log, expected) << drill::localized("解除済みの観測者に通知が来ています", "An unsubscribed observer was notified");
 }
 
-TEST(ObserverTest, 解除済みの観測者には何度publishしても通知が来ない)
+TEST(ObserverTest, UnsubscribedObserverIsNeverNotified)
 {
   SensorHub hub;
   std::vector<std::string> log;
@@ -232,10 +234,10 @@ TEST(ObserverTest, 解除済みの観測者には何度publishしても通知が
   hub.publish(3);
   hub.publish(4);
 
-  EXPECT_TRUE(log.empty()) << "解除済みの観測者に通知が来ています";
+  EXPECT_TRUE(log.empty()) << drill::localized("解除済みの観測者に通知が来ています", "An unsubscribed observer was notified");
 }
 
-TEST(ObserverTest, 通知中に他の観測者を解除しても落ちない)
+TEST(ObserverTest, UnsubscribingOtherObserverDuringNotifyDoesNotCrash)
 {
   SensorHub hub;
   std::vector<std::string> log;
@@ -257,8 +259,8 @@ TEST(ObserverTest, 通知中に他の観測者を解除しても落ちない)
   hub.publish(7);
 
   const std::vector<std::string> expected = {"control:7", "killer:7", "logger:7"};
-  EXPECT_EQ(log, expected) << "通知ループの途中で解除したせいで通知が飛んでいます";
-  EXPECT_EQ(hub.observer_count(), 2u) << "通知が終わったら解除済みを片づけてください";
+  EXPECT_EQ(log, expected) << drill::localized("通知ループの途中で解除したせいで通知が飛んでいます", "Unsubscribing in the middle of the notify loop made it skip a notification");
+  EXPECT_EQ(hub.observer_count(), 2u) << drill::localized("通知が終わったら解除済みを片づけてください", "Remove unsubscribed observers after notifying");
 
   log.clear();
   hub.publish(8);
@@ -267,7 +269,7 @@ TEST(ObserverTest, 通知中に他の観測者を解除しても落ちない)
   EXPECT_EQ(log, after);
 }
 
-TEST(ObserverTest, 通知中に自分より後ろの観測者を解除するとその回は通知されない)
+TEST(ObserverTest, UnsubscribingLaterObserverDuringNotifySkipsIt)
 {
   SensorHub hub;
   std::vector<std::string> log;
@@ -285,11 +287,11 @@ TEST(ObserverTest, 通知中に自分より後ろの観測者を解除すると�
   hub.publish(5);
 
   const std::vector<std::string> expected = {"killer:5"};
-  EXPECT_EQ(log, expected) << "解除したはずの観測者に通知が届いています";
+  EXPECT_EQ(log, expected) << drill::localized("解除したはずの観測者に通知が届いています", "An observer that was unsubscribed was notified");
   EXPECT_EQ(hub.observer_count(), 1u);
 }
 
-TEST(ObserverTest, 通知が循環しても無限ループしない)
+TEST(ObserverTest, CyclicNotificationDoesNotLoopForever)
 {
   SensorHub left;
   SensorHub right;
@@ -306,7 +308,7 @@ TEST(ObserverTest, 通知が循環しても無限ループしない)
   left.publish(3);
 
   const std::vector<std::string> expected = {"left:3", "right:3"};
-  EXPECT_EQ(log, expected) << "再入防止が効いていません";
+  EXPECT_EQ(log, expected) << drill::localized("再入防止が効いていません", "Re-entry protection does not work");
 
   log.clear();
   right.publish(4);
@@ -315,7 +317,7 @@ TEST(ObserverTest, 通知が循環しても無限ループしない)
   EXPECT_EQ(log, expected2);
 }
 
-TEST(ObserverTest, 通知中に購読した観測者はその回には呼ばれない)
+TEST(ObserverTest, ObserverAddedDuringNotifyIsNotCalledInThatRound)
 {
   SensorHub hub;
   std::vector<std::string> log;
@@ -327,15 +329,15 @@ TEST(ObserverTest, 通知中に購読した観測者はその回には呼ばれ�
 
   hub.publish(1);
   const std::vector<std::string> first = {"adder:1"};
-  EXPECT_EQ(log, first) << "通知ループ中に増えた購読をその回で呼んでいます";
+  EXPECT_EQ(log, first) << drill::localized("通知ループ中に増えた購読をその回で呼んでいます", "An observer added during the notify loop was called in the same round");
 
   log.clear();
   hub.publish(2);
   const std::vector<std::string> second = {"adder:2", "newcomer:2"};
-  EXPECT_EQ(log, second) << "次の回では新しい観測者にも通知してください";
+  EXPECT_EQ(log, second) << drill::localized("次の回では新しい観測者にも通知してください", "In the next round, notify the new observer too");
 }
 
-TEST(ObserverTest, Subscriptionはムーブできるがコピーできない)
+TEST(ObserverTest, SubscriptionIsMovableButNotCopyable)
 {
   static_assert(
     !std::is_copy_constructible<Subscription>::value,
@@ -356,7 +358,7 @@ TEST(ObserverTest, Subscriptionはムーブできるがコピーできない)
   Subscription moved_from = hub.subscribe(&display);
   Subscription moved_to = std::move(moved_from);
 
-  EXPECT_FALSE(moved_from.active()) << "ムーブ元が購読を持ったままです";
+  EXPECT_FALSE(moved_from.active()) << drill::localized("ムーブ元が購読を持ったままです", "The moved-from object still holds the subscription");
   EXPECT_TRUE(moved_to.active());
   EXPECT_EQ(hub.observer_count(), 1u);
 
@@ -365,7 +367,7 @@ TEST(ObserverTest, Subscriptionはムーブできるがコピーできない)
   ASSERT_EQ(hub.observer_count(), 2u);
 
   moved_to = std::move(logger_sub);
-  EXPECT_EQ(hub.observer_count(), 1u) << "ムーブ代入で元の購読が解除されていません";
+  EXPECT_EQ(hub.observer_count(), 1u) << drill::localized("ムーブ代入で元の購読が解除されていません", "Move assignment did not cancel the original subscription");
 
   log.clear();
   hub.publish(9);
@@ -373,7 +375,7 @@ TEST(ObserverTest, Subscriptionはムーブできるがコピーできない)
   EXPECT_EQ(log, expected);
 }
 
-TEST(ObserverTest, Subjectが先に死んでもトークンの破棄が安全)
+TEST(ObserverTest, DestroyingTokenIsSafeAfterSubjectDied)
 {
   std::vector<std::string> log;
   RecordingObserver display{"display", &log};
@@ -388,7 +390,7 @@ TEST(ObserverTest, Subjectが先に死んでもトークンの破棄が安全)
   }
   // SensorHub が先に死んだ。トークンだけが残っている状態。
 
-  EXPECT_FALSE(sub.active()) << "Subject が死んだのに購読が生きていることになっています";
+  EXPECT_FALSE(sub.active()) << drill::localized("Subject が死んだのに購読が生きていることになっています", "The Subject is gone, but the subscription still looks active");
 
   // ここで落ちたら、死んだ Subject を触っています。
   sub.reset();

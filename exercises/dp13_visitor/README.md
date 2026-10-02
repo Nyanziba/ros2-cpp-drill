@@ -68,7 +68,7 @@
   `C++ exception with description "vector"` で落ちます。
   `DiagArena::add` が何も保存していないので `at()` が範囲外になっているだけです
 - `accept` が仮想でないと、基底ポインタ経由の呼び出しで種類が消えます。
-  テスト「基底ポインタ経由でも派生ごとのvisitが選ばれる」がそこを見ます
+  テスト`VisitIsChosenPerDerivedClassViaBasePointer`がそこを見ます
 - `visit` の引数を `const SensorCheck &` ではなく `SensorCheck` にすると**コピー**が走ります。
   基底型で受けると**スライシング**します
 - `overloaded` の推論ガイドを忘れると

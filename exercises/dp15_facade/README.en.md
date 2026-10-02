@@ -76,7 +76,7 @@ If you forget one, nobody tells you. This is the motivation for the next RAII ve
 - After `std::move`, **the destructor runs** for the object too.
   It is not "it disappeared because it was moved". If you do not empty the moved-from object, the power is turned off twice
 - If the power on fails, the number of successful stages is 0. **Do not call `power_off`**.
-  The test "電源投入で失敗すると後始末は何も走らない" (if the power on fails, no clean-up runs) checks that
+  The test `PowerOnFailureRunsNoCleanup` checks that
 - `append()` takes `const char *`. `drive()` makes a `std::string`, so
   use `log_->push_back()` directly (`log_` can be `nullptr`)
 - You may want to implement the free function version as "just create a `RobotSession` and throw it away", but
