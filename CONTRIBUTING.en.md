@@ -4,6 +4,9 @@
 
 Contributions are welcome. Fixing one typo or adding a new chapter and exercise both help.
 If fixing is hard, **just reporting an issue is also a great contribution.**
+Requests are welcome too, such as "I want a chapter or an exercise about this". Please use the "Request" issue template.
+
+This is a personal project. I try to follow the latest specifications of ROS 2 and C++ as closely as I can, but I cannot keep up with everything. If you find something out of date, please tell me in an issue.
 
 Your contribution will be released under the same [MIT License](LICENSE) as this repository.
 Everyone who takes part in this project must follow the [Code of Conduct](CODE_OF_CONDUCT.en.md).
@@ -27,6 +30,7 @@ Choose a template from [Issues](https://github.com/Nyanziba/ros2-cpp-drill/issue
 | The output in the text differs from what you got when you ran it | Output differs from the actual run |
 | A typo, an error in the explanation, a broken link, a translation error | Content error |
 | An exercise does not build or its tests do not pass, a `drill` bug | Exercise or drill bug |
+| You want a chapter, exercise, or topic, or something is out of date | Request |
 
 **Output mismatches are especially welcome.** This material promises that "all output shown is measured",
 so a mismatch is an error. Please add the environment you ran it in (OS, `g++ --version`, whether you used Docker).

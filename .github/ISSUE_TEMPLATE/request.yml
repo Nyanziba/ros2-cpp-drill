@@ -1,0 +1,44 @@
+name: 要望 / Request
+description: こういう章・課題・トピックが欲しい、古くなっている箇所がある / You want a chapter, exercise, or topic, or something is out of date
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        要望を歓迎します。個人で管理しているプロジェクトなので、すべてには応えられませんが、優先順位を決める参考にします。
+        Requests are welcome. This is a personal project, so not every request can be done, but they help decide what to work on next.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: 種類 / Kind
+      options:
+        - 新しい章・課題 / A new chapter or exercise
+        - 既存の章・課題の改善 / Improve an existing chapter or exercise
+        - 仕様が古くなっている / Something is out of date
+        - その他 / Other
+    validations:
+      required: true
+  - type: dropdown
+    id: track
+    attributes:
+      label: トラック / Track
+      options:
+        - C言語編 / C track
+        - C++入門編 / C++ Basics
+        - C++編 / C++
+        - ROS 2編 / ROS 2
+        - デザインパターン編 / Design Patterns
+        - drill（ツール） / drill (the tool)
+        - 新しいトラック / A new track
+  - type: textarea
+    id: request
+    attributes:
+      label: 欲しいもの / What you want
+      description: 何を学びたいか、どこで困ったか / What you want to learn, or where you got stuck
+    validations:
+      required: true
+  - type: textarea
+    id: reference
+    attributes:
+      label: 参考（あれば） / References (optional)
+      description: 古くなっている箇所なら、新しい仕様のドキュメントへのリンク / For out-of-date content, a link to the current documentation
