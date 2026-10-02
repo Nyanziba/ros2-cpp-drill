@@ -6,6 +6,8 @@
 #include <vector>
 
 #include "drill/uart_port.hpp"
+#include "drill_i18n.hpp"
+#include "drill_i18n.hpp"
 
 // --- コンパイル時の検査 -------------------------------------------------
 //
@@ -52,17 +54,20 @@ protected:
 
 }  // namespace
 
-TEST_F(UartPortTest, instanceは何度呼んでも同じオブジェクトを返す)
+TEST_F(UartPortTest, InstanceReturnsSameObjectEveryTime)
 {
   UartPort & first = UartPort::instance();
   UartPort & second = UartPort::instance();
 
   EXPECT_EQ(&first, &second)
-    << "instance() が呼ぶたびに別のオブジェクトを返しています。"
-       "関数ローカル static（Meyers Singleton）にしてください";
+    << drill::localized(
+         "instance() が呼ぶたびに別のオブジェクトを返しています。"
+         "関数ローカル static（Meyers Singleton）にしてください",
+         "instance() returns a different object each call. "
+         "Use a function-local static (Meyers Singleton)");
 }
 
-TEST_F(UartPortTest, 状態が唯一のインスタンスで共有される)
+TEST_F(UartPortTest, StateIsSharedByTheOnlyInstance)
 {
   UartPort::instance().set_baud_rate(9600);
 
@@ -70,18 +75,18 @@ TEST_F(UartPortTest, 状態が唯一のインスタンスで共有される)
   EXPECT_EQ(UartPort::instance().baud_rate(), 9600u);
 }
 
-TEST_F(UartPortTest, 初期化は何度instanceを呼んでも一度しか走らない)
+TEST_F(UartPortTest, InitializationRunsOnlyOnceNoMatterHowManyInstanceCalls)
 {
   for (int i = 0; i < 100; ++i) {
     UartPort::instance().write_line("ping");
   }
 
   EXPECT_EQ(UartPort::construction_count(), 1)
-    << "コンストラクタが " << UartPort::construction_count()
-    << " 回走っています。1 回だけになるようにしてください";
+    << drill::localized("コンストラクタが ", "The constructor ran ") << UartPort::construction_count()
+    << drill::localized(" 回走っています。1 回だけになるようにしてください", " times. It must run only once");
 }
 
-TEST_F(UartPortTest, resetでボーレートが既定値に戻る)
+TEST_F(UartPortTest, ResetRestoresDefaultBaudRate)
 {
   UartPort::instance().set_baud_rate(9600);
   UartPort::instance().reset();
@@ -89,7 +94,7 @@ TEST_F(UartPortTest, resetでボーレートが既定値に戻る)
   EXPECT_EQ(UartPort::instance().baud_rate(), kDefaultBaudRate);
 }
 
-TEST_F(UartPortTest, resetで送信履歴が空になる)
+TEST_F(UartPortTest, ResetClearsTransmitHistory)
 {
   UartPort::instance().write_line("hello");
   UartPort::instance().write_line("world");
@@ -100,7 +105,7 @@ TEST_F(UartPortTest, resetで送信履歴が空になる)
   EXPECT_TRUE(UartPort::instance().sent_lines().empty());
 }
 
-TEST_F(UartPortTest, resetはオブジェクトを作り直さない)
+TEST_F(UartPortTest, ResetDoesNotRecreateObject)
 {
   const UartPort * before = &UartPort::instance();
   const int count_before = UartPort::construction_count();
@@ -108,11 +113,11 @@ TEST_F(UartPortTest, resetはオブジェクトを作り直さない)
   UartPort::instance().reset();
 
   EXPECT_EQ(&UartPort::instance(), before)
-    << "reset() でインスタンスが作り直されています。状態だけ戻してください";
+    << drill::localized("reset() でインスタンスが作り直されています。状態だけ戻してください", "reset() recreated the instance. Restore only the state");
   EXPECT_EQ(UartPort::construction_count(), count_before);
 }
 
-TEST_F(UartPortTest, 前のテストの状態が残っていない)
+TEST_F(UartPortTest, StateFromPreviousTestDoesNotLeak)
 {
   // SetUp が reset() を呼んでいるので、ここでは必ず既定値のはず。
   // reset() が空実装だと、前のテストが書いた値が漏れてきます。
@@ -122,11 +127,14 @@ TEST_F(UartPortTest, 前のテストの状態が残っていない)
 
 // LazyProbe は「遅延初期化」を見るためだけの型なので、
 // このテスト以外からは絶対に触りません。
-TEST(LazySingletonTest, 初期化は最初のinstance呼び出しまで走らない)
+TEST(LazySingletonTest, InitializationWaitsForFirstInstanceCall)
 {
   EXPECT_FALSE(LazyProbe::was_constructed())
-    << "instance() を呼ぶ前に構築されています。"
-       "グローバルオブジェクトではなく関数ローカル static にしてください";
+    << drill::localized(
+         "instance() を呼ぶ前に構築されています。"
+         "グローバルオブジェクトではなく関数ローカル static にしてください",
+         "It was constructed before instance() was called. "
+         "Use a function-local static, not a global object");
 
   LazyProbe & first = LazyProbe::instance();
 

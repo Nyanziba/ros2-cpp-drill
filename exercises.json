@@ -2701,7 +2701,7 @@
         }
       ],
       "hints": [
-        "`next()` は `const Book &` を返します。`Book` を返すと毎回コピーが走ります。 テスト「nextはコピーではなく本棚の中身を指す」がアドレスを比較して落とします",
+        "`next()` は `const Book &` を返します。`Book` を返すと毎回コピーが走ります。 テスト「NextReturnsReferenceNotCopy」がアドレスを比較して落とします",
         "`iterator()` は `std::unique_ptr<Iterator>` を返します。生ポインタだと 誰が `delete` するかが型に書かれません",
         "位置（`index_`）はイテレータ側が持ちます。本棚側に持たせると、 2 つのイテレータを同時に使ったとき互いに干渉します",
         "`BookShelfIterator` は `BookShelf` への参照を持っています。 本棚より長生きさせられません。Java には無い制約です"
@@ -2718,7 +2718,7 @@
       "title_en": "Iterator: GoF and STL versions",
       "chapter_en": "Patterns ch.1",
       "hints_en": [
-        "`next()` returns `const Book &`. If it returns `Book`, a copy runs every time. The test \"next points into the shelf, not to a copy\" catches this by comparing addresses.",
+        "`next()` returns `const Book &`. If it returns `Book`, a copy runs every time. The test \"NextReturnsReferenceNotCopy\" catches this by comparing addresses.",
         "`iterator()` returns `std::unique_ptr<Iterator>`. With a raw pointer, the type does not say who calls `delete`.",
         "The iterator holds the position (`index_`). If the shelf held it, two iterators used at the same time would interfere with each other.",
         "`BookShelfIterator` holds a reference to `BookShelf`. It cannot outlive the shelf. Java has no such restriction."
@@ -3020,7 +3020,7 @@
         }
       ],
       "hints": [
-        "セッタが `MotorConfigBuilder`（値）を返していると、テスト 「チェーンは同じBuilderの参照を返す」がアドレス比較で落とします",
+        "セッタが `MotorConfigBuilder`（値）を返していると、テスト 「ChainReturnsReferenceToSameBuilder」がアドレス比較で落とします",
         "`build() &&` と `build() const &` は両方実装します。片方だけだと、 もう片方の呼び方がコンパイルエラーになります （`error: 'this' argument to member function 'build' is an lvalue, but function has rvalue ref-qualifier`）",
         "`build() const &` で `std::move` すると、Builder が壊れて 2 回目の `build()` が空になります。 左辺値版はコピーです",
         "Director に書式を書き始めたら手が滑っています。Director は `make_header` / `make_field` / `make_footer` を順に呼ぶだけです",
@@ -3038,7 +3038,7 @@
       "title_en": "Builder: chaining, ref qualifiers",
       "chapter_en": "Patterns ch.7",
       "hints_en": [
-        "If a setter returns `MotorConfigBuilder` (by value), the test \"the chain returns a reference to the same Builder\" catches it by comparing addresses.",
+        "If a setter returns `MotorConfigBuilder` (by value), the test \"ChainReturnsReferenceToSameBuilder\" catches it by comparing addresses.",
         "Implement both `build() &&` and `build() const &`. If you implement only one, the other way of calling it is a compile error (`error: 'this' argument to member function 'build' is an lvalue, but function has rvalue ref-qualifier`).",
         "If you `std::move` in `build() const &`, the Builder breaks and the second `build()` is empty. The lvalue version is a copy.",
         "If you start writing formatting in the Director, your hand slipped. The Director only calls `make_header` / `make_field` / `make_footer` in order.",
@@ -3075,7 +3075,7 @@
         }
       ],
       "hints": [
-        "`create_motor()` と `create_encoder()` に別の bus を渡すと、製品群が混ざります。 テスト「同じファクトリから出た部品どうしは繋がっている」が落とします",
+        "`create_motor()` と `create_encoder()` に別の bus を渡すと、製品群が混ざります。 テスト「PartsFromSameFactoryAreConnected」が落とします",
         "`run_open_loop()` の中に `SimulationKitFactory` と書いたら設計が壊れています。 引数は `const ActuatorKitFactory &` だけです",
         "実機側は 4 逓倍エンコーダなので、同じ duty でもカウントは 4 倍進みます。 製品群が違えば挙動も違って当然です。合わせようとしないでください",
         "テンプレート版で `typename KitTraits::Motor` の `typename` を忘れるとコンパイルエラーです",
@@ -3093,7 +3093,7 @@
       "title_en": "Abstract Factory: kits, templates",
       "chapter_en": "Patterns ch.8",
       "hints_en": [
-        "If you pass different buses to `create_motor()` and `create_encoder()`, the product family gets mixed. The test \"parts from the same factory are connected to each other\" catches it.",
+        "If you pass different buses to `create_motor()` and `create_encoder()`, the product family gets mixed. The test \"PartsFromSameFactoryAreConnected\" catches it.",
         "If you write `SimulationKitFactory` inside `run_open_loop()`, the design is broken. The only argument is `const ActuatorKitFactory &`.",
         "The real hardware has a 4x encoder, so the count advances 4 times as much with the same duty. Different families naturally behave differently. Do not try to make them match.",
         "In the template version, forgetting `typename` in `typename KitTraits::Motor` is a compile error.",
@@ -3183,7 +3183,7 @@
       ],
       "hints": [
         "3 つとも同じ出力でなければいけません。手段が違うだけで、アルゴリズムは同じものです",
-        "`VirtualCommander` が Strategy をコピーして持つと、テスト 「仮想関数版はStrategyを所有せず参照で指している」がアドレス比較で落とします",
+        "`VirtualCommander` が Strategy をコピーして持つと、テスト 「VirtualFunctionVersionReferencesStrategyWithoutOwningIt」がアドレス比較で落とします",
         "`filter_` を `const VelocityFilter &`（参照）にしたくなりますが、 参照は再束縛できないので差し替えができません。だからポインタです",
         "`VirtualCommander` は Strategy を所有しません。 `ClampFilter` の実体を Commander より先に殺すと未定義動作です",
         "`ClampPolicy` に `virtual` を付けると `static_assert` で落ちます。 vtable が付いて `sizeof` も増えます"
@@ -3201,7 +3201,7 @@
       "chapter_en": "Patterns ch.10",
       "hints_en": [
         "All three must give the same output. Only the means differ. The algorithm is the same.",
-        "If `VirtualCommander` holds a copy of the Strategy, the test \"the virtual version does not own the Strategy and points to it by reference\" catches it by comparing addresses.",
+        "If `VirtualCommander` holds a copy of the Strategy, the test \"VirtualFunctionVersionReferencesStrategyWithoutOwningIt\" catches it by comparing addresses.",
         "You may want to make `filter_` a `const VelocityFilter &` (reference), but a reference cannot be re-bound, so you cannot swap it. That is why it is a pointer.",
         "`VirtualCommander` does not own the Strategy. If you destroy the `ClampFilter` object before the Commander, it is undefined behavior.",
         "If you add `virtual` to `ClampPolicy`, a `static_assert` fails. A vtable is added and `sizeof` grows."
@@ -3294,7 +3294,7 @@
         "`inner()` は `const LogSink &` を返します。`LogSink` は抽象クラスなので値では返せません",
         "`format()` の中で先に中身を呼ぶこと。順番を間違えるとタグの位置が入れ替わります",
         "包む順番で出力が変わるのが Decorator です。テストがそれを見ています",
-        "デストラクタの記録を忘れると「一番外側を破棄すると内側まで全部破棄される」が落ちます"
+        "デストラクタの記録を忘れると「DestroyingOutermostDestroysAllInner」が落ちます"
       ],
       "lecture": [
         {
@@ -3312,7 +3312,7 @@
         "`inner()` returns `const LogSink &`. `LogSink` is an abstract class, so you cannot return it by value.",
         "In `format()`, call the inner one first. If you get the order wrong, the positions of the tags are swapped.",
         "The output changes with the order of wrapping. That is what a Decorator is. The test checks it.",
-        "If you forget to record in the destructor, \"destroying the outermost one destroys all the inner ones too\" fails."
+        "If you forget to record in the destructor, \"DestroyingOutermostDestroysAllInner\" fails."
       ],
       "lecture_en": [
         {

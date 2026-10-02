@@ -6,8 +6,10 @@
 #include <utility>
 
 #include "drill/actuator_kit.hpp"
+#include "drill_i18n.hpp"
+#include "drill_i18n.hpp"
 
-TEST(AbstractFactoryTest, シミュレーション製品群で抽象コードが動く)
+TEST(AbstractFactoryTest, AbstractCodeWorksWithSimulationFamily)
 {
   SimulationBus bus;
   const SimulationKitFactory factory{bus};
@@ -15,10 +17,10 @@ TEST(AbstractFactoryTest, シミュレーション製品群で抽象コードが
   const RunResult result = run_open_loop(factory, 10, 3);
 
   EXPECT_EQ(result.kit_id, KitId::Simulation);
-  EXPECT_EQ(result.count_after, 30) << "duty 10 を 3 回。理想モデルなので 30";
+  EXPECT_EQ(result.count_after, 30) << drill::localized("duty 10 を 3 回。理想モデルなので 30", "duty 10 three times. It is an ideal model, so 30");
 }
 
-TEST(AbstractFactoryTest, 実機製品群でも同じ抽象コードが動く)
+TEST(AbstractFactoryTest, SameAbstractCodeWorksWithHardwareFamily)
 {
   HardwareRegisterFile registers;
   const HardwareKitFactory factory{registers};
@@ -27,11 +29,11 @@ TEST(AbstractFactoryTest, 実機製品群でも同じ抽象コードが動く)
   const RunResult result = run_open_loop(factory, 10, 3);
 
   EXPECT_EQ(result.kit_id, KitId::Hardware);
-  EXPECT_EQ(result.count_after, 120) << "4 逓倍なので 10 * 3 * 4";
-  EXPECT_EQ(registers.duty_register, 10) << "モータがレジスタに書けていません";
+  EXPECT_EQ(result.count_after, 120) << drill::localized("4 逓倍なので 10 * 3 * 4", "It is multiplied by 4, so 10 * 3 * 4");
+  EXPECT_EQ(registers.duty_register, 10) << drill::localized("モータがレジスタに書けていません", "The motor did not write to the register");
 }
 
-TEST(AbstractFactoryTest, シミュ用ファクトリの部品は全部シミュ用)
+TEST(AbstractFactoryTest, SimulationFactoryPartsAreAllSimulation)
 {
   SimulationBus bus;
   const SimulationKitFactory factory{bus};
@@ -46,7 +48,7 @@ TEST(AbstractFactoryTest, シミュ用ファクトリの部品は全部シミュ
   EXPECT_EQ(encoder->kit_id(), KitId::Simulation);
 }
 
-TEST(AbstractFactoryTest, 実機用ファクトリの部品は全部実機用)
+TEST(AbstractFactoryTest, HardwareFactoryPartsAreAllHardware)
 {
   HardwareRegisterFile registers;
   const HardwareKitFactory factory{registers};
@@ -61,7 +63,7 @@ TEST(AbstractFactoryTest, 実機用ファクトリの部品は全部実機用)
   EXPECT_EQ(encoder->kit_id(), KitId::Hardware);
 }
 
-TEST(AbstractFactoryTest, 同じファクトリから出た部品どうしは繋がっている)
+TEST(AbstractFactoryTest, PartsFromSameFactoryAreConnected)
 {
   // Abstract Factory の本来の価値がこれ。
   // 「モータとエンコーダが対になっている」ことをファクトリが保証する。
@@ -75,7 +77,7 @@ TEST(AbstractFactoryTest, 同じファクトリから出た部品どうしは繋
 
   sim_motor->set_duty(7);
   EXPECT_EQ(sim_encoder->read_count(), 7)
-    << "モータとエンコーダが同じ SimulationBus を見ていません";
+    << drill::localized("モータとエンコーダが同じ SimulationBus を見ていません", "The motor and the encoder do not use the same SimulationBus");
 
   HardwareRegisterFile registers;
   const HardwareKitFactory hw_factory{registers};
@@ -87,10 +89,10 @@ TEST(AbstractFactoryTest, 同じファクトリから出た部品どうしは繋
 
   hw_motor->set_duty(5);
   EXPECT_EQ(hw_encoder->read_count(), 20)
-    << "モータとエンコーダが同じ HardwareRegisterFile を見ていません";
+    << drill::localized("モータとエンコーダが同じ HardwareRegisterFile を見ていません", "The motor and the encoder do not use the same HardwareRegisterFile");
 }
 
-TEST(AbstractFactoryTest, 生成物の所有権は呼び出し側にある)
+TEST(AbstractFactoryTest, CallerOwnsCreatedProducts)
 {
   static_assert(
     std::is_same<
@@ -111,7 +113,7 @@ TEST(AbstractFactoryTest, 生成物の所有権は呼び出し側にある)
   ASSERT_NE(first, nullptr);
   ASSERT_NE(second, nullptr);
 
-  EXPECT_NE(first.get(), second.get()) << "呼ぶたびに別のインスタンスを作ること";
+  EXPECT_NE(first.get(), second.get()) << drill::localized("呼ぶたびに別のインスタンスを作ること", "Create a new instance on each call");
 
   {
     const auto temporary = factory.create_motor();
@@ -122,7 +124,7 @@ TEST(AbstractFactoryTest, 生成物の所有権は呼び出し側にある)
   EXPECT_EQ(bus.count(), 3);
 }
 
-TEST(AbstractFactoryTest, テンプレート版が実行時版と同じ結果になる)
+TEST(AbstractFactoryTest, TemplateVersionMatchesRuntimeVersion)
 {
   SimulationBus runtime_bus;
   SimulationBus static_bus;
@@ -147,7 +149,7 @@ TEST(AbstractFactoryTest, テンプレート版が実行時版と同じ結果に
   EXPECT_EQ(static_hw.count_after, 80);
 }
 
-TEST(AbstractFactoryTest, テンプレート版の部品にはvtableが無い)
+TEST(AbstractFactoryTest, TemplateVersionPartsHaveNoVtable)
 {
   // Core クラスは仮想関数を持ちません。だから vtable ポインタも持ちません。
   static_assert(!std::is_polymorphic<SimMotorCore>::value, "Core に vtable があります");

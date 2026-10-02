@@ -5,6 +5,8 @@
 #include <vector>
 
 #include "drill/velocity_filter.hpp"
+#include "drill_i18n.hpp"
+#include "drill_i18n.hpp"
 
 namespace
 {
@@ -34,7 +36,7 @@ void expect_near_all(const std::vector<double> & actual, const std::vector<doubl
 
 // --- アルゴリズムそのもの ---------------------------------------------------
 
-TEST(StrategyTest, clampは絶対値で頭打ちにする)
+TEST(StrategyTest, ClampCapsAbsoluteValue)
 {
   const ClampFilter filter{1.0};
   EXPECT_NEAR(filter.apply(0.0, 2.0), 1.0, 1e-9);
@@ -45,7 +47,7 @@ TEST(StrategyTest, clampは絶対値で頭打ちにする)
   EXPECT_NEAR(filter.apply(99.0, 0.4), 0.4, 1e-9);
 }
 
-TEST(StrategyTest, slewrateは前回値からの変化量を制限する)
+TEST(StrategyTest, SlewRateLimitsChangeFromPreviousValue)
 {
   const SlewRateFilter filter{0.5};
   EXPECT_NEAR(filter.apply(0.0, 2.0), 0.5, 1e-9);
@@ -56,7 +58,7 @@ TEST(StrategyTest, slewrateは前回値からの変化量を制限する)
 
 // --- 3 つの手段が同じ結果を出すこと ------------------------------------------
 
-TEST(StrategyTest, 仮想関数版とfunction版とテンプレート版がclampで一致する)
+TEST(StrategyTest, VirtualFunctionAndFunctionAndTemplateVersionsAgreeOnClamp)
 {
   const std::vector<double> expected = {1.0, 1.0, 1.0, -1.0, 0.4};
 
@@ -65,14 +67,14 @@ TEST(StrategyTest, 仮想関数版とfunction版とテンプレート版がclamp
   expect_near_all(run(virtual_commander), expected);
 
   FunctionCommander function_commander{make_clamp_fn(1.0)};
-  ASSERT_TRUE(function_commander.has_filter()) << "make_clamp_fn が空の std::function を返しています";
+  ASSERT_TRUE(function_commander.has_filter()) << drill::localized("make_clamp_fn が空の std::function を返しています", "make_clamp_fn returned an empty std::function");
   expect_near_all(run(function_commander), expected);
 
   StaticCommander<ClampPolicy> static_commander{ClampPolicy{1.0}};
   expect_near_all(run(static_commander), expected);
 }
 
-TEST(StrategyTest, 仮想関数版とテンプレート版がslewrateで一致する)
+TEST(StrategyTest, VirtualFunctionAndTemplateVersionsAgreeOnSlewRate)
 {
   // 0.5 ずつしか動けない: 0.5 → 1.0 → 1.5 → 1.0 → 0.5
   const std::vector<double> expected = {0.5, 1.0, 1.5, 1.0, 0.5};
@@ -87,33 +89,33 @@ TEST(StrategyTest, 仮想関数版とテンプレート版がslewrateで一致�
 
 // --- 実行時の差し替え -------------------------------------------------------
 
-TEST(StrategyTest, 仮想関数版は実行時にStrategyを差し替えられる)
+TEST(StrategyTest, VirtualFunctionVersionSwapsStrategyAtRuntime)
 {
   const ClampFilter clamp{1.0};
   const SlewRateFilter slew{0.5};
 
   VirtualCommander commander{clamp};
-  EXPECT_NEAR(commander.update(2.0), 1.0, 1e-9) << "clamp なので 1.0 に頭打ち";
+  EXPECT_NEAR(commander.update(2.0), 1.0, 1e-9) << drill::localized("clamp なので 1.0 に頭打ち", "It is a clamp, so it is capped at 1.0");
 
   commander.set_filter(slew);
   // previous_ は 1.0 のまま。slew に替わったので 0.5 しか動けない。
-  EXPECT_NEAR(commander.update(5.0), 1.5, 1e-9) << "Strategy が差し替わっていません";
+  EXPECT_NEAR(commander.update(5.0), 1.5, 1e-9) << drill::localized("Strategy が差し替わっていません", "The Strategy was not swapped");
 }
 
-TEST(StrategyTest, 仮想関数版はStrategyを所有せず参照で指している)
+TEST(StrategyTest, VirtualFunctionVersionReferencesStrategyWithoutOwningIt)
 {
   const ClampFilter clamp{1.0};
   const SlewRateFilter slew{0.5};
 
   VirtualCommander commander{clamp};
   EXPECT_EQ(commander.filter(), &clamp)
-    << "Strategy をコピーして持っています。ポインタで指してください（コピーするとスライシング）";
+    << drill::localized("Strategy をコピーして持っています。ポインタで指してください（コピーするとスライシング）", "The Strategy is held by copy. Point to it with a pointer (copying causes slicing)");
 
   commander.set_filter(slew);
   EXPECT_EQ(commander.filter(), &slew);
 }
 
-TEST(StrategyTest, function版はラムダを直接渡せる)
+TEST(StrategyTest, FunctionVersionAcceptsLambdaDirectly)
 {
   int call_count = 0;
 
@@ -131,10 +133,10 @@ TEST(StrategyTest, function版はラムダを直接渡せる)
   // 実行時に別のラムダへ差し替えられる。
   commander.set_filter([](double, double raw) { return raw; });
   EXPECT_NEAR(commander.update(9.0), 9.0, 1e-9);
-  EXPECT_EQ(call_count, 2) << "差し替え後も古いラムダが呼ばれています";
+  EXPECT_EQ(call_count, 2) << drill::localized("差し替え後も古いラムダが呼ばれています", "The old lambda is still called after the swap");
 }
 
-TEST(StrategyTest, resetで前回値が戻る)
+TEST(StrategyTest, ResetRestoresPreviousValue)
 {
   const SlewRateFilter slew{0.5};
   VirtualCommander commander{slew};
@@ -144,12 +146,12 @@ TEST(StrategyTest, resetで前回値が戻る)
 
   commander.reset();
   EXPECT_NEAR(commander.output(), 0.0, 1e-9);
-  EXPECT_NEAR(commander.update(2.0), 0.5, 1e-9) << "reset 後は前回値 0 から始まります";
+  EXPECT_NEAR(commander.update(2.0), 0.5, 1e-9) << drill::localized("reset 後は前回値 0 から始まります", "After reset, it starts again from previous value 0");
 }
 
 // --- 型の性質（ここが C++ の Strategy の核心）--------------------------------
 
-TEST(StrategyTest, テンプレート版は仮想関数を一切持たない)
+TEST(StrategyTest, TemplateVersionHasNoVirtualFunctions)
 {
   // 仮想関数版は多態。vtable がある。
   static_assert(std::is_polymorphic_v<ClampFilter>, "ClampFilter は多態のはず");

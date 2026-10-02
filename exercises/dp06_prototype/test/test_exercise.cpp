@@ -6,6 +6,8 @@
 #include <type_traits>
 
 #include "drill/waveform.hpp"
+#include "drill_i18n.hpp"
+#include "drill_i18n.hpp"
 
 // --- コンパイル時の検査 -------------------------------------------------
 //
@@ -62,61 +64,64 @@ PulseTrain make_pulse_train()
 
 }  // namespace
 
-TEST(PrototypeTest, cloneは元とは別のオブジェクトを返す)
+TEST(PrototypeTest, CloneReturnsDifferentObject)
 {
   std::unique_ptr<Waveform> original = std::make_unique<PulseTrain>(make_pulse_train());
 
   std::unique_ptr<Waveform> copy = original->clone();
 
-  ASSERT_NE(copy, nullptr) << "clone() が nullptr を返しています";
+  ASSERT_NE(copy, nullptr) << drill::localized("clone() が nullptr を返しています", "clone() returned nullptr");
   EXPECT_NE(copy.get(), original.get())
-    << "clone() が同じオブジェクトを指しています。新しい実体を作ってください";
+    << drill::localized("clone() が同じオブジェクトを指しています。新しい実体を作ってください", "clone() points to the same object. Create a new object");
 }
 
-TEST(PrototypeTest, unique_ptr経由でも派生の型が保たれる)
+TEST(PrototypeTest, DerivedTypeIsPreservedThroughUniquePtr)
 {
   // 呼ぶ側は「Waveform であること」しか知らない。それでも実体の型が複製されるのが Prototype。
   std::unique_ptr<Waveform> original = std::make_unique<PulseTrain>(make_pulse_train());
 
   std::unique_ptr<Waveform> copy = original->clone();
 
-  ASSERT_NE(copy, nullptr) << "clone() が nullptr を返しています";
+  ASSERT_NE(copy, nullptr) << drill::localized("clone() が nullptr を返しています", "clone() returned nullptr");
   EXPECT_EQ(copy->name(), "PulseTrain");
   EXPECT_NE(dynamic_cast<PulseTrain *>(copy.get()), nullptr)
-    << "複製の実体が PulseTrain になっていません。"
-       "do_clone() が基底やほかの型を作っていないか確認してください";
+    << drill::localized(
+         "複製の実体が PulseTrain になっていません。"
+         "do_clone() が基底やほかの型を作っていないか確認してください",
+         "The copy is not a PulseTrain. "
+         "Check that do_clone() does not create the base class or another type");
 }
 
-TEST(PrototypeTest, SineSweepもcloneで複製できる)
+TEST(PrototypeTest, SineSweepCanAlsoBeCloned)
 {
   std::unique_ptr<Waveform> original = std::make_unique<SineSweep>(10.0, 200.0, 8);
 
   std::unique_ptr<Waveform> copy = original->clone();
 
-  ASSERT_NE(copy, nullptr) << "clone() が nullptr を返しています";
+  ASSERT_NE(copy, nullptr) << drill::localized("clone() が nullptr を返しています", "clone() returned nullptr");
   EXPECT_EQ(copy->name(), "SineSweep");
 
   SineSweep * swept = dynamic_cast<SineSweep *>(copy.get());
-  ASSERT_NE(swept, nullptr) << "複製の実体が SineSweep になっていません";
+  ASSERT_NE(swept, nullptr) << drill::localized("複製の実体が SineSweep になっていません", "The copy is not a SineSweep");
   EXPECT_DOUBLE_EQ(swept->start_hz(), 10.0);
   EXPECT_DOUBLE_EQ(swept->end_hz(), 200.0);
 }
 
-TEST(PrototypeTest, cloneした波形は深いコピーになっている)
+TEST(PrototypeTest, ClonedWaveformIsDeepCopy)
 {
   std::unique_ptr<Waveform> original = std::make_unique<PulseTrain>(make_pulse_train());
   std::unique_ptr<Waveform> copy = original->clone();
-  ASSERT_NE(copy, nullptr) << "clone() が nullptr を返しています";
+  ASSERT_NE(copy, nullptr) << drill::localized("clone() が nullptr を返しています", "clone() returned nullptr");
 
   // 複製したあとで元を書き換える。深いコピーなら複製は影響を受けない。
   dynamic_cast<PulseTrain *>(original.get())->set_sample(0, 999.0);
 
   EXPECT_DOUBLE_EQ(copy->sample(0), 1.0)
-    << "元を書き換えたら複製も変わりました。浅いコピーになっています";
+    << drill::localized("元を書き換えたら複製も変わりました。浅いコピーになっています", "Changing the original also changed the copy. It is a shallow copy");
   EXPECT_DOUBLE_EQ(original->sample(0), 999.0);
 }
 
-TEST(PrototypeTest, PulseTrainのコピーコンストラクタが深いコピーを作る)
+TEST(PrototypeTest, PulseTrainCopyConstructorMakesDeepCopy)
 {
   // 型が分かっているならこちらが正解。clone() は要らない。
   PulseTrain original = make_pulse_train();
@@ -124,25 +129,25 @@ TEST(PrototypeTest, PulseTrainのコピーコンストラクタが深いコピ�
 
   for (std::size_t i = 0; i < kPatternLength; ++i) {
     EXPECT_DOUBLE_EQ(copy.sample(i), static_cast<double>(i) + 1.0)
-      << i << " 番目のサンプルが写されていません";
+      << i << drill::localized(" 番目のサンプルが写されていません", " th sample was not copied");
   }
   EXPECT_EQ(copy.label(), "gripper");
 }
 
-TEST(PrototypeTest, 複製はバッファを共有しない)
+TEST(PrototypeTest, CloneDoesNotShareBuffer)
 {
   PulseTrain original = make_pulse_train();
   std::unique_ptr<Waveform> copy = original.clone();
-  ASSERT_NE(copy, nullptr) << "clone() が nullptr を返しています";
+  ASSERT_NE(copy, nullptr) << drill::localized("clone() が nullptr を返しています", "clone() returned nullptr");
 
   PulseTrain * copied = dynamic_cast<PulseTrain *>(copy.get());
   ASSERT_NE(copied, nullptr);
 
   EXPECT_NE(copied->data(), original.data())
-    << "複製が元と同じ配列を指しています。二重解放の一歩手前です";
+    << drill::localized("複製が元と同じ配列を指しています。二重解放の一歩手前です", "The copy points to the same array as the original. This is close to a double free");
 }
 
-TEST(PrototypeTest, duplicateは要素数と型を保つ)
+TEST(PrototypeTest, DuplicatePreservesCountAndTypes)
 {
   WaveformLibrary library;
   library.add(std::make_unique<PulseTrain>(make_pulse_train()));
@@ -150,21 +155,21 @@ TEST(PrototypeTest, duplicateは要素数と型を保つ)
 
   WaveformLibrary copy = library.duplicate();
 
-  ASSERT_EQ(copy.size(), 2u) << "duplicate() が全要素を複製していません";
+  ASSERT_EQ(copy.size(), 2u) << drill::localized("duplicate() が全要素を複製していません", "duplicate() did not copy all elements");
   EXPECT_EQ(copy.at(0).name(), "PulseTrain");
   EXPECT_EQ(copy.at(1).name(), "SineSweep");
 }
 
-TEST(PrototypeTest, duplicateした要素は元と共有されない)
+TEST(PrototypeTest, DuplicatedElementsAreNotSharedWithOriginal)
 {
   WaveformLibrary library;
   library.add(std::make_unique<PulseTrain>(make_pulse_train()));
 
   WaveformLibrary copy = library.duplicate();
-  ASSERT_EQ(copy.size(), 1u) << "duplicate() が全要素を複製していません";
+  ASSERT_EQ(copy.size(), 1u) << drill::localized("duplicate() が全要素を複製していません", "duplicate() did not copy all elements");
 
   EXPECT_NE(&copy.at(0), &library.at(0))
-    << "duplicate() が同じオブジェクトを共有しています";
+    << drill::localized("duplicate() が同じオブジェクトを共有しています", "duplicate() shares the same object");
   EXPECT_DOUBLE_EQ(copy.at(0).sample(0), 1.0)
-    << "複製された要素の状態が写っていません";
+    << drill::localized("複製された要素の状態が写っていません", "The state of the copied element was not carried over");
 }

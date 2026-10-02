@@ -38,7 +38,7 @@ If you combine a real motor with a simulated encoder, the control runs away as i
 ## Common pitfalls
 
 - If you pass **different buses** to `create_motor()` and `create_encoder()`, the family gets mixed.
-  The test "同じファクトリから出た部品どうしは繋がっている" (parts from the same factory are connected to each other) fails it
+  The test `PartsFromSameFactoryAreConnected` fails it
 - If you write `SimulationKitFactory` inside `run_open_loop()`, the design is broken.
   The only argument is `const ActuatorKitFactory &`
 - The real-robot side has a 4x encoder, so with the same duty the count advances 4 times as much.

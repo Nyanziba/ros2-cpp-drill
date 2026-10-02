@@ -6,8 +6,10 @@
 #include <vector>
 
 #include "drill/logger_factory.hpp"
+#include "drill_i18n.hpp"
+#include "drill_i18n.hpp"
 
-TEST(FactoryMethodTest, createがロガーを返し書き込める)
+TEST(FactoryMethodTest, CreateReturnsWritableLogger)
 {
   MemoryLoggerFactory factory;
 
@@ -25,7 +27,7 @@ TEST(FactoryMethodTest, createがロガーを返し書き込める)
   EXPECT_EQ(memory_logger->lines()[1], "[motor] duty=0.0");
 }
 
-TEST(FactoryMethodTest, 成功した生成だけが順番に登録される)
+TEST(FactoryMethodTest, OnlySuccessfulCreationsAreRegisteredInOrder)
 {
   MemoryLoggerFactory factory;
 
@@ -38,7 +40,7 @@ TEST(FactoryMethodTest, 成功した生成だけが順番に登録される)
   EXPECT_EQ(factory.registered_tags(), expected);
 }
 
-TEST(FactoryMethodTest, 生成に失敗するとnullptrが返り登録もされない)
+TEST(FactoryMethodTest, FailedCreationReturnsNullptrAndIsNotRegistered)
 {
   MemoryLoggerFactory factory;
 
@@ -52,7 +54,7 @@ TEST(FactoryMethodTest, 生成に失敗するとnullptrが返り登録もされ�
   EXPECT_EQ(factory.registered_tags(), expected);
 }
 
-TEST(FactoryMethodTest, 生成物の所有権が呼び出し側に移る)
+TEST(FactoryMethodTest, OwnershipOfProductMovesToCaller)
 {
   int alive = 0;
   MemoryLoggerFactory factory{&alive};
@@ -70,7 +72,7 @@ TEST(FactoryMethodTest, 生成物の所有権が呼び出し側に移る)
   EXPECT_EQ(factory.registered_tags().size(), 1u);
 }
 
-TEST(FactoryMethodTest, ムーブで所有権がさらに移る)
+TEST(FactoryMethodTest, MoveTransfersOwnershipFurther)
 {
   int alive = 0;
   MemoryLoggerFactory factory{&alive};
@@ -93,7 +95,7 @@ TEST(FactoryMethodTest, ムーブで所有権がさらに移る)
   EXPECT_EQ(alive, 0);
 }
 
-TEST(FactoryMethodTest, ファクトリは複数の生成物を所有しない)
+TEST(FactoryMethodTest, FactoryDoesNotOwnMultipleProducts)
 {
   int alive = 0;
   {

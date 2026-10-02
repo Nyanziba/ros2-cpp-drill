@@ -51,7 +51,7 @@ Strategy を状態なしにしておくと `const` にでき、`static` な実�
 
 - **3 つとも同じ出力**でなければいけません。手段が違うだけで、アルゴリズムは同じものです
 - `VirtualCommander` が Strategy をコピーして持つと、テスト
-  「仮想関数版はStrategyを所有せず参照で指している」がアドレス比較で落とします
+  「VirtualFunctionVersionReferencesStrategyWithoutOwningIt」がアドレス比較で落とします
 - `filter_` を `const VelocityFilter &`（参照）にしたくなりますが、
   **参照は再束縛できない**ので差し替えができません。だからポインタです
 - `VirtualCommander` は Strategy を**所有しません**。

@@ -59,13 +59,13 @@ There are 8 tests.
 
 | Test | What it checks |
 | --- | --- |
-| `instanceは何度呼んでも同じオブジェクトを返す` (instance returns the same object no matter how many times you call it) | whether the addresses are the same |
-| `状態が唯一のインスタンスで共有される` (the state is shared by the only instance) | whether the same state is visible from a different path |
-| `初期化は何度instanceを呼んでも一度しか走らない` (initialization runs only once no matter how many times you call instance) | whether the constructor runs only once |
-| `resetでボーレートが既定値に戻る` (reset restores the baud rate to the default) / `resetで送信履歴が空になる` (reset empties the send history) | the contents of `reset()` |
-| `resetはオブジェクトを作り直さない` (reset does not recreate the object) | whether the address and the construction count do not change |
-| `前のテストの状態が残っていない` (the state of the previous test does not remain) | state leaking between tests |
-| `初期化は最初のinstance呼び出しまで走らない` (initialization does not run until the first call of instance) | whether it is lazy initialization |
+| `InstanceReturnsSameObjectEveryTime` | whether the addresses are the same |
+| `StateIsSharedByTheOnlyInstance` | whether the same state is visible from a different path |
+| `InitializationRunsOnlyOnceNoMatterHowManyInstanceCalls` | whether the constructor runs only once |
+| `ResetRestoresDefaultBaudRate` / `ResetClearsTransmitHistory` | the contents of `reset()` |
+| `ResetDoesNotRecreateObject` | whether the address and the construction count do not change |
+| `StateFromPreviousTestDoesNotLeak` | state leaking between tests |
+| `InitializationWaitsForFirstInstanceCall` | whether it is lazy initialization |
 
 It also checks with `static_assert` that copy, move, and construction from outside are prohibited.
 
