@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 貢献のしかた / How to contribute
+    url: https://github.com/Nyanziba/ros2-cpp-drill/blob/main/CONTRIBUTING.md
+    about: Issue や PR を出す前に / Before opening an issue or a pull request

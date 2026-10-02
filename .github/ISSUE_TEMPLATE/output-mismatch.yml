@@ -1,0 +1,45 @@
+name: 出力が実測と違う / Output differs from the actual run
+description: 載っているコンパイルエラーや実行結果が、手元で動かした結果と違う / A compiler error or program output in the notes does not match what you get
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        この教材は「載っている出力はすべて実測」を約束しています。食い違いは誤りなので、報告を歓迎します。
+        The notes promise that every output shown is from a real run, so any mismatch is a bug. Thank you for reporting.
+  - type: input
+    id: page
+    attributes:
+      label: ページと節 / Page and section
+      description: URL か、ファイルと見出し / A URL, or the file and heading
+      placeholder: https://nyanziba.github.io/ros2-cpp-drill/c/03_ポインタ1.html の 3.4
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: 実行したコマンド / Command you ran
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 本文に載っている出力 / Output shown in the notes
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 手元の出力 / Output you got
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: 環境 / Environment
+      description: OS、`g++ --version`、Docker を使ったか、CPU（x86_64 / arm64） / OS, `g++ --version`, whether you used Docker, CPU (x86_64 / arm64)
+    validations:
+      required: true

@@ -332,6 +332,10 @@ and sensor integration.
 It does not cover the design of the autonomous navigation stack itself (implementing planners and controllers).
 That depends heavily on each individual robot, so it is outside this material.
 
+## Contributing
+
+Reports and fixes are welcome. Please read [CONTRIBUTING.en.md](CONTRIBUTING.en.md) before you open an issue or a pull request.
+
 ## License
 
 MIT. See [LICENSE](LICENSE) for details.

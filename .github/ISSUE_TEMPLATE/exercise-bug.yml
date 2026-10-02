@@ -1,0 +1,44 @@
+name: 課題・drill の不具合 / Exercise or drill bug
+description: 課題がビルドできない、テストが通らない、drill の動きがおかしい / An exercise does not build, a test fails wrongly, or drill misbehaves
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        解き方の質問ではなく、課題や drill そのものの不具合を報告する場所です。まず `./drill hint <ID>` と `./drill solution <ID>` を試してください。
+        This is for bugs in the exercises or drill itself, not for help with solving them. Please try `./drill hint <ID>` and `./drill solution <ID>` first.
+  - type: input
+    id: exercise
+    attributes:
+      label: 課題 ID / Exercise ID
+      placeholder: cppb06_const
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: 実行したコマンド / Command you ran
+      render: shell
+      placeholder: docker compose run --rm drill ./drill run cppb06
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: 出力 / Output
+      render: text
+    validations:
+      required: true
+  - type: checkboxes
+    id: solution
+    attributes:
+      label: 解答例 / Solution
+      options:
+        - label: 解答例（solutions/）を当てても同じことが起きる / The same happens with the solution from solutions/ applied
+  - type: textarea
+    id: environment
+    attributes:
+      label: 環境 / Environment
+      description: OS、Docker か直接インストールか、`DRILL_LANG` の設定 / OS, Docker or native install, `DRILL_LANG` setting
+    validations:
+      required: true
