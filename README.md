@@ -1,5 +1,7 @@
 # ROS 2 練習帳（ros2-drill）
 
+**English: [README.en.md](README.en.md)**
+
 **📖 読み物はここで読めます → <https://nyanziba.github.io/ros2-cpp-drill/>**
 （章送り・トラックのタブ・日本語の全文検索つき。インストール不要）
 
