@@ -144,10 +144,79 @@ int main()
 
 This is the output (Apple clang / macOS).
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// dangling.cpp
+#include <cstdio>
+#include <vector>
+
+class SensorObserver
+{
+public:
+  virtual ~SensorObserver() = default;          // Change 1
+  virtual void on_sample(int value_mm) = 0;     // Change 2
+};
+
+class SensorHub
+{
+public:
+  void add_observer(SensorObserver * observer)  // Change 3
+  {
+    observers_.push_back(observer);
+  }
+
+  void notify(int value_mm)
+  {
+    for (SensorObserver * observer : observers_) {
+      observer->on_sample(value_mm);
+    }
+  }
+
+private:
+  std::vector<SensorObserver *> observers_;
+};
+
+class Display : public SensorObserver
+{
+public:
+  void on_sample(int value_mm) override { std::printf("display %d\n", value_mm); }
+};
+
+class Logger : public SensorObserver
+{
+public:
+  void on_sample(int value_mm) override { std::printf("logger  %d\n", value_mm); }
+};
+
+int main()
+{
+  SensorHub hub;
+
+  Display * display = new Display{};
+  hub.add_observer(display);
+  std::printf("display addr = %p\n", static_cast<void *>(display));
+  hub.notify(100);
+  delete display;                     // display dies here
+
+  Logger * logger = new Logger{};     // the same address is reused
+  std::printf("logger  addr = %p\n", static_cast<void *>(logger));
+  hub.notify(200);                    // calls logger, thinking it is display
+  delete logger;
+  return 0;
+}
 ```
-display addr = 0x1034fa470
+
+```bash
+clang++ -std=c++17 -Wall -Wextra -Wpedantic dangling.cpp -o dangling && ./dangling
+```
+
+</details>
+
+```
+display addr = 0x1038b1ea0
 display 100
-logger  addr = 0x1034fa470
+logger  addr = 0x1038b1ea0
 logger  200
 ```
 
@@ -239,9 +308,78 @@ private:
 
 When you run it, you get this.
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// weak_hub.cpp
+#include <cstdio>
+#include <memory>
+#include <vector>
+
+class SensorObserver
+{
+public:
+  virtual ~SensorObserver() = default;
+  virtual void on_sample(int value_mm) = 0;
+};
+
+class SensorHub
+{
+public:
+  void add_observer(const std::shared_ptr<SensorObserver> & observer)
+  {
+    observers_.push_back(observer);
+  }
+
+  void notify(int value_mm)
+  {
+    // iterate while cleaning up dead subscribers
+    std::vector<std::weak_ptr<SensorObserver>> alive;
+    alive.reserve(observers_.size());
+    for (const std::weak_ptr<SensorObserver> & weak : observers_) {
+      if (const std::shared_ptr<SensorObserver> observer = weak.lock()) {
+        observer->on_sample(value_mm);
+        alive.push_back(weak);
+      }
+    }
+    observers_.swap(alive);
+  }
+
+  std::size_t observer_count() const { return observers_.size(); }
+
+private:
+  std::vector<std::weak_ptr<SensorObserver>> observers_;
+};
+
+class Display : public SensorObserver
+{
+public:
+  void on_sample(int value_mm) override { std::printf("display %d\n", value_mm); }
+};
+
+int main()
+{
+  SensorHub hub;
+  {
+    const std::shared_ptr<Display> display = std::make_shared<Display>();
+    hub.add_observer(display);
+    hub.notify(100);
+  }                       // display dies
+  hub.notify(200);        // nothing happens
+  std::printf("surviving subscriptions = %zu\n", hub.observer_count());
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic weak_hub.cpp -o weak_hub && ./weak_hub
+```
+
+</details>
+
 ```
 display 100
-生き残った購読 = 0
+surviving subscriptions = 0
 ```
 
 After the subscriber dies, `notify(200)` **does nothing. It does not crash.** This is the correct behavior.
@@ -365,6 +503,85 @@ public:
 
 This is the output.
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// self_removing.cpp
+#include <algorithm>
+#include <cstdio>
+#include <vector>
+
+class SensorObserver
+{
+public:
+  virtual ~SensorObserver() = default;
+  virtual void on_sample(int value_mm) = 0;
+};
+
+class SensorHub
+{
+public:
+  void add_observer(SensorObserver * observer) { observers_.push_back(observer); }
+
+  void remove_observer(SensorObserver * observer)
+  {
+    observers_.erase(
+      std::remove(observers_.begin(), observers_.end(), observer), observers_.end());
+  }
+
+  void notify(int value_mm)
+  {
+    for (SensorObserver * observer : observers_) {
+      observer->on_sample(value_mm);
+    }
+  }
+
+private:
+  std::vector<SensorObserver *> observers_;
+};
+
+class SelfRemoving : public SensorObserver
+{
+public:
+  SelfRemoving(SensorHub * hub, int id)
+  : hub_(hub),
+    id_(id)
+  {
+  }
+
+  void on_sample(int value_mm) override
+  {
+    std::printf("observer %d got %d\n", id_, value_mm);
+    hub_->remove_observer(this);   // changes the list in the middle of notification
+  }
+
+private:
+  SensorHub * hub_;
+  int id_;
+};
+
+int main()
+{
+  SensorHub hub;
+  SelfRemoving a{&hub, 1};
+  SelfRemoving b{&hub, 2};
+  SelfRemoving c{&hub, 3};
+  hub.add_observer(&a);
+  hub.add_observer(&b);
+  hub.add_observer(&c);
+
+  hub.notify(42);
+  std::puts("returned from notify");
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic self_removing.cpp -o self_removing && ./self_removing
+```
+
+</details>
+
 ```
 observer 1 got 42
 observer 3 got 42
@@ -430,17 +647,90 @@ a.notify(1);             // never returns
 It is an infinite loop, so you cannot observe it if you just run it.
 We measured it with a mechanism that counts the depth and forcibly stops at 8 levels.
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// cycle.cpp
+#include <cstdio>
+#include <vector>
+
+class SensorObserver
+{
+public:
+  virtual ~SensorObserver() = default;
+  virtual void on_sample(int value_mm) = 0;
+};
+
+class SensorHub
+{
+public:
+  void add_observer(SensorObserver * observer) { observers_.push_back(observer); }
+
+  void notify(int value_mm)
+  {
+    for (SensorObserver * observer : observers_) {
+      observer->on_sample(value_mm);
+    }
+  }
+
+private:
+  std::vector<SensorObserver *> observers_;
+};
+
+constexpr int kMaxDepth = 8;   // stop forcibly once this is exceeded
+int g_depth = 0;
+
+// when notified, notify another SensorHub with the same value
+class Forwarder : public SensorObserver
+{
+public:
+  explicit Forwarder(SensorHub & target) : target_(target) {}
+
+  void on_sample(int value_mm) override
+  {
+    ++g_depth;
+    if (g_depth > kMaxDepth) {
+      std::printf("reached depth %d. Stopping\n", g_depth);
+      return;
+    }
+    std::printf("depth %d\n", g_depth);
+    target_.notify(value_mm);
+  }
+
+private:
+  SensorHub & target_;
+};
+
+int main()
+{
+  SensorHub a;
+  SensorHub b;
+  Forwarder to_b{b};
+  Forwarder to_a{a};
+
+  a.add_observer(&to_b);   // when a is updated, notify b
+  b.add_observer(&to_a);   // when b is updated, notify a
+  a.notify(1);             // never returns
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic cycle.cpp -o cycle && ./cycle
+```
+
+</details>
+
 ```
 depth 1
-depth 1
-depth 2
 depth 2
 depth 3
-depth 3
-...
+depth 4
+depth 5
+depth 6
+depth 7
 depth 8
-depth 8
-depth 9 に到達。止めます
+reached depth 9. Stopping
 ```
 
 **Without the stopping mechanism, it keeps going until the stack is used up.**
@@ -514,9 +804,39 @@ for (auto it = callbacks_.begin(); it != callbacks_.end(); ++it) {
 }
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+#include <functional>
+#include <vector>
+
+int main()
+{
+  std::vector<std::function<void(int)>> callbacks_;
+  auto cb = [](int v) { (void)v; };
+  callbacks_.push_back(cb);
+  for (auto it = callbacks_.begin(); it != callbacks_.end(); ++it) {
+    if (*it == cb) { callbacks_.erase(it); break; }   // I want to write this
+  }
+  return 0;
+}
 ```
-error: invalid operands to binary expression
-      ('std::function<void (int)>' and '(lambda at fn.cpp:7:13)')
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic fn.cpp -o fn
+```
+
+</details>
+
+```
+fn.cpp: In function ‘int main()’:
+fn.cpp:10:13: error: no match for ‘operator==’ (operand types are ‘std::function<void(int)>’ and ‘main()::<lambda(int)>’)
+   10 |     if (*it == cb) { callbacks_.erase(it); break; }   // I want to write this
+      |         ~~~ ^~ ~~
+      |         |      |
+      |         |      main()::<lambda(int)>
+      |         std::function<void(int)>
+...
 ```
 
 **`std::function` cannot be compared for equality.**
@@ -755,6 +1075,97 @@ private:
 g++ -std=c++17 -Wall -Wextra -Wpedantic -fno-exceptions -fno-rtti micro.cpp -o micro
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// micro.cpp
+#include <cstddef>
+
+class SensorObserver
+{
+public:
+  virtual void on_sample(int value_mm) = 0;
+
+protected:
+  // Non-virtual protected destructor.
+  // We decided "never delete through a base class pointer", so we do not add
+  // a destructor slot to the vtable.
+  ~SensorObserver() = default;
+};
+
+template <std::size_t Capacity>
+class SensorHub
+{
+public:
+  bool subscribe(SensorObserver * observer)
+  {
+    if (observer == nullptr) {
+      return false;
+    }
+    for (std::size_t i = 0; i < Capacity; ++i) {
+      if (observers_[i] == nullptr) {
+        observers_[i] = observer;
+        return true;
+      }
+    }
+    return false;                 // full. we cannot throw an exception, so return a bool
+  }
+
+  void unsubscribe(SensorObserver * observer)
+  {
+    for (std::size_t i = 0; i < Capacity; ++i) {
+      if (observers_[i] == observer) {
+        observers_[i] = nullptr;  // do not close the gap. safe even during the notification loop
+        return;
+      }
+    }
+  }
+
+  void publish(int value_mm)
+  {
+    if (notifying_) {
+      return;                     // re-entrancy guard
+    }
+    notifying_ = true;
+    for (std::size_t i = 0; i < Capacity; ++i) {
+      SensorObserver * observer = observers_[i];
+      if (observer != nullptr) {
+        observer->on_sample(value_mm);
+      }
+    }
+    notifying_ = false;
+  }
+
+private:
+  SensorObserver * observers_[Capacity] = {};
+  bool notifying_ = false;
+};
+
+class Display : public SensorObserver
+{
+public:
+  void on_sample(int value_mm) override { last_mm_ = value_mm; }
+
+private:
+  int last_mm_ = 0;
+};
+
+int main()
+{
+  SensorHub<4> hub;
+  Display display;
+  hub.subscribe(&display);
+  hub.publish(100);
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic -fno-exceptions -fno-rtti micro.cpp -o micro
+```
+
+</details>
+
 This compiles with zero warnings under `-fno-exceptions -fno-rtti`. **There are zero allocations.**
 
 There are 4 points.
@@ -771,9 +1182,97 @@ void f(SensorObserver * p) { delete p; }
 
 becomes a compile error.
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// protected_dtor.cpp
+#include <cstddef>
+
+class SensorObserver
+{
+public:
+  virtual void on_sample(int value_mm) = 0;
+
+protected:
+  // Non-virtual protected destructor.
+  // We decided "never delete through a base class pointer", so we do not add
+  // a destructor slot to the vtable.
+  ~SensorObserver() = default;
+};
+
+template <std::size_t Capacity>
+class SensorHub
+{
+public:
+  bool subscribe(SensorObserver * observer)
+  {
+    if (observer == nullptr) {
+      return false;
+    }
+    for (std::size_t i = 0; i < Capacity; ++i) {
+      if (observers_[i] == nullptr) {
+        observers_[i] = observer;
+        return true;
+      }
+    }
+    return false;                 // full. we cannot throw an exception, so return a bool
+  }
+
+  void unsubscribe(SensorObserver * observer)
+  {
+    for (std::size_t i = 0; i < Capacity; ++i) {
+      if (observers_[i] == observer) {
+        observers_[i] = nullptr;  // do not close the gap. safe even during the notification loop
+        return;
+      }
+    }
+  }
+
+  void publish(int value_mm)
+  {
+    if (notifying_) {
+      return;                     // re-entrancy guard
+    }
+    notifying_ = true;
+    for (std::size_t i = 0; i < Capacity; ++i) {
+      SensorObserver * observer = observers_[i];
+      if (observer != nullptr) {
+        observer->on_sample(value_mm);
+      }
+    }
+    notifying_ = false;
+  }
+
+private:
+  SensorObserver * observers_[Capacity] = {};
+  bool notifying_ = false;
+};
+
+void f(SensorObserver * p) { delete p; }
+
+int main()
+{
+  return 0;
+}
 ```
-error: calling a protected destructor of class 'SensorObserver'
-note: declared protected here
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic protected_dtor.cpp -o protected_dtor
+```
+
+</details>
+
+```
+protected_dtor.cpp: In function ‘void f(SensorObserver*)’:
+protected_dtor.cpp:64:30: warning: deleting object of abstract class type ‘SensorObserver’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
+   64 | void f(SensorObserver * p) { delete p; }
+      |                              ^~~~~~~~
+protected_dtor.cpp:64:37: error: ‘SensorObserver::~SensorObserver()’ is protected within this context
+   64 | void f(SensorObserver * p) { delete p; }
+      |                                     ^
+protected_dtor.cpp:13:3: note: declared protected here
+   13 |   ~SensorObserver() = default;
+      |   ^
 ```
 
 If **a convention violation becomes a compile error**, it is a mechanism, not a convention.

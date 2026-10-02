@@ -238,6 +238,65 @@ Without `--verbose` you only get the fact that "it failed" and you cannot tell w
 
 **Practice problem**: You wrote `colcon test` in the CI script, but CI turned green even though a test failed. Why?
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```xml
+<?xml version="1.0"?>
+<!-- ~/ros2_ws/src/failpkg/package.xml -->
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>failpkg</name>
+  <version>0.0.0</version>
+  <description>Package with one deliberately failing gtest</description>
+  <maintainer email="you@example.com">your_name</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <test_depend>ament_cmake_gtest</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
+```
+
+```cmake
+# ~/ros2_ws/src/failpkg/CMakeLists.txt
+cmake_minimum_required(VERSION 3.8)
+project(failpkg)
+
+find_package(ament_cmake REQUIRED)
+
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_add_gtest(t test/t.cpp)
+endif()
+
+ament_package()
+```
+
+```cpp
+// ~/ros2_ws/src/failpkg/test/t.cpp
+#include <gtest/gtest.h>
+TEST(A, DeliberatelyFails) {
+  EXPECT_EQ(1, 2) << "This is an intentional failure";
+}
+TEST(A, Passes) {
+  EXPECT_EQ(1, 1);
+}
+```
+
+```bash
+cd ~/ros2_ws
+colcon build
+colcon test
+echo $?
+colcon test-result --verbose
+```
+
+</details>
+
 <details markdown="1"><summary>Answer</summary>
 
 Because `colcon test` **returns exit code 0 even when tests fail**. CI judges pass or fail by the exit code, so it cannot detect the failure this way.
@@ -245,9 +304,16 @@ Because `colcon test` **returns exit code 0 even when tests fail**. CI judges pa
 If you actually check with a package that contains one gtest that fails on purpose, you get this.
 
 ```
-Finished <<< failpkg [0.14s]	[ with test failures ]
+Starting >>> failpkg
+--- stderr: failpkg
+Errors while running CTest
+Output from these tests are in: /home/ubuntu/ros2_ws/build/failpkg/Testing/Temporary/LastTest.log
+Use "--rerun-failed --output-on-failure" to re-run the failed cases verbosely.
+---
+Finished <<< failpkg [0.45s]	[ with test failures ]
 
-Summary: 1 package finished [0.29s]
+Summary: 1 package finished [0.65s]
+  1 package had stderr output: failpkg
   1 package had test failures: failpkg
 $ echo $?
 0
@@ -271,15 +337,52 @@ In CI, always include either (a) or (b). A CI that only has `colcon test` is the
 Also, if you add `--verbose` to `colcon test-result`, it shows even which assertion failed. Without it, you only get the fact "1 failure".
 
 ```
-build/failpkg/test_results/failpkg/t.gtest.xml: 2 tests, 0 errors, 1 failure, 0 skipped
-- failpkg.A DeliberatelyFails (src/failpkg/test/t.cpp:3)
+build/failpkg/Testing/20261002-1117/Test.xml: 1 test, 0 errors, 1 failure, 0 skipped
+- t
   <<< failure message
+    -- run_test.py: invoking following command in '/home/ubuntu/ros2_ws/build/failpkg':
+     - /home/ubuntu/ros2_ws/build/failpkg/t --gtest_output=xml:/home/ubuntu/ros2_ws/build/failpkg/test_results/failpkg/t.gtest.xml
+    Running main() from /opt/ros/jazzy/src/gtest_vendor/src/gtest_main.cc
+    [==========] Running 2 tests from 1 test suite.
+    [----------] Global test environment set-up.
+    [----------] 2 tests from A
+    [ RUN      ] A.DeliberatelyFails
+    /home/ubuntu/ros2_ws/src/failpkg/test/t.cpp:4: Failure
     Expected equality of these values:
       1
       2
-    これは意図的な失敗
+    This is an intentional failure
+    
+    [  FAILED  ] A.DeliberatelyFails (2 ms)
+    [ RUN      ] A.Passes
+    [       OK ] A.Passes (0 ms)
+    [----------] 2 tests from A (2 ms total)
+    
+    [----------] Global test environment tear-down
+    [==========] 2 tests from 1 test suite ran. (6 ms total)
+    [  PASSED  ] 1 test.
+    [  FAILED  ] 1 test, listed below:
+    [  FAILED  ] A.DeliberatelyFails
+    
+     1 FAILED TEST
+    -- run_test.py: return code 1
+    -- run_test.py: inject classname prefix into gtest result file '/home/ubuntu/ros2_ws/build/failpkg/test_results/failpkg/t.gtest.xml'
+    -- run_test.py: verify result file '/home/ubuntu/ros2_ws/build/failpkg/test_results/failpkg/t.gtest.xml'
   >>>
+build/failpkg/test_results/failpkg/t.gtest.xml: 2 tests, 0 errors, 1 failure, 0 skipped
+- failpkg.A DeliberatelyFails (/home/ubuntu/ros2_ws/src/failpkg/test/t.cpp:3)
+  <<< failure message
+    /home/ubuntu/ros2_ws/src/failpkg/test/t.cpp:4
+    Expected equality of these values:
+      1
+      2
+    This is an intentional failure
+  >>>
+
+Summary: 3 tests, 0 errors, 2 failures, 0 skipped
 ```
+
+Both `Test.xml` (ctest's own result) and `t.gtest.xml` (gtest's result) are counted, so the Summary says 3 tests / 2 failures: the same failure is counted twice.
 
 </details>
 

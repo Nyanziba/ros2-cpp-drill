@@ -32,6 +32,22 @@ int main() {
 
 [⚠ See this error in your browser (gcc 13.3)](https://godbolt.org/z/9Pnf7nx1z)
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// not_declared.cpp
+int main() {
+  int x = add(10, 20);  // add() is not declared
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 not_declared.cpp -o not_declared
+```
+
+</details>
+
 ```
 error: ‘add’ was not declared in this scope
 ```
@@ -54,9 +70,31 @@ int main() {
 
 [⚠ See this error in your browser (gcc 13.3)](https://godbolt.org/z/aP6GPnfs7)
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// no_definition.cpp
+// declaration of add
+int add(int a, int b);
+
+int main() {
+  int x = add(10, 20);  // compiles OK
+  return 0;
+}
+
+// there is no definition of add
 ```
-/usr/bin/ld: /tmp/ccXsvxNy.o: in function `main':
-nu.cpp:(.text+0x17): undefined reference to `add(int, int)'
+
+```bash
+g++ -std=c++17 -c no_definition.cpp -o no_definition.o && g++ no_definition.o -o no_definition
+```
+
+</details>
+
+```
+/usr/bin/ld: no_definition.o: in function `main':
+no_definition.cpp:(.text+0x17): undefined reference to `add(int, int)'
+collect2: error: ld returned 1 exit status
 ```
 
 **This is a link error.** The compiler succeeded, but the linker cannot find the definition.
@@ -107,8 +145,38 @@ struct Point {
 int main() { return 0; }
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// no_guard.h
+struct Point {
+  int x;
+  int y;
+};
 ```
+
+```cpp
+// main.cpp
+#include "no_guard.h"
+#include "no_guard.h"  // second time
+int main() { return 0; }
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic -c main.cpp
+```
+
+</details>
+
+```
+In file included from main.cpp:3:
 no_guard.h:2:8: error: redefinition of ‘struct Point’
+    2 | struct Point {
+      |        ^~~~~
+In file included from main.cpp:2:
+no_guard.h:2:8: note: previous definition of ‘struct Point’
+    2 | struct Point {
+      |        ^~~~~
 ```
 
 **The error points at line 2 of `no_guard.h`** (the `struct Point {` line), not at the `#include` line in

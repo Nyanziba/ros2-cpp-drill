@@ -39,6 +39,33 @@ memcpy(bytes, &val, 4);  /* ← this is the right way */
 printf("%02x %02x %02x %02x\n", bytes[0], bytes[1], bytes[2], bytes[3]);
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// endian_check.c
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+
+int main(void)
+{
+    uint32_t val = 0x12345678;
+    unsigned char bytes[4];
+
+    /* unsafe: *(uint32_t *)&bytes[0] = val;  ← strict aliasing violation */
+    memcpy(bytes, &val, 4);  /* ← this is the right way */
+
+    printf("%02x %02x %02x %02x\n", bytes[0], bytes[1], bytes[2], bytes[3]);
+    return 0;
+}
+```
+
+```bash
+gcc -std=c99 -Wall -Wextra -Wpedantic endian_check.c -o endian_check && ./endian_check
+```
+
+</details>
+
 Measured values:
 ```
 78 56 34 12
@@ -127,10 +154,45 @@ uint32_t good = (unsigned char)raw[0] |
 printf("0x%08x\n", good);  /* result: 0x0000ff80 (correct) */
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// sign_extension.c
+#include <stdio.h>
+#include <stdint.h>
+
+int main(void)
+{
+    unsigned char raw[4] = {0x80, 0xFF, 0x00, 0x00};
+
+    /* bad example: cast with (char) and then widen */
+    uint32_t bad = (char)raw[0] |
+                   ((uint32_t)(char)raw[1] << 8) |
+                   ((uint32_t)(char)raw[2] << 16) |
+                   ((uint32_t)(char)raw[3] << 24);
+    printf("0x%08x\n", bad);  /* result: 0xffffff80 (corrupted by sign extension) */
+
+    /* good example: pass through (unsigned char) and then widen */
+    uint32_t good = (unsigned char)raw[0] |
+                    ((uint32_t)(unsigned char)raw[1] << 8) |
+                    ((uint32_t)(unsigned char)raw[2] << 16) |
+                    ((uint32_t)(unsigned char)raw[3] << 24);
+    printf("0x%08x\n", good);  /* result: 0x0000ff80 (correct) */
+
+    return 0;
+}
+```
+
+```bash
+gcc -std=c99 -Wall -Wextra -Wpedantic sign_extension.c -o sign_extension && ./sign_extension
+```
+
+</details>
+
 Measured value (bad example): `0xffffff80`  
 Measured value (good example): `0x0000ff80`
 
-**The difference is `0xFF000000` — the upper 3 bytes were filled with 1 by sign extension.**
+**The difference is `0xFFFF0000` — the upper bytes were filled with 1 by sign extension.**
 
 ## 11.6 Learning from the implementation of the example CAN protocol (fictional)
 
@@ -182,11 +244,68 @@ if (original == recovered) {
 ```
 
 Measured:
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// float_roundtrip.c
+#include <stdio.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <string.h>
+
+/* pack a float into a byte sequence in little endian */
+void write_float_le(float value, unsigned char data[8], size_t offset) {
+    uint32_t u32;
+    memcpy(&u32, &value, sizeof(value));  /* ← no type punning, safe with memcpy */
+
+    data[offset + 0] = (unsigned char)(u32 & 0xFF);
+    data[offset + 1] = (unsigned char)((u32 >> 8) & 0xFF);
+    data[offset + 2] = (unsigned char)((u32 >> 16) & 0xFF);
+    data[offset + 3] = (unsigned char)((u32 >> 24) & 0xFF);
+}
+
+/* read a float from a byte sequence in little endian */
+float read_float_le(const unsigned char data[8], size_t offset) {
+    uint32_t u32 = (unsigned char)data[offset + 0] |
+                   ((uint32_t)(unsigned char)data[offset + 1] << 8) |
+                   ((uint32_t)(unsigned char)data[offset + 2] << 16) |
+                   ((uint32_t)(unsigned char)data[offset + 3] << 24);
+
+    float f;
+    memcpy(&f, &u32, sizeof(f));  /* ← no type punning, safe with memcpy */
+    return f;
+}
+
+int main(void)
+{
+    float original = 3.14f;
+    unsigned char data[8] = {0};
+
+    write_float_le(original, data, 1);
+    float recovered = read_float_le(data, 1);
+
+    if (original == recovered) {
+        printf("Round trip succeeded\n");
+    }
+
+    printf("original value: %g\n", original);
+    printf("bytes: %02x %02x %02x %02x\n", data[1], data[2], data[3], data[4]);
+    printf("recovered value: %g\n", recovered);
+    return 0;
+}
 ```
-元の値: 3.14
-バイト列: c3 f5 48 40 
-復元値: 3.14
-→ 往復一致
+
+```bash
+gcc -std=c99 -Wall -Wextra -Wpedantic float_roundtrip.c -o float_roundtrip && ./float_roundtrip
+```
+
+</details>
+
+```
+Round trip succeeded
+original value: 3.14
+bytes: c3 f5 48 40
+recovered value: 3.14
 ```
 
 ## Try it yourself

@@ -351,8 +351,38 @@ g++ -std=c++17 -Wall -Wextra autocopy.cpp -o autocopy && ./autocopy
 
 **符号なし整数の比較で警告が出る**
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// signcompare.cpp
+#include <iostream>
+#include <vector>
+
+int main()
+{
+  std::vector<int> v{10, 20, 30};
+
+  for (int i = 0; i < v.size(); ++i) {
+    std::cout << v[i] << "\n";
+  }
+  return 0;
+}
 ```
-warning: comparison of integer expressions of different signedness [-Wsign-compare]
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic signcompare.cpp -o signcompare && ./signcompare
+```
+
+</details>
+
+```
+signcompare.cpp: In function ‘int main()’:
+signcompare.cpp:9:21: warning: comparison of integer expressions of different signedness: ‘int’ and ‘std::vector<int>::size_type’ {aka ‘long unsigned int’} [-Wsign-compare]
+    9 |   for (int i = 0; i < v.size(); ++i) {
+      |                   ~~^~~~~~~~~~
+10
+20
+30
 ```
 
 `int i` と `v.size()` を比較しています。`size_t i` にするか、

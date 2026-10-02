@@ -226,7 +226,10 @@ int main()
 ```
 terminate called after throwing an instance of 'std::runtime_error'
   what():  Exception from destructor
+Aborted
 ```
+
+The last line, `Aborted`, is a message printed by the shell, not by the program (measured in an interactive shell).
 
 The destructor of `BadDtor` tries to throw an exception, but a `std::runtime_error` is already propagating.
 Throwing a second exception at that point is UB (undefined behavior), and `std::terminate` is called.
@@ -279,16 +282,58 @@ int main()
 
 [▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/d53Ev7z3Y)
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// noexcept_violation.cpp
+#include <iostream>
+#include <stdexcept>
+
+void safe_operation() noexcept
+{
+  std::cout << "Safe operation\n";
+}
+
+void unsafe_operation() noexcept
+{
+  throw std::runtime_error("Throwing an exception");  // noexcept violation
+}
+
+int main()
+{
+  try {
+    safe_operation();
+    unsafe_operation();
+  } catch (const std::exception & e) {
+    std::cout << "Caught: " << e.what() << "\n";
+  }
+
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic noexcept_violation.cpp -o noexcept_violation && ./noexcept_violation
+```
+
+</details>
+
 ```
 Safe operation
 terminate called after throwing an instance of 'std::runtime_error'
   what():  Throwing an exception
+Aborted
 ```
 
-The compiler gives a warning.
+The last line, `Aborted`, is a message printed by the shell, not by the program (measured in an interactive shell).
+
+The compiler gives a warning (it appears when you compile the program above).
 
 ```
-warning: 'throw' will always call 'terminate' [-Wterminate]
+noexcept_violation.cpp: In function ‘void unsafe_operation()’:
+noexcept_violation.cpp:12:3: warning: ‘throw’ will always call ‘terminate’ [-Wterminate]
+   12 |   throw std::runtime_error("Throwing an exception");  // noexcept violation
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ```
 
 `noexcept` is not just documentation. It is also a **basis for compiler optimization.**

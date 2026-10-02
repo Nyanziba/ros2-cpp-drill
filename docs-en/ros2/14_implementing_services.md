@@ -214,7 +214,7 @@ ros2 run py_srvcli client 2 3
 ```
 
 ```
-[INFO] [minimal_client_async]: Result of add_two_ints: for 2 + 3 = 5
+[INFO] [1790937390.907519089] [minimal_client_async]: Result of add_two_ints: for 2 + 3 = 5
 ```
 
 ### Calling synchronously inside a callback causes a deadlock

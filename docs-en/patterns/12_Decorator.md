@@ -110,8 +110,58 @@ So **the message "please hand over the ownership" is written in the type of the 
 
 If you write `inner_(inner)` in the initializer list, it is a compile error.
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// copy_inner.cpp
+#include <memory>
+#include <string>
+#include <utility>
+
+class LogSink
+{
+public:
+  virtual ~LogSink() = default;
+  virtual std::string format(const std::string & message) const = 0;
+};
+
+class SinkDecorator : public LogSink
+{
+public:
+  explicit SinkDecorator(std::unique_ptr<LogSink> inner)
+  : inner_(inner)                                          // forgot std::move
+  {
+  }
+
+protected:
+  const LogSink & inner() const { return *inner_; }
+
+private:
+  std::unique_ptr<LogSink> inner_;
+};
+
+int main()
+{
+  return 0;
+}
 ```
-error: call to implicitly-deleted copy constructor of 'std::unique_ptr<LogSink>'
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic copy_inner.cpp -o copy_inner
+```
+
+</details>
+
+```
+copy_inner.cpp: In constructor ‘SinkDecorator::SinkDecorator(std::unique_ptr<LogSink>)’:
+copy_inner.cpp:17:5: error: use of deleted function ‘std::unique_ptr<_Tp, _Dp>::unique_ptr(const std::unique_ptr<_Tp, _Dp>&) [with _Tp = LogSink; _Dp = std::default_delete<LogSink>]’
+   17 |   : inner_(inner)                                          // forgot std::move
+      |     ^~~~~~~~~~~~~
+In file included from /usr/include/c++/13/memory:78,
+                 from copy_inner.cpp:2:
+/usr/include/c++/13/bits/unique_ptr.h:522:7: note: declared here
+  522 |       unique_ptr(const unique_ptr&) = delete;
+      |       ^~~~~~~~~~
 ```
 
 Receiving it as `const std::unique_ptr<LogSink> &` is **wrong.**
@@ -185,18 +235,88 @@ public:
 };
 ```
 
-Apple clang warns at compile time (`-Wall -Wextra -Wpedantic`).
+g++ 13.3 does not warn at compile time with `-Wall -Wextra -Wpedantic`.
+
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// novirt.cpp
+#include <iostream>
+#include <memory>
+#include <string>
+#include <utility>
+
+class Sink
+{
+public:
+  ~Sink() {}                                   // forgot to write virtual
+  virtual std::string format(const std::string & m) const = 0;
+};
+
+class Plain : public Sink
+{
+public:
+  ~Plain() { std::cout << "~Plain\n"; }
+  std::string format(const std::string & m) const override { return m; }
+};
+
+class Border : public Sink
+{
+public:
+  Border(std::unique_ptr<Sink> inner, std::string tag)
+  : inner_(std::move(inner)), tag_(std::move(tag))
+  {
+  }
+  ~Border() { std::cout << "~Border(" << tag_ << ")\n"; }
+
+  std::string format(const std::string & m) const override
+  {
+    return tag_ + " " + inner_->format(m);
+  }
+
+private:
+  std::unique_ptr<Sink> inner_;
+  std::string tag_;
+};
+
+int main()
+{
+  std::unique_ptr<Sink> sink = std::make_unique<Border>(
+    std::make_unique<Border>(std::make_unique<Plain>(), "[INFO]"), "12:00:00");
+  std::cout << sink->format("moving") << "\n";
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic novirt.cpp -o novirt 2>&1 | grep 'warning:'
+./novirt; echo "exit code $?"
+```
+
+</details>
+
+`grep 'warning:'` in the command prints nothing. The `delete` inside `unique_ptr` happens inside a standard library header, so g++ suppresses the warning.
+If you add `-Wnon-virtual-dtor`, a warning appears on the class declaration (only the first line is excerpted).
+
+```bash
+g++ -std=c++17 -Wnon-virtual-dtor novirt.cpp -o novirt 2>&1 | grep -m1 'warning:'
+```
 
 ```
-warning: delete called on 'Sink' that is abstract but has non-virtual destructor
-         [-Wdelete-abstract-non-virtual-dtor]
-warning: delete called on non-final 'Border' that has virtual functions but
-         non-virtual destructor [-Wdelete-non-abstract-non-virtual-dtor]
+novirt.cpp:7:7: warning: ‘class Sink’ has virtual functions and accessible non-virtual destructor [-Wnon-virtual-dtor]
 ```
 
-And when I ran it on my machine, it crashed with exit code 133 without even printing the output of `format()`.
+And when you run it, **it did not crash**. It printed the result of `format()` on one line and exited with code 0.
+But neither `~Border` nor `~Plain` is printed even once. The inside was never destroyed.
+
+```
+12:00:00 [INFO] moving
+exit code 0
+```
+
+If you build with `-fsanitize=address` and run it, it stops with `new-delete-type-mismatch` (48 bytes were allocated, but the deleted type is 8 bytes).
 **It is undefined behavior, so what happens depends on the environment.**
-If you are lucky it crashes, and if you are unlucky it silently keeps leaking only the inside.
+If you are lucky it crashes, and if you are unlucky it silently keeps leaking only the inside. With g++ it was the latter.
 
 The reasoning is this. The outer object is held by `std::unique_ptr<Sink>`,
 so only `~Sink()` is called at release. `~Border()` is not called
@@ -205,7 +325,7 @@ The deeper the nesting, the more is leaked all at once.
 
 The nesting is the main body of Decorator, so **the damage of forgetting the virtual destructor is the biggest in this pattern.**
 
-Let us also look at the order of destruction when it is written correctly (this is the measurement of 12.6).
+Let us also look at the order of destruction when it is written correctly (this is the measurement of 12.7; it is the second block of its output).
 
 ```
 ~Border([INFO])

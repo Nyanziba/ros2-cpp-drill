@@ -331,6 +331,57 @@ bool has_cycle(const Node * head)
 
 Running it gives this (`straight` is a straight line, and `cyclic` is after adding `c -> a`).
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// cycle.cpp
+#include <cstdio>
+
+class Node
+{
+public:
+  void set_next(Node * next) { next_ = next; }
+  const Node * next() const { return next_; }
+
+private:
+  Node * next_ = nullptr;
+};
+
+bool has_cycle(const Node * head)
+{
+  const Node * slow = head;
+  const Node * fast = head;
+  while (fast != nullptr && fast->next() != nullptr) {
+    slow = slow->next();
+    fast = fast->next()->next();
+    if (slow == fast) {
+      return true;
+    }
+  }
+  return false;
+}
+
+int main()
+{
+  Node a;
+  Node b;
+  Node c;
+  a.set_next(&b);
+  b.set_next(&c);
+  std::printf("straight: %d\n", has_cycle(&a) ? 1 : 0);
+
+  c.set_next(&a);      // it became a ring
+  std::printf("cyclic:   %d\n", has_cycle(&a) ? 1 : 0);
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic cycle.cpp -o cycle && ./cycle
+```
+
+</details>
+
 ```
 straight: 0
 cyclic:   1
@@ -353,6 +404,48 @@ head->set_next(std::move(head));    // make it own itself
 std::cout << "head is " << (head ? "alive" : "null") << "\n";
 std::cout << "--- leaving main ---\n";
 ```
+
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// self_owned.cpp
+#include <iostream>
+#include <memory>
+#include <string>
+#include <utility>
+
+class Handler
+{
+public:
+  explicit Handler(std::string name) : name_(std::move(name)) {}
+  virtual ~Handler() { std::cout << "dtor " << name_ << "\n"; }
+
+  Handler & set_next(std::unique_ptr<Handler> next)
+  {
+    next_ = std::move(next);
+    return *next_;
+  }
+
+private:
+  std::string name_;
+  std::unique_ptr<Handler> next_;
+};
+
+int main()
+{
+  auto head = std::make_unique<Handler>("head");
+  head->set_next(std::move(head));    // make it own itself
+  std::cout << "head is " << (head ? "alive" : "null") << "\n";
+  std::cout << "--- leaving main ---\n";
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic self_owned.cpp -o self_owned && ./self_owned
+```
+
+</details>
 
 ```
 head is null
@@ -635,6 +728,128 @@ This is the result of passing 3 faults from `main`.
 ```bash
 g++ -std=c++17 -Wall -Wextra -Wpedantic -fno-exceptions -fno-rtti mcu.cpp -o mcu && ./mcu
 ```
+
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// mcu.cpp
+#include <cstddef>
+#include <cstdio>
+
+enum class FaultKind
+{
+  kLowVoltage,
+  kOverCurrent,
+  kCommTimeout,
+};
+
+struct Fault
+{
+  FaultKind kind;
+  int magnitude;
+};
+
+/// Do not use std::optional (value() can throw).
+/// When handled == false, the promise is that handler_name / action are not read.
+struct FaultAction
+{
+  bool handled = false;
+  const char * handler_name = nullptr;
+  const char * action = nullptr;
+};
+
+/// It has no next. The shape of the chain is held by the array side.
+class FaultHandler
+{
+public:
+  virtual ~FaultHandler() = default;
+  virtual FaultAction resolve(const Fault & fault) const = 0;
+};
+
+class LowVoltageHandler : public FaultHandler
+{
+public:
+  constexpr explicit LowVoltageHandler(int threshold_mv)
+  : threshold_mv_(threshold_mv)
+  {
+  }
+
+  FaultAction resolve(const Fault & fault) const override
+  {
+    if (fault.kind == FaultKind::kLowVoltage && fault.magnitude < threshold_mv_) {
+      return FaultAction{true, "low_voltage", "reduce_duty"};
+    }
+    return FaultAction{};
+  }
+
+private:
+  int threshold_mv_;
+};
+
+class OverCurrentHandler : public FaultHandler
+{
+public:
+  constexpr explicit OverCurrentHandler(int limit_ma)
+  : limit_ma_(limit_ma)
+  {
+  }
+
+  FaultAction resolve(const Fault & fault) const override
+  {
+    if (fault.kind == FaultKind::kOverCurrent && fault.magnitude >= limit_ma_) {
+      return FaultAction{true, "over_current", "cut_output"};
+    }
+    return FaultAction{};
+  }
+
+private:
+  int limit_ma_;
+};
+
+// Static storage. Uses neither the heap nor new.
+LowVoltageHandler low_voltage{11000};
+OverCurrentHandler over_current{20000};
+
+// The "order" of the chain is the order of this array itself.
+FaultHandler * const kChain[] = {&low_voltage, &over_current};
+constexpr std::size_t kChainSize = sizeof(kChain) / sizeof(kChain[0]);
+
+FaultAction dispatch(const Fault & fault)
+{
+  for (std::size_t i = 0; i < kChainSize; ++i) {
+    const FaultAction action = kChain[i]->resolve(fault);
+    if (action.handled) {
+      return action;
+    }
+  }
+  return FaultAction{};   // nobody handled it
+}
+
+int main()
+{
+  const Fault faults[] = {
+    Fault{FaultKind::kLowVoltage, 10500},
+    Fault{FaultKind::kOverCurrent, 25000},
+    Fault{FaultKind::kCommTimeout, 0},
+  };
+
+  for (const Fault & fault : faults) {
+    const FaultAction action = dispatch(fault);
+    if (action.handled) {
+      std::printf("%s -> %s\n", action.handler_name, action.action);
+    } else {
+      std::printf("unhandled\n");
+    }
+  }
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic -fno-exceptions -fno-rtti mcu.cpp -o mcu && ./mcu
+```
+
+</details>
 
 ```
 low_voltage -> reduce_duty

@@ -110,8 +110,58 @@ explicit SinkDecorator(std::unique_ptr<LogSink> inner)   // 値で受ける
 
 初期化子リストで `inner_(inner)` と書くとコンパイルエラーです。
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// copy_inner.cpp
+#include <memory>
+#include <string>
+#include <utility>
+
+class LogSink
+{
+public:
+  virtual ~LogSink() = default;
+  virtual std::string format(const std::string & message) const = 0;
+};
+
+class SinkDecorator : public LogSink
+{
+public:
+  explicit SinkDecorator(std::unique_ptr<LogSink> inner)
+  : inner_(inner)                                          // std::move を忘れた
+  {
+  }
+
+protected:
+  const LogSink & inner() const { return *inner_; }
+
+private:
+  std::unique_ptr<LogSink> inner_;
+};
+
+int main()
+{
+  return 0;
+}
 ```
-error: call to implicitly-deleted copy constructor of 'std::unique_ptr<LogSink>'
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic copy_inner.cpp -o copy_inner
+```
+
+</details>
+
+```
+copy_inner.cpp: In constructor ‘SinkDecorator::SinkDecorator(std::unique_ptr<LogSink>)’:
+copy_inner.cpp:17:5: error: use of deleted function ‘std::unique_ptr<_Tp, _Dp>::unique_ptr(const std::unique_ptr<_Tp, _Dp>&) [with _Tp = LogSink; _Dp = std::default_delete<LogSink>]’
+   17 |   : inner_(inner)                                          // std::move を忘れた
+      |     ^~~~~~~~~~~~~
+In file included from /usr/include/c++/13/memory:78,
+                 from copy_inner.cpp:2:
+/usr/include/c++/13/bits/unique_ptr.h:522:7: note: declared here
+  522 |       unique_ptr(const unique_ptr&) = delete;
+      |       ^~~~~~~~~~
 ```
 
 `const std::unique_ptr<LogSink> &` で受けるのは**間違い**です。
@@ -185,18 +235,88 @@ public:
 };
 ```
 
-Apple clang はコンパイル時点で警告します（`-Wall -Wextra -Wpedantic`）。
+g++ 13.3 は、`-Wall -Wextra -Wpedantic` ではコンパイル時に何も警告しません。
+
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// novirt.cpp
+#include <iostream>
+#include <memory>
+#include <string>
+#include <utility>
+
+class Sink
+{
+public:
+  ~Sink() {}                                   // virtual を書き忘れた
+  virtual std::string format(const std::string & m) const = 0;
+};
+
+class Plain : public Sink
+{
+public:
+  ~Plain() { std::cout << "~Plain\n"; }
+  std::string format(const std::string & m) const override { return m; }
+};
+
+class Border : public Sink
+{
+public:
+  Border(std::unique_ptr<Sink> inner, std::string tag)
+  : inner_(std::move(inner)), tag_(std::move(tag))
+  {
+  }
+  ~Border() { std::cout << "~Border(" << tag_ << ")\n"; }
+
+  std::string format(const std::string & m) const override
+  {
+    return tag_ + " " + inner_->format(m);
+  }
+
+private:
+  std::unique_ptr<Sink> inner_;
+  std::string tag_;
+};
+
+int main()
+{
+  std::unique_ptr<Sink> sink = std::make_unique<Border>(
+    std::make_unique<Border>(std::make_unique<Plain>(), "[INFO]"), "12:00:00");
+  std::cout << sink->format("moving") << "\n";
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic novirt.cpp -o novirt 2>&1 | grep 'warning:'
+./novirt; echo "exit code $?"
+```
+
+</details>
+
+コマンドの `grep 'warning:'` は何も出力しません。`unique_ptr` の中の `delete` は標準ライブラリのヘッダの中で起きるので、g++ は警告を抑えます。
+`-Wnon-virtual-dtor` を足せば、クラスの宣言に警告が出ます（先頭の 1 行だけ抜粋します）。
+
+```bash
+g++ -std=c++17 -Wnon-virtual-dtor novirt.cpp -o novirt 2>&1 | grep -m1 'warning:'
+```
 
 ```
-warning: delete called on 'Sink' that is abstract but has non-virtual destructor
-         [-Wdelete-abstract-non-virtual-dtor]
-warning: delete called on non-final 'Border' that has virtual functions but
-         non-virtual destructor [-Wdelete-non-abstract-non-virtual-dtor]
+novirt.cpp:7:7: warning: ‘class Sink’ has virtual functions and accessible non-virtual destructor [-Wnon-virtual-dtor]
 ```
 
-そして手元で実行すると、`format()` の出力すら出ないまま終了コード 133 で落ちました。
+そして実行すると、**落ちませんでした**。`format()` の結果を 1 行出して、終了コード 0 で終わります。
+ただし `~Border` も `~Plain` も 1 度も出力されていません。内側は破棄されていません。
+
+```
+12:00:00 [INFO] moving
+exit code 0
+```
+
+`-fsanitize=address` を付けて実行すると、`new-delete-type-mismatch`（確保したのは 48 バイト、`delete` した型は 8 バイト）で止まります。
 **未定義動作なので、何が起きるかは環境によって変わります。**
-運が良ければ落ち、悪ければ黙って内側だけ漏れ続けます。
+運が良ければ落ち、悪ければ黙って内側だけ漏れ続けます。g++ では後者でした。
 
 理屈はこうです。外側は `std::unique_ptr<Sink>` で持たれているので、
 解放時に呼ばれるのは `~Sink()` だけです。`~Border()` が呼ばれない
@@ -205,7 +325,7 @@ warning: delete called on non-final 'Border' that has virtual functions but
 
 Decorator は入れ子が本体なので、**このパターンで仮想デストラクタを忘れる被害はいちばん大きい**です。
 
-正しく書いたときの破棄の順番も見ておきます（12.6 の実測です）。
+正しく書いたときの破棄の順番も見ておきます（12.7 の実測です。出力の 2 つ目のブロックにあたります）。
 
 ```
 ~Border([INFO])

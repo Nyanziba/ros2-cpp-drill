@@ -30,25 +30,85 @@ void wait_without_volatile(void) {
 }
 ```
 
-**Case `-O0` (the relevant part of the assembly):**
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// wait_without_volatile.c
+#include <stdint.h>
+#include <stdio.h>
+
+void wait_without_volatile(void) {
+    uint32_t flag = 0;
+    int count = 0;
+    while (flag == 0) {
+        count++;
+    }
+    printf("Done\n");
+}
+```
+
+```bash
+gcc -std=c99 -O0 -S -fcf-protection=none -fno-asynchronous-unwind-tables -o - wait_without_volatile.c | sed -n '/^wait_without_volatile:/,/\.size/p'
+gcc -std=c99 -O2 -S -fcf-protection=none -fno-asynchronous-unwind-tables -o - wait_without_volatile.c | sed -n '/^wait_without_volatile:/,/\.size/p'
+```
+
+</details>
+
+**Case `-O0` (the assembly of the whole function):**
 
 ```
-cmpl	$0, -4(%rbp)      # read flag from memory
-je	.L3                   # jump to .L3 if 0
+wait_without_volatile:
+	pushq	%rbp
+	movq	%rsp, %rbp
+	subq	$16, %rsp
+	movl	$0, -4(%rbp)
+	movl	$0, -8(%rbp)
+	jmp	.L2
 .L3:
-	addl	$1, -8(%rbp)   # increment count
+	addl	$1, -8(%rbp)
 .L2:
-	cmpl	$0, -4(%rbp)   # re-read flag from memory every time
-	je	.L3                # ...
+	cmpl	$0, -4(%rbp)
+	je	.L3
+	leaq	.LC0(%rip), %rax
+	movq	%rax, %rdi
+	call	puts@PLT
+	nop
+	leave
+	ret
+	.size	wait_without_volatile, .-wait_without_volatile
 ```
 
-On every loop iteration, `cmpl $0, -4(%rbp)` reads flag again.
+**How to read it (annotated)**
+
+(Lines picked from the measured output above, with notes.)
+
+```asm
+	movl	$0, -4(%rbp)	# flag = 0 (kept in memory at -4(%rbp))
+	...
+	addl	$1, -8(%rbp)	# count++
+	...
+	cmpl	$0, -4(%rbp)	# read flag from memory and compare with 0 (every iteration)
+	je	.L3	# if 0, go back to .L3 and keep looping
+```
 
 **Case `-O2` (the whole assembly):**
 
 ```
+wait_without_volatile:
+	.p2align 4,,10
+	.p2align 3
 .L2:
-	jmp	.L2              # optimized into an infinite loop!
+	jmp	.L2
+	.size	wait_without_volatile, .-wait_without_volatile
+```
+
+**How to read it (annotated)**
+
+(Lines picked from the measured output above, with notes.)
+
+```asm
+.L2:
+	jmp	.L2	# the condition check is gone; it just jumps to itself forever
 ```
 
 This is shocking. The condition check disappeared and it became an infinite loop.
@@ -70,15 +130,57 @@ void wait_with_volatile(void) {
 
 Even when compiled with `-O2`, in the assembly:
 
-```
-.L6:
-	movl	-12(%rsp), %eax   # volatile, so read from memory every time
-	addl	$1, %edx
-	testl	%eax, %eax       # test whether flag == 0
-	je	.L9                   # if 0, keep looping
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// wait_with_volatile.c
+#include <stdint.h>
+#include <stdio.h>
+
+void wait_with_volatile(void) {
+    volatile uint32_t flag = 0;
+    int count = 0;
+    while (flag == 0) {
+        count++;
+    }
+    printf("Done\n");
+}
 ```
 
-On every loop iteration, `movl -12(%rsp), %eax` reads from memory again. This is the effect of `volatile`.
+```bash
+gcc -std=c99 -O2 -S -fcf-protection=none -fno-asynchronous-unwind-tables -o - wait_with_volatile.c | sed -n '/^wait_with_volatile:/,/\.size/p'
+```
+
+</details>
+
+```
+wait_with_volatile:
+	movl	$0, -12(%rsp)
+	.p2align 4,,10
+	.p2align 3
+.L2:
+	movl	-12(%rsp), %eax
+	testl	%eax, %eax
+	je	.L2
+	leaq	.LC0(%rip), %rsi
+	movl	$2, %edi
+	xorl	%eax, %eax
+	jmp	__printf_chk@PLT
+	.size	wait_with_volatile, .-wait_with_volatile
+```
+
+**How to read it (annotated)**
+
+(Lines picked from the measured output above, with notes.)
+
+```asm
+.L2:
+	movl	-12(%rsp), %eax	# volatile, so flag is read from memory every time
+	testl	%eax, %eax	# test whether flag == 0
+	je	.L2	# if 0, keep looping
+```
+
+This is the effect of `volatile`.
 
 ## 10.3 What `volatile` does not guarantee (most important)
 
@@ -97,10 +199,43 @@ counter++;  // this is 3 steps: read → +1 → write
 
 The actual assembly (`-O2`):
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// counter_increment.c
+#include <stdint.h>
+
+volatile uint32_t counter = 0;
+
+void increment_counter(void) {
+    counter++;  // this is 3 steps: read → +1 → write
+                // if an interrupt interrupts it, a count is lost
+}
+```
+
+```bash
+gcc -std=c99 -O2 -S -fcf-protection=none -fno-asynchronous-unwind-tables -o - counter_increment.c | sed -n '/^increment_counter:/,/\.size/p'
+```
+
+</details>
+
 ```asm
-movl	counter(%rip), %eax    # 1. read from memory
-addl	$1, %eax               # 2. add 1
-movl	%eax, counter(%rip)    # 3. write to memory
+increment_counter:
+	movl	counter(%rip), %eax
+	addl	$1, %eax
+	movl	%eax, counter(%rip)
+	ret
+	.size	increment_counter, .-increment_counter
+```
+
+**How to read it (annotated)**
+
+(Lines picked from the measured output above, with notes.)
+
+```asm
+	movl	counter(%rip), %eax	# 1. read from memory
+	addl	$1, %eax	# 2. add 1 (an interrupt here is dangerous)
+	movl	%eax, counter(%rip)	# 3. write to memory
 ```
 
 If an interrupt happens between steps 2 and 3, even if other code increments `counter`, it is overwritten here.
@@ -159,6 +294,43 @@ int main(void)
 }
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// signal_flag.c
+#include <signal.h>
+#include <stdio.h>
+#include <unistd.h>
+
+volatile sig_atomic_t signal_received = 0;
+
+void handler(int sig)
+{
+    signal_received = 1;  // safe
+}
+
+int main(void)
+{
+    signal(SIGUSR1, handler);
+
+    signal_received = 0;
+    kill(getpid(), SIGUSR1);
+    usleep(100000);
+
+    if (signal_received) {
+        printf("Signal received\n");
+    }
+
+    return 0;
+}
+```
+
+```bash
+gcc -std=gnu99 -Wall -Wpedantic signal_flag.c -o signal_flag && ./signal_flag
+```
+
+</details>
+
 Measured values:
 
 ```
@@ -191,21 +363,103 @@ uint32_t status = *uart_sr;
 status = *uart_sr;
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// uart_register_access.c
+#include <stdint.h>
+
+void access_uart(void) {
+    // STM32 UART example
+    volatile uint32_t *uart_dr = (volatile uint32_t *)0x40004000;   // data
+    volatile uint32_t *uart_sr = (volatile uint32_t *)0x40004004;   // status
+
+    // read the status register
+    uint32_t status = *uart_sr;
+
+    // write data
+    *uart_dr = 'A';
+
+    // read the status register (second time)
+    status = *uart_sr;
+}
+```
+
+```bash
+gcc -std=c99 -O2 -S -fcf-protection=none -fno-asynchronous-unwind-tables -o - uart_register_access.c | sed -n '/^access_uart:/,/\.size/p'
+```
+
+</details>
+
 Measured values (assembly with `gcc -O2`):
 
 ```asm
-movl	uart_dr(%rip), %rsi      # pointer into a register
-movl	(%rsi), %eax              # first read
-movl	(%rsi), %eax              # the second read also gets a new value
+access_uart:
+	movl	1073758212, %eax
+	movl	$65, 1073758208
+	movl	1073758212, %eax
+	ret
+	.size	access_uart, .-access_uart
 ```
+
+**How to read it (annotated)**
+
+(Lines picked from the measured output above, with notes.)
+
+```asm
+	movl	1073758212, %eax	# read uart_sr (1st)
+	movl	$65, 1073758208	# write 'A' (65) to uart_dr
+	movl	1073758212, %eax	# read uart_sr (2nd)
+```
+
+`1073758208` is `0x40004000` (`uart_dr`) and `1073758212` is `0x40004004` (`uart_sr`), written in decimal.
+
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// uart_register_access_plain.c
+#include <stdint.h>
+
+void access_uart(void) {
+    // STM32 UART example
+    uint32_t *uart_dr = (uint32_t *)0x40004000;   // data
+    uint32_t *uart_sr = (uint32_t *)0x40004004;   // status
+
+    // read the status register
+    uint32_t status = *uart_sr;
+
+    // write data
+    *uart_dr = 'A';
+
+    // read the status register (second time)
+    status = *uart_sr;
+}
+```
+
+```bash
+gcc -std=c99 -O2 -S -fcf-protection=none -fno-asynchronous-unwind-tables -o - uart_register_access_plain.c | sed -n '/^access_uart:/,/\.size/p'
+```
+
+</details>
 
 **Without `volatile`:**
 
 ```asm
-movl	uart_dr(%rip), %rsi
-movl	(%rsi), %eax
-# → the second read disappears!
+access_uart:
+	movl	$65, 1073758208
+	ret
+	.size	access_uart, .-access_uart
 ```
+
+**How to read it (annotated)**
+
+(Lines picked from the measured output above, with notes.)
+
+```asm
+	movl	$65, 1073758208	# only the write to uart_dr remains (both reads of uart_sr are gone)
+```
+
+Both reads disappear, and only the write (`movl $65, 1073758208`) remains.
 
 Always add `volatile` to registers.
 
@@ -222,10 +476,43 @@ gpio |= (1 << 3);     // actually 3 steps: read → OR → write
 
 Assembly (`-O2`):
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// gpio_rmw.c
+#include <stdint.h>
+
+volatile uint32_t gpio = 0x00000000;
+
+void set_gpio_bit3(void) {
+    // you want to set bit 3
+    gpio |= (1 << 3);     // actually 3 steps: read → OR → write
+}
+```
+
+```bash
+gcc -std=c99 -O2 -S -fcf-protection=none -fno-asynchronous-unwind-tables -o - gpio_rmw.c | sed -n '/^set_gpio_bit3:/,/\.size/p'
+```
+
+</details>
+
 ```asm
-movl	gpio(%rip), %eax         # 1. read from memory
-orl	    $8, %eax                # 2. OR
-movl	%eax, gpio(%rip)         # 3. write to memory
+set_gpio_bit3:
+	movl	gpio(%rip), %eax
+	orl	$8, %eax
+	movl	%eax, gpio(%rip)
+	ret
+	.size	set_gpio_bit3, .-set_gpio_bit3
+```
+
+**How to read it (annotated)**
+
+(Lines picked from the measured output above, with notes.)
+
+```asm
+	movl	gpio(%rip), %eax	# 1. read from memory
+	orl	$8, %eax	# 2. OR in bit 3 (value 8)
+	movl	%eax, gpio(%rip)	# 3. write to memory
 ```
 
 With a hardware register, the register state at the time of the read may differ from the actual value at the time of the write.

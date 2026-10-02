@@ -388,18 +388,20 @@ Measured result:
 
 === Arithmetic ===
 500ms + 1s = 1500 ms
+2 * 500ms = 1000 ms
 
 === Measurement with steady_clock ===
-Loop took 343 ms
+Loop took 100 ms
 
 === User-defined literals ===
 500ms: 500
 milliseconds(500): 500
 Both are equivalent.
-
 ```
 
 </details>
+
+The value after `Loop took` changes with the environment you run it in (it was measured here on Ubuntu 24.04 / g++ 13.3 / x86_64 in Docker).
 
 **Key points to check:**
 1. `2s` is `2`, but converted to milliseconds it becomes `2000` (1000 times larger)
@@ -415,10 +417,31 @@ Both are equivalent.
 auto delay = 500ms;  // error
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// no_literals.cpp
+#include <chrono>
+
+int main()
+{
+  auto delay = 500ms;  // error
+  return 0;
+}
 ```
-error: unable to deduce 'auto' from '500' [with -funsafe-math-optimizations]
-// or
-error: unable to deduce template arguments for 'operator""ms'
+
+```bash
+g++ -std=c++17 no_literals.cpp -o no_literals
+```
+
+</details>
+
+```
+no_literals.cpp: In function ‘int main()’:
+no_literals.cpp:6:16: error: unable to find numeric literal operator ‘operator""ms’
+    6 |   auto delay = 500ms;  // error
+      |                ^~~~~
+no_literals.cpp:6:16: note: use ‘-fext-numeric-literals’ to enable more built-in suffixes
 ```
 
 Add `using namespace std::chrono_literals;`.

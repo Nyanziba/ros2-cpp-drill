@@ -285,9 +285,46 @@ struct N { std::unique_ptr<N> next; };
 // connect 200,000 levels, then head.reset();
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// deep_list.cpp
+#include <cstdio>
+#include <memory>
+
+struct N { std::unique_ptr<N> next; };
+// connect 200,000 levels, then head.reset();
+
+int main()
+{
+  constexpr int depth = 200000;
+  auto head = std::make_unique<N>();
+  N * tail = head.get();
+  for (int i = 1; i < depth; ++i) {
+    tail->next = std::make_unique<N>();
+    tail = tail->next.get();
+  }
+  std::printf("built\n");
+  std::fflush(stdout);
+
+  head.reset();
+  std::printf("freed\n");
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic deep_list.cpp -o deep_list && ./deep_list; echo "exit code $?"
+```
+
+</details>
+
+Measured with zsh on macOS (the `zsh: segmentation fault` line is a message printed by the shell).
+
 ```
 built
-(SIGSEGV here. exit code 139)
+zsh: segmentation fault  ./deep_list
+exit code 139
 ```
 
 **The construction succeeded, and the release overflowed the stack.** `freed` was not printed.

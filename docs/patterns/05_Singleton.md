@@ -269,6 +269,72 @@ private:
 `limiter.cpp` 側は `g_config` を `Config::instance()` に置き換えるだけです。
 どちらのリンク順でもこうなります。
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// config2.hpp
+#pragma once
+#include <iostream>
+
+class Config
+{
+public:
+  static Config & instance()      // Meyers Singleton
+  {
+    static Config the_config;     // 最初にここを通ったときだけ構築される
+    return the_config;
+  }
+  int max_duty() const { return max_duty_; }
+
+private:
+  Config()
+  : max_duty_(100)
+  {
+    std::cout << "Config のコンストラクタ\n";
+  }
+  int max_duty_;
+};
+```
+
+```cpp
+// limiter2.cpp
+#include "config2.hpp"
+
+class Limiter
+{
+public:
+  Limiter()
+  : limit_(Config::instance().max_duty())   // 別の翻訳ユニットのグローバルを使う
+  {
+    std::cout << "Limiter のコンストラクタ: limit_ = " << limit_ << "\n";
+  }
+  int limit() const { return limit_; }
+
+private:
+  int limit_;
+};
+
+Limiter g_limiter;
+```
+
+```cpp
+// main_meyers.cpp
+#include "config2.hpp"
+
+int main()
+{
+  std::cout << "main: " << Config::instance().max_duty() << "\n";
+  return 0;
+}
+```
+
+```bash
+c++ -std=c++17 -Wall -Wextra -Wpedantic limiter2.cpp main_meyers.cpp -o meyers1 && ./meyers1
+c++ -std=c++17 -Wall -Wextra -Wpedantic main_meyers.cpp limiter2.cpp -o meyers2 && ./meyers2
+```
+
+</details>
+
 ```
 Config のコンストラクタ
 Limiter のコンストラクタ: limit_ = 100
@@ -388,14 +454,58 @@ int main()
 g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 ```
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// try_deleted.cpp
+#include <iostream>
+
+class Config
+{
+public:
+  static Config & instance()
+  {
+    static Config the_config;
+    return the_config;
+  }
+  void set_max_duty(int duty) { max_duty_ = duty; }
+  int max_duty() const { return max_duty_; }
+
+  Config(const Config &) = delete;
+  Config & operator=(const Config &) = delete;
+
+private:
+  Config() = default;
+  int max_duty_ = 100;
+};
+
+int main()
+{
+  Config copied = Config::instance();     // コピーが作られる
+  copied.set_max_duty(30);
+
+  std::cout << "instance: " << &Config::instance()
+            << " duty=" << Config::instance().max_duty() << "\n";
+  std::cout << "copied  : " << &copied
+            << " duty=" << copied.max_duty() << "\n";
+  return 0;
+}
+```
+
+```bash
+clang++ -std=c++17 -Wall -Wextra -Wpedantic try_deleted.cpp -o try_deleted
+```
+
+</details>
+
 <details>
 <summary>予想: コンパイルは通るか。通るなら 2 行のアドレスと duty はどうなるか</summary>
 
 **通ります。警告も出ません。** 実行結果（アドレスは環境で変わります）。
 
 ```
-instance: 0x102b80000 duty=100
-copied  : 0x16d285d48 duty=30
+instance: 0x555555558010 duty=100
+copied  : 0x7ffffffc5904 duty=30
 ```
 
 アドレスが違います。**`Config` が 2 個できています。**
@@ -409,15 +519,15 @@ copied  : 0x16d285d48 duty=30
   Config & operator=(const Config &) = delete;
 ```
 
-実際に出るエラーです（Apple clang。行番号は環境で変わります）。
+実際に出るエラーです（Apple clang 21）。
 
 ```
-error: call to deleted constructor of 'Config'
-  Config copied = Config::instance();     // コピーが作られる
-         ^        ~~~~~~~~~~~~~~~~~~
-note: 'Config' has been explicitly marked deleted here
-  Config(const Config &) = delete;
-  ^
+try_deleted.cpp:25:10: error: call to deleted constructor of 'Config'
+   25 |   Config copied = Config::instance();     // コピーが作られる
+      |          ^        ~~~~~~~~~~~~~~~~~~
+try_deleted.cpp:15:3: note: 'Config' has been explicitly marked deleted here
+   15 |   Config(const Config &) = delete;
+      |   ^
 1 error generated.
 ```
 
@@ -467,7 +577,71 @@ private:
 };
 ```
 
-`main` で `Uart::instance()` を先に触った場合の実際の出力です。
+`main` で `Uart::instance()` を先に、`Logger::instance()` をあとに触った場合の実際の出力です。
+
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// destruction_order.cpp
+#include <iostream>
+#include <string>
+
+class Logger
+{
+public:
+  static Logger & instance()
+  {
+    static Logger the_logger;
+    return the_logger;
+  }
+  ~Logger() { alive_ = false; }
+
+  void log(const std::string & message)
+  {
+    std::cout << "[log alive=" << alive_ << "] " << message << "\n";
+  }
+
+private:
+  Logger() = default;
+  bool alive_ = true;
+};
+
+class Uart
+{
+public:
+  static Uart & instance()
+  {
+    static Uart the_uart;
+    return the_uart;
+  }
+  ~Uart() { Logger::instance().log("Uart を閉じました"); }   // 破棄済みかもしれない
+
+private:
+  Uart() = default;
+};
+
+int main(int argc, char *[])
+{
+  const bool is_logger_first = argc > 1;
+  if (is_logger_first) {
+    Logger::instance();   // 引数があれば Logger を先に触る
+    Uart::instance();
+  } else {
+    Uart::instance();     // 引数が無ければ Uart を先に触る
+    Logger::instance();
+  }
+  std::cout << "main 終了\n";
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic destruction_order.cpp -o destruction_order
+./destruction_order              # Uart を先に触る
+./destruction_order logger_first # Logger を先に触る
+```
+
+</details>
 
 ```
 main 終了
@@ -478,7 +652,7 @@ main 終了
 未定義動作です。今回はたまたま値が読めていますが、
 `std::string` や `std::vector` を持っていれば解放済みメモリを触ります。
 
-`Logger::instance()` を先に触った場合はこうなります。
+`Logger::instance()` を先に、`Uart::instance()` をあとに触った場合はこうなります。
 
 ```
 main 終了

@@ -143,9 +143,85 @@ c++ -std=c++17 -Wall -Wextra -Wpedantic try_uaf.cpp -o uaf && ./uaf
 echo $?
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// try_uaf.cpp
+#include <iostream>
+#include <memory>
+
+class Context;
+
+class State
+{
+public:
+  virtual ~State() = default;
+  virtual const char * name() const = 0;
+  virtual void handle(Context & context) = 0;
+};
+
+class Context
+{
+public:
+  Context();
+  void set_state(std::unique_ptr<State> next) { state_ = std::move(next); }
+  void request() { state_->handle(*this); }
+
+private:
+  std::unique_ptr<State> state_;
+};
+
+class Faulted : public State
+{
+public:
+  const char * name() const override { return "Faulted"; }
+  void handle(Context &) override {}
+};
+
+class Running : public State
+{
+public:
+  const char * name() const override { return "Running"; }
+
+  void handle(Context & context) override
+  {
+    context.set_state(std::make_unique<Faulted>());  // this is deleted here
+    std::cout << "exit: " << name() << "\n";     // member function of an already dead this
+    ticks_ = ticks_ + 1;                             // write to already freed memory
+    std::cout << "ticks=" << ticks_ << "\n";
+  }
+
+private:
+  int ticks_ = 0;
+};
+
+Context::Context()
+: state_(std::make_unique<Running>())
+{
+}
+
+int main()
+{
+  Context context;
+  context.request();
+  std::cout << "done\n";
+  return 0;
+}
 ```
+
+```bash
+c++ -std=c++17 -Wall -Wextra -Wpedantic try_uaf.cpp -o uaf && ./uaf
+echo $?
+```
+
+</details>
+
+```
+Segmentation fault
 139
 ```
+
+The first line, `Segmentation fault`, is a message printed by the shell, not output of the program itself.
 
 **There is not a single warning.** `-Wall -Wextra -Wpedantic` lets it pass.
 It crashes with SIGSEGV (128 + 11 = 139) without printing even one line.
@@ -328,13 +404,67 @@ auto bad = go<Ev::Start>(faulted);   // from the faulted state to running. Canno
 
 The compile error for the last line (actual output):
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// transition_check.cpp
+#include <cstdint>
+
+enum class Ev : std::uint8_t { PowerOn, Start, Stop, EStop, Reset };
+
+struct Stopped {};
+struct Idle {};
+struct Running {};
+struct Faulted {};
+
+template <typename From, Ev E>
+struct Transition;                                          // declaration only. Not defined
+
+template <> struct Transition<Stopped, Ev::PowerOn> { using To = Idle; };
+template <> struct Transition<Idle,    Ev::Start>   { using To = Running; };
+template <> struct Transition<Running, Ev::Stop>    { using To = Idle; };
+template <> struct Transition<Faulted, Ev::Reset>   { using To = Stopped; };
+template <typename From> struct Transition<From, Ev::EStop> { using To = Faulted; };
+
+template <Ev E, typename From>
+typename Transition<From, E>::To go(const From &)
+{
+  return typename Transition<From, E>::To{};
+}
+
+int main()
+{
+  Stopped stopped;
+  auto idle    = go<Ev::PowerOn>(stopped);
+  auto running = go<Ev::Start>(idle);
+  auto faulted = go<Ev::EStop>(running);
+  auto back    = go<Ev::Reset>(faulted);
+
+  auto bad = go<Ev::Start>(faulted);   // from the faulted state to running. Cannot be written
+}
 ```
-error: no matching function for call to 'go'
-   43 |   auto bad = go<Ev::Start>(faulted);
-      |              ^~~~~~~~~~~~~
-note: candidate template ignored: substitution failure [with E = Ev::Start,
-      From = typename Transition<Running, (Ev)3>::To]:
-      implicit instantiation of undefined template 'Transition<Faulted, Ev::Start>'
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic transition_check.cpp -o transition_check
+```
+
+</details>
+
+```
+transition_check.cpp: In function ‘int main()’:
+transition_check.cpp:34:27: error: no matching function for call to ‘go<Ev::Start>(Faulted&)’
+   34 |   auto bad = go<Ev::Start>(faulted);   // from the faulted state to running. Cannot be written
+      |              ~~~~~~~~~~~~~^~~~~~~~~
+transition_check.cpp:21:34: note: candidate: ‘template<Ev E, class From> typename Transition<From, E>::To go(const From&)’
+   21 | typename Transition<From, E>::To go(const From &)
+      |                                  ^~
+transition_check.cpp:21:34: note:   template argument deduction/substitution failed:
+transition_check.cpp: In substitution of ‘template<Ev E, class From> typename Transition<From, E>::To go(const From&) [with Ev E = Ev::Start; From = Faulted]’:
+transition_check.cpp:34:27:   required from here
+transition_check.cpp:21:34: error: invalid use of incomplete type ‘struct Transition<Faulted, Ev::Start>’
+transition_check.cpp:12:8: note: declaration of ‘struct Transition<Faulted, Ev::Start>’
+   12 | struct Transition;                                          // declaration only. Not defined
+      |        ^~~~~~~~~~
 ```
 
 We achieved **"code that goes from the faulted state to running does not compile"**.
@@ -355,6 +485,37 @@ We write the same transition rules in three ways, feed the same event sequence, 
 | `std::variant` + `visit` | a sum type | none | none | can hold | no |
 
 These are the sizes measured with the exercise header (Apple clang, arm64).
+
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// state_sizes.cpp
+#include <cstdint>
+#include <cstdio>
+#include <variant>
+
+enum class MachineState : std::uint8_t { Stopped, Idle, Running, Faulted };
+enum class MachineEvent : std::uint8_t { PowerOn, Start, Stop, EmergencyStop, Reset };
+
+struct StoppedState {};
+struct IdleState {};
+struct RunningState { std::uint8_t duty_percent = 60; };   // data specific to the state
+struct FaultedState { MachineEvent cause; };
+
+using StateVariant = std::variant<StoppedState, IdleState, RunningState, FaultedState>;
+
+int main()
+{
+  std::printf("MachineState=%zu  StateVariant=%zu\n", sizeof(MachineState), sizeof(StateVariant));
+  return 0;
+}
+```
+
+```bash
+clang++ -std=c++17 -Wall -Wextra -Wpedantic state_sizes.cpp -o state_sizes && ./state_sizes
+```
+
+</details>
 
 ```
 MachineState=1  StateVariant=8
@@ -535,25 +696,110 @@ static_assert(sizeof(Machine) == 1, "the state machine is 1 byte");
 
 This is the actual output of building with `-fno-exceptions -fno-rtti` and feeding `Start / PowerOn / Start / EStop / Start / Reset`.
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// table_machine.cpp
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
+
+enum class St : std::uint8_t { Stopped, Idle, Running, Faulted, Count };
+enum class Ev : std::uint8_t { PowerOn, Start, Stop, EStop, Reset, Count };
+
+constexpr std::size_t kStates = static_cast<std::size_t>(St::Count);
+constexpr std::size_t kEvents = static_cast<std::size_t>(Ev::Count);
+
+// [current state][event] = next state. If it is itself, it means "ignore".
+constexpr St kTable[kStates][kEvents] = {
+  //            PowerOn      Start        Stop         EStop        Reset
+  /* Stopped */ {St::Idle,    St::Stopped, St::Stopped, St::Faulted, St::Stopped},
+  /* Idle    */ {St::Idle,    St::Running, St::Idle,    St::Faulted, St::Idle},
+  /* Running */ {St::Running, St::Running, St::Idle,    St::Faulted, St::Running},
+  /* Faulted */ {St::Faulted, St::Faulted, St::Faulted, St::Faulted, St::Stopped},
+};
+
+// Enter/exit actions can also be held in a table. Function pointers are the same tool as in chapter 9 of the C track.
+using Action = void (*)();
+
+void motor_stop() { std::printf("motor:stop\n"); }
+void brake_engage() { std::printf("brake:engage\n"); }
+void nothing() {}
+
+constexpr Action kOnExit[kStates]  = {nothing, nothing, motor_stop, nothing};
+constexpr Action kOnEnter[kStates] = {nothing, nothing, nothing, brake_engage};
+
+class Machine
+{
+public:
+  bool handle(Ev event)
+  {
+    const St next = kTable[static_cast<std::size_t>(state_)][static_cast<std::size_t>(event)];
+    if (next == state_) {
+      return false;
+    }
+    kOnExit[static_cast<std::size_t>(state_)]();
+    state_ = next;
+    kOnEnter[static_cast<std::size_t>(state_)]();
+    return true;
+  }
+
+  St state() const { return state_; }
+
+private:
+  St state_ = St::Stopped;
+};
+
+// The table itself can be checked at compile time.
+static_assert(kTable[static_cast<std::size_t>(St::Faulted)][static_cast<std::size_t>(Ev::Start)] ==
+                St::Faulted,
+              "the faulted state must not be left by anything other than Reset");
+static_assert(sizeof(Machine) == 1, "the state machine is 1 byte");
+
+const char * const kStateNames[kStates] = {"Stopped", "Idle", "Running", "Faulted"};
+const char * const kEventNames[kEvents] = {"PowerOn", "Start", "Stop", "EStop", "Reset"};
+
+int main()
+{
+  Machine machine;
+  const Ev events[] = {Ev::Start, Ev::PowerOn, Ev::Start, Ev::EStop, Ev::Start, Ev::Reset};
+  for (const Ev event : events) {
+    std::printf("--- %s\n", kEventNames[static_cast<std::size_t>(event)]);
+    const St before = machine.state();
+    if (machine.handle(event)) {
+      std::printf(
+        "%s -> %s\n", kStateNames[static_cast<std::size_t>(before)],
+        kStateNames[static_cast<std::size_t>(machine.state())]);
+    } else {
+      std::printf("(ignored)\n");
+    }
+  }
+  std::printf("sizeof(Machine)=%zu sizeof(kTable)=%zu\n", sizeof(Machine), sizeof(kTable));
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic -fno-exceptions -fno-rtti table_machine.cpp -o table_machine && ./table_machine
+```
+
+</details>
+
 ```
 --- Start
 (ignored)
 --- PowerOn
-exit:Stopped
-enter:Idle
+Stopped -> Idle
 --- Start
-exit:Idle
-enter:Running
+Idle -> Running
 --- EStop
-exit:Running
 motor:stop
-enter:Faulted
 brake:engage
+Running -> Faulted
 --- Start
 (ignored)
 --- Reset
-exit:Faulted
-enter:Stopped
+Faulted -> Stopped
 sizeof(Machine)=1 sizeof(kTable)=20
 ```
 

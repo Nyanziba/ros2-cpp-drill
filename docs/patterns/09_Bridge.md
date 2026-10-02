@@ -233,17 +233,17 @@ c++ -std=c++17 -Wall -Wextra -Wpedantic -c pimpl_bad.cpp
 ```
 
 ```
-/.../c++/v1/__memory/unique_ptr.h:75:19: error: invalid application of 'sizeof' to an incomplete type 'LinkStats::Impl'
-   75 |     static_assert(sizeof(_Tp) >= 0, "cannot delete an incomplete type");
-      |                   ^~~~~~~~~~~
-/.../c++/v1/__memory/unique_ptr.h:259:71: note: in instantiation of member function 'std::unique_ptr<LinkStats::Impl>::~unique_ptr' requested here
-  259 |   _LIBCPP_HIDE_FROM_ABI _LIBCPP_CONSTEXPR_SINCE_CXX23 ~unique_ptr() { reset(); }
-pimpl_bad.cpp:10:10: note: forward declaration of 'LinkStats::Impl'
-   10 |   struct Impl;
-      |          ^
+In file included from /usr/include/c++/13/memory:78,
+                 from pimpl_bad.cpp:1:
+/usr/include/c++/13/bits/unique_ptr.h: In instantiation of ‘void std::default_delete<_Tp>::operator()(_Tp*) const [with _Tp = LinkStats::Impl]’:
+/usr/include/c++/13/bits/unique_ptr.h:404:17:   required from ‘std::unique_ptr<_Tp, _Dp>::~unique_ptr() [with _Tp = LinkStats::Impl; _Dp = std::default_delete<LinkStats::Impl>]’
+pimpl_bad.cpp:3:7:   required from here
+/usr/include/c++/13/bits/unique_ptr.h:97:23: error: invalid application of ‘sizeof’ to incomplete type ‘LinkStats::Impl’
+   97 |         static_assert(sizeof(_Tp)>0,
+      |                       ^~~~~~~~~~~
 ```
 
-（GCC だと `static assertion failed: can't delete an incomplete type` という文言になります。
+（clang だと `invalid application of 'sizeof' to an incomplete type 'LinkStats::Impl'` のような文言になります。
 どちらも同じ原因です。）
 
 **理由**: コンパイラが暗黙のデストラクタを生成する場所は、`class LinkStats { ... };` の閉じ括弧です。

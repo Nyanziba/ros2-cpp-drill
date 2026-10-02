@@ -346,8 +346,47 @@ f("hello");           // error
 f(std::string("hi")); // error
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// bind_rvalue.cpp
+#include <string>
+
+void f(std::string & s);
+
+int main()
+{
+  f("hello");           // error
+  f(std::string("hi")); // error
+  return 0;
+}
 ```
-error: cannot bind non-const lvalue reference of type ‘std::string&’ to an rvalue of type ‘std::string’
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic bind_rvalue.cpp -o bind_rvalue
+```
+
+</details>
+
+```
+bind_rvalue.cpp: In function ‘int main()’:
+bind_rvalue.cpp:8:5: error: cannot bind non-const lvalue reference of type ‘std::string&’ {aka ‘std::__cxx11::basic_string<char>&’} to an rvalue of type ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’}
+    8 |   f("hello");           // error
+      |     ^~~~~~~
+In file included from /usr/include/c++/13/string:54,
+                 from bind_rvalue.cpp:2:
+/usr/include/c++/13/bits/basic_string.h:641:7: note:   after user-defined conversion: ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _CharT*, const _Alloc&) [with <template-parameter-2-1> = std::allocator<char>; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  641 |       basic_string(const _CharT* __s, const _Alloc& __a = _Alloc())
+      |       ^~~~~~~~~~~~
+bind_rvalue.cpp:4:22: note:   initializing argument 1 of ‘void f(std::string&)’
+    4 | void f(std::string & s);
+      |        ~~~~~~~~~~~~~~^
+bind_rvalue.cpp:9:10: error: cannot bind non-const lvalue reference of type ‘std::string&’ {aka ‘std::__cxx11::basic_string<char>&’} to an rvalue of type ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’}
+    9 |   f(std::string("hi")); // error
+      |          ^~~~~~~~~~~~
+bind_rvalue.cpp:4:22: note:   initializing argument 1 of ‘void f(std::string&)’
+    4 | void f(std::string & s);
+      |        ~~~~~~~~~~~~~~^
 ```
 
 A temporary object (an rvalue) cannot be bound to a non-`const` reference.

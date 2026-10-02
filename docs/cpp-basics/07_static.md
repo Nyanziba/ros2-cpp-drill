@@ -75,8 +75,34 @@ int counter = 0;  // 外部リンケージ
 int counter = 0;  // file1 と重複 → multiple definition エラー
 ```
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// file1.cpp
+int counter = 0;  // 外部リンケージ
 ```
-/usr/bin/ld: multiple definition of `counter'
+
+```cpp
+// file2.cpp
+int counter = 0;  // file1 と重複 → multiple definition エラー
+```
+
+```cpp
+// main.cpp
+int main()
+{
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic -c file1.cpp file2.cpp main.cpp && g++ file1.o file2.o main.o -o app
+```
+
+</details>
+
+```
+/usr/bin/ld: file2.o:(.bss+0x0): multiple definition of `counter'; file1.o:(.bss+0x0): first defined here
+collect2: error: ld returned 1 exit status
 ```
 
 **`static` で「このファイルだけで使う」と宣言すれば、リンク時に名前が衝突しない。**
@@ -126,8 +152,52 @@ int main()
 
 **`static` メンバは定義が必要。** 宣言だけではリンク時に見つかりません。
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// static_undefined.cpp
+#include <iostream>
+
+class Counter
+{
+public:
+  Counter() { ++count_; }
+  
+  static int get_total() { return count_; }
+  
+private:
+  static int count_;
+};
+
+// int Counter::count_ = 0;  // 定義が必要 ← この行を書かない
+
+int main()
+{
+  std::cout << Counter::get_total() << "\n";  // 0
+  
+  Counter c1;
+  std::cout << Counter::get_total() << "\n";  // 1
+  
+  Counter c2;
+  std::cout << Counter::get_total() << "\n";  // 2
+}
 ```
-/usr/bin/ld: undefined reference to `Counter::count_'
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic -c static_undefined.cpp && g++ static_undefined.o -o static_undefined
+```
+
+</details>
+
+```
+/usr/bin/ld: static_undefined.o: warning: relocation against `_ZN7Counter6count_E' in read-only section `.text._ZN7Counter9get_totalEv[_ZN7Counter9get_totalEv]'
+/usr/bin/ld: static_undefined.o: in function `Counter::Counter()':
+static_undefined.cpp:(.text._ZN7CounterC2Ev[_ZN7CounterC5Ev]+0xe): undefined reference to `Counter::count_'
+/usr/bin/ld: static_undefined.cpp:(.text._ZN7CounterC2Ev[_ZN7CounterC5Ev]+0x17): undefined reference to `Counter::count_'
+/usr/bin/ld: static_undefined.o: in function `Counter::get_total()':
+static_undefined.cpp:(.text._ZN7Counter9get_totalEv[_ZN7Counter9get_totalEv]+0xa): undefined reference to `Counter::count_'
+/usr/bin/ld: warning: creating DT_TEXTREL in a PIE
+collect2: error: ld returned 1 exit status
 ```
 
 **C++17 以降、`inline static` で定義不要になりました。**

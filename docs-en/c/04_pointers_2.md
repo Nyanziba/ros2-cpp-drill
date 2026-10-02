@@ -13,10 +13,34 @@ int *p = arr;  // arr decays to &arr[0]
 
 `arr` and `&arr[0]` point to the same address.
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// array_decay.c
+#include <stdio.h>
+
+int main(void)
+{
+    int arr[5] = {10, 20, 30, 40, 50};
+    int *p = arr;  // arr decays to &arr[0]
+
+    printf("arr = %p\n", (void *)arr);
+    printf("&arr[0] = %p\n", (void *)&arr[0]);
+    printf("p = %p\n", (void *)p);
+    return 0;
+}
 ```
-arr = 0x7ffd6afc8570
-&arr[0] = 0x7ffd6afc8570
-p = 0x7ffd6afc8570
+
+```bash
+gcc -std=c99 -Wall -Wextra -Wpedantic array_decay.c -o array_decay && ./array_decay
+```
+
+</details>
+
+```
+arr = 0x7ffffffc5950
+&arr[0] = 0x7ffffffc5950
+p = 0x7ffffffc5950
 ```
 
 **But there are exceptions.** With `sizeof(array)` and `&array`, it does not decay.
@@ -42,20 +66,53 @@ char char_arr[3] = {'a', 'b', 'c'};
 char *char_p = char_arr;
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// pointer_step.c
+#include <stdio.h>
+
+int main(void)
+{
+    int int_arr[3] = {100, 200, 300};
+    int *int_p = int_arr;
+
+    char char_arr[3] = {'a', 'b', 'c'};
+    char *char_p = char_arr;
+
+    printf("int_p = %p\n", (void *)int_p);
+    printf("int_p + 1 = %p\n", (void *)(int_p + 1));
+    printf("difference: %td bytes (sizeof(int) = %zu)\n",
+           (char *)(int_p + 1) - (char *)int_p, sizeof(int));
+
+    printf("char_p = %p\n", (void *)char_p);
+    printf("char_p + 1 = %p\n", (void *)(char_p + 1));
+    printf("difference: %td bytes (sizeof(char) = %zu)\n",
+           (char *)(char_p + 1) - (char *)char_p, sizeof(char));
+    return 0;
+}
+```
+
+```bash
+gcc -std=c99 -Wall -Wextra -Wpedantic pointer_step.c -o pointer_step && ./pointer_step
+```
+
+</details>
+
 When you advance `int_p`:
 
 ```
-int_p = 0x7ffd6afc8564
-int_p + 1 = 0x7ffd6afc8568
-差分: 4 バイト（sizeof(int) = 4）
+int_p = 0x7ffffffc5938
+int_p + 1 = 0x7ffffffc593c
+difference: 4 bytes (sizeof(int) = 4)
 ```
 
 When you advance `char_p`:
 
 ```
-char_p = 0x7ffd6afc85c5
-char_p + 1 = 0x7ffd6afc85c6
-差分: 1 バイト（sizeof(char) = 1）
+char_p = 0x7ffffffc5945
+char_p + 1 = 0x7ffffffc5946
+difference: 1 bytes (sizeof(char) = 1)
 ```
 
 **Pointer arithmetic counts in units of "elements".** Thanks to this mechanism, you can access the elements of an array in order.
@@ -72,11 +129,37 @@ printf("sizeof(my_arr) = %zu\n", sizeof(my_arr));  // 20 (5 * 4)
 printf("sizeof(my_ptr) = %zu\n", sizeof(my_ptr));  // 8 (pointer size)
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// array_size.c
+#include <stdio.h>
+
+int main(void)
+{
+    int my_arr[5];
+    int *my_ptr = my_arr;
+
+    printf("sizeof(my_arr) = %zu\n", sizeof(my_arr));  // 20 (5 * 4)
+    printf("sizeof(my_ptr) = %zu\n", sizeof(my_ptr));  // 8 (pointer size)
+
+    size_t num_elements = sizeof(my_arr) / sizeof(my_arr[0]);  // 5
+    printf("num_elements = %zu\n", num_elements);
+    return 0;
+}
+```
+
+```bash
+gcc -std=c99 -Wall -Wextra -Wpedantic array_size.c -o array_size && ./array_size
+```
+
+</details>
+
 Measured values:
 
 ```
-sizeof(my_arr) = 20 (entire array)
-sizeof(my_ptr) = 8 (just pointer)
+sizeof(my_arr) = 20
+sizeof(my_ptr) = 8
 ```
 
 **To calculate the number of elements of an array:**
@@ -88,7 +171,7 @@ size_t num_elements = sizeof(my_arr) / sizeof(my_arr[0]);  // 5
 Measured values:
 
 ```
-my_arr / sizeof(my_arr[0]) = 5 (number of elements)
+num_elements = 5
 ```
 
 This calculation is valid "only when it acts directly on an array". You cannot use it on a pointer.
@@ -113,12 +196,34 @@ int main(void)
 
 Measured values:
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// array_decay_broken.c
+#include <stdio.h>
+
+void print_array_broken(int *arr)
+{
+    printf("sizeof(arr) = %zu\n", sizeof(arr));  // 8 (pointer size)
+}
+
+int main(void)
+{
+    int data[5] = {10, 20, 30, 40, 50};
+    printf("sizeof(data) = %zu\n", sizeof(data));  // 20 (the whole array)
+    print_array_broken(data);  // it decays here!
+}
 ```
-In main:
-  sizeof(data) = 20
-  Elements: 5
-Inside function:
-  sizeof(arr) = 8 (not the array size!)
+
+```bash
+gcc -std=c99 -Wall -Wextra -Wpedantic array_decay_broken.c -o array_decay_broken && ./array_decay_broken
+```
+
+</details>
+
+```
+sizeof(data) = 20
+sizeof(arr) = 8
 ```
 
 **The function cannot know the number of elements, so you need to receive the "number of elements" as a separate argument.**
@@ -143,15 +248,39 @@ int main(void)
 
 Measured values:
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// print_array_safe.c
+#include <stdio.h>
+#include <stddef.h>   /* size_t */
+
+void print_array_safe(const int *arr, size_t n)
+{
+    for (size_t i = 0; i < n; i++) {
+        printf("arr[%zu] = %d\n", i, arr[i]);
+    }
+}
+
+int main(void)
+{
+    int data[5] = {10, 20, 30, 40, 50};
+    print_array_safe(data, sizeof(data) / sizeof(data[0]));
+}
 ```
-Inside function:
-  n = 5 (elements)
-  Printing elements:
-    arr[0] = 10
-    arr[1] = 20
-    arr[2] = 30
-    arr[3] = 40
-    arr[4] = 50
+
+```bash
+gcc -std=c99 -Wall -Wextra -Wpedantic print_array_safe.c -o print_array_safe && ./print_array_safe
+```
+
+</details>
+
+```
+arr[0] = 10
+arr[1] = 20
+arr[2] = 30
+arr[3] = 40
+arr[4] = 50
 ```
 
 **In microcontroller control, you must never lose the buffer size.** Always pass the number of elements as an argument.
@@ -186,15 +315,34 @@ printf("arr[5] = %d\n", arr[5]);  // out of bounds (undefined behavior)
 
 Running with `gcc -std=c99 -Wall -Wextra -Wpedantic` gives:
 
-```
-Valid access:
-  arr[0] = 10
-  arr[4] = 50
+<details markdown="1"><summary>Full program that produced this output</summary>
 
-Out-of-bounds read (reads garbage from stack):
-  arr[5] = 32767 (first read)
-  arr[6] = 1416566784 (second read)
-  arr[7] = -1432954244 (third read)
+```c
+// out_of_bounds.c
+#include <stdio.h>
+
+int main(void)
+{
+    int arr[5] = {10, 20, 30, 40, 50};
+    printf("arr[5] = %d\n", arr[5]);  // out of bounds (undefined behavior)
+    printf("arr[6] = %d\n", arr[6]);
+    printf("arr[7] = %d\n", arr[7]);
+    return 0;
+}
+```
+
+```bash
+gcc -std=c99 -Wall -Wextra -Wpedantic out_of_bounds.c -o out_of_bounds && ./out_of_bounds
+for run in 1 2 3; do echo "=== Run $run ==="; ./out_of_bounds; done
+gcc -std=c99 -Wall -Wextra -Wpedantic -g -fsanitize=address out_of_bounds.c -o out_of_bounds_asan && ./out_of_bounds_asan 2>&1 | head -n 16
+```
+
+</details>
+
+```
+arr[5] = 32767
+arr[6] = 525268992
+arr[7] = 1438676869
 ```
 
 **Important: the values change if you run it several times.** A different garbage value comes out every time.
@@ -203,19 +351,19 @@ The results of the next 3 runs:
 
 ```
 === Run 1 ===
-  arr[5] = 32767 (first read)
-  arr[6] = 1416566784 (second read)
-  arr[7] = -1432954244 (third read)
+arr[5] = 32767
+arr[6] = -1817045504
+arr[7] = -1489959779
 
 === Run 2 ===
-  arr[5] = 32765 (first read)
-  arr[6] = -1105437440 (second read)
-  arr[7] = 859231859 (third read)
+arr[5] = 32767
+arr[6] = 169699840
+arr[7] = -883402572
 
 === Run 3 ===
-  arr[5] = 32767 (first read)
-  arr[6] = 958064896 (second read)
-  arr[7] = -827176993 (third read)
+arr[5] = 32767
+arr[6] = 1834489600
+arr[7] = 565344630
 ```
 
 The values are different every time, so you must not report these values as "measured values".
@@ -225,28 +373,29 @@ The values are different every time, so you must not report these values as "mea
 Run again with `gcc -std=c99 -Wall -Wextra -Wpedantic -g -fsanitize=address`:
 
 ```
-==223446==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x77da24600034 at pc 0x6444b99e552d bp 0x7ffd2989f5e0 sp 0x7ffd2989f5d0
-READ of size 4 at 0x77da24600034 thread T0
-    #0 0x6444b99e552c in main /tmp/claude-1000/-home-nyanziba-hobby-program/bfbf933d-8b99-4e93-9360-43360e47ad4f/scratchpad/test_oob.c:13
-    #1 0x77da2662a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
-    #2 0x77da2662a28a in __libc_start_main_impl ../csu/libc-start.c:360
-    #3 0x6444b99e51a4 in _start (/tmp/claude-1000/-home-nyanziba-hobby-program/bfbf933d-8b99-4e93-9360-43360e47ad4f/scratchpad/test_oob_asan+0x11a4) (BuildId: 61803c7afc749dea2da335ab22612443c55880fc)
+=================================================================
+==28==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffffcf00034 at pc 0x55555555544c bp 0x7ffffffc5910 sp 0x7ffffffc5900
+READ of size 4 at 0x7ffffcf00034 thread T0
+    #0 0x55555555544b in main /w/out_of_bounds.c:7
+    #1 0x7ffffef031c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #2 0x7ffffef0328a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #3 0x555555555184 in _start (/w/out_of_bounds_asan+0x1184) (BuildId: b1df6c1edf52925bfed4cb5e81a8731ef34b6c52)
 
-Address 0x77da24600034 is located in stack of thread T0 at offset 52 in frame
-    #0 0x6444b99e5278 in main /tmp/claude-1000/-home-nyanziba-hobby-program/bfbf933d-8b99-4e93-9360-43360e47ad4f/scratchpad/test_oob.c:4
+Address 0x7ffffcf00034 is located in stack of thread T0 at offset 52 in frame
+    #0 0x555555555258 in main /w/out_of_bounds.c:5
 
   This frame has 1 object(s):
     [32, 52) 'arr' (line 6) <== Memory access at offset 52 overflows this variable
 HINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork
       (longjmp and C++ exceptions *are* supported)
-SUMMARY: AddressSanitizer: stack-buffer-overflow /tmp/claude-1000/-home-nyanziba-hobby-program/bfbf933d-8b99-4e93-9360-43360e47ad4f/scratchpad/test_oob.c:13 in main
+SUMMARY: AddressSanitizer: stack-buffer-overflow /w/out_of_bounds.c:7 in main
 ```
 
 **Important information:**
 
 - `stack-buffer-overflow` — out-of-bounds access to a stack buffer
 - `READ of size 4` — a 4-byte read (the size of `int`)
-- `#0 0x6444b99e552c in main test_oob.c:13` — the line where the violation happened
+- `#0 0x55555555544b in main out_of_bounds.c:7` — the line where the violation happened
 
 Without ASAN, this bug would be missed and would lead to data corruption with an unknown cause.
 
@@ -387,33 +536,46 @@ gcc -std=c99 -Wall -Wextra -Wpedantic -g -fsanitize=address pointer_arithmetic.c
 <details markdown="1"><summary>Answer (actual output)</summary>
 
 ```
-=== Array-to-pointer decay ===
-arr == &arr[0]: yes
-p points to arr[0]: 10
+=================================================================
+==19==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffffcf00034 at pc 0x555555556560 bp 0x7ffffffc5620 sp 0x7ffffffc5610
+READ of size 4 at 0x7ffffcf00034 thread T0
+    #0 0x55555555655f in out_of_bounds_demo /w/pointer_arithmetic.c:22
+    #1 0x555555556eb7 in main /w/pointer_arithmetic.c:66
+    #2 0x7ffffef031c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #3 0x7ffffef0328a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #4 0x5555555561e4 in _start (/w/pointer_arithmetic_asan+0x21e4) (BuildId: 3246c11b1107d70233fca6dd37dcfd7bc6ef23c5)
 
-=== Pointer arithmetic ===
-int: int_p = 0x7ffe66c32560, int_p+1 = 0x7ffe66c32564 (diff: 4 bytes)
-sizeof(int) = 4
-char: char_p = 0x7ffe66c325a4, char_p+1 = 0x7ffe66c325a5 (diff: 1 byte)
-sizeof(char) = 1
+Address 0x7ffffcf00034 is located in stack of thread T0 at offset 52 in frame
+    #0 0x555555556341 in out_of_bounds_demo /w/pointer_arithmetic.c:17
 
-=== sizeof(array) vs sizeof(pointer) ===
-sizeof(my_arr) = 20
-sizeof(my_ptr) = 8
-Elements in my_arr: 5
-
-=== Array subscript == pointer arithmetic ===
-test_arr[2] = 30
-*(test_arr + 2) = 30
-
-=== Safe array processing ===
-Sum of 5 elements: 150
-
-=== Out-of-bounds (without ASAN) ===
-  Valid: arr[0]=10, arr[4]=50
-==223529==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffd9eae6564 at pc 0x7f78fa00552d bp 0x7ffd9eae6490 sp 0x7ffd9eae6480
-READ of size 4 at 0x7ffd9eae6564 thread T0
-    #0 0x7f78fa00552c in main /tmp/claude-1000/-home-nyanziba-hobby-program/bfbf933d-8b99-4e93-9360-43360e47ad4f/scratchpad/test_oob.c:13 (BuildId: 61803c7afc749dea2da335ab22612443c55880fc)
+  This frame has 1 object(s):
+    [32, 52) 'arr' (line 18) <== Memory access at offset 52 overflows this variable
+HINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork
+      (longjmp and C++ exceptions *are* supported)
+SUMMARY: AddressSanitizer: stack-buffer-overflow /w/pointer_arithmetic.c:22 in out_of_bounds_demo
+Shadow bytes around the buggy address:
+  0x7ffffceffd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7ffffceffe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7ffffceffe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7ffffcefff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7ffffcefff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x7ffffcf00000: f1 f1 f1 f1 00 00[04]f3 f3 f3 f3 f3 00 00 00 00
+  0x7ffffcf00080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7ffffcf00100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7ffffcf00180: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7ffffcf00200: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7ffffcf00280: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
 ```
 
 </details>

@@ -191,7 +191,47 @@ struct FileCreator : Creator
 ```
 
 実際にコンパイルするとこうなります（`g++ -std=c++17 -Wall -Wextra -Wpedantic`、
-Apple clang 17）。
+Apple clang 21）。
+
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// covariant.cpp
+#include <memory>
+
+struct Product
+{
+  virtual ~Product() = default;
+};
+
+struct FileProduct : Product
+{
+};
+
+struct Creator
+{
+  virtual ~Creator() = default;
+  virtual std::unique_ptr<Product> create() = 0;
+};
+
+struct FileCreator : Creator
+{
+  // 戻り値を unique_ptr<FileProduct> に狭めようとした
+  std::unique_ptr<FileProduct> create() override { return std::make_unique<FileProduct>(); }
+};
+
+int main()
+{
+  FileCreator creator;
+  return 0;
+}
+```
+
+```bash
+clang++ -std=c++17 -Wall -Wextra -Wpedantic covariant.cpp -o covariant
+```
+
+</details>
 
 ```
 covariant.cpp:22:32: error: virtual function 'create' has a different return type ('unique_ptr<FileProduct>') than the function it overrides (which has return type 'unique_ptr<Product>')
@@ -232,10 +272,31 @@ std::unique_ptr<Base> b = std::make_unique<Derived>();   // 通る
 std::unique_ptr<Derived> d = std::move(b);               // 通らない
 ```
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// conv.cpp
+#include <memory>
+struct Base { virtual ~Base() = default; }; struct Derived : Base {};
+int main()
+{
+  std::unique_ptr<Base> b = std::make_unique<Derived>();   // 通る
+  std::unique_ptr<Derived> d = std::move(b);               // 通らない
+  return 0;
+}
 ```
-conv.cpp:7:28: error: no viable conversion from '__libcpp_remove_reference_t<unique_ptr<Base, default_delete<Base>> &>' (aka 'std::unique_ptr<Base>') to 'std::unique_ptr<Derived>'
+
+```bash
+clang++ -std=c++17 -Wall -Wextra -Wpedantic conv.cpp -o conv
+```
+
+</details>
+
+```
+conv.cpp:7:28: error: no viable conversion from '__libcpp_remove_reference_t<std::unique_ptr<Base, std::default_delete<Base>> &>' (aka 'std::unique_ptr<Base>') to 'std::unique_ptr<Derived>'
     7 |   std::unique_ptr<Derived> d = std::move(b);               // 通らない
       |                            ^   ~~~~~~~~~~~~
+...
 ```
 
 「本当は `Derived` なのだから戻せるはず」と思うでしょうが、コンパイラには分かりません。

@@ -114,8 +114,45 @@ private:
 };
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// config.cpp
+class Config
+{
+public:
+  Config(int limit)
+  {
+    limit_ = limit;    // <- error
+  }
+private:
+  const int limit_;
+};
+
+int main()
+{
+  Config config(10);
+  return 0;
+}
 ```
-error: assignment of read-only member ‘Config::limit_’
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic config.cpp -o config
+```
+
+</details>
+
+```
+config.cpp: In constructor ‘Config::Config(int)’:
+config.cpp:5:3: error: uninitialized const member in ‘const int’ [-fpermissive]
+    5 |   Config(int limit)
+      |   ^~~~~~
+config.cpp:10:13: note: ‘const int Config::limit_’ should be initialized
+   10 |   const int limit_;
+      |             ^~~~~~
+config.cpp:7:12: error: assignment of read-only member ‘Config::limit_’
+    7 |     limit_ = limit;    // <- error
+      |     ~~~~~~~^~~~~~~
 ```
 
 With an initializer list it passes.
@@ -186,9 +223,52 @@ so `b_` is not initialized yet. This is undefined behavior.
 
 g++ tells you this with `-Wall`.
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// ordered.cpp
+class Ordered
+{
+public:
+  Ordered()
+  : b_(1), a_(b_ + 1)    // the written order is b_ -> a_
+  {
+  }
+  int a_;                 // the declaration order is a_ -> b_
+  int b_;
+};
+
+int main()
+{
+  Ordered ordered;
+  return 0;
+}
 ```
-warning: ‘Ordered::b_’ will be initialized after [-Wreorder]
-warning:   ‘int Ordered::a_’ [-Wreorder]
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic ordered.cpp -o ordered && ./ordered
+```
+
+</details>
+
+```
+ordered.cpp: In constructor ‘Ordered::Ordered()’:
+ordered.cpp:10:7: warning: ‘Ordered::b_’ will be initialized after [-Wreorder]
+   10 |   int b_;
+      |       ^~
+ordered.cpp:9:7: warning:   ‘int Ordered::a_’ [-Wreorder]
+    9 |   int a_;                 // the declaration order is a_ -> b_
+      |       ^~
+ordered.cpp:5:3: warning:   when initialized here [-Wreorder]
+    5 |   Ordered()
+      |   ^~~~~~~
+ordered.cpp:6:15: warning: member ‘Ordered::b_’ is used uninitialized [-Wuninitialized]
+    6 |   : b_(1), a_(b_ + 1)    // the written order is b_ -> a_
+      |               ^~
+ordered.cpp: In constructor ‘Ordered::Ordered()’:
+ordered.cpp:6:15: warning: ‘*this.Ordered::b_’ is used uninitialized [-Wuninitialized]
+    6 |   : b_(1), a_(b_ + 1)    // the written order is b_ -> a_
+      |               ^~
 ```
 
 **If a `-Wreorder` warning appears, fix the order.**
@@ -421,11 +501,56 @@ If you add `explicit`, it stops.
 explicit Meters(double v) : v_(v) {}
 ```
 
-```
-error: could not convert ‘1.5e+0’ from ‘double’ to ‘Meters’
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// meters.cpp
+#include <iostream>
+
+class Meters
+{
+public:
+  explicit Meters(double v) : v_(v) {}
+  double value() const { return v_; }
+private:
+  double v_;
+};
+
+void move_robot(Meters distance)
+{
+  std::cout << "move " << distance.value() << " m\n";
+}
+
+int main()
+{
+  move_robot(Meters(1.5));   // the intended way to call it
+  move_robot(1.5);   // error
+  move_robot(true);   // error
+  return 0;
+}
 ```
 
-`move_robot(Meters(1.5))` passes, and only `move_robot(1.5)` fails.
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic meters.cpp -o meters
+```
+
+</details>
+
+```
+meters.cpp: In function ‘int main()’:
+meters.cpp:21:14: error: could not convert ‘1.5e+0’ from ‘double’ to ‘Meters’
+   21 |   move_robot(1.5);   // error
+      |              ^~~
+      |              |
+      |              double
+meters.cpp:22:14: error: could not convert ‘true’ from ‘bool’ to ‘Meters’
+   22 |   move_robot(true);   // error
+      |              ^~~~
+      |              |
+      |              bool
+```
+
+`move_robot(Meters(1.5))` passes, and both `move_robot(1.5)` and `move_robot(true)` fail.
 
 Remember: **in principle, add `explicit` to a constructor with one argument.**
 The only exception is when it is "really a different representation of the same thing" (such as `std::string` accepting a `const char *`).

@@ -143,10 +143,75 @@ struct DiagNode
 };
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// base_accept.cpp
+#include <memory>
+#include <vector>
+
+class SensorCheck;
+class MotorCheck;
+class CheckGroup;
+
+class DiagVisitor
+{
+public:
+  virtual ~DiagVisitor() = default;                    // Change 1
+  virtual void visit(const SensorCheck & node) = 0;    // Change 2
+  virtual void visit(const MotorCheck & node) = 0;
+  virtual void visit(const CheckGroup & node) = 0;
+};
+
+struct DiagNode
+{
+  virtual ~DiagNode() = default;
+  void accept(DiagVisitor & visitor) const { visitor.visit(*this); }   // one in the base
+};
+
+class SensorCheck : public DiagNode {};
+class MotorCheck : public DiagNode {};
+class CheckGroup : public DiagNode
+{
+public:
+  std::vector<std::unique_ptr<DiagNode>> children;
+};
+
+int main()
+{
+  return 0;
+}
 ```
-error: no matching member function for call to 'visit'
-note: candidate function not viable: no known conversion from 'const DiagNode' to 'const SensorCheck' for 1st argument
-note: candidate function not viable: no known conversion from 'const DiagNode' to 'const MotorCheck' for 1st argument
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic base_accept.cpp -o base_accept
+```
+
+</details>
+
+```
+base_accept.cpp: In member function ‘void DiagNode::accept(DiagVisitor&) const’:
+base_accept.cpp:21:59: error: no matching function for call to ‘DiagVisitor::visit(const DiagNode&)’
+   21 |   void accept(DiagVisitor & visitor) const { visitor.visit(*this); }   // one in the base
+      |                                              ~~~~~~~~~~~~~^~~~~~~
+base_accept.cpp:13:16: note: candidate: ‘virtual void DiagVisitor::visit(const SensorCheck&)’
+   13 |   virtual void visit(const SensorCheck & node) = 0;    // Change 2
+      |                ^~~~~
+base_accept.cpp:13:42: note:   no known conversion for argument 1 from ‘const DiagNode’ to ‘const SensorCheck&’
+   13 |   virtual void visit(const SensorCheck & node) = 0;    // Change 2
+      |                      ~~~~~~~~~~~~~~~~~~~~^~~~
+base_accept.cpp:14:16: note: candidate: ‘virtual void DiagVisitor::visit(const MotorCheck&)’
+   14 |   virtual void visit(const MotorCheck & node) = 0;
+      |                ^~~~~
+base_accept.cpp:14:41: note:   no known conversion for argument 1 from ‘const DiagNode’ to ‘const MotorCheck&’
+   14 |   virtual void visit(const MotorCheck & node) = 0;
+      |                      ~~~~~~~~~~~~~~~~~~~^~~~
+base_accept.cpp:15:16: note: candidate: ‘virtual void DiagVisitor::visit(const CheckGroup&)’
+   15 |   virtual void visit(const CheckGroup & node) = 0;
+      |                ^~~~~
+base_accept.cpp:15:41: note:   no known conversion for argument 1 from ‘const DiagNode’ to ‘const CheckGroup&’
+   15 |   virtual void visit(const CheckGroup & node) = 0;
+      |                      ~~~~~~~~~~~~~~~~~~~^~~~
 ```
 
 This is because **inside the base class, `*this` is a `DiagNode`**.
@@ -218,14 +283,55 @@ It works. But it has three problems.
 
 1. **It compiles even if you forget a case.** The code above silently ignores `CheckGroup`.
    When you add a kind, **nobody tells you where to fix**
-2. **It needs RTTI.** On microcontrollers `-fno-rtti` is normal.
-
-   ```
-   error: use of dynamic_cast requires -frtti
-   ```
-
+2. **It needs RTTI.** On microcontrollers `-fno-rtti` is normal (the error is shown after this list)
 3. **It is not fast.** `dynamic_cast` searches the inheritance relationships at runtime.
    The cost is different from one virtual function call
+
+The error of number 2 is as follows.
+
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// rtti.cpp
+struct DiagNode
+{
+  virtual ~DiagNode() = default;
+};
+
+struct SensorCheck : DiagNode {};
+struct MotorCheck : DiagNode {};
+struct CheckGroup : DiagNode {};
+
+void report(const DiagNode & node)
+{
+  if (const SensorCheck * const s = dynamic_cast<const SensorCheck *>(&node)) { /* ... */ }
+  else if (const MotorCheck * const m = dynamic_cast<const MotorCheck *>(&node)) { /* ... */ }
+  // forgot CheckGroup
+}
+
+int main()
+{
+  const SensorCheck sensor;
+  report(sensor);
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic -fno-rtti rtti.cpp -o rtti
+```
+
+</details>
+
+```
+rtti.cpp: In function ‘void report(const DiagNode&)’:
+rtti.cpp:13:37: error: ‘dynamic_cast’ not permitted with ‘-fno-rtti’
+   13 |   if (const SensorCheck * const s = dynamic_cast<const SensorCheck *>(&node)) { /* ... */ }
+      |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rtti.cpp:14:41: error: ‘dynamic_cast’ not permitted with ‘-fno-rtti’
+   14 |   else if (const MotorCheck * const m = dynamic_cast<const MotorCheck *>(&node)) { /* ... */ }
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 **Number 1 is the essence.** The one point where Visitor beats a chain of `dynamic_cast` is this:
 "when you add a kind, a pure virtual `visit` is added to `DiagVisitor`, and
@@ -279,9 +385,66 @@ That is what `std::visit` asks for.
 
 **If you forget the deduction guide in the last 2 lines, you get this.**
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// no_guide.cpp
+#include <iostream>
+#include <string>
+#include <variant>
+
+struct SensorSample { std::string name; int value_mv; int limit_mv; };
+struct MotorSample  { std::string name; unsigned int fault_bits; };
+
+using DiagValue = std::variant<SensorSample, MotorSample>;   // one of the kinds is held
+
+template <class ... Ts>
+struct overloaded : Ts ...
+{
+  using Ts::operator() ...;
+};
+
+// forgot the deduction guide
+
+int main()
+{
+  const DiagValue value = SensorSample{"battery", 11800, 10500};
+
+  std::visit(
+    overloaded{
+      [](const SensorSample & s) { std::cout << "sensor " << s.value_mv << "mV\n"; },
+      [](const MotorSample & m) { std::cout << "motor fault=" << m.fault_bits << "\n"; }},
+    value);
+  return 0;
+}
 ```
-error: no viable constructor or deduction guide for deduction of template arguments of 'overloaded'
-note: candidate function template not viable: requires 1 argument, but 2 were provided
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic no_guide.cpp -o no_guide
+```
+
+</details>
+
+```
+no_guide.cpp: In function ‘int main()’:
+no_guide.cpp:26:89: error: class template argument deduction failed:
+   26 |       [](const MotorSample & m) { std::cout << "motor fault=" << m.fault_bits << "\n"; }},
+      |                                                                                         ^
+no_guide.cpp:26:89: error: no matching function for call to ‘overloaded(main()::<lambda(const SensorSample&)>, main()::<lambda(const MotorSample&)>)’
+no_guide.cpp:12:8: note: candidate: ‘template<class ... Ts> overloaded()-> overloaded<Ts>’
+   12 | struct overloaded : Ts ...
+      |        ^~~~~~~~~~
+no_guide.cpp:12:8: note:   template argument deduction/substitution failed:
+no_guide.cpp:26:89: note:   candidate expects 0 arguments, 2 provided
+   26 |       [](const MotorSample & m) { std::cout << "motor fault=" << m.fault_bits << "\n"; }},
+      |                                                                                         ^
+no_guide.cpp:12:8: note: candidate: ‘template<class ... Ts> overloaded(overloaded<Ts>)-> overloaded<Ts>’
+   12 | struct overloaded : Ts ...
+      |        ^~~~~~~~~~
+no_guide.cpp:12:8: note:   template argument deduction/substitution failed:
+no_guide.cpp:26:89: note:   ‘main()::<lambda(const SensorSample&)>’ is not derived from ‘overloaded<Ts>’
+   26 |       [](const MotorSample & m) { std::cout << "motor fault=" << m.fault_bits << "\n"; }},
+      |                                                                                         ^
 ```
 
 C++20 added CTAD for aggregates, so the deduction guide is not needed.
@@ -292,13 +455,54 @@ C++20 added CTAD for aggregates, so the deduction guide is not needed.
 This is the decisive difference from a chain of `dynamic_cast`.
 If you add a kind `EncoderV` to the variant and forget to add a lambda,
 
-```
-error: static assertion failed due to requirement
-  'is_invocable_v<overloaded<...>, EncoderV &>':
-  `std::visit` requires the visitor to be exhaustive.
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// not_exhaustive.cpp
+#include <iostream>
+#include <variant>
+
+struct SensorV { int mv; };
+struct MotorV { unsigned int fault; };
+struct EncoderV { int count; };   // the added kind
+using NodeV = std::variant<SensorV, MotorV, EncoderV>;
+
+template <class ... Ts>
+struct overloaded : Ts ...
+{
+  using Ts::operator() ...;
+};
+
+template <class ... Ts>
+overloaded(Ts ...) -> overloaded<Ts ...>;      // deduction guide. required in C++17
+
+int main()
+{
+  const NodeV value = SensorV{11800};
+
+  std::visit(
+    overloaded{
+      [](const SensorV & s) { std::cout << "sensor " << s.mv << "mV\n"; },
+      [](const MotorV & m) { std::cout << "motor fault=" << m.fault << "\n"; }},
+    value);                                    // forgot to add the lambda for EncoderV
+  return 0;
+}
 ```
 
-**it fails with an error that says "the visitor is not exhaustive".**
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic not_exhaustive.cpp -o not_exhaustive 2>&1 | grep -m1 'error:'
+```
+
+</details>
+
+There are 5 errors and the output runs to dozens of lines, so `grep -m1` in the command extracts only the first `error:` line.
+
+```
+/usr/include/c++/13/type_traits:3073:11: error: no type named ‘type’ in ‘struct std::invoke_result<overloaded<main()::<lambda(const SensorV&)>, main()::<lambda(const MotorV&)> >, const EncoderV&>’
+```
+
+**it fails with an error that names the type it could not call.** It says there is no lambda that accepts `const EncoderV &`.
+(With clang's libc++ the message even says `requires the visitor to be exhaustive`.)
 When you add a kind, **the compiler lists every `std::visit` call you need to fix**.
 It is exactly the same effect as when adding a pure virtual `visit` in the GoF version makes every visitor fail.
 The difference is that **you did not write a single inheritance hierarchy for it**.
@@ -414,6 +618,69 @@ int main()
 g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 ```
 
+This is the program that produced the last error in the answer (with one lambda deleted).
+
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// try_missing.cpp
+#include <iostream>
+#include <string>
+#include <variant>
+#include <vector>
+
+// ---- 1) Check that overloads are chosen by the static type ----
+struct Node { virtual ~Node() = default; };
+struct Sensor : Node {};
+struct Motor : Node {};
+
+void describe(const Sensor &) { std::cout << "sensor\n"; }
+void describe(const Motor &) { std::cout << "motor\n"; }
+void describe(const Node &) { std::cout << "node (kind lost)\n"; }
+
+// ---- 2) With std::variant, you can choose by the runtime content ----
+struct SensorV { int mv; };
+struct MotorV { unsigned int fault; };
+using NodeV = std::variant<SensorV, MotorV>;
+
+template <class ... Ts>
+struct overloaded : Ts ...
+{
+  using Ts::operator() ...;
+};
+
+template <class ... Ts>
+overloaded(Ts ...) -> overloaded<Ts ...>;
+
+int main()
+{
+  Sensor sensor;
+  Motor motor;
+  const Node * const nodes[] = {&sensor, &motor};
+
+  for (const Node * const node : nodes) {
+    describe(*node);
+  }
+
+  const std::vector<NodeV> values = {SensorV{11800}, MotorV{3U}};
+  for (const NodeV & value : values) {
+    std::visit(
+      overloaded{
+        [](const SensorV & s) { std::cout << "sensor " << s.mv << "mV\n"; }},
+      value);
+  }
+
+  std::cout << "sizeof(NodeV) = " << sizeof(NodeV) << "\n";
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic try_missing.cpp -o try_missing 2>&1 | grep -m1 'error:'
+```
+
+</details>
+
 <details>
 <summary>Predict: what do the first 2 lines print? There are 3 overloads of <code>describe</code></summary>
 
@@ -439,7 +706,7 @@ The last 8 bytes are the result of aligning "a 4-byte member + a discriminator".
 To go further, delete one lambda in the second half.
 
 ```
-error: static assertion failed ... `std::visit` requires the visitor to be exhaustive.
+/usr/include/c++/13/type_traits:3073:11: error: no type named ‘type’ in ‘struct std::invoke_result<overloaded<main()::<lambda(const SensorV&)> >, const MotorV&>’
 ```
 
 You can confirm that **forgetting a case becomes a compile error**.
@@ -524,15 +791,15 @@ The kinds are fixed there too, so `std::variant` is the first candidate.
 
 | Symptom | Cause |
 | --- | --- |
-| `error: no matching member function for call to 'visit'` | You wrote only one `accept` in the base class. `*this` is a `DiagNode` (13.2) |
+| `error: no matching function for call to ‘DiagVisitor::visit(const DiagNode&)’` | You wrote only one `accept` in the base class. `*this` is a `DiagNode` (13.2) |
 | Through a base pointer, everything gets the same processing | `accept` is not `virtual`. Overloads are chosen by the static type |
 | The element is copied on every visit | The parameter of `visit` is a value, not `const Derived &` |
 | Derived-only members cannot be read or their values are broken | You take a base-type value like `visit(DiagNode node)` (slicing) |
 | Every visitor failed after I added one kind | **Normal.** That is the benefit of Visitor (13.4) |
-| `error: no viable constructor or deduction guide ... 'overloaded'` | You did not write the deduction guide (required in C++17) |
-| ``error: ... `std::visit` requires the visitor to be exhaustive.`` | One lambda is missing. Write all kinds of the variant |
+| `error: class template argument deduction failed` | You did not write the deduction guide (required in C++17) |
+| `error: no type named ‘type’ in ‘struct std::invoke_result<overloaded<...>, const EncoderV&>’` | One lambda is missing. Write all kinds of the variant |
 | A lambda cannot call itself recursively | A lambda does not know its own name. Make a named function and call `std::visit` inside it |
-| `error: use of dynamic_cast requires -frtti` | You used `dynamic_cast` in a `-fno-rtti` build (13.5) |
+| `error: ‘dynamic_cast’ not permitted with ‘-fno-rtti’` | You used `dynamic_cast` in a `-fno-rtti` build (13.5) |
 | `std::get` caused `abort()` on a microcontroller | It cannot throw with `-fno-exceptions`. Use `std::get_if` (13.9) |
 | The variant is oddly large | Everyone is sized to the largest member. Move only the large type to `unique_ptr` |
 
@@ -566,7 +833,7 @@ and that the variant types satisfy `static_assert(!std::is_polymorphic_v<...>)`
   Decide the direction of growth first, then choose
 - A chain of `dynamic_cast` **compiles even if you forget a case**. It also needs RTTI. It is worse than Visitor
 - **C++17 has `std::variant` + `std::visit`.** It needs no inheritance, no virtual functions, and no `accept`, and
-  exhaustiveness is guaranteed at compile time (`requires the visitor to be exhaustive`)
+  exhaustiveness is guaranteed at compile time (if a case is missing, it fails with a `std::invoke_result` error)
 - The `overloaded` idiom is not in the standard. **Write it yourself, including the deduction guide** (C++17)
 - If the kinds are fixed, use variant. If you want to extend at runtime, use the GoF version
 - **On microcontrollers, variant is the main choice.** It uses no heap and no vtable.

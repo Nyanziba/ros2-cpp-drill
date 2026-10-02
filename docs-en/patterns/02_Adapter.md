@@ -94,9 +94,31 @@ MotorActuator * m = new Adapter{};
 delete m;
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// delete_warning.cpp
+struct MotorActuator { virtual void stop() = 0; };   // forgot to write a virtual destructor
+struct Adapter : MotorActuator { void stop() override {} };
+
+int main()
+{
+  MotorActuator * m = new Adapter{};
+  delete m;
+}
 ```
-warning: delete called on 'MotorActuator' that is abstract but has
-non-virtual destructor [-Wdelete-abstract-non-virtual-dtor]
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic delete_warning.cpp -o delete_warning
+```
+
+</details>
+
+```
+delete_warning.cpp: In function ‘int main()’:
+delete_warning.cpp:8:3: warning: deleting object of abstract class type ‘MotorActuator’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
+    8 |   delete m;
+      |   ^~~~~~~~
 ```
 
 **It is a warning, not an error.** In an environment where `-Wall` is off, it passes silently.
@@ -199,10 +221,40 @@ Adapter a;
 Device * d = &a;
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// diamond.cpp
+struct Device { virtual ~Device() = default; virtual void reset() = 0; };
+struct Readable : Device { virtual double read() const = 0; };
+struct Writable : Device { virtual void write(double v) = 0; };
+
+struct Adapter : Readable, Writable
+{
+  void reset() override {}
+  double read() const override { return 0.0; }
+  void write(double) override {}
+};
+
+int main()
+{
+  Adapter a;
+  Device * d = &a;
+  (void)d;
+}
 ```
-error: ambiguous conversion from derived class 'Adapter' to base class 'Device':
-    struct Adapter -> Readable -> Device
-    struct Adapter -> Writable -> Device
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic diamond.cpp -o diamond
+```
+
+</details>
+
+```
+diamond.cpp: In function ‘int main()’:
+diamond.cpp:16:16: error: ‘Device’ is an ambiguous base of ‘Adapter’
+   16 |   Device * d = &a;
+      |                ^~
 ```
 
 `Adapter` contains **two** `Device`s. You cannot convert to a base pointer.
@@ -234,9 +286,42 @@ Adapter a;
 a.reset();
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// name_clash.cpp
+struct MotorActuator { virtual ~MotorActuator() = default;
+                       virtual void set_velocity(double) = 0; void reset() {} };
+struct LegacyDriver { void reset() {} };
+struct Adapter : MotorActuator, private LegacyDriver
+{
+  void set_velocity(double) override {}
+};
+
+int main()
+{
+  Adapter a;
+  a.reset();
+}
 ```
-error: member 'reset' found in multiple base classes of different types
-note: member found by ambiguous name lookup
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic name_clash.cpp -o name_clash
+```
+
+</details>
+
+```
+name_clash.cpp: In function ‘int main()’:
+name_clash.cpp:13:5: error: request for member ‘reset’ is ambiguous
+   13 |   a.reset();
+      |     ^~~~~
+name_clash.cpp:4:28: note: candidates are: ‘void LegacyDriver::reset()’
+    4 | struct LegacyDriver { void reset() {} };
+      |                            ^~~~~
+name_clash.cpp:3:68: note:                 ‘void MotorActuator::reset()’
+    3 |                        virtual void set_velocity(double) = 0; void reset() {} };
+      |                                                                    ^~~~~
 ```
 
 The Adaptee is assumed to be **unchangeable**. If the names collide, the only way is to write
@@ -279,9 +364,40 @@ tune(priv);           // does not compile
 
 Only the `private` version gives an error.
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// slicing.cpp
+struct LegacyDriver { int pulse = 0; void setPulse(int p) { pulse = p; } };
+struct PublicAdapter : public LegacyDriver { double gain = 2.0; };
+struct PrivateAdapter : private LegacyDriver { double gain = 2.0; };
+
+void tune(LegacyDriver driver) { driver.setPulse(0); }   // pass by value
+
+int main()
+{
+  PublicAdapter pub;
+  tune(pub);            // compiles. gain is sliced off
+
+  PrivateAdapter priv;
+  tune(priv);           // does not compile
+}
 ```
-error: cannot cast 'const PrivateAdapter' to its private base class 'const LegacyDriver'
-note: declared private here
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic slicing.cpp -o slicing
+```
+
+</details>
+
+```
+slicing.cpp: In function ‘int main()’:
+slicing.cpp:14:7: error: ‘LegacyDriver’ is an inaccessible base of ‘PrivateAdapter’
+   14 |   tune(priv);           // does not compile
+      |   ~~~~^~~~~~
+slicing.cpp:6:24: note:   initializing argument 1 of ‘void tune(LegacyDriver)’
+    6 | void tune(LegacyDriver driver) { driver.setPulse(0); }   // pass by value
+      |           ~~~~~~~~~~~~~^~~~~~
 ```
 
 **The `public` version passes silently. There is not even a warning.**
@@ -427,6 +543,50 @@ int main()
 g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// try_range.cpp
+#include <deque>
+#include <iostream>
+#include <stack>
+#include <vector>
+
+int main()
+{
+  // std::stack is a delegation-version Adapter that only "holds one container and narrows the interface".
+  // The default underlying container is std::deque.
+  std::stack<int> default_stack;
+
+  // Even if you swap the underlying container, the interface seen from outside is exactly the same.
+  std::stack<int, std::vector<int>> vector_stack;
+
+  for (int i = 1; i <= 3; ++i) {
+    default_stack.push(i);
+    vector_stack.push(i);
+  }
+
+  std::cout << default_stack.top() << " " << vector_stack.top() << "\n";
+  std::cout << default_stack.size() << " " << vector_stack.size() << "\n";
+
+  // If you use the Adaptee as it is, the interface is not narrowed.
+  std::deque<int> raw;
+  raw.push_back(1);
+  raw.push_front(0);              // an operation that stack does not have
+  std::cout << raw.front() << " " << raw.back() << "\n";
+
+  // What std::stack cannot do: traversal
+  for (int v : default_stack) { (void)v; }   // ← if you uncomment this, you get an error
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic try_range.cpp -o try_range
+```
+
+</details>
+
 <details>
 <summary>Predict: what are the three lines of output? And what happens if you uncomment the last line?</summary>
 
@@ -443,7 +603,11 @@ Even if you swap the Adaptee, Target does not change. This is what Adapter is.
 If you uncomment the last line, this happens.
 
 ```
-error: invalid range expression of type 'std::stack<int>'; no viable 'begin' function available
+try_range.cpp: In function ‘int main()’:
+try_range.cpp:31:16: error: no matching function for call to ‘begin(std::stack<int>&)’
+   31 |   for (int v : default_stack) { (void)v; }   // ← if you uncomment this, you get an error
+      |                ^~~~~~~~~~~~~
+...
 ```
 
 `std::deque` has `begin()`. `std::stack` **does not expose it**.
@@ -459,6 +623,85 @@ You can see that an Adapter is a tool that widens the interface, and also a tool
 3. The calls are not inlined
 
 You can measure the cost of the vtable pointer. On a local arm64 machine,
+
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// sizeof_adapter.cpp
+#include <cstdint>
+#include <cstdio>
+
+// Existing raw driver (cannot be changed)
+class LegacyMotorDriver
+{
+public:
+  void setPulse(int pulse) { pulse_ = pulse; }
+  int getPulse() const { return pulse_; }
+  void stopAll() { pulse_ = 0; }
+  std::int32_t readEncoderRaw() const { return encoder_raw_; }
+
+private:
+  int pulse_ = 0;
+  std::int32_t encoder_raw_ = 0;
+};
+
+class MotorActuator
+{
+public:
+  virtual ~MotorActuator() = default;
+  virtual void set_velocity(double rad_per_sec) = 0;
+  virtual void stop() = 0;
+  virtual double position_rad() const = 0;
+};
+
+// Delegation Adapter with virtual functions. It holds the raw driver by value
+class DelegatingMotorAdapter : public MotorActuator
+{
+public:
+  void set_velocity(double rad_per_sec) override
+  {
+    driver_.setPulse(static_cast<int>(rad_per_sec * 100.0));
+  }
+  void stop() override { driver_.stopAll(); }
+  double position_rad() const override { return driver_.readEncoderRaw() / 4096.0; }
+
+private:
+  LegacyMotorDriver driver_;
+};
+
+// Delegation-version Adapter with no virtual functions, no inheritance, and no allocation.
+// Align not by "the type MotorActuator" but by "the name set_velocity".
+template <typename Driver>
+class MotorAdapter
+{
+public:
+  explicit MotorAdapter(Driver & driver) : driver_(driver) {}
+
+  void set_velocity(std::int32_t milli_rad_per_sec)
+  {
+    driver_.setPulse(static_cast<int>(milli_rad_per_sec / 10));
+  }
+
+  void stop() { driver_.stopAll(); }
+
+private:
+  Driver & driver_;              // does not own. The caller guarantees the lifetime
+};
+
+int main()
+{
+  std::printf("LegacyMotorDriver                  : %zu\n", sizeof(LegacyMotorDriver));
+  std::printf("DelegatingMotorAdapter (virtual)   : %zu\n", sizeof(DelegatingMotorAdapter));
+  std::printf("MotorAdapter<LegacyMotorDriver>    : %zu\n", sizeof(MotorAdapter<LegacyMotorDriver>));
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic sizeof_adapter.cpp -o sizeof_adapter && ./sizeof_adapter
+```
+
+</details>
 
 | Type | `sizeof` |
 | --- | --- |
@@ -576,13 +819,13 @@ and **it is a different thing from the GoF Adapter**. Do not confuse them.
 
 | Symptom | Cause |
 | --- | --- |
-| `error: ambiguous conversion from derived class ... to base class` | Diamond inheritance. The Target-side interface has become two. Change to delegation |
-| `error: member 'reset' found in multiple base classes of different types` | Name collision between Target and Adaptee. It does not happen with delegation |
+| `error: 'Device' is an ambiguous base of 'Adapter'` | Diamond inheritance. The Target-side interface has become two. Change to delegation |
+| `error: request for member 'reset' is ambiguous` | Name collision between Target and Adaptee. It does not happen with delegation |
 | In the inheritance version, a call I meant for the Adaptee recurses infinitely | The unqualified call resolves to itself. Write `LegacyDriver::reset()` |
 | Members of the Adapter disappeared after passing it to a function | Slicing with public inheritance + pass by value. Use `private` inheritance or delegation |
-| `warning: delete called on ... non-virtual destructor` | Target has no virtual destructor |
+| `warning: deleting object of abstract class type ... which has non-virtual destructor` | Target has no virtual destructor |
 | It crashes when I use the return value of a function that returns an Adapter | The Adaptee is held by reference. Hold it by value, or promise the lifetime |
-| `error: cannot cast ... to its private base class` | You cannot convert to the base from outside with `private` inheritance. **This is correct behavior** |
+| `error: 'LegacyDriver' is an inaccessible base of 'PrivateAdapter'` | You cannot convert to the base from outside with `private` inheritance. **This is correct behavior** |
 | The unit conversion gives a different value for each call | The conversion factor is scattered outside the Adapter. Put it in one place as a `constexpr` on the Target side |
 
 ## 2.9 Matching exercise

@@ -39,6 +39,27 @@ int & r;        // Error: no initializer
 int & r = x;    // OK
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// basics03_uninit.cpp
+#include <iostream>
+
+int main()
+{
+  int x = 10;
+  std::cout << x << "\n";
+
+  int & r;        // Error: no initializer
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic basics03_uninit.cpp -o basics03_uninit
+```
+
+</details>
+
 Compiler message:
 ```
 error: ‘r’ declared as reference but not initialized
@@ -70,6 +91,22 @@ A reference must always refer to some object. It cannot be null.
 ```cpp
 int & ref = nullptr;  // Error
 ```
+
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// basics03_null.cpp
+int main()
+{
+  int & ref = nullptr;  // Error
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic basics03_null.cpp -o basics03_null
+```
+
+</details>
 
 Compiler message:
 ```
@@ -185,8 +222,32 @@ const int & bad_function(int x) {
 }
 
 const int & ref = bad_function(5);  // ref is invalid (a dangling reference)
-std::cout << *ref;                  // undefined behavior
+std::cout << ref;                   // undefined behavior
 ```
+
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// basics03_dangling.cpp
+#include <iostream>
+
+const int & bad_function(int x) {
+  int local = x + 1;
+  return local;  // local is destroyed when the function exits
+}
+
+int main()
+{
+  const int & ref = bad_function(5);  // ref is invalid (a dangling reference)
+  std::cout << ref;                   // undefined behavior
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic -c basics03_dangling.cpp
+```
+
+</details>
 
 The compiler should give a warning:
 

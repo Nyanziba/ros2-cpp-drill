@@ -94,9 +94,31 @@ MotorActuator * m = new Adapter{};
 delete m;
 ```
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// delete_warning.cpp
+struct MotorActuator { virtual void stop() = 0; };   // 仮想デストラクタを書き忘れた
+struct Adapter : MotorActuator { void stop() override {} };
+
+int main()
+{
+  MotorActuator * m = new Adapter{};
+  delete m;
+}
 ```
-warning: delete called on 'MotorActuator' that is abstract but has
-non-virtual destructor [-Wdelete-abstract-non-virtual-dtor]
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic delete_warning.cpp -o delete_warning
+```
+
+</details>
+
+```
+delete_warning.cpp: In function ‘int main()’:
+delete_warning.cpp:8:3: warning: deleting object of abstract class type ‘MotorActuator’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
+    8 |   delete m;
+      |   ^~~~~~~~
 ```
 
 **警告であって、エラーではありません。** `-Wall` を切っている環境では黙って通ります。
@@ -199,10 +221,40 @@ Adapter a;
 Device * d = &a;
 ```
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// diamond.cpp
+struct Device { virtual ~Device() = default; virtual void reset() = 0; };
+struct Readable : Device { virtual double read() const = 0; };
+struct Writable : Device { virtual void write(double v) = 0; };
+
+struct Adapter : Readable, Writable
+{
+  void reset() override {}
+  double read() const override { return 0.0; }
+  void write(double) override {}
+};
+
+int main()
+{
+  Adapter a;
+  Device * d = &a;
+  (void)d;
+}
 ```
-error: ambiguous conversion from derived class 'Adapter' to base class 'Device':
-    struct Adapter -> Readable -> Device
-    struct Adapter -> Writable -> Device
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic diamond.cpp -o diamond
+```
+
+</details>
+
+```
+diamond.cpp: In function ‘int main()’:
+diamond.cpp:16:16: error: ‘Device’ is an ambiguous base of ‘Adapter’
+   16 |   Device * d = &a;
+      |                ^~
 ```
 
 `Adapter` の中に `Device` が **2 つ**入っています。基底ポインタに変換できません。
@@ -233,9 +285,42 @@ Adapter a;
 a.reset();
 ```
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// name_clash.cpp
+struct MotorActuator { virtual ~MotorActuator() = default;
+                       virtual void set_velocity(double) = 0; void reset() {} };
+struct LegacyDriver { void reset() {} };
+struct Adapter : MotorActuator, private LegacyDriver
+{
+  void set_velocity(double) override {}
+};
+
+int main()
+{
+  Adapter a;
+  a.reset();
+}
 ```
-error: member 'reset' found in multiple base classes of different types
-note: member found by ambiguous name lookup
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic name_clash.cpp -o name_clash
+```
+
+</details>
+
+```
+name_clash.cpp: In function ‘int main()’:
+name_clash.cpp:13:5: error: request for member ‘reset’ is ambiguous
+   13 |   a.reset();
+      |     ^~~~~
+name_clash.cpp:4:28: note: candidates are: ‘void LegacyDriver::reset()’
+    4 | struct LegacyDriver { void reset() {} };
+      |                            ^~~~~
+name_clash.cpp:3:68: note:                 ‘void MotorActuator::reset()’
+    3 |                        virtual void set_velocity(double) = 0; void reset() {} };
+      |                                                                    ^~~~~
 ```
 
 Adaptee は**変更できない前提**です。名前が当たったら、Adapter 側で
@@ -278,9 +363,40 @@ tune(priv);           // 通らない
 
 `private` 版だけエラーになります。
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// slicing.cpp
+struct LegacyDriver { int pulse = 0; void setPulse(int p) { pulse = p; } };
+struct PublicAdapter : public LegacyDriver { double gain = 2.0; };
+struct PrivateAdapter : private LegacyDriver { double gain = 2.0; };
+
+void tune(LegacyDriver driver) { driver.setPulse(0); }   // 値渡し
+
+int main()
+{
+  PublicAdapter pub;
+  tune(pub);            // 通る。gain が切り落とされる
+
+  PrivateAdapter priv;
+  tune(priv);           // 通らない
+}
 ```
-error: cannot cast 'const PrivateAdapter' to its private base class 'const LegacyDriver'
-note: declared private here
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic slicing.cpp -o slicing
+```
+
+</details>
+
+```
+slicing.cpp: In function ‘int main()’:
+slicing.cpp:14:7: error: ‘LegacyDriver’ is an inaccessible base of ‘PrivateAdapter’
+   14 |   tune(priv);           // 通らない
+      |   ~~~~^~~~~~
+slicing.cpp:6:24: note:   initializing argument 1 of ‘void tune(LegacyDriver)’
+    6 | void tune(LegacyDriver driver) { driver.setPulse(0); }   // 値渡し
+      |           ~~~~~~~~~~~~~^~~~~~
 ```
 
 **`public` 版は黙って通ります。警告すら出ません。**
@@ -426,6 +542,50 @@ int main()
 g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 ```
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// try_range.cpp
+#include <deque>
+#include <iostream>
+#include <stack>
+#include <vector>
+
+int main()
+{
+  // std::stack は「コンテナを 1 つ持って、外に出す口を絞る」だけの委譲版 Adapter。
+  // 既定の中身は std::deque。
+  std::stack<int> default_stack;
+
+  // 中身を差し替えても、外から見た口はまったく同じ。
+  std::stack<int, std::vector<int>> vector_stack;
+
+  for (int i = 1; i <= 3; ++i) {
+    default_stack.push(i);
+    vector_stack.push(i);
+  }
+
+  std::cout << default_stack.top() << " " << vector_stack.top() << "\n";
+  std::cout << default_stack.size() << " " << vector_stack.size() << "\n";
+
+  // Adaptee をそのまま使うと、口は絞られていない。
+  std::deque<int> raw;
+  raw.push_back(1);
+  raw.push_front(0);              // stack には無い操作
+  std::cout << raw.front() << " " << raw.back() << "\n";
+
+  // std::stack にできないこと: 走査
+  for (int v : default_stack) { (void)v; }   // ← コメントを外すとエラーになる
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic try_range.cpp -o try_range
+```
+
+</details>
+
 <details>
 <summary>予想: 3 行の出力は何か。そして最後のコメントを外すと何が起きるか</summary>
 
@@ -442,7 +602,11 @@ Adaptee を差し替えても Target が変わらない、これが Adapter で�
 最後のコメントを外すとこうなります。
 
 ```
-error: invalid range expression of type 'std::stack<int>'; no viable 'begin' function available
+try_range.cpp: In function ‘int main()’:
+try_range.cpp:31:16: error: no matching function for call to ‘begin(std::stack<int>&)’
+   31 |   for (int v : default_stack) { (void)v; }   // ← コメントを外すとエラーになる
+      |                ^~~~~~~~~~~~~
+...
 ```
 
 `std::deque` には `begin()` があります。`std::stack` はそれを**公開していません**。
@@ -458,6 +622,85 @@ Adapter は口を広げる道具であると同時に、**絞る道具**でも�
 3. 呼び出しがインライン展開されない
 
 vtable ポインタのコストは実測できます。手元の arm64 環境で、
+
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// sizeof_adapter.cpp
+#include <cstdint>
+#include <cstdio>
+
+// 既存の生ドライバ（変更不可）
+class LegacyMotorDriver
+{
+public:
+  void setPulse(int pulse) { pulse_ = pulse; }
+  int getPulse() const { return pulse_; }
+  void stopAll() { pulse_ = 0; }
+  std::int32_t readEncoderRaw() const { return encoder_raw_; }
+
+private:
+  int pulse_ = 0;
+  std::int32_t encoder_raw_ = 0;
+};
+
+class MotorActuator
+{
+public:
+  virtual ~MotorActuator() = default;
+  virtual void set_velocity(double rad_per_sec) = 0;
+  virtual void stop() = 0;
+  virtual double position_rad() const = 0;
+};
+
+// 仮想関数を持つ委譲 Adapter。生ドライバを値で持つ
+class DelegatingMotorAdapter : public MotorActuator
+{
+public:
+  void set_velocity(double rad_per_sec) override
+  {
+    driver_.setPulse(static_cast<int>(rad_per_sec * 100.0));
+  }
+  void stop() override { driver_.stopAll(); }
+  double position_rad() const override { return driver_.readEncoderRaw() / 4096.0; }
+
+private:
+  LegacyMotorDriver driver_;
+};
+
+// 仮想関数なし・継承なし・確保なしの委譲版 Adapter。
+// 「MotorActuator という型」ではなく「set_velocity という名前」で揃える。
+template <typename Driver>
+class MotorAdapter
+{
+public:
+  explicit MotorAdapter(Driver & driver) : driver_(driver) {}
+
+  void set_velocity(std::int32_t milli_rad_per_sec)
+  {
+    driver_.setPulse(static_cast<int>(milli_rad_per_sec / 10));
+  }
+
+  void stop() { driver_.stopAll(); }
+
+private:
+  Driver & driver_;              // 所有しない。寿命は呼び出し側が保証する
+};
+
+int main()
+{
+  std::printf("LegacyMotorDriver                  : %zu\n", sizeof(LegacyMotorDriver));
+  std::printf("DelegatingMotorAdapter (virtual)   : %zu\n", sizeof(DelegatingMotorAdapter));
+  std::printf("MotorAdapter<LegacyMotorDriver>    : %zu\n", sizeof(MotorAdapter<LegacyMotorDriver>));
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic sizeof_adapter.cpp -o sizeof_adapter && ./sizeof_adapter
+```
+
+</details>
 
 | 型 | `sizeof` |
 | --- | --- |
@@ -575,13 +818,13 @@ Adapter を 1 枚挟んでおけば、差し替えは Adapter だけで済みま
 
 | 症状 | 原因 |
 | --- | --- |
-| `error: ambiguous conversion from derived class ... to base class` | 菱形継承。Target 側のインタフェースが 2 本になっている。委譲に変える |
-| `error: member 'reset' found in multiple base classes of different types` | Target と Adaptee の名前衝突。委譲なら起きない |
+| `error: 'Device' is an ambiguous base of 'Adapter'` | 菱形継承。Target 側のインタフェースが 2 本になっている。委譲に変える |
+| `error: request for member 'reset' is ambiguous` | Target と Adaptee の名前衝突。委譲なら起きない |
 | 継承版で Adaptee を呼んだつもりが無限再帰する | 無修飾の呼び出しが自分に解決されている。`LegacyDriver::reset()` と書く |
 | 関数に渡したら Adapter のメンバが消えていた | public 継承 + 値渡しでスライシング。`private` 継承か委譲にする |
-| `warning: delete called on ... non-virtual destructor` | Target に仮想デストラクタが無い |
+| `warning: deleting object of abstract class type ... which has non-virtual destructor` | Target に仮想デストラクタが無い |
 | Adapter を返す関数の戻り値を使うと落ちる | Adaptee を参照で持っている。値で持つか、寿命を約束する |
-| `error: cannot cast ... to its private base class` | `private` 継承は外から基底に変換できない。**これは正しい動作** |
+| `error: 'LegacyDriver' is an inaccessible base of 'PrivateAdapter'` | `private` 継承は外から基底に変換できない。**これは正しい動作** |
 | 単位変換が呼び出しごとに違う値になる | 変換係数が Adapter の外に散っている。Target 側に `constexpr` で 1 箇所に置く |
 
 ## 2.9 対応する課題

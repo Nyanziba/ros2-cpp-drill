@@ -359,11 +359,13 @@ def generate_launch_description():
 **ここで一度必ず踏むワナがあります。** 上で作った`speed_param.yaml`のトップレベルキーは`speed_node:`（名前空間なし）ですが、`namespace:=robot1`を付けて起動するとノードの完全修飾名は`/robot1/speed_node`になります。パラメータYAMLは名前空間まで含めてノード名を照合するため、`speed_node:`というキーは`/robot1/speed_node`に**マッチしません**。エラーにはならず、`declare_parameter`のデフォルト値のまま起動します。
 
 ```
-# namespace なし
-[speed_node-1] [INFO] [speed_node]: max_speed = 2.0     ← YAML が効いている
-# namespace:=robot1
-[speed_node-1] [INFO] [robot1.speed_node]: max_speed = 1.0   ← デフォルト値のまま
+$ ros2 launch speed_param_demo speed_param_launch.py
+[speed_node-1] [INFO] [1790939696.049941586] [speed_node]: max_speed = 2.0
+$ ros2 launch speed_param_demo speed_param_launch.py namespace:=robot1
+[speed_node-1] [INFO] [1790939699.503564004] [robot1.speed_node]: max_speed = 1.0
 ```
+
+上が YAML が効いている状態（`2.0`）、下がデフォルト値のまま（`1.0`）の状態です。
 
 複数台の機体で同じYAMLを使い回したい場合は、トップレベルキーを`/**`のワイルドカードにします。こうすると名前空間が付いても適用されます。
 

@@ -34,6 +34,29 @@ DOUBLE_FIXED(1 + 2)   // expansion: ((1 + 2) * 2) = 6
 
 Measured values:
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// macro_parentheses.c
+#include <stdio.h>
+
+#define DOUBLE_BROKEN(x) x * 2
+#define DOUBLE_FIXED(x) ((x) * 2)
+
+int main(void)
+{
+    printf("DOUBLE_BROKEN(1 + 2) = %d\n", DOUBLE_BROKEN(1 + 2));  // expansion: 1 + 2 * 2 = 5
+    printf("DOUBLE_FIXED(1 + 2) = %d\n", DOUBLE_FIXED(1 + 2));    // expansion: ((1 + 2) * 2) = 6
+    return 0;
+}
+```
+
+```bash
+gcc -std=c99 -Wall -Wextra -Wpedantic macro_parentheses.c -o macro_parentheses && ./macro_parentheses
+```
+
+</details>
+
 ```
 DOUBLE_BROKEN(1 + 2) = 5
 DOUBLE_FIXED(1 + 2) = 6
@@ -56,8 +79,32 @@ int result = SQ(i++);  // i++ is evaluated twice
 
 Measured values:
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// macro_double_evaluation.c
+#include <stdio.h>
+
+#define SQ(x) ((x) * (x))
+
+int main(void)
+{
+    int i = 0;
+    int result = SQ(i++);  // i++ is evaluated twice
+
+    printf("i after SQ(i++) = %d, result = %d\n", i, result);
+    return 0;
+}
 ```
-SQ(i++)後の i = 2, 結果 = 0
+
+```bash
+gcc -std=c99 -Wall -Wextra -Wpedantic macro_double_evaluation.c -o macro_double_evaluation && ./macro_double_evaluation
+```
+
+</details>
+
+```
+i after SQ(i++) = 2, result = 0
 ```
 
 **Note: the above is undefined behavior.** `SQ(i++)` changes `i` twice in the same expression, so the C standard says "the result is not guaranteed". In this measurement it gave these values, but it may differ between runs and between implementations.
@@ -89,9 +136,57 @@ else
 
 Compiler warning at compile time:
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// multistatement_macro.c
+#include <stdio.h>
+
+static void handle_error(void)
+{
+    printf("error\n");
+}
+
+#define LOG_BROKEN(fmt) \
+    printf("DEBUG: " fmt "\n"); \
+    printf("More info\n")
+
+int main(void)
+{
+    int condition = 1;
+
+    if (condition)
+        LOG_BROKEN("message");  // the else is ignored ✗
+    else
+        handle_error();
+
+    return 0;
+}
 ```
-test_multiline_broken.c:4:5: warning: macro expands to multiple statements [-Wmultistatement-macros]
+
+```bash
+gcc -std=c99 -Wall -Wextra -Wpedantic multistatement_macro.c -o multistatement_macro
 ```
+
+</details>
+
+```
+multistatement_macro.c: In function ‘main’:
+multistatement_macro.c:10:5: warning: macro expands to multiple statements [-Wmultistatement-macros]
+   10 |     printf("DEBUG: " fmt "\n"); \
+      |     ^~~~~~
+multistatement_macro.c:18:9: note: in expansion of macro ‘LOG_BROKEN’
+   18 |         LOG_BROKEN("message");  // the else is ignored ✗
+      |         ^~~~~~~~~~
+multistatement_macro.c:17:5: note: some parts of macro expansion are not guarded by this ‘if’ clause
+   17 |     if (condition)
+      |     ^~
+multistatement_macro.c:19:5: error: ‘else’ without a previous ‘if’
+   19 |     else
+      |     ^~~~
+```
+
+Besides the warning, `error: ‘else’ without a previous ‘if’` is also printed. The comment in the code above says "the else is ignored", but in fact the `else` is not ignored: the macro expands to 2 statements, so the body of the `if` is only the first one, and the `else` is left after a statement that has no `if` — a compile error.
 
 **Fix with `do { } while (0)`:**
 
@@ -124,13 +219,30 @@ CONCAT(foo, bar)     // foo_bar (joins the tokens foo and bar)
 To check the macro expansion, look at the output of the preprocessor:
 
 ```bash
-gcc -E -std=c99 myfile.c
+gcc -E -P -std=c99 macro_expansion.c
 ```
+
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// macro_expansion.c
+#define STRINGIFY(x) #x
+#define CONCAT(a, b) a ## _ ## b
+
+const char *greeting = STRINGIFY(hello);  // "hello"
+int CONCAT(foo, bar);                     // foo_bar(joins the tokens foo and bar)
+```
+
+```bash
+gcc -E -P -std=c99 macro_expansion.c
+```
+
+</details>
 
 Measured values:
 
 ```c
-int ((3) + (4));
+const char *greeting = "hello";
 int foo_bar;
 ```
 
@@ -150,14 +262,44 @@ You can disable assertions with `#define NDEBUG`:
 gcc -DNDEBUG myfile.c   // all assert calls disappear (the condition is not evaluated)
 ```
 
-Measured values (C code after expansion):
+<details markdown="1"><summary>Full program that produced this output</summary>
 
 ```c
-// without NDEBUG:
-assert(1 == 1);
+// assert_expansion.c
+#include <assert.h>
 
-// with NDEBUG:
-((void) (0))   // does nothing
+int main(void)
+{
+    assert(1 == 1);
+    return 0;
+}
+```
+
+```bash
+gcc -E -P -std=c11 assert_expansion.c | sed -n '/^int main/,$p'
+gcc -E -P -std=c11 -DNDEBUG assert_expansion.c | sed -n '/^int main/,$p'
+```
+
+</details>
+
+Measured values (without `NDEBUG`):
+
+```c
+int main(void)
+{
+    ((1 == 1) ? (void) (0) : __assert_fail ("1 == 1", "assert_expansion.c", 6, __extension__ __PRETTY_FUNCTION__));
+    return 0;
+}
+```
+
+Measured values (with `-DNDEBUG`; it becomes an expression that does nothing):
+
+```c
+int main(void)
+{
+    ((void) (0));
+    return 0;
+}
 ```
 
 **Do not write side effects inside an assertion:**
@@ -190,13 +332,37 @@ _Static_assert(sizeof(CANPayload) == 8, "CAN payload must be exactly 8 bytes");
 Example run (on failure):
 
 ```bash
-gcc -std=c11 myfile.c
+gcc -std=c11 static_assert_fail.c
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// static_assert_fail.c
+typedef struct {
+    int x;
+    char y;
+    char padding[3];
+} MyStruct;
+
+_Static_assert(sizeof(MyStruct) == 16, "MyStruct must be 16 bytes");
+
+int main(void)
+{
+    return 0;
+}
 ```
-test_static_assert_fail.c:8:1: error: static assertion failed: "MyStruct must be 16 bytes"
-     8 | _Static_assert(sizeof(MyStruct) == 16, "MyStruct must be 16 bytes");
-       | ^~~~~~~~~~~~~~
+
+```bash
+gcc -std=c11 static_assert_fail.c
+```
+
+</details>
+
+```
+static_assert_fail.c:8:1: error: static assertion failed: "MyStruct must be 16 bytes"
+    8 | _Static_assert(sizeof(MyStruct) == 16, "MyStruct must be 16 bytes");
+      | ^~~~~~~~~~~~~~
 ```
 
 On success, nothing is printed and compilation passes:
@@ -210,6 +376,39 @@ typedef struct {
 
 _Static_assert(sizeof(MyStruct) == 8, "MyStruct must be 8 bytes");
 // compile succeeds, run result: sizeof(MyStruct) = 8
+```
+
+If you add a `main` and run it, it prints:
+
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// static_assert_ok.c
+#include <stdio.h>
+
+typedef struct {
+    int x;
+    char y;
+    char padding[3];
+} MyStruct;
+
+_Static_assert(sizeof(MyStruct) == 8, "MyStruct must be 8 bytes");
+
+int main(void)
+{
+    printf("sizeof(MyStruct) = %zu\n", sizeof(MyStruct));
+    return 0;
+}
+```
+
+```bash
+gcc -std=c11 -Wall -Wextra -Wpedantic static_assert_ok.c -o static_assert_ok && ./static_assert_ok
+```
+
+</details>
+
+```
+sizeof(MyStruct) = 8
 ```
 
 ## 12.8 Define a macro at compile time with `-D`
@@ -260,15 +459,32 @@ Program running
 **You can check whether a macro is expanded correctly by looking at the output of the preprocessor.**
 
 ```bash
-gcc -E -std=c99 myfile.c
+gcc -E -P -std=c99 macro_expansion.c
 ```
 
-The `-E` flag stops at the preprocessor stage and prints the expanded code to standard output.
+The `-E` flag stops at the preprocessor stage and prints the expanded code to standard output. With `-P`, the line-marker lines (`# 1 "..."`) are not printed.
 
-Measured values (excerpt):
+<details markdown="1"><summary>Full program that produced this output</summary>
 
 ```c
-int ((3) + (4));
+// macro_expansion.c
+#define STRINGIFY(x) #x
+#define CONCAT(a, b) a ## _ ## b
+
+const char *greeting = STRINGIFY(hello);  // "hello"
+int CONCAT(foo, bar);                     // foo_bar(joins the tokens foo and bar)
+```
+
+```bash
+gcc -E -P -std=c99 macro_expansion.c
+```
+
+</details>
+
+Measured values:
+
+```c
+const char *greeting = "hello";
 int foo_bar;
 ```
 

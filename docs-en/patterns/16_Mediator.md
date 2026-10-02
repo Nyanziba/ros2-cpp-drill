@@ -302,9 +302,44 @@ public:
 };
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// incomplete.cpp
+class PanelMediator;
+
+class PanelWidget
+{
+public:
+  void notify_changed() { mediator_->widget_changed(this); }
+  // ...
+
+private:
+  PanelMediator * mediator_ = nullptr;
+};
+
+int main()
+{
+  PanelWidget widget;
+  widget.notify_changed();
+  return 0;
+}
 ```
-error: member access into incomplete type 'PanelMediator'
-note: forward declaration of 'PanelMediator'
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic incomplete.cpp -o incomplete
+```
+
+</details>
+
+```
+incomplete.cpp: In member function ‘void PanelWidget::notify_changed()’:
+incomplete.cpp:7:36: error: invalid use of incomplete type ‘class PanelMediator’
+    7 |   void notify_changed() { mediator_->widget_changed(this); }
+      |                                    ^~
+incomplete.cpp:2:7: note: forward declaration of ‘class PanelMediator’
+    2 | class PanelMediator;
+      |       ^~~~~~~~~~~~~
 ```
 
 For two classes that refer to each other, **you must push the implementation of one of them out to the `.cpp`**.

@@ -131,9 +131,46 @@ private:
 
 This is the actual error.
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// private_call.cpp
+class Sensor
+{
+private:
+  virtual void setup() { }       // private
+};
+
+class Imu : public Sensor
+{
+private:
+  void setup() override
+  {
+    Sensor::setup();     // error because it is private. The path from the derived class to the base version is closed
+  }
+};
+
+int main()
+{
+  Imu imu;
+  (void)imu;
+}
 ```
-error: 'setup' is a private member of 'Sensor'
-note: declared private here
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic private_call.cpp -o private_call
+```
+
+</details>
+
+```
+private_call.cpp: In member function ‘virtual void Imu::setup()’:
+private_call.cpp:13:18: error: ‘virtual void Sensor::setup()’ is private within this context
+   13 |     Sensor::setup();     // error because it is private. The path from the derived class to the base version is closed
+      |     ~~~~~~~~~~~~~^~
+private_call.cpp:5:16: note: declared private here
+    5 |   virtual void setup() { }       // private
+      |                ^~~~~
 ```
 
 All the derived class can do is "fill in the contents".
@@ -173,10 +210,45 @@ What the skeleton calls is still the base `check`. **It compiles, and there is n
 
 If you write `override`, it becomes an error on the spot.
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// override_const.cpp
+class Sensor
+{
+private:
+  virtual bool check(double value) const { return value == value; }
+};
+
+class Imu : public Sensor
+{
+private:
+  bool check(double value) override { return value > 0.0; }   // dropped const. Added override
+};
+
+int main()
+{
+  Imu imu;
+  (void)imu;
+}
 ```
-error: non-virtual member function marked 'override' hides virtual member function
-note: hidden overloaded virtual function 'Sensor::check' declared here:
-      different qualifiers ('const' vs unqualified)
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic override_const.cpp -o override_const
+```
+
+</details>
+
+```
+override_const.cpp:11:8: error: ‘bool Imu::check(double)’ marked ‘override’, but does not override
+   11 |   bool check(double value) override { return value > 0.0; }   // dropped const. Added override
+      |        ^~~~~
+override_const.cpp:5:16: warning: ‘virtual bool Sensor::check(double) const’ was hidden [-Woverloaded-virtual=]
+    5 |   virtual bool check(double value) const { return value == value; }
+      |                ^~~~~
+override_const.cpp:11:8: note:   by ‘bool Imu::check(double)’
+   11 |   bool check(double value) override { return value > 0.0; }   // dropped const. Added override
+      |        ^~~~~
 ```
 
 `override` is a declaration that "I intend to replace a virtual function of the base", and
@@ -193,8 +265,39 @@ public:
 };
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// override_boot.cpp
+class Sensor
+{
+public:
+  void boot() { }     // non-virtual skeleton
+};
+
+class Imu : public Sensor
+{
+public:
+  void boot() override { }     // Sensor::boot() is non-virtual
+};
+
+int main()
+{
+  Imu imu;
+  imu.boot();
+}
 ```
-error: only virtual member functions can be marked 'override'
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic override_boot.cpp -o override_boot
+```
+
+</details>
+
+```
+override_boot.cpp:11:8: error: ‘void Imu::boot()’ marked ‘override’, but does not override
+   11 |   void boot() override { }     // Sensor::boot() is non-virtual
+      |        ^~~~
 ```
 
 **This is a good mistake.** It lets you notice that "I am trying to replace the skeleton".
@@ -211,9 +314,42 @@ private:
 };
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// final_setup.cpp
+class Sensor
+{
+private:
+  virtual void setup() final { }    // no replacement from here on
+};
+
+class Imu : public Sensor
+{
+private:
+  void setup() override { }         // tried to replace a final function
+};
+
+int main()
+{
+  Imu imu;
+  (void)imu;
+}
 ```
-error: declaration of 'setup' overrides a 'final' function
-note: overridden virtual function is here
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic final_setup.cpp -o final_setup
+```
+
+</details>
+
+```
+final_setup.cpp:11:8: error: virtual function ‘virtual void Imu::setup()’ overriding final function
+   11 |   void setup() override { }         // tried to replace a final function
+      |        ^~~~~
+final_setup.cpp:5:16: note: overridden function is ‘virtual void Sensor::setup()’
+    5 |   virtual void setup() final { }    // no replacement from here on
+      |                ^~~~~
 ```
 
 It has the same effect as a Java `final` method, but in C++ you use it to **cut the chain of `virtual` in the middle**.
@@ -262,18 +398,40 @@ struct D : B { void setup() override { std::printf("D\n"); } };
 int main() { D d; (void)d; }
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// pure_virtual.cpp
+#include <cstdio>
+
+struct B { B() { setup(); } virtual ~B() = default; virtual void setup() = 0; };
+struct D : B { void setup() override { std::printf("D\n"); } };
+int main() { D d; (void)d; }
 ```
-warning: call to pure virtual member function 'setup' has undefined behavior;
-         overrides of 'setup' in subclasses are not available in the constructor of 'B'
-         [-Wcall-to-pure-virtual-from-ctor-dtor]
+
+```bash
+clang++ -std=c++17 -Wall -Wextra -Wpedantic pure_virtual.cpp -o pure_virtual && ./pure_virtual
+```
+
+</details>
+
+```
+pure_virtual.cpp:4:18: warning: call to pure virtual member function 'setup' has undefined behavior; overrides of 'setup' in subclasses are not available in the constructor of 'B' [-Wcall-to-pure-virtual-from-ctor-dtor]
+    4 | struct B { B() { setup(); } virtual ~B() = default; virtual void setup() = 0; };
+      |                  ^
+pure_virtual.cpp:4:53: note: 'setup' declared here
+    4 | struct B { B() { setup(); } virtual ~B() = default; virtual void setup() = 0; };
+      |                                                     ^
+1 warning generated.
 ```
 
 ```
 libc++abi: Pure virtual function called!
 ```
 
-(This is the run result with Apple clang 17 / libc++. With gcc / libstdc++,
-the message is `pure virtual method called`.)
+(This is the run result with Apple clang 21 / libc++. If you build the same program with g++ 13.3 / libstdc++ on Linux,
+the warning is `pure virtual ‘virtual void B::setup()’ called from constructor`,
+and linking fails with `undefined reference to 'B::setup()'`, so no executable is produced.)
 
 **In this case a warning is shown**, but when the base has an implementation, as at the start of 3.4,
 the base is called silently without even a warning. That case is more troublesome.
@@ -360,6 +518,57 @@ int main()
 g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// try_boot.cpp
+#include <iostream>
+
+class Sensor
+{
+public:
+  Sensor()
+  {
+    std::cout << "Calling setup() from Sensor()\n";
+    setup();                       // dangerous. The derived class does not exist yet
+  }
+  virtual ~Sensor() = default;
+
+  // The skeleton. No virtual = do not allow replacement
+  void boot()
+  {
+    std::cout << "Calling setup() from boot()\n";
+    setup();
+  }
+
+private:
+  // Even though it is private, the derived class can override it
+  virtual void setup() { std::cout << "  Sensor::setup\n"; }
+};
+
+class Imu : public Sensor
+{
+public:
+  void boot() override { }      // tried to replace the non-virtual skeleton
+
+private:
+  void setup() override { std::cout << "  Imu::setup\n"; }
+};
+
+int main()
+{
+  Imu imu;
+  imu.boot();
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic try_boot.cpp -o try_boot
+```
+
+</details>
+
 <details>
 <summary>Predict: <code>setup()</code> is called twice. Is it <code>Imu::setup</code> both times?</summary>
 
@@ -383,7 +592,9 @@ You can also confirm two more things.
 Try adding `void boot() override { }` to `Imu`.
 
 ```
-error: only virtual member functions can be marked 'override'
+try_boot.cpp:29:8: error: ‘void Imu::boot()’ marked ‘override’, but does not override
+   29 |   void boot() override { }      // tried to replace the non-virtual skeleton
+      |        ^~~~
 ```
 
 **The skeleton is protected.**
@@ -561,9 +772,9 @@ steps called from the skeleton of the control loop that `ros2_control` owns.
 | --- | --- |
 | The derived implementation is not called, and the base implementation runs | The base function has no `virtual`. In C++ it is not virtual unless you write it |
 | The derived implementation is not called (I did add `virtual`) | The signature is off and it became a different function. If you add `override`, it becomes an error |
-| `error: only virtual member functions can be marked 'override'` | You are trying to replace a non-virtual skeleton. Review the design |
-| `error: 'setup' is a private member of 'Sensor'` | You are trying to **call** a `private virtual` from a derived class. If you need to call it, make it `protected` |
-| `error: declaration of 'setup' overrides a 'final' function` | `final` is on the base. Replacement is stopped on purpose |
+| `error: 'void Imu::boot()' marked 'override', but does not override` | You are trying to replace a non-virtual skeleton. Review the design |
+| `error: 'virtual void Sensor::setup()' is private within this context` | You are trying to **call** a `private virtual` from a derived class. If you need to call it, make it `protected` |
+| `error: virtual function 'virtual void Imu::setup()' overriding final function` | `final` is on the base. Replacement is stopped on purpose |
 | Behavior differs only inside the constructor | 3.4. A virtual call inside a constructor / destructor runs the base implementation |
 | It crashes at run time with `pure virtual method called` | You call a **pure** virtual function from a constructor / destructor |
 | It leaked when destroyed through a base pointer | There is no `virtual ~SensorReader()` |

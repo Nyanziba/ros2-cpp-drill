@@ -30,25 +30,85 @@ void wait_without_volatile(void) {
 }
 ```
 
-**`-O0` の場合（アセンブリの関連部分）：**
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```c
+// wait_without_volatile.c
+#include <stdint.h>
+#include <stdio.h>
+
+void wait_without_volatile(void) {
+    uint32_t flag = 0;
+    int count = 0;
+    while (flag == 0) {
+        count++;
+    }
+    printf("Done\n");
+}
+```
+
+```bash
+gcc -std=c99 -O0 -S -fcf-protection=none -fno-asynchronous-unwind-tables -o - wait_without_volatile.c | sed -n '/^wait_without_volatile:/,/\.size/p'
+gcc -std=c99 -O2 -S -fcf-protection=none -fno-asynchronous-unwind-tables -o - wait_without_volatile.c | sed -n '/^wait_without_volatile:/,/\.size/p'
+```
+
+</details>
+
+**`-O0` の場合（関数全体のアセンブリ）：**
 
 ```
-cmpl	$0, -4(%rbp)      # flag をメモリから読む
-je	.L3                   # 0 なら .L3 にジャンプ
+wait_without_volatile:
+	pushq	%rbp
+	movq	%rsp, %rbp
+	subq	$16, %rsp
+	movl	$0, -4(%rbp)
+	movl	$0, -8(%rbp)
+	jmp	.L2
 .L3:
-	addl	$1, -8(%rbp)   # count をインクリメント
+	addl	$1, -8(%rbp)
 .L2:
-	cmpl	$0, -4(%rbp)   # 毎回 flag をメモリから読み直す
-	je	.L3                # ...
+	cmpl	$0, -4(%rbp)
+	je	.L3
+	leaq	.LC0(%rip), %rax
+	movq	%rax, %rdi
+	call	puts@PLT
+	nop
+	leave
+	ret
+	.size	wait_without_volatile, .-wait_without_volatile
 ```
 
-毎ループ `cmpl $0, -4(%rbp)` で flag を読み直しています。
+**読み方（注釈つき）**
+
+（実測の出力から説明に要る行を抜き出し、注釈を付けたもの）
+
+```asm
+	movl	$0, -4(%rbp)	# flag = 0（メモリ上の -4(%rbp) に置かれる）
+	...
+	addl	$1, -8(%rbp)	# count++
+	...
+	cmpl	$0, -4(%rbp)	# flag をメモリから読んで 0 と比べる（毎ループ）
+	je	.L3	# 0 なら .L3 に戻ってループを続ける
+```
 
 **`-O2` の場合（アセンブリの全体）：**
 
 ```
+wait_without_volatile:
+	.p2align 4,,10
+	.p2align 3
 .L2:
-	jmp	.L2              # 無限ループに最適化！
+	jmp	.L2
+	.size	wait_without_volatile, .-wait_without_volatile
+```
+
+**読み方（注釈つき）**
+
+（実測の出力から説明に要る行を抜き出し、注釈を付けたもの）
+
+```asm
+.L2:
+	jmp	.L2	# 条件チェックが消え、自分自身に戻るだけの無限ループ
 ```
 
 ショックです。条件チェックが消えて、無限ループになってしまいました。
@@ -70,15 +130,57 @@ void wait_with_volatile(void) {
 
 `-O2` でコンパイルしても、アセンブリでは：
 
-```
-.L6:
-	movl	-12(%rsp), %eax   # volatile なので毎回メモリから読む
-	addl	$1, %edx
-	testl	%eax, %eax       # flag == 0 かテスト
-	je	.L9                   # 0 なら ループ続行
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```c
+// wait_with_volatile.c
+#include <stdint.h>
+#include <stdio.h>
+
+void wait_with_volatile(void) {
+    volatile uint32_t flag = 0;
+    int count = 0;
+    while (flag == 0) {
+        count++;
+    }
+    printf("Done\n");
+}
 ```
 
-毎ループ `movl -12(%rsp), %eax` でメモリから読み直しています。これが `volatile` の効果です。
+```bash
+gcc -std=c99 -O2 -S -fcf-protection=none -fno-asynchronous-unwind-tables -o - wait_with_volatile.c | sed -n '/^wait_with_volatile:/,/\.size/p'
+```
+
+</details>
+
+```
+wait_with_volatile:
+	movl	$0, -12(%rsp)
+	.p2align 4,,10
+	.p2align 3
+.L2:
+	movl	-12(%rsp), %eax
+	testl	%eax, %eax
+	je	.L2
+	leaq	.LC0(%rip), %rsi
+	movl	$2, %edi
+	xorl	%eax, %eax
+	jmp	__printf_chk@PLT
+	.size	wait_with_volatile, .-wait_with_volatile
+```
+
+**読み方（注釈つき）**
+
+（実測の出力から説明に要る行を抜き出し、注釈を付けたもの）
+
+```asm
+.L2:
+	movl	-12(%rsp), %eax	# volatile なので毎回メモリから flag を読む
+	testl	%eax, %eax	# flag == 0 かを調べる
+	je	.L2	# 0 ならループを続ける
+```
+
+これが `volatile` の効果です。
 
 ## 10.3 `volatile` が保証しないこと（最重要）
 
@@ -97,10 +199,43 @@ counter++;  // これは3ステップ：読む → +1 → 書く
 
 実際のアセンブリ（`-O2`）：
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```c
+// counter_increment.c
+#include <stdint.h>
+
+volatile uint32_t counter = 0;
+
+void increment_counter(void) {
+    counter++;  // これは3ステップ：読む → +1 → 書く
+                // 割り込みで中断されたら、カウント が失われます
+}
+```
+
+```bash
+gcc -std=c99 -O2 -S -fcf-protection=none -fno-asynchronous-unwind-tables -o - counter_increment.c | sed -n '/^increment_counter:/,/\.size/p'
+```
+
+</details>
+
 ```asm
-movl	counter(%rip), %eax    # 1. メモリから読む
-addl	$1, %eax               # 2. +1 する
-movl	%eax, counter(%rip)    # 3. メモリに書く
+increment_counter:
+	movl	counter(%rip), %eax
+	addl	$1, %eax
+	movl	%eax, counter(%rip)
+	ret
+	.size	increment_counter, .-increment_counter
+```
+
+**読み方（注釈つき）**
+
+（実測の出力から説明に要る行を抜き出し、注釈を付けたもの）
+
+```asm
+	movl	counter(%rip), %eax	# 1. メモリから読む
+	addl	$1, %eax	# 2. +1 する（ここで割り込まれると危険）
+	movl	%eax, counter(%rip)	# 3. メモリに書く
 ```
 
 割り込みが 2 番と 3 番の間に発生すると、他のコードが `counter` をインクリメントしても、ここで上書きされてしまいます。
@@ -159,6 +294,43 @@ int main(void)
 }
 ```
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```c
+// signal_flag.c
+#include <signal.h>
+#include <stdio.h>
+#include <unistd.h>
+
+volatile sig_atomic_t signal_received = 0;
+
+void handler(int sig)
+{
+    signal_received = 1;  // 安全
+}
+
+int main(void)
+{
+    signal(SIGUSR1, handler);
+
+    signal_received = 0;
+    kill(getpid(), SIGUSR1);
+    usleep(100000);
+
+    if (signal_received) {
+        printf("Signal received\n");
+    }
+
+    return 0;
+}
+```
+
+```bash
+gcc -std=gnu99 -Wall -Wpedantic signal_flag.c -o signal_flag && ./signal_flag
+```
+
+</details>
+
 実測値：
 
 ```
@@ -191,21 +363,103 @@ uint32_t status = *uart_sr;
 status = *uart_sr;
 ```
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```c
+// uart_register_access.c
+#include <stdint.h>
+
+void access_uart(void) {
+    // STM32 UART 例
+    volatile uint32_t *uart_dr = (volatile uint32_t *)0x40004000;   // データ
+    volatile uint32_t *uart_sr = (volatile uint32_t *)0x40004004;   // ステータス
+
+    // ステータスレジスタを読む
+    uint32_t status = *uart_sr;
+
+    // データを書く
+    *uart_dr = 'A';
+
+    // ステータスレジスタを読む（2回目）
+    status = *uart_sr;
+}
+```
+
+```bash
+gcc -std=c99 -O2 -S -fcf-protection=none -fno-asynchronous-unwind-tables -o - uart_register_access.c | sed -n '/^access_uart:/,/\.size/p'
+```
+
+</details>
+
 実測値（`gcc -O2` でのアセンブリ）：
 
 ```asm
-movl	uart_dr(%rip), %rsi      # pointer をレジスタに
-movl	(%rsi), %eax              # 最初の読み出し
-movl	(%rsi), %eax              # 2 回目も新しい値を読む
+access_uart:
+	movl	1073758212, %eax
+	movl	$65, 1073758208
+	movl	1073758212, %eax
+	ret
+	.size	access_uart, .-access_uart
 ```
+
+**読み方（注釈つき）**
+
+（実測の出力から説明に要る行を抜き出し、注釈を付けたもの）
+
+```asm
+	movl	1073758212, %eax	# uart_sr を読む（1 回目）
+	movl	$65, 1073758208	# uart_dr に 'A'（65）を書く
+	movl	1073758212, %eax	# uart_sr を読む（2 回目）
+```
+
+`1073758208` は `0x40004000`（`uart_dr`）、`1073758212` は `0x40004004`（`uart_sr`）を 10 進で書いたものです。
+
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```c
+// uart_register_access_plain.c
+#include <stdint.h>
+
+void access_uart(void) {
+    // STM32 UART 例
+    uint32_t *uart_dr = (uint32_t *)0x40004000;   // データ
+    uint32_t *uart_sr = (uint32_t *)0x40004004;   // ステータス
+
+    // ステータスレジスタを読む
+    uint32_t status = *uart_sr;
+
+    // データを書く
+    *uart_dr = 'A';
+
+    // ステータスレジスタを読む（2回目）
+    status = *uart_sr;
+}
+```
+
+```bash
+gcc -std=c99 -O2 -S -fcf-protection=none -fno-asynchronous-unwind-tables -o - uart_register_access_plain.c | sed -n '/^access_uart:/,/\.size/p'
+```
+
+</details>
 
 **`volatile` を付けないと：**
 
 ```asm
-movl	uart_dr(%rip), %rsi
-movl	(%rsi), %eax
-# → 2 回目の読み出しが消える！
+access_uart:
+	movl	$65, 1073758208
+	ret
+	.size	access_uart, .-access_uart
 ```
+
+**読み方（注釈つき）**
+
+（実測の出力から説明に要る行を抜き出し、注釈を付けたもの）
+
+```asm
+	movl	$65, 1073758208	# uart_dr への書き込みだけが残る（uart_sr の読み出しは 2 回とも消えた）
+```
+
+読み出しが 2 回とも消え、書き込み（`movl $65, 1073758208`）だけが残ります。
 
 レジスタには必ず `volatile` を付けます。
 
@@ -222,10 +476,43 @@ gpio |= (1 << 3);     // 実は 3 ステップ：読む → OR → 書く
 
 アセンブリ（`-O2`）：
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```c
+// gpio_rmw.c
+#include <stdint.h>
+
+volatile uint32_t gpio = 0x00000000;
+
+void set_gpio_bit3(void) {
+    // ビット 3 を立てたい
+    gpio |= (1 << 3);     // 実は 3 ステップ：読む → OR → 書く
+}
+```
+
+```bash
+gcc -std=c99 -O2 -S -fcf-protection=none -fno-asynchronous-unwind-tables -o - gpio_rmw.c | sed -n '/^set_gpio_bit3:/,/\.size/p'
+```
+
+</details>
+
 ```asm
-movl	gpio(%rip), %eax         # 1. メモリから読む
-orl	    $8, %eax                # 2. OR する
-movl	%eax, gpio(%rip)         # 3. メモリに書く
+set_gpio_bit3:
+	movl	gpio(%rip), %eax
+	orl	$8, %eax
+	movl	%eax, gpio(%rip)
+	ret
+	.size	set_gpio_bit3, .-set_gpio_bit3
+```
+
+**読み方（注釈つき）**
+
+（実測の出力から説明に要る行を抜き出し、注釈を付けたもの）
+
+```asm
+	movl	gpio(%rip), %eax	# 1. メモリから読む
+	orl	$8, %eax	# 2. ビット 3（値 8）を OR する
+	movl	%eax, gpio(%rip)	# 3. メモリに書く
 ```
 
 ハードウェアレジスタの場合、読み出し時点でのレジスタ状態と、書き込み時点での実際の値が異なっている可能性があります。

@@ -42,8 +42,38 @@ int main()
 void (*f)() = &MinimalPublisher::timer_callback;   // エラー
 ```
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// member_pointer.cpp
+
+class MinimalPublisher
+{
+public:
+  void timer_callback() {}
+};
+
+int main()
+{
+  void (*f)() = &MinimalPublisher::timer_callback;   // エラー
+  return 0;
+}
 ```
-error: cannot convert ‘void (MinimalPublisher::*)()’ to ‘void (*)()’
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic member_pointer.cpp -o member_pointer
+```
+
+</details>
+
+```
+member_pointer.cpp: In function ‘int main()’:
+member_pointer.cpp:11:17: error: cannot convert ‘void (MinimalPublisher::*)()’ to ‘void (*)()’ in initialization
+   11 |   void (*f)() = &MinimalPublisher::timer_callback;   // エラー
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+member_pointer.cpp:11:10: warning: unused variable ‘f’ [-Wunused-variable]
+   11 |   void (*f)() = &MinimalPublisher::timer_callback;   // エラー
+      |          ^
 ```
 
 型が違います。`void (MinimalPublisher::*)()` は**メンバ関数ポインタ**という別の型で、
@@ -124,8 +154,52 @@ std::bind(&MinimalSubscriber::topic_callback, this, _1)
 std::bind(MinimalSubscriber::topic_callback, this, _1)   // & を忘れた
 ```
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// bind_noamp.cpp
+#include <functional>
+#include <string>
+
+using std::placeholders::_1;
+
+void subscribe(std::function<void(const std::string &)> callback) { (void)callback; }
+
+class MinimalSubscriber
+{
+public:
+  void topic_callback(const std::string & msg) { (void)msg; }
+
+  void start()
+  {
+    subscribe(
+      std::bind(MinimalSubscriber::topic_callback, this, _1)   // & を忘れた
+    );
+  }
+};
+
+int main()
+{
+  MinimalSubscriber subscriber;
+  subscriber.start();
+  return 0;
+}
 ```
-error: invalid use of non-static member function
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic bind_noamp.cpp -o bind_noamp
+```
+
+</details>
+
+```
+bind_noamp.cpp: In member function ‘void MinimalSubscriber::start()’:
+bind_noamp.cpp:17:36: error: invalid use of non-static member function ‘void MinimalSubscriber::topic_callback(const std::string&)’
+   17 |       std::bind(MinimalSubscriber::topic_callback, this, _1)   // & を忘れた
+      |                 ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+bind_noamp.cpp:12:8: note: declared here
+   12 |   void topic_callback(const std::string & msg) { (void)msg; }
+      |        ^~~~~~~~~~~~~~
 ```
 
 **② `this`** — 「どのオブジェクトのメンバ関数か」。
@@ -502,7 +576,7 @@ g++ -std=c++17 -Wall -Wextra lambda.cpp -o lambda && ./lambda
 
 [▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/E93xYx5W5)
 
-次に**寿命の事故を起こします。** `main` の `②` の部分を次に差し替えてください。
+次に**寿命の事故を起こします。** `main` の `②` の部分を次に差し替えてください（`c` が無くなるので、あとの `c.show();` の 1 行も消します）。
 
 ```cpp
   // ② this キャプチャ（危険版）
@@ -541,8 +615,8 @@ $ g++ -std=c++17 -c lambda.cpp -o /dev/null 2>&1 | wc -l
 22
 ```
 
-**22 行**出ました。しかもそのほとんどが `std::_Bind<...>` のテンプレート展開で、
-「`_2` が 1 つ多い」とはどこにも書かれていません。
+**22 行**出ました。しかもそのほとんどが `std::_Bind_check_arity<...>` や `std::_Bind_helper<...>` のテンプレート展開で、
+引数の数が違うと読み取れるのは `static assertion failed: Wrong number of arguments for pointer-to-member` の 1 行だけです。
 ラムダで引数の数を間違えれば `too few arguments to function` の 1〜2 行で済みます。
 これが「新規ならラムダ」を勧める実務的な理由です。
 

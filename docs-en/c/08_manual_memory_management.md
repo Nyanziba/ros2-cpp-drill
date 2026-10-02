@@ -113,15 +113,45 @@ printf("*p = %d\n", *p);  // use after free. This is the tricky part
 
 **Contrary to what you expect, this usually does not crash.** These are measured values from running the same executable 5 times.
 
-```
-*p = 1599802780     exit=0
-*p = -1009684065    exit=0
-*p = -1092865557    exit=0
-*p = 2119807940     exit=0
-*p = 22557486       exit=0
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// use_after_free.c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void)
+{
+    int *p = (int *)malloc(sizeof(int));
+    *p = 42;
+    free(p);
+    printf("*p = %d\n", *p);  // use after free. This is the tricky part
+    return 0;
+}
 ```
 
-A different value comes out every time, and **it exits normally every time.** This is the most dangerous property of use-after-free.
+```bash
+gcc -std=c99 -Wall -Wextra -Wpedantic use_after_free.c -o use_after_free
+for run in 1 2 3 4 5; do ./use_after_free; echo "exit=$?"; done
+gcc -std=c99 -Wall -Wextra -Wpedantic -g -fsanitize=address use_after_free.c -o use_after_free_asan && ./use_after_free_asan 2>&1 | head -n 4
+```
+
+</details>
+
+```
+*p = 1431655769
+exit=0
+*p = 1431655769
+exit=0
+*p = 1431655769
+exit=0
+*p = 1431655769
+exit=0
+*p = 1431655769
+exit=0
+```
+
+In this environment the same value came out all 5 times (on Linux with a randomized heap address, the value changes on every run). Either way, **it exits normally every time.** This is the most dangerous property of use-after-free.
 If it crashed, you would notice, but it does not crash, so you cannot notice.
 Tests pass too, and it breaks only when it hits a different value in the field.
 
@@ -129,16 +159,22 @@ So the only way is to **make it visible with tools**.
 First, `gcc` itself may notice (measured).
 
 ```
-warning: pointer ‘p’ used after ‘free’ [-Wuse-after-free]
-note: call to ‘free’ here
+use_after_free.c: In function ‘main’:
+use_after_free.c:10:5: warning: pointer ‘p’ used after ‘free’ [-Wuse-after-free]
+   10 |     printf("*p = %d\n", *p);  // use after free. This is the tricky part
+      |     ^~~~~~~~~~~~~~~~~~~~~~~
+use_after_free.c:9:5: note: call to ‘free’ here
+    9 |     free(p);
+      |     ^~~~~~~
 ```
 
 And Address Sanitizer stops it for sure. The actual detection message:
 
 ```
-==214035==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010
+=================================================================
+==28==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x5555555552e7 bp 0x7ffffffc5890 sp 0x7ffffffc5880
 READ of size 4 at 0x502000000010 thread T0
-    #0 0x642ec0775345 in main
+    #0 0x5555555552e6 in main /w/use_after_free.c:10
 ```
 
 From the message you can identify "which address", "which size", and "which line of the main function".
@@ -245,7 +281,7 @@ All cleaned up
 Next, detect the use-after-free with Address Sanitizer.
 
 ```bash
-gcc -std=c99 -Wall -Wextra -Wpedantic -fsanitize=address memory_uaf.c -o memory_uaf && ./memory_uaf
+gcc -std=c99 -Wall -Wextra -Wpedantic -fsanitize=address memory_uaf.c -o memory_uaf && ./memory_uaf 2>&1 | head -n 12
 ```
 
 Code example (`memory_uaf.c`):
@@ -267,14 +303,18 @@ int main(void)
 Output of Address Sanitizer:
 
 ```
-==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010
+=================================================================
+==19==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x5555555552e7 bp 0x7ffffffc5a30 sp 0x7ffffffc5a20
 READ of size 4 at 0x502000000010 thread T0
-    #0 0x... in main
+    #0 0x5555555552e6 in main (/w/memory_uaf+0x12e6) (BuildId: d606520f9ad77ce303d95395fbd903c31e672f8d)
+    #1 0x7ffffef031c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #2 0x7ffffef0328a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #3 0x555555555184 in _start (/w/memory_uaf+0x1184) (BuildId: d606520f9ad77ce303d95395fbd903c31e672f8d)
 
 0x502000000010 is located 0 bytes inside of 4-byte region [0x502000000010,0x502000000014)
 freed by thread T0 here:
-    #0 0x... in free
-    #1 0x... in main
+    #0 0x7fffff1e84d8 in free ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:52
+    #1 0x5555555552af in main (/w/memory_uaf+0x12af) (BuildId: d606520f9ad77ce303d95395fbd903c31e672f8d)
 ```
 
 It states clearly that the memory has already been freed.

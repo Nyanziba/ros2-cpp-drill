@@ -388,21 +388,23 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic chrono_time_demo.cpp -o chrono_time_demo
 
 === Arithmetic ===
 500ms + 1s = 1500 ms
+2 * 500ms = 1000 ms
 
 === Measurement with steady_clock ===
-Loop took 343 ms
+Loop took 97 ms
 
 === User-defined literals ===
 500ms: 500
 milliseconds(500): 500
 Both are equivalent.
-
 ```
 
 </details>
 
+`Loop took` の値は実行する環境で変わります（ここでは Docker の Ubuntu 24.04 / g++ 13.3 / x86_64 で測りました）。
+
 **確認ポイント：**
-1. `2s` は `2` だが、ミリ秒に変換すると `2000` になります（10 倍の）
+1. `2s` は `2` だが、ミリ秒に変換すると `2000` になります（1000 倍）
 2. `500ms` を秒に変換すると `0` に切り詰められます
 3. `500ms + 1s` の結果は `1500ms`（小さい単位に統一）
 4. `steady_clock` での計測は実際の時間経過を反映します
@@ -415,10 +417,31 @@ Both are equivalent.
 auto delay = 500ms;  // エラー
 ```
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// no_literals.cpp
+#include <chrono>
+
+int main()
+{
+  auto delay = 500ms;  // エラー
+  return 0;
+}
 ```
-error: unable to deduce 'auto' from '500' [with -funsafe-math-optimizations]
-// または
-error: unable to deduce template arguments for 'operator""ms'
+
+```bash
+g++ -std=c++17 no_literals.cpp -o no_literals
+```
+
+</details>
+
+```
+no_literals.cpp: In function ‘int main()’:
+no_literals.cpp:6:16: error: unable to find numeric literal operator ‘operator""ms’
+    6 |   auto delay = 500ms;  // エラー
+      |                ^~~~~
+no_literals.cpp:6:16: note: use ‘-fext-numeric-literals’ to enable more built-in suffixes
 ```
 
 `using namespace std::chrono_literals;` を追加してください。

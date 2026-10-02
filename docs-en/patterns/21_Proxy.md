@@ -94,9 +94,82 @@ For example, `entry_count() const`. If `realize()` is not `const`, you are stuck
 You assign to `real_` from a `const` member function, so you need `mutable`.
 If you remove it, you get this (measured with Apple clang).
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// printer_proxy.cpp
+#include <iostream>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <utility>
+
+class Printer
+{
+public:
+  explicit Printer(std::string name) : name_(std::move(name)) {}
+
+  void print(const std::string & text) { std::cout << "[" << name_ << "] " << text << "\n"; }
+
+private:
+  std::string name_;
+};
+
+class Printable
+{
+public:
+  virtual ~Printable() = default;                       // change 1
+  virtual void set_printer_name(std::string name) = 0;
+  virtual const std::string & printer_name() const = 0;  // change 2
+  virtual void print(const std::string & text) = 0;
+};
+
+class PrinterProxy : public Printable
+{
+public:
+  void set_printer_name(std::string name) override { name_ = std::move(name); }
+  const std::string & printer_name() const override { return name_; }
+
+  void print(const std::string & text) override
+  {
+    realize();
+    real_->print(text);
+  }
+
+private:
+  void realize() const                                  // change 3
+  {
+    if (!real_) { real_ = std::make_unique<Printer>(name_); }
+  }
+
+  std::string name_;
+  std::unique_ptr<Printer> real_;                       // change 4 (mutable removed)
+  mutable std::mutex mutex_;                            // change 5
+};
+
+int main()
+{
+  PrinterProxy proxy;
+  proxy.set_printer_name("lp0");
+  proxy.print("hello");
+  return 0;
+}
 ```
-error: no viable overloaded '='
-note: 'this' argument has type 'const std::unique_ptr<Real>', but method is not marked const
+
+```bash
+clang++ -std=c++17 -Wall -Wextra -Wpedantic printer_proxy.cpp -o printer_proxy
+```
+
+</details>
+
+```
+printer_proxy.cpp:43:25: error: no viable overloaded '='
+   43 |     if (!real_) { real_ = std::make_unique<Printer>(name_); }
+      |                   ~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__memory/unique_ptr.h:227:67: note: candidate function not viable: 'this' argument has type 'const std::unique_ptr<Printer>', but method is not marked const
+  227 |   _LIBCPP_HIDE_FROM_ABI _LIBCPP_CONSTEXPR_SINCE_CXX23 unique_ptr& operator=(unique_ptr&& __u) _NOEXCEPT {
+      |                                                                   ^
+...
 ```
 
 `mutable` is a tool for "logically `const`, but physically modified".
@@ -405,6 +478,35 @@ int main()
 g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 ```
 
+The C++11 error at the end of the answer was measured with this minimal program.
+
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// copy_elision.cpp
+class A
+{
+public:
+  A() = default;
+  A(const A &) = delete;
+};
+
+A make() { return A{}; }
+
+int main()
+{
+  A a = make();
+  (void)a;
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++11 -Wall -Wextra -Wpedantic copy_elision.cpp -o copy_elision
+```
+
+</details>
+
 <details>
 <summary>Predict: in the single line <code>proxy-&gt;work()</code>, what is called, and how many times?</summary>
 
@@ -425,11 +527,23 @@ Look at the order. `Guard created` → `Real::work` → `Guard destroyed`.
 the lock is taken without the caller writing anything.
 
 `Guard` can be neither copied nor moved, yet `operator->` can return it by value.
-This is thanks to the **guaranteed copy elision** of C++17. If you compile with C++11, you get this.
+This is thanks to the **guaranteed copy elision** of C++17. If you compile a minimal program of the same shape with C++11, you get this.
 
 ```
-error: call to deleted constructor of 'A'
-note: 'A' has been explicitly marked deleted here
+copy_elision.cpp: In function ‘A make()’:
+copy_elision.cpp:9:19: error: use of deleted function ‘A::A(const A&)’
+    9 | A make() { return A{}; }
+      |                   ^~~
+copy_elision.cpp:6:3: note: declared here
+    6 |   A(const A &) = delete;
+      |   ^
+copy_elision.cpp: In function ‘int main()’:
+copy_elision.cpp:13:14: error: use of deleted function ‘A::A(const A&)’
+   13 |   A a = make();
+      |              ^
+copy_elision.cpp:6:3: note: declared here
+    6 |   A(const A &) = delete;
+      |   ^
 ```
 </details>
 
@@ -539,6 +653,36 @@ class RegisterProxy
 
 With this form, `sizeof` is **1** (the minimum size of an empty class). It uses no RAM at all.
 I measured it.
+
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// register_proxy_size.cpp
+#include <cstdint>
+#include <cstdio>
+
+template <std::uint32_t Address, std::uint16_t Mask = 0xffffu>
+class RegisterProxy
+{
+  static volatile std::uint16_t * reg()
+  {
+    return reinterpret_cast<volatile std::uint16_t *>(static_cast<std::uintptr_t>(Address));
+  }
+  // ...
+};
+
+int main()
+{
+  std::printf("sizeof(RegisterProxy) = %zu\n", sizeof(RegisterProxy<0x40012C34u>));
+  return 0;
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic register_proxy_size.cpp -o register_proxy_size && ./register_proxy_size
+```
+
+</details>
 
 ```
 sizeof(RegisterProxy) = 1

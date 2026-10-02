@@ -19,6 +19,23 @@ const int x = 5;
 x = 10;  // エラー
 ```
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// const_assign.cpp
+int main()
+{
+  const int x = 5;
+  x = 10;  // エラー
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic const_assign.cpp -o const_assign
+```
+
+</details>
+
 ```
 error: assignment of read-only variable ‘x’
 ```
@@ -47,6 +64,29 @@ void process(const std::string & s)
 }
 ```
 
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// const_string.cpp
+#include <string>
+
+void process(const std::string & s)
+{
+  s = "modified";  // エラー
+}
+
+int main()
+{
+  process("hello");
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic const_string.cpp -o const_string
+```
+
+</details>
+
 ```
 error: no match for ‘operator=’ (operand types are ‘const std::string’ {aka ‘const std::__cxx11::basic_string<char>’} and ‘const char [9]’)
 ```
@@ -61,6 +101,28 @@ void bump(const int & n)
   n = 1;   // エラー
 }
 ```
+
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// const_int_reference.cpp
+void bump(const int & n)
+{
+  n = 1;   // エラー
+}
+
+int main()
+{
+  int value = 0;
+  bump(value);
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic const_int_reference.cpp -o const_int_reference
+```
+
+</details>
 
 ```
 error: assignment of read-only reference ‘n’
@@ -134,6 +196,47 @@ const Point p(3.0, 4.0);
 std::cout << p.distance() << "\n";  // OK
 // p.move(1.0, 1.0);  // エラー - const メンバ関数ではない
 ```
+
+<details markdown="1"><summary>この出力を出したプログラム全体</summary>
+
+```cpp
+// const_this.cpp
+#include <cmath>
+#include <iostream>
+
+class Point
+{
+public:
+  Point(double x, double y) : x_(x), y_(y) {}
+  
+  double distance() const  // ← メンバ関数の const
+  {
+    return std::sqrt(x_ * x_ + y_ * y_);
+  }
+  
+  void move(double dx, double dy)  // ← const なし = 書き換え可
+  {
+    x_ += dx;
+    y_ += dy;
+  }
+  
+private:
+  double x_, y_;
+};
+
+int main()
+{
+  const Point p(3.0, 4.0);
+  std::cout << p.distance() << "\n";  // OK
+  p.move(1.0, 1.0);  // エラー - const メンバ関数ではない
+}
+```
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic const_this.cpp -o const_this
+```
+
+</details>
 
 エラーメッセージ：
 
