@@ -36,6 +36,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic const_assign.cpp -o const_assign
 
 </details>
 
+<!-- measure: filter="grep -o 'error:.*'" -->
 ```
 error: assignment of read-only variable ‘x’
 ```
@@ -87,6 +88,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic const_string.cpp -o const_string
 
 </details>
 
+<!-- measure: filter="grep -o 'error:.*' | head -n 1" -->
 ```
 error: no match for ‘operator=’ (operand types are ‘const std::string’ {aka ‘const std::__cxx11::basic_string<char>’} and ‘const char [9]’)
 ```
@@ -124,6 +126,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic const_int_reference.cpp -o const_int_ref
 
 </details>
 
+<!-- measure: filter="grep -o 'error:.*'" -->
 ```
 error: assignment of read-only reference ‘n’
 ```
@@ -240,6 +243,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic const_this.cpp -o const_this
 
 Error message:
 
+<!-- measure: filter="grep -o 'error:.*'" -->
 ```
 error: passing ‘const Point’ as ‘this’ argument discards qualifiers [-fpermissive]
 ```
@@ -397,6 +401,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic const_all.cpp -o const_all && ./const_al
 
 <details markdown="1"><summary>Answer (actual output)</summary>
 
+<!-- measure: -->
 ```
 == const object ==
 r.area() = 12

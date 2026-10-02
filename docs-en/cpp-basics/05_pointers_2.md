@@ -103,13 +103,19 @@ g++ -fsanitize=address basics05_oob.cpp -o basics05_oob && ./basics05_oob
 </details>
 
 Output (first part):
+<!-- measure: filter="head -n 13" -->
 ```
-==1==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffffcb00028 at pc 0x555555555394
+=================================================================
+==14==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffffcb00028 at pc 0x555555555394 bp 0x7ffffffc58e0 sp 0x7ffffffc58d0
 READ of size 4 at 0x7ffffcb00028 thread T0
-    #0 0x555555555393 in main (..../basics05_oob+0x1393)
-    ...
+    #0 0x555555555393 in main (/w/basics05_oob+0x1393) (BuildId: 23dd49c026c0c0051f341d216f87c58aec77ed90)
+    #1 0x7ffffeb6e1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #2 0x7ffffeb6e28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #3 0x555555555184 in _start (/w/basics05_oob+0x1184) (BuildId: 23dd49c026c0c0051f341d216f87c58aec77ed90)
+
 Address 0x7ffffcb00028 is located in stack of thread T0 at offset 40 in frame
-    #0 0x555555555258 in main (...)
+    #0 0x555555555258 in main (/w/basics05_oob+0x1258) (BuildId: 23dd49c026c0c0051f341d216f87c58aec77ed90)
+
   This frame has 1 object(s):
     [32, 40) 'arr' (line 5) <== Memory access at offset 40 overflows this variable
 ```
@@ -268,6 +274,7 @@ Output:
 
 <details markdown="1"><summary>Answer (actual output)</summary>
 
+<!-- measure: -->
 ```
 === Pointers 2 (arrays and choosing between them) ===
 

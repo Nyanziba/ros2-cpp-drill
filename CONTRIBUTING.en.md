@@ -87,6 +87,20 @@ Do not include output written from a guess or memory, or output edited by hand.
 - When you show only part of the output, mark the omission with `...` or similar.
 - For things whose result depends on the environment (data races, undefined behavior, exit codes, and so on), write the environment you measured in and that the result "depends on the environment".
 
+### Measure with tools/measure.py
+
+Put a marker that says how to measure right before each output block. `tools/measure.py` reads the marker, runs it in Docker, and compares the result with the page.
+
+```markdown
+<!-- measure: filter="grep -o 'error:.*'" -->
+```
+
+- The files come from code blocks whose first line is a comment like `// file_name.cpp`. The command is the nearest `bash` block before the marker.
+  You can set both with `files=` and `cmd=`. Use `filter=` for an excerpt, `env=clang` to measure with Apple clang, `env=ros` for ROS 2,
+  and `env=static reason="..."` for things you cannot run (GUI, a real robot, and so on). The details are at the top of `tools/measure.py`.
+- When you add an output or change code, run `python3 tools/measure.py --write <page>` to measure again and write the result,
+  and `python3 tools/measure.py --check <page>` to make sure nothing differs. CI (measure.yml) runs the same check.
+
 The code in the C++ chapters has a [Compiler Explorer](https://godbolt.org/) link (`▶ Run in your browser`).
 **If you change the code, make the link again.** Paste the new code into Compiler Explorer,
 use the compiler `x86-64 gcc 13.3` and the same options as the command in the text, and replace the link with the Share short link.

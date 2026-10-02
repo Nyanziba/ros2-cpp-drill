@@ -155,6 +155,7 @@ by_value[0].size();                        // ?
 
 実測（11.8 で全体を動かします）。
 
+<!-- measure: files=try.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try" -->
 ```
 vector<Entry>            : 0
 vector<unique_ptr<Entry>>: 100
@@ -242,6 +243,7 @@ struct Good
 
 デストラクタにログを入れて実測した結果です（コードは 11.8 の後半）。
 
+<!-- measure: files=try_parent.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic try_parent.cpp -o try_parent && ./try_parent" -->
 ```
 Bad  root.use_count = 2
 --- Bad のスコープを抜けた ---
@@ -321,6 +323,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic deep_list.cpp -o deep_list && ./deep_lis
 
 macOS の zsh で実測しました（`zsh: segmentation fault` の行はシェルが出すメッセージです）。
 
+<!-- measure: env=clang files=deep_list.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic deep_list.cpp -o deep_list && python3 -c 'import os,pty,subprocess as s;m,w=pty.openpty();s.run([\"zsh\",\"-f\",\"-i\",\"-c\",\"./deep_list; echo exit code $?\"],stdin=w,stdout=w,stderr=w,start_new_session=True);print(os.read(m,99999).decode(),end=\"\")'" -->
 ```
 built
 zsh: segmentation fault  ./deep_list
@@ -365,6 +368,7 @@ class Group;
 ### その1: スライシング
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -408,6 +412,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 <details>
 <summary>予想: 上の行は何が出るか。警告は出るか</summary>
 
+<!-- measure: files=try.cpp -->
 ```
 vector<Entry>            : 0
 vector<unique_ptr<Entry>>: 100
@@ -427,6 +432,7 @@ Composite の基底クラスを抽象に保つ実用上の理由です。
 ### その2: 親を `shared_ptr` で持つと解放されない
 
 ```cpp
+// try_parent.cpp
 #include <iostream>
 #include <memory>
 #include <string>
@@ -480,6 +486,7 @@ int main()
 
 **0 回です。**
 
+<!-- measure: files=try_parent.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic try_parent.cpp -o try_parent && ./try_parent" -->
 ```
 Bad  root.use_count = 2
 --- Bad のスコープを抜けた ---

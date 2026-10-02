@@ -162,6 +162,7 @@ clang++ -std=c++17 -Wall -Wextra -Wpedantic printer_proxy.cpp -o printer_proxy
 
 </details>
 
+<!-- measure: env=clang filter="head -n 6; echo ..." -->
 ```
 printer_proxy.cpp:43:25: error: no viable overloaded '='
    43 |     if (!real_) { real_ = std::make_unique<Printer>(name_); }
@@ -426,6 +427,7 @@ auto handle = buffer.operator->();   // handle が生きている間ロックが
 **出力の順番を予想してから**実行してください。
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <memory>
 
@@ -510,6 +512,7 @@ g++ -std=c++11 -Wall -Wextra -Wpedantic copy_elision.cpp -o copy_elision
 <details>
 <summary>予想: <code>proxy-&gt;work()</code> の 1 行で、何が何回呼ばれるか</summary>
 
+<!-- measure: files=try.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try" -->
 ```
 式の前
   Guard 生成
@@ -529,6 +532,7 @@ g++ -std=c++11 -Wall -Wextra -Wpedantic copy_elision.cpp -o copy_elision
 `Guard` はコピーもムーブもできないのに、`operator->` が値で返せています。
 C++17 の**保証されたコピー省略**のおかげです。同じ形を最小にしたプログラムを C++11 でコンパイルするとこうなります。
 
+<!-- measure: -->
 ```
 copy_elision.cpp: In function ‘A make()’:
 copy_elision.cpp:9:19: error: use of deleted function ‘A::A(const A&)’
@@ -563,6 +567,7 @@ real_ = std::make_unique<CalibrationTable>(source_);   // ループの途中で�
 `volatile` な番地への読み書きに、範囲チェックや単位変換を挟みます。
 
 ```cpp
+// duty_register.cpp
 #include <cstdint>
 #include <cstdio>
 
@@ -611,6 +616,7 @@ int main()
 
 実行結果です。
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic duty_register.cpp -o duty_register && ./duty_register" -->
 ```
 duty=500 raw=500
 duty=999 raw=999
@@ -684,6 +690,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic register_proxy_size.cpp -o register_prox
 
 </details>
 
+<!-- measure: -->
 ```
 sizeof(RegisterProxy) = 1
 ```

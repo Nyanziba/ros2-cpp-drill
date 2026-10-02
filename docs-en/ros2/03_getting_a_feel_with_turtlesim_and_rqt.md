@@ -140,6 +140,7 @@ ros2 interface show geometry_msgs/msg/Twist
 
 The output looks like this.
 
+<!-- measure: env=ros filter="tail -n +3 | expand" -->
 ```
 Vector3  linear
         float64 x

@@ -305,6 +305,7 @@ Always think first, "can we switch it in the build?"
 Before you solve the exercise, compile this one file and **predict the output** before you run it.
 
 ```cpp
+// try.cpp
 #include <cstddef>
 #include <iostream>
 #include <memory>
@@ -391,6 +392,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 <details>
 <summary>Predict: What does <code>mixed</code> print? And where does the difference between the two <code>sizeof</code> values come from?</summary>
 
+<!-- measure: -->
 ```
 mixed:  0
 paired: 10

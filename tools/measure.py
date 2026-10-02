@@ -11,6 +11,7 @@
 印の項目（どれも省略できます）:
   files   使うファイル（カンマ区切り）。それぞれ、印より前にある「1 行目が
           `// ファイル名` などのコメント」のコードブロックのうち、いちばん近いもの。
+          印より前に無ければ、印より後ろでいちばん近いもの（出力を先に見せる書き方のため）。
           省略すると、印より前でいちばん近い、ファイル名つきのコードブロック 1 つ。
   cmd     実行するコマンド。省略すると、印より前でいちばん近い bash のコードブロック。
   env     gcc（既定。Docker の Ubuntu / g++）、clang（macOS の clang。手元が macOS のときだけ）、
@@ -127,15 +128,19 @@ def find_measurements(page):
         if not following:
             raise ValueError(f"{page}:{index + 1}: 印のあとに出力のコードブロックがありません")
         output_block = following[0]
-        preceding = [block for block in blocks if block.end_line < index]
         measurement = Measurement(page, index, output_block, options)
-        measurement.files = select_files(page, index, preceding, options.get("files"))
-        measurement.command = options.get("cmd") or nearest_command(page, index, preceding)
+        if options.get("env") != "static":
+            preceding = [block for block in blocks if block.end_line < index]
+            # 先に出力を見せ、プログラムは後の節に載せる書き方もあるので、後ろのブロックも探す。
+            later = [block for block in blocks if block.start_line > output_block.end_line]
+            measurement.files = select_files(page, index, preceding, later, options.get("files"))
+            measurement.command = options.get("cmd") or nearest_command(page, index, preceding)
         measurements.append(measurement)
     return measurements
 
 
-def select_files(page, marker_line, preceding, requested):
+def select_files(page, marker_line, preceding, later, requested):
+    """使うファイル。印より前でいちばん近いものを優先し、無ければ印より後ろでいちばん近いもの。"""
     named = [block for block in preceding if block.file_name]
     if requested is None:
         if not named:
@@ -143,10 +148,14 @@ def select_files(page, marker_line, preceding, requested):
         return {named[-1].file_name: named[-1].content}
     files = {}
     for name in requested.split(","):
-        candidates = [block for block in named if block.file_name == name]
-        if not candidates:
-            raise ValueError(f"{page}:{marker_line + 1}: ファイル {name} のコードブロックが印より前にありません")
-        files[name] = candidates[-1].content
+        before = [block for block in named if block.file_name == name]
+        after = [block for block in later if block.file_name == name]
+        if before:
+            files[name] = before[-1].content
+        elif after:
+            files[name] = after[0].content
+        else:
+            raise ValueError(f"{page}:{marker_line + 1}: ファイル {name} のコードブロックがページにありません")
     return files
 
 
@@ -164,7 +173,11 @@ def run(measurement):
         return None
     script = measurement.command
     if measurement.options.get("tty") == "yes":
-        script = f"script -qec {shlex.quote(script)} /dev/null"
+        if environment == "clang":
+            # macOS（BSD）の script はコマンドを引数で受け取る。
+            script = f"script -q /dev/null bash -c {shlex.quote(script)}"
+        else:
+            script = f"script -qec {shlex.quote(script)} /dev/null"
     script = f"( {script} ) 2>&1"
     if measurement.options.get("filter"):
         script += f" | {measurement.options['filter']}"
@@ -188,6 +201,10 @@ def run(measurement):
         else:
             raise ValueError(f"{measurement.page}:{measurement.marker_line + 1}: 未知の env: {environment}")
         completed = subprocess.run(argv, cwd=directory, capture_output=True, text=True)
+        # 125〜127 は docker や bash 自体が動けなかったときの終了コード。
+        # これを出力として書き込むと本文が壊れるので、ここで止める。
+        if completed.returncode in (125, 126, 127) and not completed.stdout.strip():
+            raise RuntimeError(f"{measurement.page}:{measurement.marker_line + 1}: 測る仕組みが動きませんでした:\n{completed.stderr}")
         output = completed.stdout
     return "\n".join(line.rstrip() for line in output.rstrip().split("\n"))
 

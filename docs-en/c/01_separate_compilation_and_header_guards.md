@@ -241,9 +241,8 @@ Compile several files and check how header guards, `static`, and `static` inside
 
 **Predict**: What are the results of `add(5, 3)` and `multiply(4, 7)`?
 
-math.h
-
 ```c
+// math.h
 #ifndef MATH_H
 #define MATH_H
 
@@ -253,9 +252,8 @@ int multiply(int a, int b);
 #endif
 ```
 
-math.c
-
 ```c
+// math.c
 #include "math.h"
 
 int add(int a, int b)
@@ -269,9 +267,8 @@ int multiply(int a, int b)
 }
 ```
 
-main.c
-
 ```c
+// main.c
 #include <stdio.h>
 #include "math.h"
 
@@ -293,6 +290,7 @@ Output:
 
 <details markdown="1"><summary>Answer (actual output)</summary>
 
+<!-- measure: files=math.h,math.c,main.c -->
 ```
 add(5, 3) = 8
 multiply(4, 7) = 28
@@ -305,6 +303,7 @@ multiply(4, 7) = 28
 **Predict**: Does `counter` grow as 1, 2, 3 on each call? Or is it 101 every time?
 
 ```c
+// static_demo.c
 #include <stdio.h>
 
 int next_id(void)
@@ -332,6 +331,7 @@ Output:
 
 <details markdown="1"><summary>Answer (actual output)</summary>
 
+<!-- measure: -->
 ```
 next_id() = 101
 next_id() = 102
@@ -346,9 +346,8 @@ The value of `counter` is kept across calls.
 
 **Predict**: Are the `counter` in `file1` and the `counter` in `file2` independent? Or are they shared?
 
-file1.c
-
 ```c
+// file1.c
 #include <stdio.h>
 
 static int counter = 0;
@@ -359,9 +358,8 @@ int get_count_from_file1(void)
 }
 ```
 
-file2.c
-
 ```c
+// file2.c
 #include <stdio.h>
 
 static int counter = 1000;
@@ -372,9 +370,8 @@ int get_count_from_file2(void)
 }
 ```
 
-main_static.c
-
 ```c
+// main_static.c
 #include <stdio.h>
 
 int get_count_from_file1(void);
@@ -400,6 +397,7 @@ Output:
 
 <details markdown="1"><summary>Answer (actual output)</summary>
 
+<!-- measure: files=main_static.c,file1.c,file2.c -->
 ```
 file1: 1
 file1: 2

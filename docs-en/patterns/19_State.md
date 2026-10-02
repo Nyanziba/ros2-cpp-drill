@@ -216,6 +216,7 @@ echo $?
 
 </details>
 
+<!-- measure: tty=yes -->
 ```
 Segmentation fault
 139
@@ -450,6 +451,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic transition_check.cpp -o transition_check
 
 </details>
 
+<!-- measure: -->
 ```
 transition_check.cpp: In function ‘int main()’:
 transition_check.cpp:34:27: error: no matching function for call to ‘go<Ev::Start>(Faulted&)’
@@ -517,6 +519,7 @@ clang++ -std=c++17 -Wall -Wextra -Wpedantic state_sizes.cpp -o state_sizes && ./
 
 </details>
 
+<!-- measure: env=clang -->
 ```
 MachineState=1  StateVariant=8
 ```
@@ -543,6 +546,7 @@ Writing `default:` removes that warning. This is a big strength of the `switch` 
 Get the SIGSEGV of 19.3 with your own hands. **This is the main part of this chapter.**
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <memory>
 
@@ -614,6 +618,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try; echo $?
 
 **There are 0 warnings.** And it crashes with 0 lines of output.
 
+<!-- measure: env=clang filter="tail -n 1" -->
 ```
 139
 ```
@@ -785,6 +790,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic -fno-exceptions -fno-rtti table_machine.
 
 </details>
 
+<!-- measure: -->
 ```
 --- Start
 (ignored)

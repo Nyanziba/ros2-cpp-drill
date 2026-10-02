@@ -194,6 +194,7 @@ Output:
 
 <details markdown="1"><summary>Answer (actual output)</summary>
 
+<!-- measure: -->
 ```
 == Fixed-width integers and overflow ==
 uint8_t: 255 (max)

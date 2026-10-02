@@ -104,6 +104,7 @@ for (const Node * const node : nodes) {
 
 実行するとこうです（13.8 の `try.cpp` の前半がこれです）。
 
+<!-- measure: files=try.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try" filter="sed -n '1,2p'" -->
 ```
 node（種類が消えた）
 node（種類が消えた）
@@ -189,6 +190,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic base_accept.cpp -o base_accept
 
 </details>
 
+<!-- measure: files=base_accept.cpp -->
 ```
 base_accept.cpp: In member function ‘void DiagNode::accept(DiagVisitor&) const’:
 base_accept.cpp:21:59: error: no matching function for call to ‘DiagVisitor::visit(const DiagNode&)’
@@ -323,6 +325,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic -fno-rtti rtti.cpp -o rtti
 
 </details>
 
+<!-- measure: files=rtti.cpp -->
 ```
 rtti.cpp: In function ‘void report(const DiagNode&)’:
 rtti.cpp:13:37: error: ‘dynamic_cast’ not permitted with ‘-fno-rtti’
@@ -425,6 +428,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic no_guide.cpp -o no_guide
 
 </details>
 
+<!-- measure: files=no_guide.cpp -->
 ```
 no_guide.cpp: In function ‘int main()’:
 no_guide.cpp:26:89: error: class template argument deduction failed:
@@ -497,6 +501,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic not_exhaustive.cpp -o not_exhaustive 2>&
 
 エラーは 5 件で数十行続くので、コマンドの `grep -m1` で最初の `error:` の行だけを抜き出しています。
 
+<!-- measure: files=not_exhaustive.cpp -->
 ```
 /usr/include/c++/13/type_traits:3073:11: error: no type named ‘type’ in ‘struct std::invoke_result<overloaded<main()::<lambda(const SensorV&)>, main()::<lambda(const MotorV&)> >, const EncoderV&>’
 ```
@@ -550,6 +555,7 @@ public:
 
 `std::variant` の弱点は 5 行目です。
 
+<!-- measure: files=try.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try" filter="sed -n '5p' | sed 's|$|      // SensorV{int} と MotorV{unsigned int} の場合|'" -->
 ```
 sizeof(NodeV) = 8      // SensorV{int} と MotorV{unsigned int} の場合
 ```
@@ -562,6 +568,7 @@ sizeof(NodeV) = 8      // SensorV{int} と MotorV{unsigned int} の場合
 1 ファイルで完結します。**出力を予想してから**実行してください。
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <string>
 #include <variant>
@@ -684,6 +691,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try_missing.cpp -o try_missing 2>&1 | gr
 <details>
 <summary>予想: 前半 2 行は何が出るか。<code>describe</code> のオーバーロードは 3 つあるのに</summary>
 
+<!-- measure: files=try.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try" -->
 ```
 node（種類が消えた）
 node（種類が消えた）
@@ -705,6 +713,7 @@ sizeof(NodeV) = 8
 
 さらに試すなら、後半のラムダを 1 つ消してみてください。
 
+<!-- measure: files=try_missing.cpp -->
 ```
 /usr/include/c++/13/type_traits:3073:11: error: no type named ‘type’ in ‘struct std::invoke_result<overloaded<main()::<lambda(const SensorV&)> >, const MotorV&>’
 ```

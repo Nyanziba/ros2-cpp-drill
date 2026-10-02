@@ -303,6 +303,7 @@ Because `colcon test` **returns exit code 0 even when tests fail**. CI judges pa
 
 If you actually check with a package that contains one gtest that fails on purpose, you get this.
 
+<!-- measure: env=ros files=src/failpkg/package.xml,src/failpkg/CMakeLists.txt,src/failpkg/test/t.cpp cmd="colcon build >/dev/null 2>&1; colcon test; exit_code=$?; echo '$ echo $?'; echo $exit_code" -->
 ```
 Starting >>> failpkg
 --- stderr: failpkg
@@ -336,6 +337,7 @@ In CI, always include either (a) or (b). A CI that only has `colcon test` is the
 
 Also, if you add `--verbose` to `colcon test-result`, it shows even which assertion failed. Without it, you only get the fact "1 failure".
 
+<!-- measure: env=ros files=src/failpkg/package.xml,src/failpkg/CMakeLists.txt,src/failpkg/test/t.cpp cmd="colcon build >/dev/null 2>&1; colcon test >/dev/null 2>&1; colcon test-result --verbose" -->
 ```
 build/failpkg/Testing/20261002-1117/Test.xml: 1 test, 0 errors, 1 failure, 0 skipped
 - t

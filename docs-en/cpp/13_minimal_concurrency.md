@@ -11,6 +11,7 @@
 ## 13.1 `std::thread` — creating and ending threads
 
 ```cpp
+// thread_basic.cpp
 #include <iostream>
 #include <thread>
 
@@ -32,8 +33,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/djrhvK59r)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/K3Y8aEvbb)
 
+<!-- measure: env=static cmd="g++ -std=c++17 -pthread thread_basic.cpp -o thread_basic && ./thread_basic" reason="two threads write to std::cout at the same time, so the order and interleaving of the output change on every run" -->
 ```
 Thread 1 is running
 Thread 2 is running
@@ -83,6 +85,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic -pthread terminate.cpp -o terminate && .
 
 </details>
 
+<!-- measure: tty=yes -->
 ```
 terminate called without an active exception
 Aborted
@@ -134,6 +137,7 @@ int main()
 }
 ```
 
+<!-- measure: env=static reason="the data-race results change on every run and between machines (the race may not appear at all)" -->
 ```bash
 $ g++ -std=c++17 -Wall -Wextra -pthread race1.cpp -o race1
 $ for i in 1 2 3 4 5 6 7 8; do ./race1 | head -1; done
@@ -199,6 +203,7 @@ int main()
 }
 ```
 
+<!-- measure: env=static reason="the data-race results change on every run and between machines (the race may not appear at all)" -->
 ```bash
 $ g++ -std=c++17 -Wall -Wextra -pthread race2.cpp -o race2
 $ for i in 1 2 3 4 5; do ./race2 | head -1; done
@@ -223,6 +228,7 @@ If two threads `load` the same value, and both add 1 to that same value and `sto
 
 It is impossible to find a bug that "happens to work" by eye. **Use a tool.**
 
+<!-- measure: env=static reason="the data-race values and the TSan report (pid, addresses, BuildId) change on every run; TSan does not run under amd64 emulation (unexpected memory mapping), so it cannot be measured" -->
 ```bash
 $ g++ -std=c++17 -fsanitize=thread -g -pthread race2.cpp -o race2_ts
 $ ./race2_ts 2>&1 | grep -E "WARNING|SUMMARY|^  (Read|Write|Previous)|#0 increment" | head -6
@@ -247,6 +253,7 @@ It makes the program 5 to 15 times slower, so you do not put it in a production 
 To prevent a data race, limit access to the shared variable to one thread at a time.
 
 ```cpp
+// mutex_counter.cpp
 #include <iostream>
 #include <thread>
 #include <mutex>
@@ -279,8 +286,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/zf4ad3oaK)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/1rMxvj5nq)
 
+<!-- measure: files=mutex_counter.cpp cmd="g++ -std=c++17 -pthread mutex_counter.cpp -o mutex_counter && ./mutex_counter" -->
 ```
 Result: 500000
 Expected: 500000
@@ -297,6 +305,7 @@ The destructor is called even if an exception is thrown, so **it also prevents a
 For a counter that is a single `int`, `atomic` is lighter than `mutex`.
 
 ```cpp
+// atomic_counter.cpp
 #include <iostream>
 #include <thread>
 #include <atomic>
@@ -327,8 +336,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/vj6xPhhMG)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/rh75jG9Yc)
 
+<!-- measure: files=atomic_counter.cpp cmd="g++ -std=c++17 -pthread atomic_counter.cpp -o atomic_counter && ./atomic_counter" -->
 ```
 Result: 500000
 Expected: 500000
@@ -344,6 +354,7 @@ But its range of use is narrower than `mutex`. When you want to lock several var
 To pass a value between threads, use `promise` and `future`.
 
 ```cpp
+// promise_future.cpp
 #include <iostream>
 #include <thread>
 #include <future>
@@ -370,8 +381,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/jdbG7dErn)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/sK9rr9h56)
 
+<!-- measure: env=static reason="the order of the worker and main output can change from run to run" -->
 ```
 Main: waiting for the result
 Worker: computing...
@@ -387,6 +399,7 @@ Main: result = 42
 ### Timeout with `wait_for`
 
 ```cpp
+// wait_for_timeout.cpp
 #include <iostream>
 #include <thread>
 #include <future>
@@ -418,8 +431,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/Mrx6dzE4q)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/vhqz3K6fE)
 
+<!-- measure: env=static reason="the order of the first lines from the two threads changes from run to run" -->
 ```
 Main: waiting 2 seconds
 Worker: waiting for a long time

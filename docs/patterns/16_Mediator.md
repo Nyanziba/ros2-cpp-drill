@@ -112,6 +112,7 @@ Mediator が死ぬときに Colleague も一緒に死ぬからです。**逆の�
 実際に動かして確かめてください。
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -179,6 +180,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 
 **出ません。** 実行結果はこうです。
 
+<!-- measure: files=try.cpp -->
 ```
 --- bad ---
 use_count: mediator=2 colleague=2
@@ -332,6 +334,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic incomplete.cpp -o incomplete
 
 </details>
 
+<!-- measure: files=incomplete.cpp -->
 ```
 incomplete.cpp: In member function ‘void PanelWidget::notify_changed()’:
 incomplete.cpp:7:36: error: invalid use of incomplete type ‘class PanelMediator’
@@ -443,6 +446,7 @@ void widget_changed(PanelWidget *) { update_enabled_states(); }
 Mediator と Colleague を**静的に持って、起動時に一度だけ結線**します。
 
 ```cpp
+// micro.cpp
 #include <cstdint>
 
 class PanelMediator;

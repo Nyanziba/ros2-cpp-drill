@@ -52,6 +52,7 @@ They appear in different places, for different purposes.
 A derived class that inherits **has the members of the base class as its own.**
 
 ```cpp
+// greet.cpp
 #include <iostream>
 #include <string>
 
@@ -88,8 +89,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/MnEz9qfP3)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/MPbe145s9)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic greet.cpp -o greet && ./greet" -->
 ```
 Hello, derived
 derived works
@@ -166,6 +168,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic private.cpp -o private
 
 </details>
 
+<!-- measure: -->
 ```
 private.cpp: In member function ‘void Derived::bad()’:
 private.cpp:20:29: error: ‘std::string Base::name_’ is private within this context
@@ -222,6 +225,7 @@ It prevents someone outside from making sub-nodes freely.
 When you create a derived class, **the base class constructor runs first.**
 
 ```cpp
+// ctor_order.cpp
 #include <iostream>
 
 class Base
@@ -245,8 +249,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/M7x91hcoP)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/en1aGdn4M)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic ctor_order.cpp -o ctor_order && ./ctor_order" -->
 ```
 Base()
 Derived()
@@ -287,15 +292,63 @@ MinimalPublisher::MinimalPublisher()
 
 If you forget to write `Node(...)`, the compiler tries to "call `Node()` with no arguments" and fails.
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// drill/minimal_publisher.hpp
+#pragma once
+
+#include <cstddef>
+#include <memory>
+#include <string>
+
+#include <rclcpp/rclcpp.hpp>
+#include <std_msgs/msg/string.hpp>
+
+class MinimalPublisher : public rclcpp::Node
+{
+public:
+  MinimalPublisher();
+
+private:
+  void timer_callback();
+
+  rclcpp::TimerBase::SharedPtr timer_;
+  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+  std::size_t count_;
+};
+```
+
+```cpp
+// minimal_publisher.cpp
+#include "drill/minimal_publisher.hpp"
+
+MinimalPublisher::MinimalPublisher()
+: count_(0)   // forgot Node(...)
+{
+}
+```
+
+```bash
+g++ -std=c++17 -I. -c minimal_publisher.cpp -o mp.o   # the rclcpp include paths (-I) are omitted
+```
+
+</details>
+
+<!-- measure: env=ros files=drill/minimal_publisher.hpp,minimal_publisher.cpp cmd="g++ -std=c++17 -I. $(find /opt/ros/jazzy/include -maxdepth 1 -mindepth 1 -type d -printf '-I%p ') -c minimal_publisher.cpp -o mp.o" filter="grep -oE '(error|note):.*'" -->
 ```
 error: no matching function for call to ‘rclcpp::Node::Node()’
+note: candidate: ‘rclcpp::Node::Node(const rclcpp::Node&, const std::string&)’
+note:   candidate expects 2 arguments, 0 provided
+note: candidate: ‘rclcpp::Node::Node(const std::string&, const std::string&, const rclcpp::NodeOptions&)’
+note:   candidate expects 3 arguments, 0 provided
 note: candidate: ‘rclcpp::Node::Node(const std::string&, const rclcpp::NodeOptions&)’
 note:   candidate expects 2 arguments, 0 provided
 ```
 
 > This output needs rclcpp, so it is an excerpt measured in an environment with ROS 2 (the repository's Docker image). Unlike the other examples in the C++ track, you cannot reproduce it with `g++` alone.
 
-**If "candidate expects 2 arguments, 0 provided" appears, you forgot to call the base class.**
+**If "candidate expects N arguments, 0 provided" is listed for each `Node` constructor, you forgot to call the base class.**
 
 The order to write is **base class first, members after**. The real initialization order is also like that.
 If you have `-Wall` on, writing them in the opposite order gives a `-Wreorder` warning.
@@ -330,6 +383,7 @@ Until now, inheritance was only "borrowing the features of the base".
 The other use of inheritance is **to let the derived class put the contents into a frame decided by the base class.**
 
 ```cpp
+// shapes.cpp
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -375,8 +429,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/vPhK11qh5)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/d9d5713hP)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic shapes.cpp -o shapes && ./shapes" -->
 ```
 area of circle = 3.14159
 area of shape = 4
@@ -448,6 +503,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic abstract.cpp -o abstract
 
 </details>
 
+<!-- measure: -->
 ```
 abstract.cpp: In function ‘int main()’:
 abstract.cpp:36:9: error: cannot declare variable ‘s’ to be of abstract type ‘Shape’
@@ -516,6 +572,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic override.cpp -o override
 
 </details>
 
+<!-- measure: -->
 ```
 override.cpp:18:10: error: ‘double Circle::area()’ marked ‘override’, but does not override
    18 |   double area() override { return 3.14159 * r_ * r_; }   // forgot const
@@ -579,6 +636,7 @@ Circle object                  Circle vtable
 You can check it.
 
 ```cpp
+// sizeof_virtual.cpp
 #include <iostream>
 struct NoVirtual { double x; };
 struct WithVirtual { virtual ~WithVirtual() = default; double x; };
@@ -589,8 +647,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/P6vhPe6MP)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/TGbb14c3P)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic sizeof_virtual.cpp -o sizeof_virtual && ./sizeof_virtual" -->
 ```
 8 16
 ```
@@ -609,6 +668,7 @@ In the `Shape` example we wrote `virtual ~Shape() = default;`.
 Let us actually see what happens if you remove it.
 
 ```cpp
+// no_virtual_destructor.cpp
 #include <iostream>
 #include <memory>
 
@@ -631,8 +691,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/f1hWozac5)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/8Mq87fYMr)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic no_virtual_destructor.cpp -o no_virtual_destructor && ./no_virtual_destructor" -->
 ```
 ~Base()
 ```
@@ -674,6 +735,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic vdtor.cpp -o vdtor && ./vdtor
 
 </details>
 
+<!-- measure: -->
 ```
 ~Derived()
 ~Base()
@@ -746,11 +808,57 @@ MinimalPublisher a;
 MinimalPublisher b = a;    // error
 ```
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// drill/minimal_publisher.hpp
+#pragma once
+
+#include <cstddef>
+#include <memory>
+#include <string>
+
+#include <rclcpp/rclcpp.hpp>
+#include <std_msgs/msg/string.hpp>
+
+class MinimalPublisher : public rclcpp::Node
+{
+public:
+  MinimalPublisher();
+
+private:
+  void timer_callback();
+
+  rclcpp::TimerBase::SharedPtr timer_;
+  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+  std::size_t count_;
+};
+```
+
+```cpp
+// minimal_publisher.cpp
+#include "drill/minimal_publisher.hpp"
+
+void copy_it()
+{
+  MinimalPublisher a;
+  MinimalPublisher b = a;    // error
+}
+```
+
+```bash
+g++ -std=c++17 -I. -c minimal_publisher.cpp -o mp.o   # the rclcpp include paths (-I) are omitted
+```
+
+</details>
+
+<!-- measure: env=ros files=drill/minimal_publisher.hpp,minimal_publisher.cpp cmd="g++ -std=c++17 -I. $(find /opt/ros/jazzy/include -maxdepth 1 -mindepth 1 -type d -printf '-I%p ') -c minimal_publisher.cpp -o mp.o" filter="grep -oE '(error|note):.*'" -->
 ```
 error: use of deleted function ‘MinimalPublisher::MinimalPublisher(const MinimalPublisher&)’
-note: ‘MinimalPublisher::MinimalPublisher(const MinimalPublisher&)’ is implicitly deleted
-      because the default definition would be ill-formed
+note: ‘MinimalPublisher::MinimalPublisher(const MinimalPublisher&)’ is implicitly deleted because the default definition would be ill-formed:
 error: use of deleted function ‘rclcpp::Node::Node(const rclcpp::Node&)’
+note: declared here
+note: in definition of macro ‘RCLCPP_DISABLE_COPY’
 ```
 
 > This output needs rclcpp, so it is an excerpt measured in an environment with ROS 2 (the repository's Docker image). Unlike the other examples in the C++ track, you cannot reproduce it with `g++` alone.
@@ -767,6 +875,7 @@ rclcpp::spin(std::make_shared<MinimalPublisher>());
 What would happen if copying were not prohibited? It is worth knowing this too.
 
 ```cpp
+// slicing.cpp
 #include <iostream>
 
 class Base
@@ -801,8 +910,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/8WW5frKsK)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/WY8csvTqE)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic slicing.cpp -o slicing && ./slicing" -->
 ```
 by_value: Base
 by_ref:   Derived

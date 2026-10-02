@@ -52,6 +52,7 @@ constructor explicitly). We follow it because the official tutorial writes it th
 **This is the only important pitfall of `auto`.**
 
 ```cpp
+// auto_ref.cpp
 #include <iostream>
 #include <string>
 #include <vector>
@@ -72,8 +73,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/n4jYqYKh3)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/6hrhfe17d)
 
+<!-- measure: files=auto_ref.cpp cmd="g++ -std=c++17 auto_ref.cpp -o auto_ref && ./auto_ref" -->
 ```
 hello changed
 ```
@@ -145,6 +147,7 @@ auto diff = a.size() - b.size();  // subtraction of size_t -> does not become ne
 ```
 
 ```cpp
+// size_diff.cpp
 #include <iostream>
 #include <vector>
 
@@ -158,8 +161,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/rTdqTfz9c)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/Y9fanjsfP)
 
+<!-- measure: files=size_diff.cpp cmd="g++ -std=c++17 -Wall -Wextra size_diff.cpp -o size_diff && ./size_diff" -->
 ```
 18446744073709551613
 ```
@@ -193,6 +197,7 @@ It is the same kind of trap as the `std::vector<int> b{3, 0};` story in chapter 
 A relative of `auto`. You can receive several values at once.
 
 ```cpp
+// structured.cpp
 #include <iostream>
 #include <map>
 #include <string>
@@ -208,8 +213,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/xaYGEKTTr)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/73xjn9ann)
 
+<!-- measure: files=structured.cpp cmd="g++ -std=c++17 -Wall -Wextra structured.cpp -o structured && ./structured" -->
 ```
 accel = 3
 speed = 10
@@ -375,6 +381,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic signcompare.cpp -o signcompare && ./sign
 
 </details>
 
+<!-- measure: files=signcompare.cpp -->
 ```
 signcompare.cpp: In function ‘int main()’:
 signcompare.cpp:9:21: warning: comparison of integer expressions of different signedness: ‘int’ and ‘std::vector<int>::size_type’ {aka ‘long unsigned int’} [-Wsign-compare]

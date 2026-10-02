@@ -371,6 +371,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic build_rvalue_only.cpp -o build_rvalue_on
 
 </details>
 
+<!-- measure: -->
 ```
 build_rvalue_only.cpp: In function ‘int main()’:
 build_rvalue_only.cpp:46:36: error: passing ‘MotorConfigBuilder’ as ‘this’ argument discards qualifiers [-fpermissive]
@@ -466,6 +467,7 @@ In C++20 you have `std::format`, and many cases of building strings can be done 
 Before you solve the exercise, compile this one file and **predict the output** before you run it.
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <string>
 #include <utility>
@@ -541,6 +543,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 <details>
 <summary>Predict: Which <code>build()</code> is called when, and how does the string buffer move?</summary>
 
+<!-- measure: files=try.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try" -->
 ```
 same object? 1
 build() const &

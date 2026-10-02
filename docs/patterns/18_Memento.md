@@ -219,6 +219,7 @@ void GainTuner::restore(GainSnapshot && snapshot)
 「値で持つ」と「`shared_ptr` で持つ」を並べます。**出力を予想してから**実行してください。
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <memory>
 #include <string>
@@ -273,6 +274,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 <details>
 <summary>予想: 2 行それぞれ何が出るか</summary>
 
+<!-- measure: -->
 ```
 値で持った Memento      : 起動時の軌道
 shared_ptr で持った Memento: 調整後の軌道
@@ -351,6 +353,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic private_access.cpp -o private_access
 
 </details>
 
+<!-- measure: env=static reason="課題のヘッダ（exercises/dp18 の GainTuner / GainSnapshot）を include する前提で、本文のプログラムだけでは動かせない" -->
 ```
 private_access.cpp: In function ‘int main()’:
 private_access.cpp:45:16: error: ‘double GainSnapshot::kp_’ is private within this context

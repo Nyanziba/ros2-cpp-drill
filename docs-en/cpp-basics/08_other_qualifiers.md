@@ -67,6 +67,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic -c file1.cpp file2.cpp main.cpp && g++ f
 
 If you link the files above, you get:
 
+<!-- measure: files=helper.h,file1.cpp,file2.cpp,main.cpp -->
 ```
 /usr/bin/ld: file2.o: in function `add_one(int)':
 file2.cpp:(.text+0x0): multiple definition of `add_one(int)'; file1.o:file1.cpp:(.text+0x0): first defined here
@@ -115,6 +116,7 @@ echo "=== With inline ==="
 
 Now the link succeeds. Check with `nm -C`: without `inline` the symbol is `T` (strong symbol), with `inline` it is `W` (weak symbol):
 
+<!-- measure: -->
 ```
 === Without inline ===
 0000000000000000 T add_one(int)
@@ -133,6 +135,7 @@ Templates are treated as `inline` automatically.
 **A constructor that takes one argument can be used by the caller for an implicit type conversion. `explicit` prevents this.**
 
 ```cpp
+// implicit_conversion.cpp
 #include <iostream>
 
 class IsEnabled {
@@ -159,8 +162,9 @@ int main() {
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/xrzb879bP)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/ncqKnhTha)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic implicit_conversion.cpp -o implicit_conversion && ./implicit_conversion" -->
 ```
 enabled
 ```
@@ -220,6 +224,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic explicit_error.cpp -o explicit_error
 
 </details>
 
+<!-- measure: filter="grep -o 'error:.*'" -->
 ```
 error: could not convert ‘true’ from ‘bool’ to ‘IsEnabled’
 ```
@@ -237,6 +242,7 @@ configure(IsEnabled(true));   // OK
 **A `const` member function cannot change members. `mutable` is the exception.** A `mutable` member can be changed even from a `const` member function.
 
 ```cpp
+// mutable_cached_value.cpp
 #include <iostream>
 
 class CachedValue {
@@ -266,8 +272,9 @@ int main() {
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/rPcrf4a9c)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/5WfhYPGsW)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic mutable_cached_value.cpp -o mutable_cached_value && ./mutable_cached_value" -->
 ```
 42
 42
@@ -288,6 +295,7 @@ The accesses are counted even inside the `const` function `get()`.
 **A `constexpr` function can be computed at compile time.** You can prove it with `static_assert` (`static_assert` accepts only compile-time expressions).
 
 ```cpp
+// constexpr_factorial.cpp
 #include <iostream>
 
 constexpr int factorial(int n) {
@@ -303,6 +311,7 @@ int main() {
 }
 ```
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic constexpr_factorial.cpp -o constexpr_factorial && ./constexpr_factorial" -->
 ```
 factorial(5) = 120
 ```
@@ -321,6 +330,7 @@ In C++20, `constexpr` can do even more (for example, dynamic memory allocation).
 This program checks all four qualifiers at once.
 
 ```cpp
+// try.cpp
 #include <iostream>
 
 // === inline ===
@@ -400,12 +410,13 @@ int main() {
 g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/dh6MKMMG5)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/ov8zczvK7)
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/PPsxn1bPz)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/v8McW6KcK)
 
 <details markdown="1"><summary>Answer (actual output)</summary>
 
+<!-- measure: -->
 ```
 === inline ===
 add_one(10) = 11

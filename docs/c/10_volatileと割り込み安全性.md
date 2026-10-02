@@ -56,6 +56,7 @@ gcc -std=c99 -O2 -S -fcf-protection=none -fno-asynchronous-unwind-tables -o - wa
 
 **`-O0` の場合（関数全体のアセンブリ）：**
 
+<!-- measure: filter="head -n 19" -->
 ```
 wait_without_volatile:
 	pushq	%rbp
@@ -93,6 +94,7 @@ wait_without_volatile:
 
 **`-O2` の場合（アセンブリの全体）：**
 
+<!-- measure: filter="tail -n 6" -->
 ```
 wait_without_volatile:
 	.p2align 4,,10
@@ -153,6 +155,7 @@ gcc -std=c99 -O2 -S -fcf-protection=none -fno-asynchronous-unwind-tables -o - wa
 
 </details>
 
+<!-- measure: -->
 ```
 wait_with_volatile:
 	movl	$0, -12(%rsp)
@@ -219,6 +222,7 @@ gcc -std=c99 -O2 -S -fcf-protection=none -fno-asynchronous-unwind-tables -o - co
 
 </details>
 
+<!-- measure: -->
 ```asm
 increment_counter:
 	movl	counter(%rip), %eax
@@ -333,6 +337,7 @@ gcc -std=gnu99 -Wall -Wpedantic signal_flag.c -o signal_flag && ./signal_flag
 
 実測値：
 
+<!-- measure: -->
 ```
 Signal received
 ```
@@ -393,6 +398,7 @@ gcc -std=c99 -O2 -S -fcf-protection=none -fno-asynchronous-unwind-tables -o - ua
 
 実測値（`gcc -O2` でのアセンブリ）：
 
+<!-- measure: -->
 ```asm
 access_uart:
 	movl	1073758212, %eax
@@ -444,6 +450,7 @@ gcc -std=c99 -O2 -S -fcf-protection=none -fno-asynchronous-unwind-tables -o - ua
 
 **`volatile` を付けないと：**
 
+<!-- measure: -->
 ```asm
 access_uart:
 	movl	$65, 1073758208
@@ -496,6 +503,7 @@ gcc -std=c99 -O2 -S -fcf-protection=none -fno-asynchronous-unwind-tables -o - gp
 
 </details>
 
+<!-- measure: -->
 ```asm
 set_gpio_bit3:
 	movl	gpio(%rip), %eax
@@ -602,6 +610,7 @@ gcc -std=c99 -Wall -Wextra -Wpedantic volatile_test.c -o volatile_test && ./vola
 
 <details markdown="1"><summary>解答（実行結果）</summary>
 
+<!-- measure: -->
 ```
 Register reads (volatile):
   Read 1: 0x11111111

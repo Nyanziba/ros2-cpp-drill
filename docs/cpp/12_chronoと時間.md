@@ -374,6 +374,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic chrono_time_demo.cpp -o chrono_time_demo
 
 <details markdown="1"><summary>解答（実行結果）</summary>
 
+<!-- measure: env=static reason="steady_clock で測った所要時間（Loop took N ms）が実行ごとに変わる" -->
 ```
 === Duration types ===
 500ms: 500
@@ -436,6 +437,7 @@ g++ -std=c++17 no_literals.cpp -o no_literals
 
 </details>
 
+<!-- measure: -->
 ```
 no_literals.cpp: In function ‘int main()’:
 no_literals.cpp:6:16: error: unable to find numeric literal operator ‘operator""ms’

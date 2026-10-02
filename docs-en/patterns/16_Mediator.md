@@ -112,6 +112,7 @@ when the Mediator dies, the Colleagues die with it. **The reverse order cannot h
 Run it and see for yourself.
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -179,6 +180,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 
 **They do not.** The result of running it is this.
 
+<!-- measure: files=try.cpp -->
 ```
 --- bad ---
 use_count: mediator=2 colleague=2
@@ -332,6 +334,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic incomplete.cpp -o incomplete
 
 </details>
 
+<!-- measure: files=incomplete.cpp -->
 ```
 incomplete.cpp: In member function ‘void PanelWidget::notify_changed()’:
 incomplete.cpp:7:36: error: invalid use of incomplete type ‘class PanelMediator’
@@ -443,6 +446,7 @@ appears only when you write it with branches.
 hold the Mediator and the Colleagues **statically and wire them just once at startup**.
 
 ```cpp
+// micro.cpp
 #include <cstdint>
 
 class PanelMediator;

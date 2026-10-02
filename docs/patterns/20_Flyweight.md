@@ -137,6 +137,7 @@ Java では**リークするだけ**です。C++ で `std::map<K, std::shared_pt
 
 `use_count` で見えます。手元で試してください（20.4 のコード）。
 
+<!-- measure: env=static cmd=- reason="20.4 の try.cpp の出力の前半を抜き出したもの。プログラムが印より後ろにあり、印は前方のブロックを参照できない（同じ出力は 20.4 の印で測っている）" -->
 ```
 [strong]
   + Table(gyro)
@@ -172,6 +173,7 @@ Handle get(const std::string & model_id)
 
 同じプログラムの後半の出力です。
 
+<!-- measure: env=static cmd=- reason="20.4 の try.cpp の出力の後半を抜き出したもの。プログラムが印より後ろにあり、印は前方のブロックを参照できない（同じ出力は 20.4 の印で測っている）" -->
 ```
 [weak]
   + Table(gyro)
@@ -267,6 +269,7 @@ Java 版はこれを規約とコメントで守っています。C++ は型で�
 `use_count` とデストラクタで、20.2 の話を自分の目で確認してください。
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <map>
 #include <memory>
@@ -362,6 +365,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 
 実際の出力です。
 
+<!-- measure: -->
 ```
 [strong]
   + Table(gyro)
@@ -542,6 +546,7 @@ Flyweight を入れると、**ロックという新しい遅さ**が付いてき
 代わりに使うのが `constexpr` です。**共有したい不変なものは ROM に置きます。**
 
 ```cpp
+// rom.cpp
 #include <cstdio>
 #include <string_view>
 
@@ -588,6 +593,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic rom.cpp -o rom && ./rom
 
 出力です。
 
+<!-- measure: filter="tail -n 2" -->
 ```
 sizeof(kRom) = 128
 offset = -40.000000

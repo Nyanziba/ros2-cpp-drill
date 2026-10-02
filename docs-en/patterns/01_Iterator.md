@@ -218,6 +218,7 @@ In real work, this is also the right answer in most cases.
 Before you solve the exercise, compile this one file and **predict the output** before you run it.
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <string>
 #include <vector>
@@ -313,6 +314,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try_no_begin.cpp -o try_no_begin
 
 Two lines are printed.
 
+<!-- measure: files=try.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try" -->
 ```
 Design Patterns
 Refactoring
@@ -320,6 +322,7 @@ Refactoring
 
 If you delete `begin()` / `end()`, the range-based for becomes a compile error.
 
+<!-- measure: filter="head -n 5; echo ..." -->
 ```
 try_no_begin.cpp: In function ‘int main()’:
 try_no_begin.cpp:31:28: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?

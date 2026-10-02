@@ -19,6 +19,7 @@
 First, look at this.
 
 ```cpp
+// vec2_add.cpp
 #include <iostream>
 
 struct Vec2
@@ -46,8 +47,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/441Md7oKs)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/817vq8q15)
 
+<!-- measure: files=vec2_add.cpp cmd="g++ -std=c++17 vec2_add.cpp -o vec2_add && ./vec2_add" -->
 ```
 11,22
 11,22
@@ -181,6 +183,7 @@ g++ -std=c++17 sortpoint.cpp -o sortpoint 2>&1 | grep "error:"
 
 </details>
 
+<!-- measure: -->
 ```
 /usr/include/c++/13/bits/predefined_ops.h:45:23: error: no match for ‘operator<’ (operand types are ‘Point’ and ‘Point’)
 /usr/include/c++/13/bits/predefined_ops.h:98:22: error: no match for ‘operator<’ (operand types are ‘Point’ and ‘Point’)
@@ -263,6 +266,7 @@ Just know that you will be able to use it in the future.)
 **exact comparison of floating point numbers is dangerous.**
 
 ```cpp
+// float_equal.cpp
 #include <iostream>
 int main()
 {
@@ -274,8 +278,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/z3GKeGcEa)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/Msqzoec4d)
 
+<!-- measure: files=float_equal.cpp cmd="g++ -std=c++17 float_equal.cpp -o float_equal && ./float_equal" -->
 ```
 0
 5.55112e-17
@@ -297,6 +302,7 @@ EXPECT_DOUBLE_EQ(limit_velocity(5.0, 0.0, 100.0, 1.0), 1.0);
 The mechanism that makes `std::cout << x` work is also an operator.
 
 ```cpp
+// ostream_output.cpp
 #include <iostream>
 #include <sstream>
 
@@ -324,8 +330,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/c6T3vrq98)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/az1zv1dMo)
 
+<!-- measure: files=ostream_output.cpp cmd="g++ -std=c++17 ostream_output.cpp -o ostream_output && ./ostream_output" -->
 ```
 (1.5, -2.5)
 pos=(1.5, -2.5)
@@ -673,6 +680,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic ops.cpp -o ops && ./ops
 
 </details>
 
+<!-- measure: -->
 ```
 a      = (1, 2)
 a + b  = (11, 22)

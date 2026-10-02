@@ -48,6 +48,7 @@ void MinimalSubscriber::topic_callback(const std_msgs::msg::String & msg) const
 測ってみます。
 
 ```cpp
+// tracked.cpp
 #include <iostream>
 #include <string>
 #include <vector>
@@ -84,8 +85,9 @@ int main()
 }
 ```
 
-[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/1148bvT6T)
+[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/oMcnnYG1e)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic tracked.cpp -o tracked && ./tracked" -->
 ```
 生成:
   [生成]
@@ -129,6 +131,7 @@ double limit_velocity(double target, double previous, double max_speed, double m
 参照は「別名」なので、**元のものが死んだら参照も無効になります。**
 
 ```cpp
+// dangling.cpp
 #include <iostream>
 #include <string>
 
@@ -145,10 +148,11 @@ int main()
 }
 ```
 
-[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/8M9zKKbfd)
+[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/Gocf3nqn5)
 
 g++ は警告します。
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic dangling.cpp -o dangling" filter="grep -o 'warning:.*'" -->
 ```
 warning: reference to local variable ‘local’ returned [-Wreturn-local-addr]
 ```
@@ -273,6 +277,7 @@ g++ -std=c++17 -Wall -Wextra copies.cpp -o copies && ./copies
 
 <details markdown="1"><summary>解答（実行結果）</summary>
 
+<!-- measure: -->
 ```
 log_only(m):
   read: hello
@@ -368,6 +373,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic bind_rvalue.cpp -o bind_rvalue
 
 </details>
 
+<!-- measure: -->
 ```
 bind_rvalue.cpp: In function ‘int main()’:
 bind_rvalue.cpp:8:5: error: cannot bind non-const lvalue reference of type ‘std::string&’ {aka ‘std::__cxx11::basic_string<char>&’} to an rvalue of type ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’}

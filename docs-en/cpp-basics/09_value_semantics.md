@@ -5,6 +5,7 @@
 ## 9.1 Assignment is a copy — changing `a` after `b = a;` does not change `b`
 
 ```cpp
+// value_assignment.cpp
 #include <iostream>
 
 class Value {
@@ -27,8 +28,9 @@ int main() {
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/rc1KE5qTz)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/PKxnf3cMo)
 
+<!-- measure: cmd="g++ -std=c++17 value_assignment.cpp -o value_assignment && ./value_assignment" -->
 ```
 a.x_ = 99
 b.x_ = 10
@@ -71,6 +73,7 @@ std::cout << b.x_ << "\n";  // 10 (unchanged)
    → calls the **copy assignment operator**
 
 ```cpp
+// value_copy_constructor.cpp
 #include <iostream>
 
 class Value {
@@ -109,8 +112,9 @@ int main() {
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/Kbnoj7sdq)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/jx3eqPecj)
 
+<!-- measure: cmd="g++ -std=c++17 value_copy_constructor.cpp -o value_copy_constructor && ./value_copy_constructor" -->
 ```
 === Copy constructor: Value b = a; ===
 Value(10)
@@ -139,6 +143,7 @@ void process_by_const_ref(const Data & d) {
 ```
 
 ```cpp
+// value_pass_by_argument.cpp
 #include <iostream>
 
 class Data {
@@ -184,8 +189,9 @@ int main() {
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/qdfhar8n1)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/d659eTjea)
 
+<!-- measure: cmd="g++ -std=c++17 value_pass_by_argument.cpp -o value_pass_by_argument && ./value_pass_by_argument" -->
 ```
 === pass by value ===
 Data(10)
@@ -207,6 +213,7 @@ Data(20)
 **When a function returns a value, C++17 constructs the return value directly.**
 
 ```cpp
+// value_return.cpp
 #include <iostream>
 
 class Data {
@@ -243,6 +250,7 @@ int main() {
 }
 ```
 
+<!-- measure: cmd="g++ -std=c++17 value_return.cpp -o value_return && ./value_return" -->
 ```
 === Returning by value in C++17 ===
 Data(40)
@@ -270,6 +278,7 @@ Before C++17, copies or moves could happen. Since C++17, this is guaranteed.
 This program checks the copy constructor, assignment, pass by value and by reference, and return value optimization in one place.
 
 ```cpp
+// try.cpp
 #include <iostream>
 
 class Data {
@@ -361,13 +370,26 @@ int main() {
 g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/fbjT39xP7)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/f6n1qxYr7)
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/r6xWWsqhT)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/4YfhvdhfK)
 
 <details markdown="1"><summary>Answer (actual output)</summary>
 
+<!-- measure: -->
 ```
+try.cpp: In function ‘void pass_by_value(Data)’:
+try.cpp:47:25: warning: unused parameter ‘d’ [-Wunused-parameter]
+   47 | void pass_by_value(Data d) {
+      |                    ~~~~~^
+try.cpp: In function ‘void pass_by_const_ref(const Data&)’:
+try.cpp:51:37: warning: unused parameter ‘d’ [-Wunused-parameter]
+   51 | void pass_by_const_ref(const Data & d) {
+      |                        ~~~~~~~~~~~~~^
+try.cpp: In function ‘void show_returning()’:
+try.cpp:74:8: warning: variable ‘d’ set but not used [-Wunused-but-set-variable]
+   74 |   Data d = create_data();
+      |        ^
 == COPY SEMANTICS ==
 Creating a(10):
 [constructor] x=10

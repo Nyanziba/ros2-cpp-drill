@@ -7,6 +7,7 @@
 **A `static` variable in a function is initialized only on the first call, and after that it lives on and keeps its value.**
 
 ```cpp
+// static_request_id.cpp
 #include <iostream>
 
 int get_request_id()
@@ -23,8 +24,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/oqaK3d54x)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/bM1j8v4Eo)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic static_request_id.cpp -o static_request_id && ./static_request_id" -->
 ```
 1001
 1002
@@ -100,6 +102,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic -c file1.cpp file2.cpp main.cpp && g++ f
 
 </details>
 
+<!-- measure: files=file1.cpp,file2.cpp,main.cpp -->
 ```
 /usr/bin/ld: file2.o:(.bss+0x0): multiple definition of `counter'; file1.o:(.bss+0x0): first defined here
 collect2: error: ld returned 1 exit status
@@ -115,6 +118,7 @@ If you want to synchronize the values, you must communicate through functions.
 **A `static` member is a single object shared by all instances of the class.**
 
 ```cpp
+// static_counter.cpp
 #include <iostream>
 
 class Counter
@@ -142,8 +146,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/xqe4aseeK)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/Ee8svxzxz)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic static_counter.cpp -o static_counter && ./static_counter" -->
 ```
 0
 1
@@ -189,6 +194,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic -c static_undefined.cpp && g++ static_un
 
 </details>
 
+<!-- measure: -->
 ```
 /usr/bin/ld: static_undefined.o: warning: relocation against `_ZN7Counter6count_E' in read-only section `.text._ZN7Counter9get_totalEv[_ZN7Counter9get_totalEv]'
 /usr/bin/ld: static_undefined.o: in function `Counter::Counter()':
@@ -317,6 +323,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic static_all.cpp -o static_all && ./static
 
 <details markdown="1"><summary>Answer (actual output)</summary>
 
+<!-- measure: -->
 ```
 == static in function ==
 request 1: 1001

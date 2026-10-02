@@ -104,6 +104,7 @@ for (const Node * const node : nodes) {
 
 Running it gives this (this is the first half of `try.cpp` in 13.8).
 
+<!-- measure: files=try.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try" filter="sed -n '1,2p'" -->
 ```
 node (kind lost)
 node (kind lost)
@@ -189,6 +190,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic base_accept.cpp -o base_accept
 
 </details>
 
+<!-- measure: files=base_accept.cpp -->
 ```
 base_accept.cpp: In member function ‘void DiagNode::accept(DiagVisitor&) const’:
 base_accept.cpp:21:59: error: no matching function for call to ‘DiagVisitor::visit(const DiagNode&)’
@@ -323,6 +325,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic -fno-rtti rtti.cpp -o rtti
 
 </details>
 
+<!-- measure: files=rtti.cpp -->
 ```
 rtti.cpp: In function ‘void report(const DiagNode&)’:
 rtti.cpp:13:37: error: ‘dynamic_cast’ not permitted with ‘-fno-rtti’
@@ -425,6 +428,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic no_guide.cpp -o no_guide
 
 </details>
 
+<!-- measure: files=no_guide.cpp -->
 ```
 no_guide.cpp: In function ‘int main()’:
 no_guide.cpp:26:89: error: class template argument deduction failed:
@@ -497,6 +501,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic not_exhaustive.cpp -o not_exhaustive 2>&
 
 There are 5 errors and the output runs to dozens of lines, so `grep -m1` in the command extracts only the first `error:` line.
 
+<!-- measure: files=not_exhaustive.cpp -->
 ```
 /usr/include/c++/13/type_traits:3073:11: error: no type named ‘type’ in ‘struct std::invoke_result<overloaded<main()::<lambda(const SensorV&)>, main()::<lambda(const MotorV&)> >, const EncoderV&>’
 ```
@@ -550,6 +555,7 @@ The last 2 rows are the point of 13.4. **First decide which direction will grow*
 
 The weak point of `std::variant` is row 5.
 
+<!-- measure: files=try.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try" filter="sed -n '5p' | sed 's|$|      // for SensorV{int} and MotorV{unsigned int}|'" -->
 ```
 sizeof(NodeV) = 8      // for SensorV{int} and MotorV{unsigned int}
 ```
@@ -562,6 +568,7 @@ It is a gain if all types are small, but if you mix in just one type with a 1 KB
 It is complete in one file. **Predict the output** before you run it.
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <string>
 #include <variant>
@@ -684,6 +691,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try_missing.cpp -o try_missing 2>&1 | gr
 <details>
 <summary>Predict: what do the first 2 lines print? There are 3 overloads of <code>describe</code></summary>
 
+<!-- measure: files=try.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try" -->
 ```
 node (kind lost)
 node (kind lost)
@@ -705,6 +713,7 @@ The last 8 bytes are the result of aligning "a 4-byte member + a discriminator".
 
 To go further, delete one lambda in the second half.
 
+<!-- measure: files=try_missing.cpp -->
 ```
 /usr/include/c++/13/type_traits:3073:11: error: no type named ‘type’ in ‘struct std::invoke_result<overloaded<main()::<lambda(const SensorV&)> >, const MotorV&>’
 ```

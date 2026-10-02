@@ -218,6 +218,7 @@ STL 互換のイテレータを 1 から書く方法は、必要になったと�
 課題を解く前に、この 1 ファイルをコンパイルして**出力を予想してから**実行してください。
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <string>
 #include <vector>
@@ -313,6 +314,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try_no_begin.cpp -o try_no_begin
 
 2 行出ます。
 
+<!-- measure: files=try.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try" -->
 ```
 Design Patterns
 Refactoring
@@ -320,6 +322,7 @@ Refactoring
 
 `begin()` / `end()` を消すと、range-based for がコンパイルエラーになります。
 
+<!-- measure: filter="head -n 5; echo ..." -->
 ```
 try_no_begin.cpp: In function ‘int main()’:
 try_no_begin.cpp:31:28: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?

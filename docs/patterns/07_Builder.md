@@ -371,6 +371,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic build_rvalue_only.cpp -o build_rvalue_on
 
 </details>
 
+<!-- measure: -->
 ```
 build_rvalue_only.cpp: In function ‘int main()’:
 build_rvalue_only.cpp:46:36: error: passing ‘MotorConfigBuilder’ as ‘this’ argument discards qualifiers [-fpermissive]
@@ -466,6 +467,7 @@ C++20 まで行くと `std::format` があり、文字列組み立ての多く�
 課題を解く前に、この 1 ファイルをコンパイルして**出力を予想してから**実行してください。
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <string>
 #include <utility>
@@ -541,6 +543,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 <details>
 <summary>予想: どちらの <code>build()</code> がいつ呼ばれ、文字列のバッファはどう動くか</summary>
 
+<!-- measure: files=try.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try" -->
 ```
 same object? 1
 build() const &

@@ -357,6 +357,7 @@ struct VariantEvaluator
 **実行する前に、何が起きるか予想してください。**
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <memory>
 #include <string>
@@ -444,6 +445,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 
 手元（macOS / Apple clang）での実際の出力です。
 
+<!-- measure: env=clang filter="head -n 2" -->
 ```
 depth 3 -> 8 leaves
 parsing depth 200000 ...

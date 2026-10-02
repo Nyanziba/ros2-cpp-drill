@@ -105,10 +105,14 @@ int main()
 **Crash it for real, just once.** If you do not know the symptom, you will not recognize it when it happens on a real robot.
 
 ```bash
-$ g++ -std=c++17 segv.cpp -o segv
-$ ./segv
-Segmentation fault (core dumped)
-$ echo $?
+g++ -std=c++17 segv.cpp -o segv
+./segv
+echo $?
+```
+
+<!-- measure: cmd="g++ -std=c++17 segv.cpp -o segv && ./segv; echo $?" tty=yes -->
+```
+Segmentation fault
 139
 ```
 
@@ -262,6 +266,7 @@ Output:
 
 <details markdown="1"><summary>Answer (actual output)</summary>
 
+<!-- measure: -->
 ```
 === Pointers 1 (addresses and dereferencing) ===
 

@@ -152,6 +152,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic copy_inner.cpp -o copy_inner
 
 </details>
 
+<!-- measure: files=copy_inner.cpp -->
 ```
 copy_inner.cpp: In constructor ‘SinkDecorator::SinkDecorator(std::unique_ptr<LogSink>)’:
 copy_inner.cpp:17:5: error: use of deleted function ‘std::unique_ptr<_Tp, _Dp>::unique_ptr(const std::unique_ptr<_Tp, _Dp>&) [with _Tp = LogSink; _Dp = std::default_delete<LogSink>]’
@@ -302,6 +303,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic novirt.cpp -o novirt 2>&1 | grep 'warnin
 g++ -std=c++17 -Wnon-virtual-dtor novirt.cpp -o novirt 2>&1 | grep -m1 'warning:'
 ```
 
+<!-- measure: files=novirt.cpp -->
 ```
 novirt.cpp:7:7: warning: ‘class Sink’ has virtual functions and accessible non-virtual destructor [-Wnon-virtual-dtor]
 ```
@@ -309,6 +311,7 @@ novirt.cpp:7:7: warning: ‘class Sink’ has virtual functions and accessible n
 そして実行すると、**落ちませんでした**。`format()` の結果を 1 行出して、終了コード 0 で終わります。
 ただし `~Border` も `~Plain` も 1 度も出力されていません。内側は破棄されていません。
 
+<!-- measure: files=novirt.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic novirt.cpp -o novirt 2>&1 | grep 'warning:'; ./novirt; echo \"exit code $?\"" -->
 ```
 12:00:00 [INFO] moving
 exit code 0
@@ -327,6 +330,7 @@ Decorator は入れ子が本体なので、**このパターンで仮想デス�
 
 正しく書いたときの破棄の順番も見ておきます（12.7 の実測です。出力の 2 つ目のブロックにあたります）。
 
+<!-- measure: files=try.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try" filter="sed -n '7,9p'" -->
 ```
 ~Border([INFO])
 ~Border(12:00:00)
@@ -361,6 +365,7 @@ Decorator は入れ子が本体なので、**このパターンで仮想デス�
 1 ファイルで完結します。**出力を予想してから**実行してください。
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <memory>
 #include <string>
@@ -427,6 +432,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 <details>
 <summary>予想: 2 つのブロックの整形結果は同じか。デストラクタは何個呼ばれるか</summary>
 
+<!-- measure: files=try.cpp -->
 ```
 12:00:00 [INFO] moving
 ~Border(12:00:00)
@@ -457,6 +463,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 代わりに **型で入れ子にします**。`Border<Border<Text>>` です。
 
 ```cpp
+// micro.cpp
 #include <cstdio>
 #include <cstring>
 #include <type_traits>
@@ -540,6 +547,7 @@ int main()
 c++ -std=c++17 -Wall -Wextra -Wpedantic -fno-exceptions -fno-rtti micro.cpp -o micro && ./micro
 ```
 
+<!-- measure: files=micro.cpp -->
 ```
 [INFO] 12:00:00.000 moving
 sizeof(sink) = 24

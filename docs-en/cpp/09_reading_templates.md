@@ -13,6 +13,7 @@
 First, write just one yourself. This is enough groundwork for reading.
 
 ```cpp
+// larger.cpp
 #include <iostream>
 #include <string>
 
@@ -31,8 +32,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/WfWWzfqWY)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/T3qq17cvv)
 
+<!-- measure: files=larger.cpp cmd="g++ -std=c++17 larger.cpp -o larger && ./larger" -->
 ```
 7
 1.5
@@ -211,6 +213,7 @@ see many "has no member named ..." errors.
 Template errors are long. First, let us make a real one.
 
 ```cpp
+// sorterr.cpp
 #include <algorithm>
 #include <vector>
 
@@ -225,11 +228,15 @@ int main()
 ```
 
 ```bash
-$ g++ -std=c++17 sorterr.cpp -o sorterr 2>&1 | wc -l
+g++ -std=c++17 sorterr.cpp -o sorterr 2>&1 | wc -l
+```
+
+<!-- measure: files=sorterr.cpp -->
+```
 78
 ```
 
-[⚠ See this error in your browser (gcc 13.3)](https://godbolt.org/z/a65vx3nYP)
+[⚠ See this error in your browser (gcc 13.3)](https://godbolt.org/z/9d56fKxaM)
 
 It prints **78 lines**. But the real cause is just one: "`Point` has no `operator<`".
 
@@ -241,6 +248,7 @@ Let us fix a procedure for reading.
 g++ -std=c++17 sorterr.cpp 2>&1 | grep "error:"
 ```
 
+<!-- measure: files=sorterr.cpp -->
 ```
 /usr/include/c++/13/bits/predefined_ops.h:45:23: error: no match for ‘operator<’ (operand types are ‘Point’ and ‘Point’)
 /usr/include/c++/13/bits/predefined_ops.h:98:22: error: no match for ‘operator<’ (operand types are ‘Point’ and ‘Point’)
@@ -256,15 +264,16 @@ The other 75 lines are `note:` (a list of candidates), `In instantiation of` (th
 g++ -std=c++17 sorterr.cpp 2>&1 | grep "sorterr.cpp"
 ```
 
+<!-- measure: files=sorterr.cpp -->
 ```
-                 from sorterr.cpp:1:
-sorterr.cpp:9:12:   required from here
-sorterr.cpp:9:12:   required from here
-sorterr.cpp:9:12:   required from here
+                 from sorterr.cpp:2:
+sorterr.cpp:10:12:   required from here
+sorterr.cpp:10:12:   required from here
+sorterr.cpp:10:12:   required from here
 ```
 
 **`required from here` tells you "which line of your code is the trigger".**
-It is the `std::sort` on line 9.
+It is the `std::sort` on line 10.
 
 **Step 3: Follow `required from here` from bottom to top.**
 The error appears "deep inside the library", but if you follow the chain of `In instantiation of`,

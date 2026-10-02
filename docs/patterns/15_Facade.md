@@ -477,6 +477,7 @@ if (end == text || errno == ERANGE || value > INT_MAX || value < INT_MIN) {
 出るとしたら何が出るかを当ててください。
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <string>
 
@@ -573,6 +574,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 <details>
 <summary>予想: <code>calib</code> が失敗したとき、<code>link</code> の行は出るか</summary>
 
+<!-- measure: files=try.cpp -->
 ```
 --- 全部成功 ---
   power up
@@ -631,6 +633,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 `main()` からクロック設定のあとに `init()` を呼びます**。
 
 ```cpp
+// mcu.cpp
 #include <cstdio>
 
 namespace
@@ -749,6 +752,7 @@ int main()
 g++ -std=c++17 -Wall -Wextra -Wpedantic -fno-exceptions -fno-rtti mcu.cpp -o mcu && ./mcu
 ```
 
+<!-- measure: files=mcu.cpp -->
 ```
 --- 12.0 V ---
 clock on

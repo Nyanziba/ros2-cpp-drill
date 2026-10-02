@@ -233,6 +233,7 @@ clang++ -std=c++17 -Wall -Wextra -Wpedantic covariant.cpp -o covariant
 
 </details>
 
+<!-- measure: env=clang -->
 ```
 covariant.cpp:22:32: error: virtual function 'create' has a different return type ('unique_ptr<FileProduct>') than the function it overrides (which has return type 'unique_ptr<Product>')
    22 |   std::unique_ptr<FileProduct> create() override { return std::make_unique<FileProduct>(); }
@@ -292,6 +293,7 @@ clang++ -std=c++17 -Wall -Wextra -Wpedantic conv.cpp -o conv
 
 </details>
 
+<!-- measure: env=clang filter="head -n 3; echo ..." -->
 ```
 conv.cpp:7:28: error: no viable conversion from '__libcpp_remove_reference_t<std::unique_ptr<Base, std::default_delete<Base>> &>' (aka 'std::unique_ptr<Base>') to 'std::unique_ptr<Derived>'
     7 |   std::unique_ptr<Derived> d = std::move(b);               // does not compile
@@ -465,6 +467,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 <details>
 <summary>Predict: where does "Logger destroyed" appear? What is <code>created_count</code>?</summary>
 
+<!-- measure: -->
 ```
   [motor] duty=0.5
 Leaving the scope
@@ -587,6 +590,7 @@ int main()
 g++ -std=c++17 -Wall -Wextra -Wpedantic -fno-exceptions micro.cpp -o micro && ./micro
 ```
 
+<!-- measure: -->
 ```
   UART1: boot ok
   3rd: nullptr

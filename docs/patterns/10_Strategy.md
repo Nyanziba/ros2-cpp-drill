@@ -200,6 +200,7 @@ Java 版で `class ClampStrategy implements Strategy { ... }` と 5 行書いて
 `std::function` は中身の型を消して（型消去）保持します。何が入るか分からないので、
 **大きすぎるものはヒープに置きます**。手元で実測した結果です（Apple clang / arm64）。
 
+<!-- measure: env=clang files=try.cpp cmd="g++ -std=c++17 try.cpp -o try && ./try" filter="sed -n '3,5p' | sed -e '2s|$|      ← double 1 個キャプチャ|' -e '3s|$|      ← double 5 個キャプチャ|'" -->
 ```
 sizeof(std::function<double(double)>) = 32
 small ラムダ  : 確保 0 回      ← double 1 個キャプチャ
@@ -290,6 +291,7 @@ clang++ -std=c++17 -O2 -S asm.cpp -o - | grep -E '^_|^[[:space:]]+(ldr|fcmp|fcse
 
 コマンドの出力のうち、関数の本体の命令だけを抜き出しています（`;` 以降の説明は足したものです）。仮想関数版:
 
+<!-- measure: env=clang files=asm.cpp filter="sed -n '1,4p' | sed -e '2s|$|        ; vptr を読む|' -e '3s|$|   ; vtable から apply のアドレスを読む|' -e '4s|$|              ; 間接ジャンプ|'" -->
 ```
 __Z11run_virtualRK6Filterd:             ; @_Z11run_virtualRK6Filterd
 	ldr	x8, [x0]        ; vptr を読む
@@ -299,6 +301,7 @@ __Z11run_virtualRK6Filterd:             ; @_Z11run_virtualRK6Filterd
 
 ポリシー版:
 
+<!-- measure: env=clang files=asm.cpp filter="sed -n '5,9p' | sed -e '2s|$|        ; メンバ m_ を読む|' -e '4s|$|  ; 比較して選ぶだけ。呼び出しが消えている|'" -->
 ```
 __Z10run_policyRK11ClampPolicyd:        ; @_Z10run_policyRK11ClampPolicyd
 	ldr	d1, [x0]        ; メンバ m_ を読む
@@ -313,6 +316,7 @@ __Z10run_policyRK11ClampPolicyd:        ; @_Z10run_policyRK11ClampPolicyd
 
 大きさも違います。
 
+<!-- measure: env=clang files=try.cpp cmd="g++ -std=c++17 try.cpp -o try && ./try" filter="sed -n '1,2p' | sed -e '1s|$|      ← vptr 8 + double 8|' -e '2s|$|       ← double 8|'" -->
 ```
 sizeof(Clamp)        = 16      ← vptr 8 + double 8
 sizeof(ClampPolicy)  = 8       ← double 8
@@ -376,6 +380,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic err.cpp -o err
 
 </details>
 
+<!-- measure: files=err.cpp -->
 ```
 err.cpp: In function ‘int main()’:
 err.cpp:5:26: error: cannot convert ‘main()::<lambda(double)>’ to ‘double (*)(double)’ in initialization
@@ -448,6 +453,7 @@ Deleter をテンプレートにしたおかげで、状態の無い Deleter な
 **予想してから実行してください。**
 
 ```cpp
+// try.cpp
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
@@ -527,6 +533,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 
 手元（Apple clang / arm64）ではこうなりました。
 
+<!-- measure: env=clang files=try.cpp -->
 ```
 sizeof(Clamp)        = 16
 sizeof(ClampPolicy)  = 8

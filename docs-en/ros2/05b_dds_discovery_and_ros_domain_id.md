@@ -95,6 +95,7 @@ ros2 doctor --report
 
 It appears in the `RMW MIDDLEWARE` section.
 
+<!-- measure: env=ros filter="grep -A1 'RMW MIDDLEWARE'" -->
 ```
    RMW MIDDLEWARE
 middleware name    : rmw_fastrtps_cpp
@@ -144,10 +145,12 @@ ros2 node list
 ros2 topic list
 ```
 
+<!-- measure: env=static reason="talker の起動が要り、Docker イメージに demo_nodes_cpp も無い" -->
 ```
 /talker
 ```
 
+<!-- measure: env=static reason="talker の起動が要り、Docker イメージに demo_nodes_cpp も無い" -->
 ```
 /chatter
 /parameter_events
@@ -179,6 +182,7 @@ In terminal 2, look from the **same domain**.
 ROS_DOMAIN_ID=42 ros2 node list
 ```
 
+<!-- measure: env=static reason="talker の起動が要り、Docker イメージに demo_nodes_cpp も無い" -->
 ```
 /talker
 ```
@@ -204,6 +208,7 @@ ss -ulnp | grep "$pid"
 
 This is the actual output when run in domain 42 (an excerpt).
 
+<!-- measure: env=static reason="talker を動かしたまま ss で UDP ポートを見る必要があり、PID も毎回変わる" -->
 ```
 UNCONN 0  0  0.0.0.0:17900  0.0.0.0:*  users:(("talker",pid=155463,fd=26))
 UNCONN 0  0  0.0.0.0:17910  0.0.0.0:*  users:(("talker",pid=155463,fd=25))
@@ -247,6 +252,7 @@ Once you know the formula, you can also derive the upper limit you can specify.
 cat /proc/sys/net/ipv4/ip_local_port_range
 ```
 
+<!-- measure: env=gcc -->
 ```
 32768	60999
 ```
@@ -288,6 +294,7 @@ From terminal 2, look with the same settings.
 ROS_DOMAIN_ID=45 ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST ros2 node list
 ```
 
+<!-- measure: env=static reason="talker の起動が要り、Docker イメージに demo_nodes_cpp も無い" -->
 ```
 /talker
 ```
@@ -304,6 +311,7 @@ If you have two PCs, type `ROS_DOMAIN_ID=45 ros2 node list` on the other one. Th
 ROS_DOMAIN_ID=44 ROS_AUTOMATIC_DISCOVERY_RANGE=OFF ros2 node list
 ```
 
+<!-- measure: env=ros -->
 ```
 Warning: ROS_AUTOMATIC_DISCOVERY_RANGE=OFF with no ROS_STATIC_PEERS configured.
 No discovery mechanism is available. Results will be empty.
@@ -417,12 +425,14 @@ ros2 multicast send
 
 The sender prints this and ends.
 
+<!-- measure: env=static reason="ros2 multicast の送信側と受信側を別プロセスで動かす必要がある" -->
 ```
 Sending one UDP multicast datagram...
 ```
 
 If the receiver shows this, multicast is passing (measured on the same machine).
 
+<!-- measure: env=static reason="ros2 multicast の送信側と受信側を別プロセスで動かす必要があり、受信元の IP とポートも毎回変わる" -->
 ```
 Waiting for UDP multicast datagram...
 Received from 10.28.0.217:37857: 'Hello World!'

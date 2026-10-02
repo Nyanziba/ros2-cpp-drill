@@ -7,6 +7,7 @@
 **関数の中の `static` 変数は、初回の関数呼び出しのときだけ初期化され、その後は値を保ったまま生存する。**
 
 ```cpp
+// static_request_id.cpp
 #include <iostream>
 
 int get_request_id()
@@ -23,8 +24,9 @@ int main()
 }
 ```
 
-[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/oqaK3d54x)
+[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/bM1j8v4Eo)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic static_request_id.cpp -o static_request_id && ./static_request_id" -->
 ```
 1001
 1002
@@ -100,6 +102,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic -c file1.cpp file2.cpp main.cpp && g++ f
 
 </details>
 
+<!-- measure: files=file1.cpp,file2.cpp,main.cpp -->
 ```
 /usr/bin/ld: file2.o:(.bss+0x0): multiple definition of `counter'; file1.o:(.bss+0x0): first defined here
 collect2: error: ld returned 1 exit status
@@ -115,6 +118,7 @@ collect2: error: ld returned 1 exit status
 **`static` メンバは、そのクラスの全インスタンスで共有される単一のオブジェクト。**
 
 ```cpp
+// static_counter.cpp
 #include <iostream>
 
 class Counter
@@ -142,8 +146,9 @@ int main()
 }
 ```
 
-[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/a19n4hYfW)
+[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/9M1rWzeKf)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic static_counter.cpp -o static_counter && ./static_counter" -->
 ```
 0
 1
@@ -189,6 +194,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic -c static_undefined.cpp && g++ static_un
 
 </details>
 
+<!-- measure: -->
 ```
 /usr/bin/ld: static_undefined.o: warning: relocation against `_ZN7Counter6count_E' in read-only section `.text._ZN7Counter9get_totalEv[_ZN7Counter9get_totalEv]'
 /usr/bin/ld: static_undefined.o: in function `Counter::Counter()':
@@ -317,6 +323,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic static_all.cpp -o static_all && ./static
 
 <details markdown="1"><summary>解答（実行結果）</summary>
 
+<!-- measure: -->
 ```
 == static in function ==
 request 1: 1001

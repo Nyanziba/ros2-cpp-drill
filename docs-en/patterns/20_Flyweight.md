@@ -137,6 +137,7 @@ Nothing is released until the pool dies.
 
 You can see it with `use_count`. Try it yourself (the code in 20.4).
 
+<!-- measure: env=static cmd=- reason="Excerpt (first half) of the output of try.cpp in 20.4. The program comes after this block and a marker cannot refer forward (the full output is measured at 20.4)" -->
 ```
 [strong]
   + Table(gyro)
@@ -172,6 +173,7 @@ Handle get(const std::string & model_id)
 
 This is the output of the second half of the same program.
 
+<!-- measure: env=static cmd=- reason="Excerpt (second half) of the output of try.cpp in 20.4. The program comes after this block and a marker cannot refer forward (the full output is measured at 20.4)" -->
 ```
 [weak]
   + Table(gyro)
@@ -267,6 +269,7 @@ The Java version protects this with conventions and comments. C++ can protect it
 Check the story of 20.2 with your own eyes, using `use_count` and the destructor.
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <map>
 #include <memory>
@@ -362,6 +365,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 
 This is the actual output.
 
+<!-- measure: -->
 ```
 [strong]
   + Table(gyro)
@@ -542,6 +546,7 @@ You pay time to save memory, so you cannot know whether you really gain without 
 What you use instead is `constexpr`. **Put the immutable thing you want to share in ROM.**
 
 ```cpp
+// rom.cpp
 #include <cstdio>
 #include <string_view>
 
@@ -588,6 +593,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic rom.cpp -o rom && ./rom
 
 This is the output.
 
+<!-- measure: filter="tail -n 2" -->
 ```
 sizeof(kRom) = 128
 offset = -40.000000

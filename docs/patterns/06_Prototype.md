@@ -147,6 +147,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic covariant_clone.cpp -o covariant_clone
 
 </details>
 
+<!-- measure: -->
 ```
 covariant_clone.cpp:13:30: error: invalid covariant return type for ‘virtual std::unique_ptr<SineSweep> SineSweep::clone() const’
    13 |   std::unique_ptr<SineSweep> clone() const override    // ここ
@@ -291,6 +292,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic abstract_slicing.cpp -o abstract_slicing
 
 </details>
 
+<!-- measure: -->
 ```
 abstract_slicing.cpp: In function ‘int main()’:
 abstract_slicing.cpp:18:21: error: cannot allocate an object of abstract type ‘Waveform’
@@ -481,6 +483,7 @@ Java の `=` に一番近いのはこちらです。「Java のつもり」で�
 スライシングと `clone()` を並べます。**出力を予想してから**実行してください。
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <memory>
 #include <string>
@@ -532,6 +535,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 <details>
 <summary>予想: <code>sliced.name()</code> は何を返すか。警告は出るか</summary>
 
+<!-- measure: files=try.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try" -->
 ```
 sliced: Waveform
 clone : SineSweep

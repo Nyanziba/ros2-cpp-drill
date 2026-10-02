@@ -146,6 +146,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic covariant_clone.cpp -o covariant_clone
 
 </details>
 
+<!-- measure: -->
 ```
 covariant_clone.cpp:13:30: error: invalid covariant return type for ‘virtual std::unique_ptr<SineSweep> SineSweep::clone() const’
    13 |   std::unique_ptr<SineSweep> clone() const override    // here
@@ -290,6 +291,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic abstract_slicing.cpp -o abstract_slicing
 
 </details>
 
+<!-- measure: -->
 ```
 abstract_slicing.cpp: In function ‘int main()’:
 abstract_slicing.cpp:18:21: error: cannot allocate an object of abstract type ‘Waveform’
@@ -481,6 +483,7 @@ so make it clear every time whether you want to **copy or share**.
 We put slicing and `clone()` side by side. **Predict the output** before you run it.
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <memory>
 #include <string>
@@ -532,6 +535,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 <details>
 <summary>Predict: What does <code>sliced.name()</code> return? Is there a warning?</summary>
 
+<!-- measure: files=try.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try" -->
 ```
 sliced: Waveform
 clone : SineSweep

@@ -63,6 +63,7 @@ Let us look at four representative ones.
 ros2 interface show sensor_msgs/msg/LaserScan
 ```
 
+<!-- measure: env=ros filter="sed 's/ *#.*//' | grep -v -e '^$' -e '^[[:space:]]' " -->
 ```
 std_msgs/Header header
 float32 angle_min
@@ -88,6 +89,7 @@ ros2 interface show sensor_msgs/msg/PointCloud2
 ros2 interface show sensor_msgs/msg/Imu
 ```
 
+<!-- measure: env=ros filter="sed 's/ *#.*//' | grep -v -e '^$' -e '^[[:space:]]' " -->
 ```
 std_msgs/Header header
 geometry_msgs/Quaternion orientation

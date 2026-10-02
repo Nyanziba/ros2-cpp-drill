@@ -114,6 +114,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic delete_warning.cpp -o delete_warning
 
 </details>
 
+<!-- measure: -->
 ```
 delete_warning.cpp: In function ‘int main()’:
 delete_warning.cpp:8:3: warning: deleting object of abstract class type ‘MotorActuator’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
@@ -250,6 +251,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic diamond.cpp -o diamond
 
 </details>
 
+<!-- measure: -->
 ```
 diamond.cpp: In function ‘int main()’:
 diamond.cpp:16:16: error: ‘Device’ is an ambiguous base of ‘Adapter’
@@ -310,6 +312,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic name_clash.cpp -o name_clash
 
 </details>
 
+<!-- measure: -->
 ```
 name_clash.cpp: In function ‘int main()’:
 name_clash.cpp:13:5: error: request for member ‘reset’ is ambiguous
@@ -389,6 +392,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic slicing.cpp -o slicing
 
 </details>
 
+<!-- measure: -->
 ```
 slicing.cpp: In function ‘int main()’:
 slicing.cpp:14:7: error: ‘LegacyDriver’ is an inaccessible base of ‘PrivateAdapter’
@@ -504,6 +508,7 @@ std::stack<int> s;
 課題を解く前に、この 1 ファイルをコンパイルして**出力を予想してから**実行してください。
 
 ```cpp
+// try.cpp
 #include <deque>
 #include <iostream>
 #include <stack>
@@ -589,6 +594,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try_range.cpp -o try_range
 <details>
 <summary>予想: 3 行の出力は何か。そして最後のコメントを外すと何が起きるか</summary>
 
+<!-- measure: files=try.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try" -->
 ```
 3 3
 3 3
@@ -601,6 +607,7 @@ Adaptee を差し替えても Target が変わらない、これが Adapter で�
 
 最後のコメントを外すとこうなります。
 
+<!-- measure: filter="head -n 4; echo ..." -->
 ```
 try_range.cpp: In function ‘int main()’:
 try_range.cpp:31:16: error: no matching function for call to ‘begin(std::stack<int>&)’
@@ -714,6 +721,7 @@ RAM が 20 KB のマイコンで、これを 20 箇所でやると効いてき�
 代わりに、**型ではなく名前で揃えます**。テンプレートの委譲 Adapter です。
 
 ```cpp
+// micro.cpp
 #include <cstdint>
 
 // 既存の生ドライバ（変更不可）

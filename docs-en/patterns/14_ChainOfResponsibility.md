@@ -382,6 +382,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic cycle.cpp -o cycle && ./cycle
 
 </details>
 
+<!-- measure: files=cycle.cpp -->
 ```
 straight: 0
 cyclic:   1
@@ -447,6 +448,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic self_owned.cpp -o self_owned && ./self_o
 
 </details>
 
+<!-- measure: files=self_owned.cpp -->
 ```
 head is null
 --- leaving main ---
@@ -503,6 +505,7 @@ Before you solve the exercise, compile this one file and **predict the output** 
 In particular, guess the **order** of the `dtor` lines that appear at the final `head.reset()`.
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <memory>
 #include <optional>
@@ -573,6 +576,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 <details>
 <summary>Predict: does <code>dtor</code> run from the head or from the tail</summary>
 
+<!-- measure: files=try.cpp -->
 ```
 ctor low_voltage
 ctor over_current
@@ -595,6 +599,7 @@ Remember the order of the destructor body and member destruction.
 
 One more thing. If you change `return *next_;` in `set_next` to `return *this;`, you get this.
 
+<!-- measure: files=try.cpp cmd="sed 's/return \*next_;/return *this;/' try.cpp > try_this.cpp && g++ -std=c++17 -Wall -Wextra -Wpedantic try_this.cpp -o try_this && ./try_this" -->
 ```
 ctor low_voltage
 ctor over_current
@@ -851,6 +856,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic -fno-exceptions -fno-rtti mcu.cpp -o mcu
 
 </details>
 
+<!-- measure: files=mcu.cpp -->
 ```
 low_voltage -> reduce_duty
 over_current -> cut_output
