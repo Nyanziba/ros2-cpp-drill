@@ -332,16 +332,14 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic incomplete.cpp -o incomplete
 
 </details>
 
-This is the output measured with Apple clang 21 on macOS.
-
 ```
-incomplete.cpp:7:36: error: member access into incomplete type 'PanelMediator'
+incomplete.cpp: In member function ‘void PanelWidget::notify_changed()’:
+incomplete.cpp:7:36: error: invalid use of incomplete type ‘class PanelMediator’
     7 |   void notify_changed() { mediator_->widget_changed(this); }
-      |                                    ^
-incomplete.cpp:2:7: note: forward declaration of 'PanelMediator'
+      |                                    ^~
+incomplete.cpp:2:7: note: forward declaration of ‘class PanelMediator’
     2 | class PanelMediator;
-      |       ^
-1 error generated.
+      |       ^~~~~~~~~~~~~
 ```
 
 For two classes that refer to each other, **you must push the implementation of one of them out to the `.cpp`**.

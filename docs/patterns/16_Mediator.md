@@ -332,16 +332,14 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic incomplete.cpp -o incomplete
 
 </details>
 
-macOS の Apple clang 21 で実測した出力です。
-
 ```
-incomplete.cpp:7:36: error: member access into incomplete type 'PanelMediator'
+incomplete.cpp: In member function ‘void PanelWidget::notify_changed()’:
+incomplete.cpp:7:36: error: invalid use of incomplete type ‘class PanelMediator’
     7 |   void notify_changed() { mediator_->widget_changed(this); }
-      |                                    ^
-incomplete.cpp:2:7: note: forward declaration of 'PanelMediator'
+      |                                    ^~
+incomplete.cpp:2:7: note: forward declaration of ‘class PanelMediator’
     2 | class PanelMediator;
-      |       ^
-1 error generated.
+      |       ^~~~~~~~~~~~~
 ```
 
 相互参照する 2 つのクラスは、**片方の実装を必ず `.cpp` に追い出す**ことになります。

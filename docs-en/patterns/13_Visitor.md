@@ -189,22 +189,29 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic base_accept.cpp -o base_accept
 
 </details>
 
-This is the output measured with Apple clang 21 on macOS (the SDK path is abbreviated to `/.../`).
-
 ```
-base_accept.cpp:21:54: error: no matching member function for call to 'visit'
+base_accept.cpp: In member function ‘void DiagNode::accept(DiagVisitor&) const’:
+base_accept.cpp:21:59: error: no matching function for call to ‘DiagVisitor::visit(const DiagNode&)’
    21 |   void accept(DiagVisitor & visitor) const { visitor.visit(*this); }   // one in the base
-      |                                              ~~~~~~~~^~~~~
-base_accept.cpp:13:16: note: candidate function not viable: no known conversion from 'const DiagNode' to 'const SensorCheck' for 1st argument
+      |                                              ~~~~~~~~~~~~~^~~~~~~
+base_accept.cpp:13:16: note: candidate: ‘virtual void DiagVisitor::visit(const SensorCheck&)’
    13 |   virtual void visit(const SensorCheck & node) = 0;    // Change 2
-      |                ^     ~~~~~~~~~~~~~~~~~~~~~~~~
-base_accept.cpp:14:16: note: candidate function not viable: no known conversion from 'const DiagNode' to 'const MotorCheck' for 1st argument
+      |                ^~~~~
+base_accept.cpp:13:42: note:   no known conversion for argument 1 from ‘const DiagNode’ to ‘const SensorCheck&’
+   13 |   virtual void visit(const SensorCheck & node) = 0;    // Change 2
+      |                      ~~~~~~~~~~~~~~~~~~~~^~~~
+base_accept.cpp:14:16: note: candidate: ‘virtual void DiagVisitor::visit(const MotorCheck&)’
    14 |   virtual void visit(const MotorCheck & node) = 0;
-      |                ^     ~~~~~~~~~~~~~~~~~~~~~~~
-base_accept.cpp:15:16: note: candidate function not viable: no known conversion from 'const DiagNode' to 'const CheckGroup' for 1st argument
+      |                ^~~~~
+base_accept.cpp:14:41: note:   no known conversion for argument 1 from ‘const DiagNode’ to ‘const MotorCheck&’
+   14 |   virtual void visit(const MotorCheck & node) = 0;
+      |                      ~~~~~~~~~~~~~~~~~~~^~~~
+base_accept.cpp:15:16: note: candidate: ‘virtual void DiagVisitor::visit(const CheckGroup&)’
    15 |   virtual void visit(const CheckGroup & node) = 0;
-      |                ^     ~~~~~~~~~~~~~~~~~~~~~~~
-1 error generated.
+      |                ^~~~~
+base_accept.cpp:15:41: note:   no known conversion for argument 1 from ‘const DiagNode’ to ‘const CheckGroup&’
+   15 |   virtual void visit(const CheckGroup & node) = 0;
+      |                      ~~~~~~~~~~~~~~~~~~~^~~~
 ```
 
 This is because **inside the base class, `*this` is a `DiagNode`**.
@@ -316,16 +323,14 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic -fno-rtti rtti.cpp -o rtti
 
 </details>
 
-This is the output measured with Apple clang 21 on macOS (the SDK path is abbreviated to `/.../`).
-
 ```
-rtti.cpp:13:37: error: use of dynamic_cast requires -frtti
+rtti.cpp: In function ‘void report(const DiagNode&)’:
+rtti.cpp:13:37: error: ‘dynamic_cast’ not permitted with ‘-fno-rtti’
    13 |   if (const SensorCheck * const s = dynamic_cast<const SensorCheck *>(&node)) { /* ... */ }
-      |                                     ^
-rtti.cpp:14:41: error: use of dynamic_cast requires -frtti
+      |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rtti.cpp:14:41: error: ‘dynamic_cast’ not permitted with ‘-fno-rtti’
    14 |   else if (const MotorCheck * const m = dynamic_cast<const MotorCheck *>(&node)) { /* ... */ }
-      |                                         ^
-2 errors generated.
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ```
 
 **Number 1 is the essence.** The one point where Visitor beats a chain of `dynamic_cast` is this:
@@ -420,19 +425,26 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic no_guide.cpp -o no_guide
 
 </details>
 
-This is the output measured with Apple clang 21 on macOS (the SDK path is abbreviated to `/.../`).
-
 ```
-no_guide.cpp:24:5: error: no viable constructor or deduction guide for deduction of template arguments of 'overloaded'
-   24 |     overloaded{
-      |     ^
-no_guide.cpp:12:8: note: candidate function template not viable: requires 1 argument, but 2 were provided
+no_guide.cpp: In function ‘int main()’:
+no_guide.cpp:26:89: error: class template argument deduction failed:
+   26 |       [](const MotorSample & m) { std::cout << "motor fault=" << m.fault_bits << "\n"; }},
+      |                                                                                         ^
+no_guide.cpp:26:89: error: no matching function for call to ‘overloaded(main()::<lambda(const SensorSample&)>, main()::<lambda(const MotorSample&)>)’
+no_guide.cpp:12:8: note: candidate: ‘template<class ... Ts> overloaded()-> overloaded<Ts>’
    12 | struct overloaded : Ts ...
       |        ^~~~~~~~~~
-no_guide.cpp:12:8: note: implicit deduction guide declared as 'template <class ...Ts> overloaded(overloaded<Ts...>) -> overloaded<Ts...>'
-no_guide.cpp:12:8: note: candidate function template not viable: requires 0 arguments, but 2 were provided
-no_guide.cpp:12:8: note: implicit deduction guide declared as 'template <class ...Ts> overloaded() -> overloaded<Ts...>'
-1 error generated.
+no_guide.cpp:12:8: note:   template argument deduction/substitution failed:
+no_guide.cpp:26:89: note:   candidate expects 0 arguments, 2 provided
+   26 |       [](const MotorSample & m) { std::cout << "motor fault=" << m.fault_bits << "\n"; }},
+      |                                                                                         ^
+no_guide.cpp:12:8: note: candidate: ‘template<class ... Ts> overloaded(overloaded<Ts>)-> overloaded<Ts>’
+   12 | struct overloaded : Ts ...
+      |        ^~~~~~~~~~
+no_guide.cpp:12:8: note:   template argument deduction/substitution failed:
+no_guide.cpp:26:89: note:   ‘main()::<lambda(const SensorSample&)>’ is not derived from ‘overloaded<Ts>’
+   26 |       [](const MotorSample & m) { std::cout << "motor fault=" << m.fault_bits << "\n"; }},
+      |                                                                                         ^
 ```
 
 C++20 added CTAD for aggregates, so the deduction guide is not needed.
@@ -483,13 +495,14 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic not_exhaustive.cpp -o not_exhaustive 2>&
 
 </details>
 
-Measured with Apple clang 21 on macOS. There are 4 errors and the output runs to dozens of lines, so `grep -m1` in the command extracts only the first `error:` line (the SDK path is abbreviated to `/.../`).
+There are 5 errors and the output runs to dozens of lines, so `grep -m1` in the command extracts only the first `error:` line.
 
 ```
-/.../c++/v1/variant:612:19: error: static assertion failed due to requirement 'is_invocable_v<overloaded<(lambda at not_exhaustive.cpp:25:7), (lambda at not_exhaustive.cpp:26:7)>, const EncoderV &>': `std::visit` requires the visitor to be exhaustive.
+/usr/include/c++/13/type_traits:3073:11: error: no type named ‘type’ in ‘struct std::invoke_result<overloaded<main()::<lambda(const SensorV&)>, main()::<lambda(const MotorV&)> >, const EncoderV&>’
 ```
 
-**it fails with an error that says "the visitor is not exhaustive".**
+**it fails with an error that names the type it could not call.** It says there is no lambda that accepts `const EncoderV &`.
+(With clang's libc++ the message even says `requires the visitor to be exhaustive`.)
 When you add a kind, **the compiler lists every `std::visit` call you need to fix**.
 It is exactly the same effect as when adding a pure virtual `visit` in the GoF version makes every visitor fail.
 The difference is that **you did not write a single inheritance hierarchy for it**.
@@ -693,7 +706,7 @@ The last 8 bytes are the result of aligning "a 4-byte member + a discriminator".
 To go further, delete one lambda in the second half.
 
 ```
-/.../c++/v1/variant:612:19: error: static assertion failed due to requirement 'is_invocable_v<overloaded<(lambda at try_missing.cpp:44:9)>, const MotorV &>': `std::visit` requires the visitor to be exhaustive.
+/usr/include/c++/13/type_traits:3073:11: error: no type named ‘type’ in ‘struct std::invoke_result<overloaded<main()::<lambda(const SensorV&)> >, const MotorV&>’
 ```
 
 You can confirm that **forgetting a case becomes a compile error**.
@@ -778,15 +791,15 @@ The kinds are fixed there too, so `std::variant` is the first candidate.
 
 | Symptom | Cause |
 | --- | --- |
-| `error: no matching member function for call to 'visit'` | You wrote only one `accept` in the base class. `*this` is a `DiagNode` (13.2) |
+| `error: no matching function for call to ‘DiagVisitor::visit(const DiagNode&)’` | You wrote only one `accept` in the base class. `*this` is a `DiagNode` (13.2) |
 | Through a base pointer, everything gets the same processing | `accept` is not `virtual`. Overloads are chosen by the static type |
 | The element is copied on every visit | The parameter of `visit` is a value, not `const Derived &` |
 | Derived-only members cannot be read or their values are broken | You take a base-type value like `visit(DiagNode node)` (slicing) |
 | Every visitor failed after I added one kind | **Normal.** That is the benefit of Visitor (13.4) |
-| `error: no viable constructor or deduction guide ... 'overloaded'` | You did not write the deduction guide (required in C++17) |
-| ``error: ... `std::visit` requires the visitor to be exhaustive.`` | One lambda is missing. Write all kinds of the variant |
+| `error: class template argument deduction failed` | You did not write the deduction guide (required in C++17) |
+| `error: no type named ‘type’ in ‘struct std::invoke_result<overloaded<...>, const EncoderV&>’` | One lambda is missing. Write all kinds of the variant |
 | A lambda cannot call itself recursively | A lambda does not know its own name. Make a named function and call `std::visit` inside it |
-| `error: use of dynamic_cast requires -frtti` | You used `dynamic_cast` in a `-fno-rtti` build (13.5) |
+| `error: ‘dynamic_cast’ not permitted with ‘-fno-rtti’` | You used `dynamic_cast` in a `-fno-rtti` build (13.5) |
 | `std::get` caused `abort()` on a microcontroller | It cannot throw with `-fno-exceptions`. Use `std::get_if` (13.9) |
 | The variant is oddly large | Everyone is sized to the largest member. Move only the large type to `unique_ptr` |
 
@@ -820,7 +833,7 @@ and that the variant types satisfy `static_assert(!std::is_polymorphic_v<...>)`
   Decide the direction of growth first, then choose
 - A chain of `dynamic_cast` **compiles even if you forget a case**. It also needs RTTI. It is worse than Visitor
 - **C++17 has `std::variant` + `std::visit`.** It needs no inheritance, no virtual functions, and no `accept`, and
-  exhaustiveness is guaranteed at compile time (`requires the visitor to be exhaustive`)
+  exhaustiveness is guaranteed at compile time (if a case is missing, it fails with a `std::invoke_result` error)
 - The `overloaded` idiom is not in the standard. **Write it yourself, including the deduction guide** (C++17)
 - If the kinds are fixed, use variant. If you want to extend at runtime, use the GoF version
 - **On microcontrollers, variant is the main choice.** It uses no heap and no vtable.

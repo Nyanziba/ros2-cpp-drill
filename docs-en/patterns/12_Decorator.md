@@ -152,16 +152,16 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic copy_inner.cpp -o copy_inner
 
 </details>
 
-This is the output measured with Apple clang 21 on macOS (the SDK path is abbreviated to `/.../`).
-
 ```
-copy_inner.cpp:17:5: error: call to implicitly-deleted copy constructor of 'std::unique_ptr<LogSink>'
+copy_inner.cpp: In constructor ‘SinkDecorator::SinkDecorator(std::unique_ptr<LogSink>)’:
+copy_inner.cpp:17:5: error: use of deleted function ‘std::unique_ptr<_Tp, _Dp>::unique_ptr(const std::unique_ptr<_Tp, _Dp>&) [with _Tp = LogSink; _Dp = std::default_delete<LogSink>]’
    17 |   : inner_(inner)                                          // forgot std::move
-      |     ^      ~~~~~
-/.../c++/v1/__memory/unique_ptr.h:209:55: note: copy constructor is implicitly deleted because 'unique_ptr<LogSink>' has a user-declared move constructor
-  209 |   _LIBCPP_HIDE_FROM_ABI _LIBCPP_CONSTEXPR_SINCE_CXX23 unique_ptr(unique_ptr&& __u) _NOEXCEPT
-      |                                                       ^
-1 error generated.
+      |     ^~~~~~~~~~~~~
+In file included from /usr/include/c++/13/memory:78,
+                 from copy_inner.cpp:2:
+/usr/include/c++/13/bits/unique_ptr.h:522:7: note: declared here
+  522 |       unique_ptr(const unique_ptr&) = delete;
+      |       ^~~~~~~~~~
 ```
 
 Receiving it as `const std::unique_ptr<LogSink> &` is **wrong.**
@@ -235,7 +235,7 @@ public:
 };
 ```
 
-Apple clang 21 warns at compile time (`-Wall -Wextra -Wpedantic`).
+g++ 13.3 does not warn at compile time with `-Wall -Wextra -Wpedantic`.
 
 <details markdown="1"><summary>Full program that produced this output</summary>
 
@@ -295,25 +295,28 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic novirt.cpp -o novirt 2>&1 | grep 'warnin
 
 </details>
 
-Extracting only the warning lines gives this (the SDK path is abbreviated to `/.../`).
+`grep 'warning:'` in the command prints nothing. The `delete` inside `unique_ptr` happens inside a standard library header, so g++ suppresses the warning.
+If you add `-Wnon-virtual-dtor`, a warning appears on the class declaration (only the first line is excerpted).
+
+```bash
+g++ -std=c++17 -Wnon-virtual-dtor novirt.cpp -o novirt 2>&1 | grep -m1 'warning:'
+```
 
 ```
-/.../c++/v1/__memory/unique_ptr.h:75:5: warning: delete called on 'Sink' that is abstract but has non-virtual destructor [-Wdelete-abstract-non-virtual-dtor]
-/.../c++/v1/__memory/unique_ptr.h:75:5: warning: delete called on non-final 'Plain' that has virtual functions but non-virtual destructor [-Wdelete-non-abstract-non-virtual-dtor]
-/.../c++/v1/__memory/unique_ptr.h:75:5: warning: delete called on non-final 'Border' that has virtual functions but non-virtual destructor [-Wdelete-non-abstract-non-virtual-dtor]
+novirt.cpp:7:7: warning: ‘class Sink’ has virtual functions and accessible non-virtual destructor [-Wnon-virtual-dtor]
 ```
 
-And when I ran it on my machine (zsh on macOS), it printed the result of `format()` on one line and then crashed with exit code 133 (`SIGTRAP`).
+And when you run it, **it did not crash**. It printed the result of `format()` on one line and exited with code 0.
+But neither `~Border` nor `~Plain` is printed even once. The inside was never destroyed.
 
 ```
 12:00:00 [INFO] moving
-zsh: trace trap  ./novirt
-exit code 133
+exit code 0
 ```
 
-If you send the output to a pipe or a file, it crashes before the buffer is flushed, so even the output of `format()` does not appear.
+If you build with `-fsanitize=address` and run it, it stops with `new-delete-type-mismatch` (48 bytes were allocated, but the deleted type is 8 bytes).
 **It is undefined behavior, so what happens depends on the environment.**
-If you are lucky it crashes, and if you are unlucky it silently keeps leaking only the inside.
+If you are lucky it crashes, and if you are unlucky it silently keeps leaking only the inside. With g++ it was the latter.
 
 The reasoning is this. The outer object is held by `std::unique_ptr<Sink>`,
 so only `~Sink()` is called at release. `~Border()` is not called

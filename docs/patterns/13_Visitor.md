@@ -189,22 +189,29 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic base_accept.cpp -o base_accept
 
 </details>
 
-macOS の Apple clang 21 で実測した出力です（SDK のパスは `/.../` に省略しています）。
-
 ```
-base_accept.cpp:21:54: error: no matching member function for call to 'visit'
+base_accept.cpp: In member function ‘void DiagNode::accept(DiagVisitor&) const’:
+base_accept.cpp:21:59: error: no matching function for call to ‘DiagVisitor::visit(const DiagNode&)’
    21 |   void accept(DiagVisitor & visitor) const { visitor.visit(*this); }   // 基底に 1 個
-      |                                              ~~~~~~~~^~~~~
-base_accept.cpp:13:16: note: candidate function not viable: no known conversion from 'const DiagNode' to 'const SensorCheck' for 1st argument
+      |                                              ~~~~~~~~~~~~~^~~~~~~
+base_accept.cpp:13:16: note: candidate: ‘virtual void DiagVisitor::visit(const SensorCheck&)’
    13 |   virtual void visit(const SensorCheck & node) = 0;    // 変更点2
-      |                ^     ~~~~~~~~~~~~~~~~~~~~~~~~
-base_accept.cpp:14:16: note: candidate function not viable: no known conversion from 'const DiagNode' to 'const MotorCheck' for 1st argument
+      |                ^~~~~
+base_accept.cpp:13:42: note:   no known conversion for argument 1 from ‘const DiagNode’ to ‘const SensorCheck&’
+   13 |   virtual void visit(const SensorCheck & node) = 0;    // 変更点2
+      |                      ~~~~~~~~~~~~~~~~~~~~^~~~
+base_accept.cpp:14:16: note: candidate: ‘virtual void DiagVisitor::visit(const MotorCheck&)’
    14 |   virtual void visit(const MotorCheck & node) = 0;
-      |                ^     ~~~~~~~~~~~~~~~~~~~~~~~
-base_accept.cpp:15:16: note: candidate function not viable: no known conversion from 'const DiagNode' to 'const CheckGroup' for 1st argument
+      |                ^~~~~
+base_accept.cpp:14:41: note:   no known conversion for argument 1 from ‘const DiagNode’ to ‘const MotorCheck&’
+   14 |   virtual void visit(const MotorCheck & node) = 0;
+      |                      ~~~~~~~~~~~~~~~~~~~^~~~
+base_accept.cpp:15:16: note: candidate: ‘virtual void DiagVisitor::visit(const CheckGroup&)’
    15 |   virtual void visit(const CheckGroup & node) = 0;
-      |                ^     ~~~~~~~~~~~~~~~~~~~~~~~
-1 error generated.
+      |                ^~~~~
+base_accept.cpp:15:41: note:   no known conversion for argument 1 from ‘const DiagNode’ to ‘const CheckGroup&’
+   15 |   virtual void visit(const CheckGroup & node) = 0;
+      |                      ~~~~~~~~~~~~~~~~~~~^~~~
 ```
 
 **基底の中では `*this` は `DiagNode` だから**です。
@@ -316,16 +323,14 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic -fno-rtti rtti.cpp -o rtti
 
 </details>
 
-macOS の Apple clang 21 で実測した出力です（SDK のパスは `/.../` に省略しています）。
-
 ```
-rtti.cpp:13:37: error: use of dynamic_cast requires -frtti
+rtti.cpp: In function ‘void report(const DiagNode&)’:
+rtti.cpp:13:37: error: ‘dynamic_cast’ not permitted with ‘-fno-rtti’
    13 |   if (const SensorCheck * const s = dynamic_cast<const SensorCheck *>(&node)) { /* ... */ }
-      |                                     ^
-rtti.cpp:14:41: error: use of dynamic_cast requires -frtti
+      |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rtti.cpp:14:41: error: ‘dynamic_cast’ not permitted with ‘-fno-rtti’
    14 |   else if (const MotorCheck * const m = dynamic_cast<const MotorCheck *>(&node)) { /* ... */ }
-      |                                         ^
-2 errors generated.
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ```
 
 **1 番が本質です。** Visitor が `dynamic_cast` の連鎖に勝っているのは、
@@ -420,19 +425,26 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic no_guide.cpp -o no_guide
 
 </details>
 
-macOS の Apple clang 21 で実測した出力です（SDK のパスは `/.../` に省略しています）。
-
 ```
-no_guide.cpp:24:5: error: no viable constructor or deduction guide for deduction of template arguments of 'overloaded'
-   24 |     overloaded{
-      |     ^
-no_guide.cpp:12:8: note: candidate function template not viable: requires 1 argument, but 2 were provided
+no_guide.cpp: In function ‘int main()’:
+no_guide.cpp:26:89: error: class template argument deduction failed:
+   26 |       [](const MotorSample & m) { std::cout << "motor fault=" << m.fault_bits << "\n"; }},
+      |                                                                                         ^
+no_guide.cpp:26:89: error: no matching function for call to ‘overloaded(main()::<lambda(const SensorSample&)>, main()::<lambda(const MotorSample&)>)’
+no_guide.cpp:12:8: note: candidate: ‘template<class ... Ts> overloaded()-> overloaded<Ts>’
    12 | struct overloaded : Ts ...
       |        ^~~~~~~~~~
-no_guide.cpp:12:8: note: implicit deduction guide declared as 'template <class ...Ts> overloaded(overloaded<Ts...>) -> overloaded<Ts...>'
-no_guide.cpp:12:8: note: candidate function template not viable: requires 0 arguments, but 2 were provided
-no_guide.cpp:12:8: note: implicit deduction guide declared as 'template <class ...Ts> overloaded() -> overloaded<Ts...>'
-1 error generated.
+no_guide.cpp:12:8: note:   template argument deduction/substitution failed:
+no_guide.cpp:26:89: note:   candidate expects 0 arguments, 2 provided
+   26 |       [](const MotorSample & m) { std::cout << "motor fault=" << m.fault_bits << "\n"; }},
+      |                                                                                         ^
+no_guide.cpp:12:8: note: candidate: ‘template<class ... Ts> overloaded(overloaded<Ts>)-> overloaded<Ts>’
+   12 | struct overloaded : Ts ...
+      |        ^~~~~~~~~~
+no_guide.cpp:12:8: note:   template argument deduction/substitution failed:
+no_guide.cpp:26:89: note:   ‘main()::<lambda(const SensorSample&)>’ is not derived from ‘overloaded<Ts>’
+   26 |       [](const MotorSample & m) { std::cout << "motor fault=" << m.fault_bits << "\n"; }},
+      |                                                                                         ^
 ```
 
 C++20 では集成体の CTAD が入ったので推論ガイドは要りません。
@@ -483,13 +495,14 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic not_exhaustive.cpp -o not_exhaustive 2>&
 
 </details>
 
-macOS の Apple clang 21 で実測しました。エラーは 4 件で数十行続くので、コマンドの `grep -m1` で最初の `error:` の行だけを抜き出しています（SDK のパスは `/.../` に省略しています）。
+エラーは 5 件で数十行続くので、コマンドの `grep -m1` で最初の `error:` の行だけを抜き出しています。
 
 ```
-/.../c++/v1/variant:612:19: error: static assertion failed due to requirement 'is_invocable_v<overloaded<(lambda at not_exhaustive.cpp:25:7), (lambda at not_exhaustive.cpp:26:7)>, const EncoderV &>': `std::visit` requires the visitor to be exhaustive.
+/usr/include/c++/13/type_traits:3073:11: error: no type named ‘type’ in ‘struct std::invoke_result<overloaded<main()::<lambda(const SensorV&)>, main()::<lambda(const MotorV&)> >, const EncoderV&>’
 ```
 
-**「訪問者が網羅的でない」と名指しで落ちます。**
+**呼べなかった型を名指しして落ちます。** `const EncoderV &` を受けるラムダが無い、というエラーです。
+（clang の libc++ では `requires the visitor to be exhaustive` という文言まで付きます。）
 種類を増やしたら、直すべき `std::visit` の呼び出し箇所を**コンパイラが全部挙げてくれます**。
 GoF 版で純粋仮想 `visit` を足したときに全訪問者が落ちるのと、まったく同じ効果です。
 違うのは、**そのために継承階層を 1 つも書いていない**ことです。
@@ -693,7 +706,7 @@ sizeof(NodeV) = 8
 さらに試すなら、後半のラムダを 1 つ消してみてください。
 
 ```
-/.../c++/v1/variant:612:19: error: static assertion failed due to requirement 'is_invocable_v<overloaded<(lambda at try_missing.cpp:44:9)>, const MotorV &>': `std::visit` requires the visitor to be exhaustive.
+/usr/include/c++/13/type_traits:3073:11: error: no type named ‘type’ in ‘struct std::invoke_result<overloaded<main()::<lambda(const SensorV&)> >, const MotorV&>’
 ```
 
 **書き忘れがコンパイルエラーになる**ことが確認できます。
@@ -778,15 +791,15 @@ ROS 2 側で Visitor を書くとしたら、**受信フレームを自作パー
 
 | 症状 | 原因 |
 | --- | --- |
-| `error: no matching member function for call to 'visit'` | `accept` を基底クラスに 1 個だけ書いた。`*this` が `DiagNode` になっている（13.2） |
+| `error: no matching function for call to ‘DiagVisitor::visit(const DiagNode&)’` | `accept` を基底クラスに 1 個だけ書いた。`*this` が `DiagNode` になっている（13.2） |
 | 基底ポインタ経由だと全部同じ処理になる | `accept` が `virtual` でない。オーバーロードは静的型で決まる |
 | 訪問のたびに要素がコピーされる | `visit` の引数が `const Derived &` でなく値になっている |
 | 派生固有のメンバが読めない・値が壊れる | `visit(DiagNode node)` と基底型の値で受けている（スライシング） |
 | 種類を 1 つ足したら訪問者が全部落ちた | **正常**。それが Visitor の効能（13.4） |
-| `error: no viable constructor or deduction guide ... 'overloaded'` | 推論ガイドを書いていない（C++17 では必須） |
-| ``error: ... `std::visit` requires the visitor to be exhaustive.`` | ラムダが 1 つ足りない。variant の種類を全部書く |
+| `error: class template argument deduction failed` | 推論ガイドを書いていない（C++17 では必須） |
+| `error: no type named ‘type’ in ‘struct std::invoke_result<overloaded<...>, const EncoderV&>’` | ラムダが 1 つ足りない。variant の種類を全部書く |
 | ラムダの中から自分を再帰呼び出しできない | ラムダは自分の名前を知らない。名前付き関数を作ってその中で `std::visit` する |
-| `error: use of dynamic_cast requires -frtti` | `-fno-rtti` のビルドで `dynamic_cast` を使った（13.5） |
+| `error: ‘dynamic_cast’ not permitted with ‘-fno-rtti’` | `-fno-rtti` のビルドで `dynamic_cast` を使った（13.5） |
 | マイコンで `std::get` を使ったら `abort()` した | `-fno-exceptions` で throw できない。`std::get_if` を使う（13.9） |
 | variant のサイズが妙に大きい | 一番大きいメンバに全員が合わせられている。大きい型だけ `unique_ptr` に逃がす |
 
@@ -820,7 +833,7 @@ variant 版が GoF 版と 1 文字も違わない文字列を返すこと、
   増える方向を先に決めてから選ぶ
 - `dynamic_cast` の連鎖は**書き忘れても通る**。RTTI も要る。Visitor に劣る
 - **C++17 には `std::variant` + `std::visit` がある。** 継承も仮想関数も `accept` も不要で、
-  網羅性はコンパイル時に保証される（`requires the visitor to be exhaustive`）
+  網羅性はコンパイル時に保証される（足りなければ `std::invoke_result` のエラーで落ちる）
 - `overloaded` イディオムは標準に無い。**推論ガイドまで自分で書く**（C++17）
 - 種類が固定なら variant、実行時に拡張したいなら GoF 版
 - **マイコンでは variant が本命。** ヒープも vtable も使わない。

@@ -78,7 +78,18 @@ wait_without_volatile:
 	.size	wait_without_volatile, .-wait_without_volatile
 ```
 
-On every loop iteration, `cmpl $0, -4(%rbp)` reads flag again.
+**How to read it (annotated)**
+
+(Lines picked from the measured output above, with notes.)
+
+```asm
+	movl	$0, -4(%rbp)	# flag = 0 (kept in memory at -4(%rbp))
+	...
+	addl	$1, -8(%rbp)	# count++
+	...
+	cmpl	$0, -4(%rbp)	# read flag from memory and compare with 0 (every iteration)
+	je	.L3	# if 0, go back to .L3 and keep looping
+```
 
 **Case `-O2` (the whole assembly):**
 
@@ -89,6 +100,15 @@ wait_without_volatile:
 .L2:
 	jmp	.L2
 	.size	wait_without_volatile, .-wait_without_volatile
+```
+
+**How to read it (annotated)**
+
+(Lines picked from the measured output above, with notes.)
+
+```asm
+.L2:
+	jmp	.L2	# the condition check is gone; it just jumps to itself forever
 ```
 
 This is shocking. The condition check disappeared and it became an infinite loop.
@@ -149,7 +169,18 @@ wait_with_volatile:
 	.size	wait_with_volatile, .-wait_with_volatile
 ```
 
-On every loop iteration, `movl -12(%rsp), %eax` reads from memory again. This is the effect of `volatile`.
+**How to read it (annotated)**
+
+(Lines picked from the measured output above, with notes.)
+
+```asm
+.L2:
+	movl	-12(%rsp), %eax	# volatile, so flag is read from memory every time
+	testl	%eax, %eax	# test whether flag == 0
+	je	.L2	# if 0, keep looping
+```
+
+This is the effect of `volatile`.
 
 ## 10.3 What `volatile` does not guarantee (most important)
 
@@ -197,7 +228,15 @@ increment_counter:
 	.size	increment_counter, .-increment_counter
 ```
 
-From the top, these are 3 instructions: 1. read from memory, 2. add 1, 3. write to memory.
+**How to read it (annotated)**
+
+(Lines picked from the measured output above, with notes.)
+
+```asm
+	movl	counter(%rip), %eax	# 1. read from memory
+	addl	$1, %eax	# 2. add 1 (an interrupt here is dangerous)
+	movl	%eax, counter(%rip)	# 3. write to memory
+```
 
 If an interrupt happens between steps 2 and 3, even if other code increments `counter`, it is overwritten here.
 
@@ -363,7 +402,17 @@ access_uart:
 	.size	access_uart, .-access_uart
 ```
 
-`1073758208` is `0x40004000` (`uart_dr`) and `1073758212` is `0x40004004` (`uart_sr`), written in decimal. The read, the write, and the second read stay as 3 instructions in this order.
+**How to read it (annotated)**
+
+(Lines picked from the measured output above, with notes.)
+
+```asm
+	movl	1073758212, %eax	# read uart_sr (1st)
+	movl	$65, 1073758208	# write 'A' (65) to uart_dr
+	movl	1073758212, %eax	# read uart_sr (2nd)
+```
+
+`1073758208` is `0x40004000` (`uart_dr`) and `1073758212` is `0x40004004` (`uart_sr`), written in decimal.
 
 <details markdown="1"><summary>Full program that produced this output</summary>
 
@@ -400,6 +449,14 @@ access_uart:
 	movl	$65, 1073758208
 	ret
 	.size	access_uart, .-access_uart
+```
+
+**How to read it (annotated)**
+
+(Lines picked from the measured output above, with notes.)
+
+```asm
+	movl	$65, 1073758208	# only the write to uart_dr remains (both reads of uart_sr are gone)
 ```
 
 Both reads disappear, and only the write (`movl $65, 1073758208`) remains.
@@ -448,7 +505,15 @@ set_gpio_bit3:
 	.size	set_gpio_bit3, .-set_gpio_bit3
 ```
 
-From the top, these are 3 instructions: read from memory, OR, write to memory.
+**How to read it (annotated)**
+
+(Lines picked from the measured output above, with notes.)
+
+```asm
+	movl	gpio(%rip), %eax	# 1. read from memory
+	orl	$8, %eax	# 2. OR in bit 3 (value 8)
+	movl	%eax, gpio(%rip)	# 3. write to memory
+```
 
 With a hardware register, the register state at the time of the read may differ from the actual value at the time of the write.
 

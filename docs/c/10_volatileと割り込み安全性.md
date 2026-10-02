@@ -78,7 +78,18 @@ wait_without_volatile:
 	.size	wait_without_volatile, .-wait_without_volatile
 ```
 
-毎ループ `cmpl $0, -4(%rbp)` で flag を読み直しています。
+**読み方（注釈つき）**
+
+（実測の出力から説明に要る行を抜き出し、注釈を付けたもの）
+
+```asm
+	movl	$0, -4(%rbp)	# flag = 0（メモリ上の -4(%rbp) に置かれる）
+	...
+	addl	$1, -8(%rbp)	# count++
+	...
+	cmpl	$0, -4(%rbp)	# flag をメモリから読んで 0 と比べる（毎ループ）
+	je	.L3	# 0 なら .L3 に戻ってループを続ける
+```
 
 **`-O2` の場合（アセンブリの全体）：**
 
@@ -89,6 +100,15 @@ wait_without_volatile:
 .L2:
 	jmp	.L2
 	.size	wait_without_volatile, .-wait_without_volatile
+```
+
+**読み方（注釈つき）**
+
+（実測の出力から説明に要る行を抜き出し、注釈を付けたもの）
+
+```asm
+.L2:
+	jmp	.L2	# 条件チェックが消え、自分自身に戻るだけの無限ループ
 ```
 
 ショックです。条件チェックが消えて、無限ループになってしまいました。
@@ -149,7 +169,18 @@ wait_with_volatile:
 	.size	wait_with_volatile, .-wait_with_volatile
 ```
 
-毎ループ `movl -12(%rsp), %eax` でメモリから読み直しています。これが `volatile` の効果です。
+**読み方（注釈つき）**
+
+（実測の出力から説明に要る行を抜き出し、注釈を付けたもの）
+
+```asm
+.L2:
+	movl	-12(%rsp), %eax	# volatile なので毎回メモリから flag を読む
+	testl	%eax, %eax	# flag == 0 かを調べる
+	je	.L2	# 0 ならループを続ける
+```
+
+これが `volatile` の効果です。
 
 ## 10.3 `volatile` が保証しないこと（最重要）
 
@@ -197,7 +228,15 @@ increment_counter:
 	.size	increment_counter, .-increment_counter
 ```
 
-上から順に、1. メモリから読む、2. +1 する、3. メモリに書く、の 3 命令です。
+**読み方（注釈つき）**
+
+（実測の出力から説明に要る行を抜き出し、注釈を付けたもの）
+
+```asm
+	movl	counter(%rip), %eax	# 1. メモリから読む
+	addl	$1, %eax	# 2. +1 する（ここで割り込まれると危険）
+	movl	%eax, counter(%rip)	# 3. メモリに書く
+```
 
 割り込みが 2 番と 3 番の間に発生すると、他のコードが `counter` をインクリメントしても、ここで上書きされてしまいます。
 
@@ -363,7 +402,17 @@ access_uart:
 	.size	access_uart, .-access_uart
 ```
 
-`1073758208` は `0x40004000`（`uart_dr`）、`1073758212` は `0x40004004`（`uart_sr`）を 10 進で書いたものです。読み出し、書き込み、読み出しの順に、3 命令がそのまま並んでいます。
+**読み方（注釈つき）**
+
+（実測の出力から説明に要る行を抜き出し、注釈を付けたもの）
+
+```asm
+	movl	1073758212, %eax	# uart_sr を読む（1 回目）
+	movl	$65, 1073758208	# uart_dr に 'A'（65）を書く
+	movl	1073758212, %eax	# uart_sr を読む（2 回目）
+```
+
+`1073758208` は `0x40004000`（`uart_dr`）、`1073758212` は `0x40004004`（`uart_sr`）を 10 進で書いたものです。
 
 <details markdown="1"><summary>この出力を出したプログラム全体</summary>
 
@@ -400,6 +449,14 @@ access_uart:
 	movl	$65, 1073758208
 	ret
 	.size	access_uart, .-access_uart
+```
+
+**読み方（注釈つき）**
+
+（実測の出力から説明に要る行を抜き出し、注釈を付けたもの）
+
+```asm
+	movl	$65, 1073758208	# uart_dr への書き込みだけが残る（uart_sr の読み出しは 2 回とも消えた）
 ```
 
 読み出しが 2 回とも消え、書き込み（`movl $65, 1073758208`）だけが残ります。
@@ -448,7 +505,15 @@ set_gpio_bit3:
 	.size	set_gpio_bit3, .-set_gpio_bit3
 ```
 
-上から順に、メモリから読む、OR する、メモリに書く、の 3 命令です。
+**読み方（注釈つき）**
+
+（実測の出力から説明に要る行を抜き出し、注釈を付けたもの）
+
+```asm
+	movl	gpio(%rip), %eax	# 1. メモリから読む
+	orl	$8, %eax	# 2. ビット 3（値 8）を OR する
+	movl	%eax, gpio(%rip)	# 3. メモリに書く
+```
 
 ハードウェアレジスタの場合、読み出し時点でのレジスタ状態と、書き込み時点での実際の値が異なっている可能性があります。
 

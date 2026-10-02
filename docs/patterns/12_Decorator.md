@@ -152,16 +152,16 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic copy_inner.cpp -o copy_inner
 
 </details>
 
-macOS の Apple clang 21 で実測した出力です（SDK のパスは `/.../` に省略しています）。
-
 ```
-copy_inner.cpp:17:5: error: call to implicitly-deleted copy constructor of 'std::unique_ptr<LogSink>'
+copy_inner.cpp: In constructor ‘SinkDecorator::SinkDecorator(std::unique_ptr<LogSink>)’:
+copy_inner.cpp:17:5: error: use of deleted function ‘std::unique_ptr<_Tp, _Dp>::unique_ptr(const std::unique_ptr<_Tp, _Dp>&) [with _Tp = LogSink; _Dp = std::default_delete<LogSink>]’
    17 |   : inner_(inner)                                          // std::move を忘れた
-      |     ^      ~~~~~
-/.../c++/v1/__memory/unique_ptr.h:209:55: note: copy constructor is implicitly deleted because 'unique_ptr<LogSink>' has a user-declared move constructor
-  209 |   _LIBCPP_HIDE_FROM_ABI _LIBCPP_CONSTEXPR_SINCE_CXX23 unique_ptr(unique_ptr&& __u) _NOEXCEPT
-      |                                                       ^
-1 error generated.
+      |     ^~~~~~~~~~~~~
+In file included from /usr/include/c++/13/memory:78,
+                 from copy_inner.cpp:2:
+/usr/include/c++/13/bits/unique_ptr.h:522:7: note: declared here
+  522 |       unique_ptr(const unique_ptr&) = delete;
+      |       ^~~~~~~~~~
 ```
 
 `const std::unique_ptr<LogSink> &` で受けるのは**間違い**です。
@@ -235,7 +235,7 @@ public:
 };
 ```
 
-Apple clang 21 はコンパイル時点で警告します（`-Wall -Wextra -Wpedantic`）。
+g++ 13.3 は、`-Wall -Wextra -Wpedantic` ではコンパイル時に何も警告しません。
 
 <details markdown="1"><summary>この出力を出したプログラム全体</summary>
 
@@ -295,25 +295,28 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic novirt.cpp -o novirt 2>&1 | grep 'warnin
 
 </details>
 
-警告の行だけを抜き出すとこうなります（SDK のパスは `/.../` に省略しています）。
+コマンドの `grep 'warning:'` は何も出力しません。`unique_ptr` の中の `delete` は標準ライブラリのヘッダの中で起きるので、g++ は警告を抑えます。
+`-Wnon-virtual-dtor` を足せば、クラスの宣言に警告が出ます（先頭の 1 行だけ抜粋します）。
+
+```bash
+g++ -std=c++17 -Wnon-virtual-dtor novirt.cpp -o novirt 2>&1 | grep -m1 'warning:'
+```
 
 ```
-/.../c++/v1/__memory/unique_ptr.h:75:5: warning: delete called on 'Sink' that is abstract but has non-virtual destructor [-Wdelete-abstract-non-virtual-dtor]
-/.../c++/v1/__memory/unique_ptr.h:75:5: warning: delete called on non-final 'Plain' that has virtual functions but non-virtual destructor [-Wdelete-non-abstract-non-virtual-dtor]
-/.../c++/v1/__memory/unique_ptr.h:75:5: warning: delete called on non-final 'Border' that has virtual functions but non-virtual destructor [-Wdelete-non-abstract-non-virtual-dtor]
+novirt.cpp:7:7: warning: ‘class Sink’ has virtual functions and accessible non-virtual destructor [-Wnon-virtual-dtor]
 ```
 
-そして手元（macOS の zsh）で実行すると、`format()` の結果を 1 行出したあと、終了コード 133（`SIGTRAP`）で落ちました。
+そして実行すると、**落ちませんでした**。`format()` の結果を 1 行出して、終了コード 0 で終わります。
+ただし `~Border` も `~Plain` も 1 度も出力されていません。内側は破棄されていません。
 
 ```
 12:00:00 [INFO] moving
-zsh: trace trap  ./novirt
-exit code 133
+exit code 0
 ```
 
-出力をパイプやファイルに流すと、バッファが吐かれる前に落ちるので、`format()` の出力すら出ません。
+`-fsanitize=address` を付けて実行すると、`new-delete-type-mismatch`（確保したのは 48 バイト、`delete` した型は 8 バイト）で止まります。
 **未定義動作なので、何が起きるかは環境によって変わります。**
-運が良ければ落ち、悪ければ黙って内側だけ漏れ続けます。
+運が良ければ落ち、悪ければ黙って内側だけ漏れ続けます。g++ では後者でした。
 
 理屈はこうです。外側は `std::unique_ptr<Sink>` で持たれているので、
 解放時に呼ばれるのは `~Sink()` だけです。`~Border()` が呼ばれない

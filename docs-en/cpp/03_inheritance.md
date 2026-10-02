@@ -293,6 +293,8 @@ note: candidate: ‘rclcpp::Node::Node(const std::string&, const rclcpp::NodeOpt
 note:   candidate expects 2 arguments, 0 provided
 ```
 
+> This output needs rclcpp, so it is an excerpt measured in an environment with ROS 2 (the repository's Docker image). Unlike the other examples in the C++ track, you cannot reproduce it with `g++` alone.
+
 **If "candidate expects 2 arguments, 0 provided" appears, you forgot to call the base class.**
 
 The order to write is **base class first, members after**. The real initialization order is also like that.
@@ -750,6 +752,8 @@ note: ‘MinimalPublisher::MinimalPublisher(const MinimalPublisher&)’ is impli
       because the default definition would be ill-formed
 error: use of deleted function ‘rclcpp::Node::Node(const rclcpp::Node&)’
 ```
+
+> This output needs rclcpp, so it is an excerpt measured in an environment with ROS 2 (the repository's Docker image). Unlike the other examples in the C++ track, you cannot reproduce it with `g++` alone.
 
 **This is the direct answer to "why is everything in ROS 2 code a `shared_ptr`".**
 You cannot pass it around as a value, so you have no choice but to handle it with a pointer.

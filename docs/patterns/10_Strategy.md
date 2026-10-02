@@ -356,7 +356,7 @@ std::printf("%.1f\n", fp(3.0));      // 6.0
 つまり「ラムダで書きたい」だけなら `std::function` は要りません。
 **キャプチャを使わなければ、関数ポインタで受け取れます。**
 
-キャプチャすると変換できません。実際のエラーはこうです（macOS の Apple clang 21 で実測）。
+キャプチャすると変換できません。実際のエラーはこうです。
 
 <details markdown="1"><summary>この出力を出したプログラム全体</summary>
 
@@ -371,16 +371,18 @@ int main()
 ```
 
 ```bash
-clang++ -std=c++17 -Wall -Wextra -Wpedantic err.cpp -o err
+g++ -std=c++17 -Wall -Wextra -Wpedantic err.cpp -o err
 ```
 
 </details>
 
 ```
-err.cpp:4:12: error: no viable conversion from '(lambda at err.cpp:4:26)' to 'double (*)(double)'
-    4 |   double (*fp)(double) = [scale](double raw) { return raw * scale; };
-      |            ^             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-1 error generated.
+err.cpp: In function ‘int main()’:
+err.cpp:5:26: error: cannot convert ‘main()::<lambda(double)>’ to ‘double (*)(double)’ in initialization
+    5 |   double (*fp)(double) = [scale](double raw) { return raw * scale; };
+      |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                          |
+      |                          main()::<lambda(double)>
 ```
 
 弱点は 2 つ。**状態を持てない**（キャプチャできない）ことと、

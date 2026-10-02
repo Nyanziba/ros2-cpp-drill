@@ -232,32 +232,18 @@ int main()
 c++ -std=c++17 -Wall -Wextra -Wpedantic -c pimpl_bad.cpp
 ```
 
-This is the output measured with Apple clang 21 on macOS (the SDK path is abbreviated to `/.../`).
-
 ```
-In file included from pimpl_bad.cpp:1:
-In file included from /.../c++/v1/memory:950:
-In file included from /.../c++/v1/__memory/inout_ptr.h:16:
-In file included from /.../c++/v1/__memory/shared_ptr.h:36:
-/.../c++/v1/__memory/unique_ptr.h:73:19: error: invalid application of 'sizeof' to an incomplete type 'LinkStats::Impl'
-   73 |     static_assert(sizeof(_Tp) >= 0, "cannot delete an incomplete type");
-      |                   ^~~~~~~~~~~
-/.../c++/v1/__memory/unique_ptr.h:291:7: note: in instantiation of member function 'std::default_delete<LinkStats::Impl>::operator()' requested here
-  291 |       __deleter_(__tmp);
-      |       ^
-/.../c++/v1/__memory/unique_ptr.h:257:71: note: in instantiation of member function 'std::unique_ptr<LinkStats::Impl>::reset' requested here
-  257 |   _LIBCPP_HIDE_FROM_ABI _LIBCPP_CONSTEXPR_SINCE_CXX23 ~unique_ptr() { reset(); }
-      |                                                                       ^
-pimpl_bad.cpp:3:7: note: in instantiation of member function 'std::unique_ptr<LinkStats::Impl>::~unique_ptr' requested here
-    3 | class LinkStats
-      |       ^
-pimpl_bad.cpp:10:10: note: forward declaration of 'LinkStats::Impl'
-   10 |   struct Impl;
-      |          ^
-1 error generated.
+In file included from /usr/include/c++/13/memory:78,
+                 from pimpl_bad.cpp:1:
+/usr/include/c++/13/bits/unique_ptr.h: In instantiation of ‘void std::default_delete<_Tp>::operator()(_Tp*) const [with _Tp = LinkStats::Impl]’:
+/usr/include/c++/13/bits/unique_ptr.h:404:17:   required from ‘std::unique_ptr<_Tp, _Dp>::~unique_ptr() [with _Tp = LinkStats::Impl; _Dp = std::default_delete<LinkStats::Impl>]’
+pimpl_bad.cpp:3:7:   required from here
+/usr/include/c++/13/bits/unique_ptr.h:97:23: error: invalid application of ‘sizeof’ to incomplete type ‘LinkStats::Impl’
+   97 |         static_assert(sizeof(_Tp)>0,
+      |                       ^~~~~~~~~~~
 ```
 
-(With GCC 13, the message reads `invalid application of 'sizeof' to incomplete type 'LinkStats::Impl'`.
+(With clang, the message reads like `invalid application of 'sizeof' to an incomplete type 'LinkStats::Impl'`.
 Both have the same cause.)
 
 **Reason**: The place where the compiler generates the implicit destructor is the closing brace of `class LinkStats { ... };`.

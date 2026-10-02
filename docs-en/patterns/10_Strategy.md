@@ -356,7 +356,7 @@ std::printf("%.1f\n", fp(3.0));      // 6.0
 So if you only want to "write it as a lambda", you do not need `std::function`.
 **If you do not use captures, you can receive it with a function pointer.**
 
-If it captures, it cannot be converted. The actual error looks like this (measured with Apple clang 21 on macOS).
+If it captures, it cannot be converted. The actual error looks like this.
 
 <details markdown="1"><summary>Full program that produced this output</summary>
 
@@ -371,16 +371,18 @@ int main()
 ```
 
 ```bash
-clang++ -std=c++17 -Wall -Wextra -Wpedantic err.cpp -o err
+g++ -std=c++17 -Wall -Wextra -Wpedantic err.cpp -o err
 ```
 
 </details>
 
 ```
-err.cpp:4:12: error: no viable conversion from '(lambda at err.cpp:4:26)' to 'double (*)(double)'
-    4 |   double (*fp)(double) = [scale](double raw) { return raw * scale; };
-      |            ^             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-1 error generated.
+err.cpp: In function ‘int main()’:
+err.cpp:5:26: error: cannot convert ‘main()::<lambda(double)>’ to ‘double (*)(double)’ in initialization
+    5 |   double (*fp)(double) = [scale](double raw) { return raw * scale; };
+      |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                          |
+      |                          main()::<lambda(double)>
 ```
 
 There are 2 weak points. It **cannot hold state** (it cannot capture), and

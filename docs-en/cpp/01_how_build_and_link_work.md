@@ -316,6 +316,8 @@ $ nm -C mp.o | grep timer_callback
 0000000000000000 T MinimalPublisher::timer_callback()
 ```
 
+> This output needs rclcpp, so it is an excerpt measured in an environment with ROS 2 (the repository's Docker image). Unlike the other examples in the C++ track, you cannot reproduce it with `g++` alone.
+
 `nm` prints the list of symbols inside an object file.
 Without `-C`, you get the transformed name `_ZN16MinimalPublisher14timer_callbackEv`.
 With `-C` (demangle), it goes back to a form humans can read.
