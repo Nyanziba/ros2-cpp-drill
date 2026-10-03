@@ -1,0 +1,3 @@
+$ ros2 run velocity_filter_demo filter_host --ros-args --params-file ... -p filters:=[deadband, mystery]
+[ERROR] [1791034496.382239262] [filter_host]: フィルタ 'mystery': パラメータ 'mystery.plugin' が設定されていません
+[ros2run]: Process exited with failure 1

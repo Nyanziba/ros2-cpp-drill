@@ -28,7 +28,7 @@ Lyrical 版の URL は <https://nyanziba.github.io/ros2-cpp-drill/lyrical/> で�
 | --- | --- | --- | --- |
 | **C++入門編** | [cpp-basics/](cpp-basics/README.md) | `cppb01`〜`cppb10` | `const` や `static` で手が止まる人。全10章 |
 | **C++編** | [cpp/](cpp/README.md) | `cpp01`〜`cpp12` | rclcpp を読む準備。全15章 |
-| **ROS 2編** | [ros2/](ros2/01_この記事からスタート_ROS2講習ハブ.md) | `01`〜`15` | 全23本 |
+| **ROS 2編** | [ros2/](ros2/01_この記事からスタート_ROS2講習ハブ.md) | `01`〜`18` | 全24本 |
 
 **C++入門編と C++編は ROS 2 を使いません。** `g++` と gtest だけで完結します。
 

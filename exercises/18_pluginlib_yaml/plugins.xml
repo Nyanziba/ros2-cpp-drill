@@ -1,0 +1,11 @@
+<library path="drill_18_pluginlib_yaml_filters">
+  <class name="drill/ClampFilter" type="drill::ClampFilter" base_class_type="drill::VelocityFilter">
+    <description>絶対値を上限で切る</description>
+  </class>
+  <class name="drill/RateLimitFilter" type="drill::RateLimitFilter" base_class_type="drill::VelocityFilter">
+    <description>前回の出力からの変化を、加速度 x dt までに制限する</description>
+  </class>
+  <class name="drill/DeadbandFilter" type="drill::DeadbandFilter" base_class_type="drill::VelocityFilter">
+    <description>絶対値がしきい値未満なら 0 にする</description>
+  </class>
+</library>

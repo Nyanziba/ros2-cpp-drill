@@ -1,0 +1,13 @@
+# nav2 の controller / planner の層と同じ形。filters の順に通す。
+filter_host:
+  ros__parameters:
+    filters: ["deadband", "clamp", "rate_limit"]   # この順に通す
+    deadband:
+      plugin: "drill/DeadbandFilter"
+      linear_threshold: 0.05
+    clamp:
+      plugin: "drill/ClampFilter"
+      max_linear: 0.5
+    rate_limit:
+      plugin: "drill/RateLimitFilter"
+      max_linear_acceleration: 1.0

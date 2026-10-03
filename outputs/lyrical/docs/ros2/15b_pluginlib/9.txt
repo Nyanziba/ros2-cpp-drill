@@ -1,0 +1,3 @@
+$ ros2 run velocity_filter_demo filter_host --ros-args --params-file ... -p filters:=[clamp, clamp]
+[ERROR] [1791034413.411586251] [filter_host]: parameter 'clamp.plugin' has already been declared
+[ros2run]: Process exited with failure 1

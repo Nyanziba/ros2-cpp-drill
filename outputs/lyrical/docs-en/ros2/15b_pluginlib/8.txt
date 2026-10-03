@@ -1,0 +1,3 @@
+$ ros2 run velocity_filter_demo filter_host --ros-args --params-file ... -p clamp.max_linear:=1
+[ERROR] [1791034586.515260221] [filter_host]: parameter 'clamp.max_linear' has invalid type: Wrong parameter type, parameter {clamp.max_linear} is of type {double}, setting it to {integer} is not allowed.
+[ros2run]: Process exited with failure 1

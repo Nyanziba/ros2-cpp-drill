@@ -1,0 +1,5 @@
+$ ros2 run velocity_filter_demo filter_host --ros-args --params-file ... -p filters:=[rate_limit, clamp, deadband]
+declared: drill/ClampFilter drill/DeadbandFilter drill/RateLimitFilter
+step 1: in (0.80, 0.05) -> out (0.10, 0.00)
+step 2: in (0.80, 0.50) -> out (0.20, 0.15)
+step 3: in (0.02, 0.50) -> out (0.10, 0.25)

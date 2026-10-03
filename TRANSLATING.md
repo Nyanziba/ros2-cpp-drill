@@ -82,6 +82,7 @@
 | `docs/ros2/13_カスタムインターフェース.md` | `docs-en/ros2/13_custom_interfaces.md` |
 | `docs/ros2/14_サービスの実装.md` | `docs-en/ros2/14_implementing_services.md` |
 | `docs/ros2/15_パラメータとlaunchの実践.md` | `docs-en/ros2/15_parameters_and_launch_in_practice.md` |
+| `docs/ros2/15b_pluginlib.md` | `docs-en/ros2/15b_pluginlib.md` |
 | `docs/ros2/16_アクションサーバの実装.md` | `docs-en/ros2/16_implementing_an_action_server.md` |
 | `docs/ros2/17_テストとデバッグ.md` | `docs-en/ros2/17_testing_and_debugging.md` |
 | `docs/ros2/18_TF2と座標系.md` | `docs-en/ros2/18_tf2_and_coordinate_frames.md` |

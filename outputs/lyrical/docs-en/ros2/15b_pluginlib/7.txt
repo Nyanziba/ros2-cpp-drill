@@ -1,0 +1,7 @@
+$ ros2 run velocity_filter_demo filter_host --ros-args --params-file src/velocity_filter_demo/config/filters.yaml
+declared: drill/ClampFilter drill/DeadbandFilter drill/RateLimitFilter
+step 1: in (0.80, 0.05) -> out (0.10, 0.00)
+step 2: in (0.80, 0.50) -> out (0.20, 0.10)
+step 3: in (0.02, 0.50) -> out (0.10, 0.20)
+Warning: class_loader.ClassLoader: SEVERE WARNING!!! Attempting to unload library while objects created by this loader exist in the heap! You should delete your objects before attempting to unload the library or destroying the ClassLoader. The library will NOT be unloaded.
+         at line 127 in ./src/class_loader.cpp
