@@ -357,6 +357,7 @@ You check "does a recursive descent parser that does not look at the depth reall
 **Before you run it, predict what happens.**
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <memory>
 #include <string>
@@ -444,6 +445,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 
 This is the actual output on my machine (macOS / Apple clang).
 
+<!-- measure: env=clang filter="head -n 2" -->
 ```
 depth 3 -> 8 leaves
 parsing depth 200000 ...

@@ -209,6 +209,7 @@ c++ -std=c++17 -Wall -Wextra -Wpedantic limiter.cpp config.cpp main_siof.cpp -o 
 
 実際の出力です。
 
+<!-- measure: files=config.hpp,config.cpp,limiter.cpp,main_siof.cpp -->
 ```
 Limiter のコンストラクタ: limit_ = 0
 Config のコンストラクタ
@@ -229,6 +230,7 @@ main: g_config.max_duty() = 100
 c++ -std=c++17 -Wall -Wextra -Wpedantic config.cpp limiter.cpp main_siof.cpp -o siof2 && ./siof2
 ```
 
+<!-- measure: files=config.hpp,config.cpp,limiter.cpp,main_siof.cpp -->
 ```
 Config のコンストラクタ
 Limiter のコンストラクタ: limit_ = 100
@@ -335,6 +337,7 @@ c++ -std=c++17 -Wall -Wextra -Wpedantic main_meyers.cpp limiter2.cpp -o meyers2 
 
 </details>
 
+<!-- measure: files=config2.hpp,limiter2.cpp,main_meyers.cpp cmd="(c++ -std=c++17 -Wall -Wextra -Wpedantic limiter2.cpp main_meyers.cpp -o meyers1 && ./meyers1) > meyers1.txt; (c++ -std=c++17 -Wall -Wextra -Wpedantic main_meyers.cpp limiter2.cpp -o meyers2 && ./meyers2) > meyers2.txt; cmp meyers1.txt meyers2.txt && cat meyers1.txt" -->
 ```
 Config のコンストラクタ
 Limiter のコンストラクタ: limit_ = 100
@@ -419,6 +422,7 @@ private:
 1 ファイルで完結します。**出力を予想してから**実行してください。
 
 ```cpp
+// try.cpp
 #include <iostream>
 
 class Config
@@ -503,6 +507,7 @@ clang++ -std=c++17 -Wall -Wextra -Wpedantic try_deleted.cpp -o try_deleted
 
 **通ります。警告も出ません。** 実行結果（アドレスは環境で変わります）。
 
+<!-- measure: files=try_deleted.cpp cmd="grep -v '= delete' try_deleted.cpp > try_without_delete.cpp && g++ -std=c++17 -Wall -Wextra -Wpedantic try_without_delete.cpp -o try_without_delete && ./try_without_delete" -->
 ```
 instance: 0x555555558010 duty=100
 copied  : 0x7ffffffc5904 duty=30
@@ -521,6 +526,7 @@ copied  : 0x7ffffffc5904 duty=30
 
 実際に出るエラーです（Apple clang 21）。
 
+<!-- measure: env=clang -->
 ```
 try_deleted.cpp:25:10: error: call to deleted constructor of 'Config'
    25 |   Config copied = Config::instance();     // コピーが作られる
@@ -643,6 +649,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic destruction_order.cpp -o destruction_ord
 
 </details>
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic destruction_order.cpp -o destruction_order && ./destruction_order" -->
 ```
 main 終了
 [log alive=0] Uart を閉じました
@@ -654,6 +661,7 @@ main 終了
 
 `Logger::instance()` を先に、`Uart::instance()` をあとに触った場合はこうなります。
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic destruction_order.cpp -o destruction_order && ./destruction_order logger_first" -->
 ```
 main 終了
 [log alive=1] Uart を閉じました

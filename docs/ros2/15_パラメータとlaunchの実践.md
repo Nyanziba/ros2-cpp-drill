@@ -119,6 +119,7 @@ ros2 run speed_param_demo speed_node
 `speed_node.py`のコンストラクタにコールバック登録を追加します。
 
 ```python
+# ~/ros2_ws/src/speed_param_demo/speed_param_demo/speed_node.py
 import rclpy
 from rclpy.node import Node
 from rcl_interfaces.msg import SetParametersResult
@@ -204,6 +205,7 @@ mkdir config
 `config/speed_param.yaml`を作成します。ノード名をキーにした構造で、`ros`名前空間の下に`node_name`、その下に`ros__parameters`というキー構造が固定です。
 
 ```yaml
+# ~/ros2_ws/src/speed_param_demo/config/speed_param.yaml
 speed_node:
   ros__parameters:
     max_speed: 2.0
@@ -212,6 +214,7 @@ speed_node:
 `setup.py`を編集し、`config`ディレクトリの中身がインストール先に配置されるように`data_files`へ追加します。
 
 ```python
+# ~/ros2_ws/src/speed_param_demo/setup.py
 import os
 from glob import glob
 from setuptools import setup
@@ -317,6 +320,7 @@ ros2 launch speed_param_demo speed_param_launch.py
 複数台の機体を同じlaunchファイルで起動したい場面を想定し、`namespace`をコマンドラインから指定できるようにします。
 
 ```python
+# ~/ros2_ws/src/speed_param_demo/launch/speed_param_launch.py
 import os
 
 from ament_index_python.packages import get_package_share_directory
@@ -358,6 +362,7 @@ def generate_launch_description():
 
 **ここで一度必ず踏むワナがあります。** 上で作った`speed_param.yaml`のトップレベルキーは`speed_node:`（名前空間なし）ですが、`namespace:=robot1`を付けて起動するとノードの完全修飾名は`/robot1/speed_node`になります。パラメータYAMLは名前空間まで含めてノード名を照合するため、`speed_node:`というキーは`/robot1/speed_node`に**マッチしません**。エラーにはならず、`declare_parameter`のデフォルト値のまま起動します。
 
+<!-- measure: env=ros files=src/speed_param_demo/speed_param_demo/speed_node.py,src/speed_param_demo/config/speed_param.yaml,src/speed_param_demo/setup.py,src/speed_param_demo/launch/speed_param_launch.py cmd="export PYTHONUNBUFFERED=1; ros2 pkg create --build-type ament_python --destination-directory /tmp/generated speed_param_demo >/dev/null 2>&1; cp -rn /tmp/generated/speed_param_demo/. src/speed_param_demo/ 2>/dev/null; colcon build --packages-select speed_param_demo >/dev/null 2>&1; source install/setup.bash; echo '$ ros2 launch speed_param_demo speed_param_launch.py'; timeout -s INT 4 ros2 launch speed_param_demo speed_param_launch.py 2>&1 | grep -m1 max_speed; echo '$ ros2 launch speed_param_demo speed_param_launch.py namespace:=robot1'; timeout -s INT 4 ros2 launch speed_param_demo speed_param_launch.py namespace:=robot1 2>&1 | grep -m1 max_speed" -->
 ```
 $ ros2 launch speed_param_demo speed_param_launch.py
 [speed_node-1] [INFO] [1790939696.049941586] [speed_node]: max_speed = 2.0

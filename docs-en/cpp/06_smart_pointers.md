@@ -135,6 +135,7 @@ There are 3 reasons to use `make_unique`.
 ## 6.3 `shared_ptr` — reference counting
 
 ```cpp
+// use_count.cpp
 #include <iostream>
 #include <memory>
 
@@ -156,8 +157,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/vbfTzGWd7)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/WxPc3zhKs)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic use_count.cpp -o use_count && ./use_count" -->
 ```
 a only:      1
 a and b:    2
@@ -216,6 +218,7 @@ When both leave scope, `delete` runs twice and the program crashes.
 ### Circular reference — the only pattern where `shared_ptr` leaks
 
 ```cpp
+// cycle.cpp
 #include <iostream>
 #include <memory>
 
@@ -236,8 +239,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/nx83Tx6c3)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/vT7Mrh1Ps)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic cycle.cpp -o cycle && ./cycle" -->
 ```
 leaving main
 ```
@@ -255,6 +259,7 @@ Neither reaches 0, so they are never freed.
 A `weak_ptr` is a reference that lets you check "is it still there?" but **does not keep it alive**.
 
 ```cpp
+// weak_lock.cpp
 #include <iostream>
 #include <memory>
 
@@ -283,8 +288,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/sbarEx94h)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/zdo1oGhrh)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic weak_lock.cpp -o weak_lock && ./weak_lock" -->
 ```
 alive: use_count = 1
 lock succeeded: 42

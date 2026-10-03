@@ -200,6 +200,7 @@ or a bound member function**. Its biggest advantage is that it is not tied to an
 `std::function` holds the contents by erasing their type (type erasure). It does not know what will be put in, so
 **it puts things that are too big on the heap**. This is the result I measured on my machine (Apple clang / arm64).
 
+<!-- measure: env=clang files=try.cpp cmd="g++ -std=c++17 try.cpp -o try && ./try" filter="sed -n '3,5p' | sed -e '2s|$|      ← captures 1 double|' -e '3s|$|      ← captures 5 doubles|'" -->
 ```
 sizeof(std::function<double(double)>) = 32
 small lambda  : allocations = 0      ← captures 1 double
@@ -290,6 +291,7 @@ clang++ -std=c++17 -O2 -S asm.cpp -o - | grep -E '^_|^[[:space:]]+(ldr|fcmp|fcse
 
 Of the command output, only the instructions of the function bodies are extracted (the explanations after `;` were added). The virtual function version:
 
+<!-- measure: env=clang files=asm.cpp filter="sed -n '1,4p' | sed -e '2s|$|        ; read the vptr|' -e '3s|$|   ; read the address of apply from the vtable|' -e '4s|$|              ; indirect jump|'" -->
 ```
 __Z11run_virtualRK6Filterd:             ; @_Z11run_virtualRK6Filterd
 	ldr	x8, [x0]        ; read the vptr
@@ -299,6 +301,7 @@ __Z11run_virtualRK6Filterd:             ; @_Z11run_virtualRK6Filterd
 
 The policy version:
 
+<!-- measure: env=clang files=asm.cpp filter="sed -n '5,9p' | sed -e '2s|$|        ; read the member m_|' -e '4s|$|  ; just compare and select. The call has disappeared|'" -->
 ```
 __Z10run_policyRK11ClampPolicyd:        ; @_Z10run_policyRK11ClampPolicyd
 	ldr	d1, [x0]        ; read the member m_
@@ -313,6 +316,7 @@ An indirect jump is likely to be mispredicted by the branch predictor, and this 
 
 The size is also different.
 
+<!-- measure: env=clang files=try.cpp cmd="g++ -std=c++17 try.cpp -o try && ./try" filter="sed -n '1,2p' | sed -e '1s|$|      ← vptr 8 + double 8|' -e '2s|$|       ← double 8|'" -->
 ```
 sizeof(Clamp)        = 16      ← vptr 8 + double 8
 sizeof(ClampPolicy)  = 8       ← double 8
@@ -376,6 +380,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic err.cpp -o err
 
 </details>
 
+<!-- measure: files=err.cpp -->
 ```
 err.cpp: In function ‘int main()’:
 err.cpp:5:26: error: cannot convert ‘main()::<lambda(double)>’ to ‘double (*)(double)’ in initialization
@@ -448,6 +453,7 @@ We replace `operator new` and count whether `std::function` really allocates.
 **Predict first, then run it.**
 
 ```cpp
+// try.cpp
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
@@ -527,6 +533,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 
 On my machine (Apple clang / arm64) the result was this.
 
+<!-- measure: env=clang files=try.cpp -->
 ```
 sizeof(Clamp)        = 16
 sizeof(ClampPolicy)  = 8

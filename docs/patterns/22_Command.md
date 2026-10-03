@@ -326,6 +326,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic move_only_capture.cpp -o move_only_captu
 
 </details>
 
+<!-- measure: -->
 ```
 In file included from /usr/include/c++/13/functional:59,
                  from move_only_capture.cpp:2:
@@ -378,6 +379,7 @@ queue.run_all();                                 // 死んだ arm を触る
 `operator new` を差し替えて数えます。**予想してから実行してください。**
 
 ```cpp
+// try.cpp
 #include <cstddef>
 #include <cstdlib>
 #include <functional>
@@ -433,6 +435,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 
 Apple clang 17（libc++）ではこうなりました。
 
+<!-- measure: env=clang -->
 ```
 small capture : 0 allocation(s)
 large capture : 1 allocation(s)

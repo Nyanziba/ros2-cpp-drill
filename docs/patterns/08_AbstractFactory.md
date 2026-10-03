@@ -305,6 +305,7 @@ Abstract Factory に対応する標準ライブラリの部品は無いので、
 課題を解く前に、この 1 ファイルをコンパイルして**出力を予想してから**実行してください。
 
 ```cpp
+// try.cpp
 #include <cstddef>
 #include <iostream>
 #include <memory>
@@ -391,6 +392,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 <details>
 <summary>予想: <code>mixed</code> は何を出すか。そして 2 つの <code>sizeof</code> の差はどこから来るか</summary>
 
+<!-- measure: -->
 ```
 mixed:  0
 paired: 10

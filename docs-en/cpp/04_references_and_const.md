@@ -48,6 +48,7 @@ Even if someone says "passing by value makes a copy", without a feel for it, it 
 Let us measure.
 
 ```cpp
+// tracked.cpp
 #include <iostream>
 #include <string>
 #include <vector>
@@ -84,8 +85,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/ofvPGGPaj)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/ffv164qGo)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic tracked.cpp -o tracked && ./tracked" -->
 ```
 create:
   [created]
@@ -129,6 +131,7 @@ double limit_velocity(double target, double previous, double max_speed, double m
 A reference is an "alias", so **if the original dies, the reference becomes invalid.**
 
 ```cpp
+// dangling.cpp
 #include <iostream>
 #include <string>
 
@@ -145,10 +148,11 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/7Kn6Pa77a)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/YEG5Eh6WP)
 
 g++ warns you.
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic dangling.cpp -o dangling" filter="grep -o 'warning:.*'" -->
 ```
 warning: reference to local variable ‘local’ returned [-Wreturn-local-addr]
 ```
@@ -273,6 +277,7 @@ g++ -std=c++17 -Wall -Wextra copies.cpp -o copies && ./copies
 
 <details markdown="1"><summary>Answer (actual output)</summary>
 
+<!-- measure: -->
 ```
 log_only(m):
   read: hello
@@ -368,6 +373,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic bind_rvalue.cpp -o bind_rvalue
 
 </details>
 
+<!-- measure: -->
 ```
 bind_rvalue.cpp: In function ‘int main()’:
 bind_rvalue.cpp:8:5: error: cannot bind non-const lvalue reference of type ‘std::string&’ {aka ‘std::__cxx11::basic_string<char>&’} to an rvalue of type ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’}

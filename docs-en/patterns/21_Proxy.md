@@ -162,6 +162,7 @@ clang++ -std=c++17 -Wall -Wextra -Wpedantic printer_proxy.cpp -o printer_proxy
 
 </details>
 
+<!-- measure: env=clang filter="head -n 6; echo ..." -->
 ```
 printer_proxy.cpp:43:25: error: no viable overloaded '='
    43 |     if (!real_) { real_ = std::make_unique<Printer>(name_); }
@@ -426,6 +427,7 @@ You see the `operator->` chain and the lifetime of the temporary object with you
 **Predict the order of the output** before you run it.
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <memory>
 
@@ -510,6 +512,7 @@ g++ -std=c++11 -Wall -Wextra -Wpedantic copy_elision.cpp -o copy_elision
 <details>
 <summary>Predict: in the single line <code>proxy-&gt;work()</code>, what is called, and how many times?</summary>
 
+<!-- measure: files=try.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try" -->
 ```
 before the expression
   Guard created
@@ -529,6 +532,7 @@ the lock is taken without the caller writing anything.
 `Guard` can be neither copied nor moved, yet `operator->` can return it by value.
 This is thanks to the **guaranteed copy elision** of C++17. If you compile a minimal program of the same shape with C++11, you get this.
 
+<!-- measure: -->
 ```
 copy_elision.cpp: In function ‘A make()’:
 copy_elision.cpp:9:19: error: use of deleted function ‘A::A(const A&)’
@@ -563,6 +567,7 @@ You load the calibration table **into a fixed region at startup.** You do not de
 You put a range check or a unit conversion on a read or write to a `volatile` address.
 
 ```cpp
+// duty_register.cpp
 #include <cstdint>
 #include <cstdio>
 
@@ -611,6 +616,7 @@ int main()
 
 This is the result.
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic duty_register.cpp -o duty_register && ./duty_register" -->
 ```
 duty=500 raw=500
 duty=999 raw=999
@@ -684,6 +690,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic register_proxy_size.cpp -o register_prox
 
 </details>
 
+<!-- measure: -->
 ```
 sizeof(RegisterProxy) = 1
 ```

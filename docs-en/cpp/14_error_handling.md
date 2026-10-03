@@ -24,6 +24,7 @@ A Python exception cannot be sent over DDS. Responses of a Service/Action are re
 ## 14.2 Exceptions — `throw`, `try`, `catch`
 
 ```cpp
+// divide_exception.cpp
 #include <iostream>
 #include <stdexcept>
 
@@ -51,8 +52,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/TEj1YKTb6)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/ds5hWPqsM)
 
+<!-- measure: files=divide_exception.cpp cmd="g++ -std=c++17 divide_exception.cpp -o divide_exception && ./divide_exception" -->
 ```
 10 / 2 = 5
 Trying 10 / 0...
@@ -75,6 +77,7 @@ catch (std::exception e) { }             // value ← do not do this
 What we did in chapter 3 applies to exceptions too.
 
 ```cpp
+// slicing.cpp
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -113,8 +116,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/9E6rsxKxo)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/cTcfaeP93)
 
+<!-- measure: files=slicing.cpp cmd="g++ -std=c++17 slicing.cpp -o slicing && ./slicing" -->
 ```
 Caught as base: Custom error
 Restored as MyError: 99
@@ -134,6 +138,7 @@ When you see this warning, change it to `const &`.
 The powerful point of C++ exceptions is that **the stack unwinds automatically and destructors are called.**
 
 ```cpp
+// stack_unwinding.cpp
 #include <iostream>
 #include <stdexcept>
 
@@ -172,8 +177,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/GjjjEjjTY)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/h1nPe85rn)
 
+<!-- measure: files=stack_unwinding.cpp cmd="g++ -std=c++17 stack_unwinding.cpp -o stack_unwinding && ./stack_unwinding" -->
 ```
   [Resource A] acquired
   [Resource B] acquired
@@ -196,6 +202,7 @@ When a destructor is being called, an exception may already be propagating.
 If another exception is thrown at that time, **`std::terminate` is called and the program is forcibly stopped.**
 
 ```cpp
+// destructor_throw.cpp
 #include <iostream>
 #include <stdexcept>
 
@@ -221,8 +228,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/za8aaxzrn)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/Gvf51qj71)
 
+<!-- measure: files=destructor_throw.cpp cmd="g++ -std=c++17 destructor_throw.cpp -o destructor_throw 2>/dev/null && ./destructor_throw" tty=yes -->
 ```
 terminate called after throwing an instance of 'std::runtime_error'
   what():  Exception from destructor
@@ -318,6 +326,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic noexcept_violation.cpp -o noexcept_viola
 
 </details>
 
+<!-- measure: tty=yes cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic noexcept_violation.cpp -o noexcept_violation 2>/dev/null && ./noexcept_violation" -->
 ```
 Safe operation
 terminate called after throwing an instance of 'std::runtime_error'
@@ -329,6 +338,7 @@ The last line, `Aborted`, is a message printed by the shell, not by the program 
 
 The compiler gives a warning (it appears when you compile the program above).
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic noexcept_violation.cpp -o noexcept_violation" -->
 ```
 noexcept_violation.cpp: In function ‘void unsafe_operation()’:
 noexcept_violation.cpp:12:3: warning: ‘throw’ will always call ‘terminate’ [-Wterminate]
@@ -414,6 +424,7 @@ That is why ROS 2 has a strong return-code culture.
 ### `std::optional<T>` — there or not
 
 ```cpp
+// optional_parse.cpp
 #include <iostream>
 #include <optional>
 #include <string>
@@ -440,8 +451,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/z1crrhG1P)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/hevvd8xGx)
 
+<!-- measure: files=optional_parse.cpp cmd="g++ -std=c++17 optional_parse.cpp -o optional_parse && ./optional_parse" -->
 ```
 Success: 42
 ```
@@ -454,6 +466,7 @@ It does not appear in the drill, so it is enough to keep it as knowledge.
 ### `assert()` and `static_assert`
 
 ```cpp
+// assert_range.cpp
 #include <iostream>
 #include <cassert>
 
@@ -473,6 +486,7 @@ int main()
 }
 ```
 
+<!-- measure: files=assert_range.cpp cmd="g++ -std=c++17 assert_range.cpp -o assert_range && ./assert_range" -->
 ```
 OK: 50
 ```
@@ -606,7 +620,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic error_handling.cpp -o error_handling && 
 
 [▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/hrYfWG3Kd)
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/nYec3YW9e)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/PsYKcc54f)
 
 After you check it, do these 2 experiments.
 

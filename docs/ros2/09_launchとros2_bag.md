@@ -272,6 +272,7 @@ ros2 launch ~/ros2_lecture/launch/mimic_record_launch.py
 
 ログにrecorderの行が混ざります。`[ros2-4]`が4番目の要素（`ExecuteProcess`）の出力という意味です。
 
+<!-- measure: env=static reason="turtlesim_node の起動が要り、Docker イメージに turtlesim も無い" -->
 ```
 [ros2-4] [INFO] [rosbag2_recorder]: Starting recording to 'mimic_bag'
 [ros2-4] [INFO] [rosbag2_recorder]: Listening for topics...
@@ -281,6 +282,7 @@ ros2 launch ~/ros2_lecture/launch/mimic_record_launch.py
 
 10秒ほど放置してから、launchのターミナルで**Ctrl+Cを1回**押してください。recorderもちゃんと終了処理をします。
 
+<!-- measure: env=static reason="turtlesim_node の起動が要り、Docker イメージに turtlesim も無い" -->
 ```
 [ros2-4] [INFO] [rosbag2_recorder]: Pausing recording.
 [mimic-3] [INFO] [rclcpp]: signal_handler(SIGINT/SIGTERM)
@@ -296,6 +298,7 @@ ros2 launch ~/ros2_lecture/launch/mimic_record_launch.py
 ros2 bag info mimic_bag
 ```
 
+<!-- measure: env=static reason="turtlesim_node の起動が要り、Docker イメージに turtlesim も無い" -->
 ```
 Files:             mimic_bag_0.mcap
 Bag size:          43.7 KiB
@@ -319,6 +322,7 @@ Topic information: Topic: /turtlesim1/turtle1/pose | Type: turtlesim/msg/Pose | 
 
 2. エラーで記録が始まりません。
 
+<!-- measure: env=static reason="turtlesim_node の起動が要り、Docker イメージに turtlesim も無い" -->
 ```
 [ERROR] [ros2bag]: Output folder 'mimic_bag' already exists.
 ```
@@ -347,6 +351,7 @@ stamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
 
 **`--topics`を付けてください。** トピック名を位置引数として並べる書き方（`ros2 bag record -o foo /topic_a`）も動きますが、Jazzyでは非推奨の警告が出ます。
 
+<!-- measure: env=ros cmd="timeout -s INT 3 ros2 bag record -o /tmp/positional_bag /chatter" filter="grep WARN" -->
 ```
 [WARN] [ros2bag]: Positional "topics" argument deprecated. Please use optional "--topics" argument instead.
 ```
@@ -392,6 +397,7 @@ ros2 launch mimic_record_launch.py record:=false
 ros2 component types | grep rosbag
 ```
 
+<!-- measure: env=ros -->
 ```
 rosbag2_transport
   rosbag2_transport::Player

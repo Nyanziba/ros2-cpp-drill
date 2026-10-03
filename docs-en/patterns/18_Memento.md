@@ -218,6 +218,7 @@ This is not only about Memento. It is **a decision you make every time you write
 We put "hold by value" and "hold by `shared_ptr`" side by side. **Predict the output first**, then run it.
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <memory>
 #include <string>
@@ -272,6 +273,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 <details>
 <summary>Predict: what do the two lines print?</summary>
 
+<!-- measure: -->
 ```
 Memento held by value      : startup trajectory
 Memento held by shared_ptr: tuned trajectory
@@ -350,6 +352,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic private_access.cpp -o private_access
 
 </details>
 
+<!-- measure: env=static reason="Assumes the exercise header (GainTuner / GainSnapshot under exercises/dp18); the program on this page does not build alone" -->
 ```
 private_access.cpp: In function ‘int main()’:
 private_access.cpp:45:16: error: ‘double GainSnapshot::kp_’ is private within this context

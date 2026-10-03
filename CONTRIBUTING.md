@@ -86,6 +86,20 @@ python3 -m venv .venv-docs
 - 出力の一部だけを載せるときは、省いたことが分かるように `...` などで示します。
 - 環境によって結果が変わるもの（データ競合、未定義動作、終了コードなど）は、測った環境と「環境によって変わる」ことを書きます。
 
+### tools/measure.py で測る
+
+出力ブロックの直前には、測り方を書いた印を置きます。`tools/measure.py` がこの印を読んで Docker で動かし、本文と比べます。
+
+```markdown
+<!-- measure: filter="grep -o 'error:.*'" -->
+```
+
+- 使うファイルは、1 行目に `// ファイル名.cpp` のコメントを書いたコードブロックから取ります。コマンドは直前の `bash` のブロックです。
+  どちらも `files=` と `cmd=` で指定できます。抜粋は `filter=`、Apple clang で測るなら `env=clang`、ROS 2 なら `env=ros`、
+  動かせないもの（GUI・実機など）は `env=static reason="..."` です。くわしくは `tools/measure.py` の先頭に書いてあります。
+- 出力を新しく載せる・コードを変えたら、`python3 tools/measure.py --write <ページ>` で測り直して書き込み、
+  `python3 tools/measure.py --check <ページ>` で食い違いが無いことを確かめます。CI（measure.yml）でも同じ検査を回します。
+
 C++ の章のコードには [Compiler Explorer](https://godbolt.org/) のリンク（`▶ ブラウザで実行する`）が付いています。
 **コードを変えたら、リンクも作り直してください。** Compiler Explorer でコードを貼り替え、
 コンパイラ `x86-64 gcc 13.3`、オプションは本文のコマンドと同じにして、Share の短縮リンクに差し替えます。

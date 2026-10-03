@@ -95,6 +95,7 @@ ros2 doctor --report
 
 `RMW MIDDLEWARE`の節に出ます。
 
+<!-- measure: env=ros filter="grep -A1 'RMW MIDDLEWARE'" -->
 ```
    RMW MIDDLEWARE
 middleware name    : rmw_fastrtps_cpp
@@ -144,10 +145,12 @@ ros2 node list
 ros2 topic list
 ```
 
+<!-- measure: env=static reason="talker の起動が要り、Docker イメージに demo_nodes_cpp も無い" -->
 ```
 /talker
 ```
 
+<!-- measure: env=static reason="talker の起動が要り、Docker イメージに demo_nodes_cpp も無い" -->
 ```
 /chatter
 /parameter_events
@@ -179,6 +182,7 @@ ros2 run demo_nodes_cpp talker
 ROS_DOMAIN_ID=42 ros2 node list
 ```
 
+<!-- measure: env=static reason="talker の起動が要り、Docker イメージに demo_nodes_cpp も無い" -->
 ```
 /talker
 ```
@@ -204,6 +208,7 @@ ss -ulnp | grep "$pid"
 
 ドメイン42で動かしたときの実際の出力です（一部を抜粋）。
 
+<!-- measure: env=static reason="talker を動かしたまま ss で UDP ポートを見る必要があり、PID も毎回変わる" -->
 ```
 UNCONN 0  0  0.0.0.0:17900  0.0.0.0:*  users:(("talker",pid=155463,fd=26))
 UNCONN 0  0  0.0.0.0:17910  0.0.0.0:*  users:(("talker",pid=155463,fd=25))
@@ -247,6 +252,7 @@ discovery用(個別) = 基準ポート + 10 + 2 × 参加者番号
 cat /proc/sys/net/ipv4/ip_local_port_range
 ```
 
+<!-- measure: env=gcc -->
 ```
 32768	60999
 ```
@@ -288,6 +294,7 @@ ROS_DOMAIN_ID=45 ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST ros2 run demo_nodes_cpp
 ROS_DOMAIN_ID=45 ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST ros2 node list
 ```
 
+<!-- measure: env=static reason="talker の起動が要り、Docker イメージに demo_nodes_cpp も無い" -->
 ```
 /talker
 ```
@@ -304,6 +311,7 @@ ROS_DOMAIN_ID=45 ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST ros2 node list
 ROS_DOMAIN_ID=44 ROS_AUTOMATIC_DISCOVERY_RANGE=OFF ros2 node list
 ```
 
+<!-- measure: env=ros -->
 ```
 Warning: ROS_AUTOMATIC_DISCOVERY_RANGE=OFF with no ROS_STATIC_PEERS configured.
 No discovery mechanism is available. Results will be empty.
@@ -417,12 +425,14 @@ ros2 multicast send
 
 送信側はこう出て終了します。
 
+<!-- measure: env=static reason="ros2 multicast の送信側と受信側を別プロセスで動かす必要がある" -->
 ```
 Sending one UDP multicast datagram...
 ```
 
 受信側にこう出れば、マルチキャストは通っています（同一マシンでの実測）。
 
+<!-- measure: env=static reason="ros2 multicast の送信側と受信側を別プロセスで動かす必要があり、受信元の IP とポートも毎回変わる" -->
 ```
 Waiting for UDP multicast datagram...
 Received from 10.28.0.217:37857: 'Hello World!'

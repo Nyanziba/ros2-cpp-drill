@@ -119,6 +119,7 @@ Details:
 Add the callback registration to the constructor of `speed_node.py`.
 
 ```python
+# ~/ros2_ws/src/speed_param_demo/speed_param_demo/speed_node.py
 import rclpy
 from rclpy.node import Node
 from rcl_interfaces.msg import SetParametersResult
@@ -204,6 +205,7 @@ Details:
 Create `config/speed_param.yaml`. It has a structure keyed by the node name, and the key structure is fixed: the node name comes first, and `ros__parameters` comes under it.
 
 ```yaml
+# ~/ros2_ws/src/speed_param_demo/config/speed_param.yaml
 speed_node:
   ros__parameters:
     max_speed: 2.0
@@ -212,6 +214,7 @@ speed_node:
 Edit `setup.py` and add to `data_files` so that the contents of the `config` directory are placed in the install location.
 
 ```python
+# ~/ros2_ws/src/speed_param_demo/setup.py
 import os
 from glob import glob
 from setuptools import setup
@@ -317,6 +320,7 @@ Details:
 Imagine you want to start several robots with the same launch file, and make `namespace` specifiable from the command line.
 
 ```python
+# ~/ros2_ws/src/speed_param_demo/launch/speed_param_launch.py
 import os
 
 from ament_index_python.packages import get_package_share_directory
@@ -358,6 +362,7 @@ def generate_launch_description():
 
 **Here is a trap that you should step on once.** The top-level key of the `speed_param.yaml` we made above is `speed_node:` (no namespace), but if you start with `namespace:=robot1`, the fully qualified name of the node becomes `/robot1/speed_node`. A parameter YAML matches the node name including the namespace, so the key `speed_node:` does **not match** `/robot1/speed_node`. It is not an error, and the node starts with the default value of `declare_parameter`.
 
+<!-- measure: env=ros files=src/speed_param_demo/speed_param_demo/speed_node.py,src/speed_param_demo/config/speed_param.yaml,src/speed_param_demo/setup.py,src/speed_param_demo/launch/speed_param_launch.py cmd="export PYTHONUNBUFFERED=1; ros2 pkg create --build-type ament_python --destination-directory /tmp/generated speed_param_demo >/dev/null 2>&1; cp -rn /tmp/generated/speed_param_demo/. src/speed_param_demo/ 2>/dev/null; colcon build --packages-select speed_param_demo >/dev/null 2>&1; source install/setup.bash; echo '$ ros2 launch speed_param_demo speed_param_launch.py'; timeout -s INT 4 ros2 launch speed_param_demo speed_param_launch.py 2>&1 | grep -m1 max_speed; echo '$ ros2 launch speed_param_demo speed_param_launch.py namespace:=robot1'; timeout -s INT 4 ros2 launch speed_param_demo speed_param_launch.py namespace:=robot1 2>&1 | grep -m1 max_speed" -->
 ```
 $ ros2 launch speed_param_demo speed_param_launch.py
 [speed_node-1] [INFO] [1790939696.049941586] [speed_node]: max_speed = 2.0

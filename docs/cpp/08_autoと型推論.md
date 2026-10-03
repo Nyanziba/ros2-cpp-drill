@@ -52,6 +52,7 @@ auto message = std_msgs::msg::String();
 **これが `auto` の唯一の重要な落とし穴です。**
 
 ```cpp
+// auto_ref.cpp
 #include <iostream>
 #include <string>
 #include <vector>
@@ -72,8 +73,9 @@ int main()
 }
 ```
 
-[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/5hTGz31Ka)
+[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/9Ed68E5fb)
 
+<!-- measure: files=auto_ref.cpp cmd="g++ -std=c++17 auto_ref.cpp -o auto_ref && ./auto_ref" -->
 ```
 hello changed
 ```
@@ -145,6 +147,7 @@ auto diff = a.size() - b.size();  // size_t の減算 → 負にならず巨大�
 ```
 
 ```cpp
+// size_diff.cpp
 #include <iostream>
 #include <vector>
 
@@ -158,8 +161,9 @@ int main()
 }
 ```
 
-[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/rTdqTfz9c)
+[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/Y9fanjsfP)
 
+<!-- measure: files=size_diff.cpp cmd="g++ -std=c++17 -Wall -Wextra size_diff.cpp -o size_diff && ./size_diff" -->
 ```
 18446744073709551613
 ```
@@ -193,6 +197,7 @@ auto d{1};         // int（C++17 以降）
 `auto` の親戚で、複数の値を一度に受け取れます。
 
 ```cpp
+// structured.cpp
 #include <iostream>
 #include <map>
 #include <string>
@@ -208,8 +213,9 @@ int main()
 }
 ```
 
-[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/xaYGEKTTr)
+[▶ ブラウザで実行する（gcc 13.3）](https://godbolt.org/z/73xjn9ann)
 
+<!-- measure: files=structured.cpp cmd="g++ -std=c++17 -Wall -Wextra structured.cpp -o structured && ./structured" -->
 ```
 accel = 3
 speed = 10
@@ -375,6 +381,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic signcompare.cpp -o signcompare && ./sign
 
 </details>
 
+<!-- measure: files=signcompare.cpp -->
 ```
 signcompare.cpp: In function ‘int main()’:
 signcompare.cpp:9:21: warning: comparison of integer expressions of different signedness: ‘int’ and ‘std::vector<int>::size_type’ {aka ‘long unsigned int’} [-Wsign-compare]

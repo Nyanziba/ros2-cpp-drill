@@ -25,14 +25,18 @@ int main() { return 0; }
 ```
 
 ```bash
-$ g++ -std=c++17 -E hello.cpp | wc -l
-25257
+g++ -std=c++17 -E hello.cpp | wc -l
+```
+
+<!-- measure: files=hello.cpp -->
+```
+25258
 ```
 
 [▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/e1Wax65x1)
 
 `-E` is an option that runs only the preprocessor.
-A 2-line file became **25257 lines**. `<string>` and everything it `#include`s
+A 2-line file became **25258 lines**. `<string>` and everything it `#include`s
 were really expanded and pasted.
 
 This "paste only" property decides everything about the C++ build.
@@ -162,6 +166,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic main.cpp -o main
 
 </details>
 
+<!-- measure: files=a.hpp,b.hpp,main.cpp -->
 ```
 In file included from b.hpp:2,
                  from main.cpp:3:
@@ -247,6 +252,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic x.cpp y.cpp -o app
 
 </details>
 
+<!-- measure: files=bad.hpp,x.cpp,y.cpp -->
 ```
 /usr/bin/ld: /tmp/cc51bYE3.o: in function `add(int, int)':
 y.cpp:(.text+0x0): multiple definition of `add(int, int)'; /tmp/ccMSxLb3.o:x.cpp:(.text+0x0): first defined here
@@ -311,9 +317,76 @@ file name in `CMakeLists.txt`, it appears in this form.
 Linker messages are hard to read because C++ stores function names in a **transformed** form.
 
 ```bash
-$ g++ -std=c++17 -c minimal_publisher.cpp -o mp.o
-$ nm -C mp.o | grep timer_callback
-0000000000000000 T MinimalPublisher::timer_callback()
+g++ -std=c++17 -c minimal_publisher.cpp -o mp.o
+nm -C mp.o | grep timer_callback
+```
+
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```cpp
+// drill/minimal_publisher.hpp
+#pragma once
+
+#include <chrono>
+#include <cstddef>
+#include <memory>
+#include <string>
+
+#include <rclcpp/rclcpp.hpp>
+#include <std_msgs/msg/string.hpp>
+
+/// MinimalPublisher from the official tutorial
+/// "Writing a simple publisher and subscriber (C++)".
+///
+/// The only difference from the official one is that main() is split into another file (src/talker_main.cpp),
+/// because the tests create and check this class directly.
+class MinimalPublisher : public rclcpp::Node
+{
+public:
+  MinimalPublisher();
+
+private:
+  void timer_callback();
+
+  rclcpp::TimerBase::SharedPtr timer_;
+  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+  std::size_t count_;
+};
+```
+
+```cpp
+// minimal_publisher.cpp
+#include "drill/minimal_publisher.hpp"
+
+using namespace std::chrono_literals;
+
+MinimalPublisher::MinimalPublisher()
+: Node("minimal_publisher"), count_(0)
+{
+  publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10);
+  timer_ = this->create_wall_timer(
+    500ms, std::bind(&MinimalPublisher::timer_callback, this));
+}
+
+void MinimalPublisher::timer_callback()
+{
+  auto message = std_msgs::msg::String();
+  message.data = "Hello, world! " + std::to_string(count_++);
+  RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
+  publisher_->publish(message);
+}
+```
+
+```bash
+g++ -std=c++17 -I. -c minimal_publisher.cpp -o mp.o   # the rclcpp include paths (-I) are omitted
+nm -C mp.o | grep timer_callback
+```
+
+</details>
+
+<!-- measure: env=ros files=drill/minimal_publisher.hpp,minimal_publisher.cpp cmd="g++ -std=c++17 -I. $(find /opt/ros/jazzy/include -maxdepth 1 -mindepth 1 -type d -printf '-I%p ') -c minimal_publisher.cpp -o mp.o && nm -C mp.o | grep timer_callback" filter="grep ' T '" -->
+```
+00000000000004b4 T MinimalPublisher::timer_callback()
 ```
 
 > This output needs rclcpp, so it is an excerpt measured in an environment with ROS 2 (the repository's Docker image). Unlike the other examples in the C++ track, you cannot reproduce it with `g++` alone.
@@ -401,6 +474,7 @@ g++ -std=c++17 -Wall -Wextra counter.cpp main.cpp -o app && ./app
 
 <details markdown="1"><summary>Answer (compile error)</summary>
 
+<!-- measure: files=counter.hpp,counter.cpp,main.cpp -->
 ```
 /usr/bin/ld: /tmp/cc8kIU49.o: in function `twice(int)':
 main.cpp:(.text+0x0): multiple definition of `twice(int)'; /tmp/ccNwomqP.o:counter.cpp:(.text+0x0): first defined here
@@ -421,9 +495,13 @@ sed 's/int main()/int other()/' main.cpp > other.cpp
 g++ -std=c++17 counter.cpp main.cpp other.cpp -o app
 ```
 
+<!-- measure: files=counter.hpp,counter.cpp,main.cpp cmd="sed 's/int main()/int other()/' main.cpp > other.cpp; g++ -std=c++17 counter.cpp main.cpp other.cpp -o app" -->
 ```
-/usr/bin/ld: ... main.cpp:(.text+0x0): multiple definition of `twice(int)'; ... counter.cpp: first defined here
-/usr/bin/ld: ... other.cpp:(.text+0x0): multiple definition of `twice(int)'; ... counter.cpp: first defined here
+/usr/bin/ld: /tmp/ccnS7bOT.o: in function `twice(int)':
+main.cpp:(.text+0x0): multiple definition of `twice(int)'; /tmp/ccQEXosz.o:counter.cpp:(.text+0x0): first defined here
+/usr/bin/ld: /tmp/ccXufbXu.o: in function `twice(int)':
+other.cpp:(.text+0x0): multiple definition of `twice(int)'; /tmp/ccQEXosz.o:counter.cpp:(.text+0x0): first defined here
+collect2: error: ld returned 1 exit status
 ```
 
 From the number of errors, you can see that one definition is made per `.cpp`.
@@ -435,6 +513,7 @@ sed -i 's/^int twice/inline int twice/' counter.hpp
 g++ -std=c++17 counter.cpp main.cpp other.cpp -o app && ./app
 ```
 
+<!-- measure: files=counter.hpp,counter.cpp,main.cpp cmd="sed 's/int main()/int other()/' main.cpp > other.cpp; sed -i 's/^int twice/inline int twice/' counter.hpp; g++ -std=c++17 counter.cpp main.cpp other.cpp -o app && ./app" -->
 ```
 1242
 ```

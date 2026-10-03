@@ -197,6 +197,7 @@ Output:
 
 <details markdown="1"><summary>Answer (actual output)</summary>
 
+<!-- measure: -->
 ```
 === Scope and lifetime ===
 

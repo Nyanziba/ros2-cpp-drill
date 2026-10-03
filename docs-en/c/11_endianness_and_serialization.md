@@ -67,6 +67,7 @@ gcc -std=c99 -Wall -Wextra -Wpedantic endian_check.c -o endian_check && ./endian
 </details>
 
 Measured values:
+<!-- measure: -->
 ```
 78 56 34 12
 ```
@@ -301,6 +302,7 @@ gcc -std=c99 -Wall -Wextra -Wpedantic float_roundtrip.c -o float_roundtrip && ./
 
 </details>
 
+<!-- measure: -->
 ```
 Round trip succeeded
 original value: 3.14
@@ -315,6 +317,7 @@ Copy the following, compile and run it, and check it in your own environment too
 **Predict: In little endian, the byte sequence of `1.0f` should be `00 00 80 3f`.**
 
 ```c
+// endian_demo.c
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -374,9 +377,15 @@ int main(void) {
 }
 ```
 
+```bash
+gcc -std=c99 -Wall -Wextra -Wpedantic endian_demo.c -o endian_demo && ./endian_demo
+```
+
 Result (measured):
+
 <details markdown="1"><summary>Answer (actual output)</summary>
 
+<!-- measure: -->
 ```
 === Endianness test ===
 0x12345678 -> 78 56 34 12

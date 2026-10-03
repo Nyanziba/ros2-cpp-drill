@@ -213,6 +213,7 @@ clang++ -std=c++17 -Wall -Wextra -Wpedantic dangling.cpp -o dangling && ./dangli
 
 </details>
 
+<!-- measure: env=clang -->
 ```
 display addr = 0x1038b1ea0
 display 100
@@ -377,6 +378,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic weak_hub.cpp -o weak_hub && ./weak_hub
 
 </details>
 
+<!-- measure: -->
 ```
 display 100
 surviving subscriptions = 0
@@ -582,6 +584,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic self_removing.cpp -o self_removing && ./
 
 </details>
 
+<!-- measure: -->
 ```
 observer 1 got 42
 observer 3 got 42
@@ -721,6 +724,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic cycle.cpp -o cycle && ./cycle
 
 </details>
 
+<!-- measure: -->
 ```
 depth 1
 depth 2
@@ -807,6 +811,7 @@ for (auto it = callbacks_.begin(); it != callbacks_.end(); ++it) {
 <details markdown="1"><summary>Full program that produced this output</summary>
 
 ```cpp
+// fn.cpp
 #include <functional>
 #include <vector>
 
@@ -828,10 +833,11 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic fn.cpp -o fn
 
 </details>
 
+<!-- measure: filter="head -n 7; echo ..." -->
 ```
 fn.cpp: In function ‘int main()’:
-fn.cpp:10:13: error: no match for ‘operator==’ (operand types are ‘std::function<void(int)>’ and ‘main()::<lambda(int)>’)
-   10 |     if (*it == cb) { callbacks_.erase(it); break; }   // I want to write this
+fn.cpp:11:13: error: no match for ‘operator==’ (operand types are ‘std::function<void(int)>’ and ‘main()::<lambda(int)>’)
+   11 |     if (*it == cb) { callbacks_.erase(it); break; }   // I want to write this
       |         ~~~ ^~ ~~
       |         |      |
       |         |      main()::<lambda(int)>
@@ -898,6 +904,7 @@ Before solving the exercise, compile this and **predict the output** before you 
 It is the smallest form of 17.4, "the list changes during notification".
 
 ```cpp
+// try.cpp
 #include <algorithm>
 #include <cstdio>
 #include <vector>
@@ -976,6 +983,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 
 It is not 3 lines with 1, 2, 3 once each. This is what happened on my machine.
 
+<!-- measure: -->
 ```
 observer 1 got 42
 observer 3 got 42
@@ -1262,6 +1270,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic protected_dtor.cpp -o protected_dtor
 
 </details>
 
+<!-- measure: -->
 ```
 protected_dtor.cpp: In function ‘void f(SensorObserver*)’:
 protected_dtor.cpp:64:30: warning: deleting object of abstract class type ‘SensorObserver’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]

@@ -58,6 +58,7 @@ In the second terminal, look at the list of nodes that are running now.
 ros2 node list
 ```
 
+<!-- measure: env=static reason="turtlesim_node の起動が要り、Docker イメージに turtlesim も無い" -->
 ```
 /turtlesim
 ```
@@ -94,6 +95,7 @@ When you check with `ros2 node list`, it is now registered as `/my_turtle` inste
 ros2 node list
 ```
 
+<!-- measure: env=static reason="turtlesim_node の起動が要り、Docker イメージに turtlesim も無い" -->
 ```
 /my_turtle
 ```
@@ -102,6 +104,7 @@ ros2 node list
 
 This is useful when you want to start several nodes of the same package and avoid name collisions. This is easy to misunderstand, but **ROS 2 does not stop two nodes with the same name from existing.** If you actually start two nodes with the same name, both keep running normally, and they appear twice in `ros2 node list`. The only thing you get is the following warning.
 
+<!-- measure: env=static reason="turtlesim_node を同名で 2 つ起動する必要があり、Docker イメージに turtlesim も無い" -->
 ```
 WARNING: Be aware that there are nodes in the graph that share an exact name, which can have unintended side effects.
 /turtlesim

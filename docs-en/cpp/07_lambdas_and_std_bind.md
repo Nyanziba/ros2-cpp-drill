@@ -66,6 +66,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic member_pointer.cpp -o member_pointer
 
 </details>
 
+<!-- measure: -->
 ```
 member_pointer.cpp: In function ‘int main()’:
 member_pointer.cpp:11:17: error: cannot convert ‘void (MinimalPublisher::*)()’ to ‘void (*)()’ in initialization
@@ -93,6 +94,7 @@ MinimalPublisher obj;
 `std::bind` is a tool that "bundles a function and some of its arguments in advance".
 
 ```cpp
+// bind_add.cpp
 #include <functional>
 #include <iostream>
 
@@ -107,8 +109,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/EYEzThcoY)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/aojxTaYca)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic bind_add.cpp -o bind_add && ./bind_add" -->
 ```
 15
 17
@@ -192,6 +195,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic bind_noamp.cpp -o bind_noamp
 
 </details>
 
+<!-- measure: -->
 ```
 bind_noamp.cpp: In member function ‘void MinimalSubscriber::start()’:
 bind_noamp.cpp:17:36: error: invalid use of non-static member function ‘void MinimalSubscriber::topic_callback(const std::string&)’
@@ -270,6 +274,7 @@ The return type is deduced. If you want to state it, add `-> type`.
 This is the heart of lambdas.
 
 ```cpp
+// capture.cpp
 #include <iostream>
 
 int main()
@@ -295,8 +300,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/13rareMGx)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/zoPo8444o)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic capture.cpp -o capture && ./capture" -->
 ```
 copy   a=1
 ref    a=99
@@ -404,6 +410,7 @@ This is a problem when you want to **keep it as a member variable** or **receive
 `std::function<return_type(arguments...)>` is the container for this.
 
 ```cpp
+// std_function.cpp
 #include <functional>
 #include <iostream>
 
@@ -425,8 +432,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/c3e6E69d8)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/b19cvGj1x)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic std_function.cpp -o std_function && ./std_function" -->
 ```
   x=1
   x=2
@@ -611,7 +619,11 @@ reg.on_event(std::bind(&Counter::add, &d, std::placeholders::_1, std::placeholde
 **Count the lines of the error.**
 
 ```bash
-$ g++ -std=c++17 -c lambda.cpp -o /dev/null 2>&1 | wc -l
+g++ -std=c++17 -c lambda.cpp -o /dev/null 2>&1 | wc -l
+```
+
+<!-- measure: files=lambda.cpp cmd="sed -i 's/placeholders::_1));/placeholders::_1, std::placeholders::_2));/' lambda.cpp; g++ -std=c++17 -c lambda.cpp -o /dev/null 2>&1 | wc -l" -->
+```
 22
 ```
 

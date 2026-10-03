@@ -57,6 +57,7 @@ gcc -std=c99 -Wall -Wextra -Wpedantic macro_parentheses.c -o macro_parentheses &
 
 </details>
 
+<!-- measure: -->
 ```
 DOUBLE_BROKEN(1 + 2) = 5
 DOUBLE_FIXED(1 + 2) = 6
@@ -103,6 +104,7 @@ gcc -std=c99 -Wall -Wextra -Wpedantic macro_double_evaluation.c -o macro_double_
 
 </details>
 
+<!-- measure: filter="tail -n 1" -->
 ```
 i after SQ(i++) = 2, result = 0
 ```
@@ -170,6 +172,7 @@ gcc -std=c99 -Wall -Wextra -Wpedantic multistatement_macro.c -o multistatement_m
 
 </details>
 
+<!-- measure: -->
 ```
 multistatement_macro.c: In function ‘main’:
 multistatement_macro.c:10:5: warning: macro expands to multiple statements [-Wmultistatement-macros]
@@ -241,6 +244,7 @@ gcc -E -P -std=c99 macro_expansion.c
 
 Measured values:
 
+<!-- measure: -->
 ```c
 const char *greeting = "hello";
 int foo_bar;
@@ -284,6 +288,7 @@ gcc -E -P -std=c11 -DNDEBUG assert_expansion.c | sed -n '/^int main/,$p'
 
 Measured values (without `NDEBUG`):
 
+<!-- measure: filter="head -n 5" -->
 ```c
 int main(void)
 {
@@ -294,6 +299,7 @@ int main(void)
 
 Measured values (with `-DNDEBUG`; it becomes an expression that does nothing):
 
+<!-- measure: filter="tail -n 5" -->
 ```c
 int main(void)
 {
@@ -359,6 +365,7 @@ gcc -std=c11 static_assert_fail.c
 
 </details>
 
+<!-- measure: -->
 ```
 static_assert_fail.c:8:1: error: static assertion failed: "MyStruct must be 16 bytes"
     8 | _Static_assert(sizeof(MyStruct) == 16, "MyStruct must be 16 bytes");
@@ -407,6 +414,7 @@ gcc -std=c11 -Wall -Wextra -Wpedantic static_assert_ok.c -o static_assert_ok && 
 
 </details>
 
+<!-- measure: -->
 ```
 sizeof(MyStruct) = 8
 ```
@@ -416,6 +424,7 @@ sizeof(MyStruct) = 8
 **When you compile a program, you can pass a `#define` as a command-line argument.**
 
 ```c
+// myfile.c
 #include <stdio.h>
 
 #ifdef DEBUG_MODE
@@ -438,6 +447,7 @@ gcc -std=c99 -Wall -Wextra -Wpedantic myfile.c -o myfile
 ./myfile
 ```
 
+<!-- measure: -->
 ```
 Program running
 ```
@@ -449,6 +459,7 @@ gcc -std=c99 -Wall -Wextra -Wpedantic -DDEBUG_MODE myfile.c -o myfile_debug
 ./myfile_debug
 ```
 
+<!-- measure: -->
 ```
 [DEBUG] This is a debug message
 Program running
@@ -483,6 +494,7 @@ gcc -E -P -std=c99 macro_expansion.c
 
 Measured values:
 
+<!-- measure: -->
 ```c
 const char *greeting = "hello";
 int foo_bar;
@@ -559,7 +571,15 @@ gcc -std=c11 -Wall -Wextra -Wpedantic preprocessor_demo.c -o preprocessor_demo &
 
 <details markdown="1"><summary>Answer (actual output)</summary>
 
+<!-- measure: -->
 ```
+preprocessor_demo.c: In function ‘main’:
+preprocessor_demo.c:49:28: warning: operation on ‘i’ may be undefined [-Wsequence-point]
+   49 |     int result = SQ_MACRO(i++);
+      |                            ^
+preprocessor_demo.c:11:29: note: in definition of macro ‘SQ_MACRO’
+   11 | #define SQ_MACRO(x) ((x) * (x))
+      |                             ^
 == Macro expansion pitfalls ==
 DOUBLE_BROKEN(1 + 2) = 5 (should be 5, not 6)
 DOUBLE_FIXED(1 + 2) = 6 (should be 6)

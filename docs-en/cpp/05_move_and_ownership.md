@@ -74,6 +74,7 @@ I deliberately wrote "promise" on the third line. It is easy to misunderstand, s
 **Just receiving with `T &&` does not move even one byte of the contents.**
 
 ```cpp
+// take_it.cpp
 #include <iostream>
 #include <utility>
 #include <vector>
@@ -93,8 +94,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/YETdsP484)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/14aYhWP18)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic take_it.cpp -o take_it && ./take_it" -->
 ```
 take (size 3)
 after move, size = 3
@@ -187,6 +189,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic address_of_rvalue.cpp -o address_of_rval
 
 </details>
 
+<!-- measure: -->
 ```
 address_of_rvalue.cpp: In function ‘int main()’:
 address_of_rvalue.cpp:7:3: warning: statement has no effect [-Wunused-value]
@@ -248,6 +251,7 @@ void f(std::string && s);       // rvalue reference — receives only rvalues
 Let us actually see the dispatch.
 
 ```cpp
+// overload.cpp
 #include <iostream>
 #include <string>
 
@@ -265,8 +269,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/Eeqnvzqba)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/vz11zfxss)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic overload.cpp -o overload && ./overload" -->
 ```
 const & : named
 &&      : literal
@@ -306,6 +311,7 @@ there would have been fewer misunderstandings.
 Let us reproduce what the move of `std::string` does with our own class.
 
 ```cpp
+// buffer.cpp
 #include <iostream>
 #include <utility>
 
@@ -359,10 +365,11 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/8d7158eME)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/ejK8o48sj)
 
 Example output (addresses change on every run).
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic buffer.cpp -o buffer && ./buffer" -->
 ```
   allocated 4
 address of a: 0x55555556b2b0
@@ -536,6 +543,7 @@ g++ -std=c++17 -Wall -Wextra -Wpessimizing-move pessimizing.cpp -o pessimizing
 
 </details>
 
+<!-- measure: -->
 ```
 pessimizing.cpp: In function ‘std::string make_bad()’:
 pessimizing.cpp:8:19: warning: moving a local object in a return statement prevents copy elision [-Wpessimizing-move]
@@ -593,6 +601,7 @@ std::string s = make();                                // it is constructed only
 You can check it.
 
 ```cpp
+// elision.cpp
 #include <iostream>
 
 struct Noisy
@@ -611,8 +620,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/sqqd7f8YG)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/zYYG9vc4P)
 
+<!-- measure: cmd="g++ -std=c++17 elision.cpp -o elision && ./elision" -->
 ```
 create
 ```

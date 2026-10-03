@@ -99,6 +99,7 @@ You can see the detailed information of a topic (type, number of publishers, num
 ros2 topic info /turtle1/cmd_vel
 ```
 
+<!-- measure: env=static reason="turtlesim_node の起動が要り、Docker イメージに turtlesim も無い" -->
 ```
 Type: geometry_msgs/msg/Twist
 Publisher count: 1
@@ -129,6 +130,7 @@ What values to send to `cmd_vel` can be known by looking at the message type.
 ros2 interface show geometry_msgs/msg/Twist
 ```
 
+<!-- measure: env=ros filter="expand" -->
 ```
 # This expresses velocity in free space broken into its linear and angular parts.
 

@@ -272,6 +272,7 @@ ros2 launch ~/ros2_lecture/launch/mimic_record_launch.py
 
 Lines from the recorder are mixed into the log. `[ros2-4]` means the output of the fourth element (`ExecuteProcess`).
 
+<!-- measure: env=static reason="turtlesim_node の起動が要り、Docker イメージに turtlesim も無い" -->
 ```
 [ros2-4] [INFO] [rosbag2_recorder]: Starting recording to 'mimic_bag'
 [ros2-4] [INFO] [rosbag2_recorder]: Listening for topics...
@@ -281,6 +282,7 @@ Lines from the recorder are mixed into the log. `[ros2-4]` means the output of t
 
 Leave it for about 10 seconds, and then press **Ctrl+C once** in the launch terminal. The recorder also shuts down properly.
 
+<!-- measure: env=static reason="turtlesim_node の起動が要り、Docker イメージに turtlesim も無い" -->
 ```
 [ros2-4] [INFO] [rosbag2_recorder]: Pausing recording.
 [mimic-3] [INFO] [rclcpp]: signal_handler(SIGINT/SIGTERM)
@@ -296,6 +298,7 @@ Leave it for about 10 seconds, and then press **Ctrl+C once** in the launch term
 ros2 bag info mimic_bag
 ```
 
+<!-- measure: env=static reason="turtlesim_node の起動が要り、Docker イメージに turtlesim も無い" -->
 ```
 Files:             mimic_bag_0.mcap
 Bag size:          43.7 KiB
@@ -319,6 +322,7 @@ As an exercise, check the following by yourself.
 
 2. Recording does not start, because of an error.
 
+<!-- measure: env=static reason="turtlesim_node の起動が要り、Docker イメージに turtlesim も無い" -->
 ```
 [ERROR] [ros2bag]: Output folder 'mimic_bag' already exists.
 ```
@@ -347,6 +351,7 @@ Hint: Here are three points where you can get stuck in real operation.
 
 **Add `--topics`.** The style that lists topic names as positional arguments (`ros2 bag record -o foo /topic_a`) also works, but Jazzy shows a deprecation warning.
 
+<!-- measure: env=ros cmd="timeout -s INT 3 ros2 bag record -o /tmp/positional_bag /chatter" filter="grep WARN" -->
 ```
 [WARN] [ros2bag]: Positional "topics" argument deprecated. Please use optional "--topics" argument instead.
 ```
@@ -392,6 +397,7 @@ ros2 launch mimic_record_launch.py record:=false
 ros2 component types | grep rosbag
 ```
 
+<!-- measure: env=ros -->
 ```
 rosbag2_transport
   rosbag2_transport::Player

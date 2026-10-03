@@ -311,6 +311,7 @@ gcc -std=c99 -Wall -Wextra -Wpedantic func_pointer_all.c -o func_pointer_all && 
 
 <details markdown="1"><summary>Answer (actual output)</summary>
 
+<!-- measure: -->
 ```
 == Function pointers: decay and typedef ==
 op1(3, 4) = 7
@@ -348,6 +349,7 @@ Check these 3 points.
 Next, check what happens when you call a NULL function pointer.
 
 ```c
+// null_func_crash.c
 #include <stdio.h>
 
 typedef int (*Handler)(int);
@@ -368,9 +370,10 @@ gcc -std=c99 -Wall -Wextra -Wpedantic null_func_crash.c -o null_func_crash && ./
 
 <details markdown="1"><summary>Answer (actual output)</summary>
 
+<!-- measure: tty=yes filter="tail -n 3" -->
 ```
 Calling a NULL function pointer...
-Segmentation fault (core dumped)
+Segmentation fault
 Exit code: 139
 ```
 

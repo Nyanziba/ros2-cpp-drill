@@ -477,6 +477,7 @@ whether the `link` line appears in the run where `calib` fails,
 and if it does, what appears.
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <string>
 
@@ -573,6 +574,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 <details>
 <summary>Predict: when <code>calib</code> fails, does the <code>link</code> line appear</summary>
 
+<!-- measure: files=try.cpp -->
 ```
 --- all succeed ---
   power up
@@ -631,6 +633,7 @@ So **make the constructor a `constexpr` that does nothing, and
 call `init()` from `main()` after the clock setup**.
 
 ```cpp
+// mcu.cpp
 #include <cstdio>
 
 namespace
@@ -749,6 +752,7 @@ int main()
 g++ -std=c++17 -Wall -Wextra -Wpedantic -fno-exceptions -fno-rtti mcu.cpp -o mcu && ./mcu
 ```
 
+<!-- measure: files=mcu.cpp -->
 ```
 --- 12.0 V ---
 clock on

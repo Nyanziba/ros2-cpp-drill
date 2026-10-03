@@ -235,6 +235,7 @@ Output:
 
 <details markdown="1"><summary>Answer (actual output)</summary>
 
+<!-- measure: -->
 ```
 === Practice: reading declarations ===
 

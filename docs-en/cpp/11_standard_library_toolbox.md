@@ -460,6 +460,7 @@ Measured result:
 
 <details markdown="1"><summary>Answer (actual output)</summary>
 
+<!-- measure: -->
 ```
 === std::string ===
 Greeting: 'Hello world'
@@ -537,6 +538,7 @@ g++ -std=c++17 -Wall printf_string.cpp -o printf_string && ./printf_string
 
 </details>
 
+<!-- measure: cmd="g++ -std=c++17 -Wall printf_string.cpp -o printf_string" -->
 ```
 printf_string.cpp: In function ‘int main()’:
 printf_string.cpp:8:21: warning: format ‘%s’ expects argument of type ‘char*’, but argument 2 has type ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} [-Wformat=]
@@ -577,6 +579,7 @@ g++ -std=c++17 concat_literals.cpp -o concat_literals
 
 </details>
 
+<!-- measure: -->
 ```
 concat_literals.cpp: In function ‘int main()’:
 concat_literals.cpp:6:27: error: invalid operands of types ‘const char [6]’ and ‘const char [7]’ to binary ‘operator+’
@@ -636,6 +639,7 @@ g++ -std=c++17 optional_to_int.cpp -o optional_to_int
 
 </details>
 
+<!-- measure: -->
 ```
 optional_to_int.cpp: In function ‘int main()’:
 optional_to_int.cpp:7:11: error: cannot convert ‘std::optional<int>’ to ‘int’ in initialization
@@ -676,6 +680,7 @@ g++ -std=c++17 enum_mix.cpp -o enum_mix
 
 </details>
 
+<!-- measure: -->
 ```
 enum_mix.cpp: In function ‘int main()’:
 enum_mix.cpp:7:11: error: no match for ‘operator==’ (operand types are ‘Color’ and ‘Status’)

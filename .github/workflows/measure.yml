@@ -1,0 +1,54 @@
+name: measure
+
+# 読み物に載せた出力が、いまも実測どおりかを確かめるワークフロー。
+#
+# 出力の直前に <!-- measure: ... --> の印がある出力ブロックを、tools/measure.py が
+# Docker（Ubuntu 24.04 / g++ 13.3 / x86_64）で動かし直して、本文と食い違わないかを見ます。
+# アドレスや時刻など実行ごとに変わる値は、比べる前に正規化します。
+#
+# Apple clang で測る出力（env=clang）は macOS でしか動かせないので、ここでは数えるだけで飛ばします。
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'docs-en/**'
+      - 'tools/measure.py'
+      - 'Dockerfile'
+      - '.github/workflows/measure.yml'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'docs-en/**'
+      - 'tools/measure.py'
+      - 'Dockerfile'
+      - '.github/workflows/measure.yml'
+  # コンパイラやベースイメージの更新で出力が変わったことに気づけるよう、週 1 回も回す。
+  schedule:
+    - cron: '0 4 * * 2'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      # measure.py は ros2-drill:jazzy-amd64 を使う。docker.yml と同じく gha キャッシュに載せる。
+      - name: イメージをビルド
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: ros2-drill:jazzy-amd64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: 出力が実測どおりか
+        run: python3 tools/measure.py --check

@@ -152,6 +152,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic copy_inner.cpp -o copy_inner
 
 </details>
 
+<!-- measure: files=copy_inner.cpp -->
 ```
 copy_inner.cpp: In constructor ‘SinkDecorator::SinkDecorator(std::unique_ptr<LogSink>)’:
 copy_inner.cpp:17:5: error: use of deleted function ‘std::unique_ptr<_Tp, _Dp>::unique_ptr(const std::unique_ptr<_Tp, _Dp>&) [with _Tp = LogSink; _Dp = std::default_delete<LogSink>]’
@@ -302,6 +303,7 @@ If you add `-Wnon-virtual-dtor`, a warning appears on the class declaration (onl
 g++ -std=c++17 -Wnon-virtual-dtor novirt.cpp -o novirt 2>&1 | grep -m1 'warning:'
 ```
 
+<!-- measure: files=novirt.cpp -->
 ```
 novirt.cpp:7:7: warning: ‘class Sink’ has virtual functions and accessible non-virtual destructor [-Wnon-virtual-dtor]
 ```
@@ -309,6 +311,7 @@ novirt.cpp:7:7: warning: ‘class Sink’ has virtual functions and accessible n
 And when you run it, **it did not crash**. It printed the result of `format()` on one line and exited with code 0.
 But neither `~Border` nor `~Plain` is printed even once. The inside was never destroyed.
 
+<!-- measure: files=novirt.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic novirt.cpp -o novirt 2>&1 | grep 'warning:'; ./novirt; echo \"exit code $?\"" -->
 ```
 12:00:00 [INFO] moving
 exit code 0
@@ -327,6 +330,7 @@ The nesting is the main body of Decorator, so **the damage of forgetting the vir
 
 Let us also look at the order of destruction when it is written correctly (this is the measurement of 12.7; it is the second block of its output).
 
+<!-- measure: files=try.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try" filter="sed -n '7,9p'" -->
 ```
 ~Border([INFO])
 ~Border(12:00:00)
@@ -361,6 +365,7 @@ first think whether `streambuf` or templates are enough (→ [0. Before you use 
 It is complete in one file. Run it **after predicting the output.**
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <memory>
 #include <string>
@@ -427,6 +432,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 <details>
 <summary>Predict: are the formatted results of the 2 blocks the same? How many destructors are called?</summary>
 
+<!-- measure: files=try.cpp -->
 ```
 12:00:00 [INFO] moving
 ~Border(12:00:00)
@@ -457,6 +463,7 @@ if you write code that reassembles depending on the situation inside a loop, the
 Instead, **nest by type.** It is `Border<Border<Text>>`.
 
 ```cpp
+// micro.cpp
 #include <cstdio>
 #include <cstring>
 #include <type_traits>
@@ -540,6 +547,7 @@ I built it with settings close to a microcontroller and ran it.
 c++ -std=c++17 -Wall -Wextra -Wpedantic -fno-exceptions -fno-rtti micro.cpp -o micro && ./micro
 ```
 
+<!-- measure: files=micro.cpp -->
 ```
 [INFO] 12:00:00.000 moving
 sizeof(sink) = 24

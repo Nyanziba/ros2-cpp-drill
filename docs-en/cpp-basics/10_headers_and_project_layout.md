@@ -48,6 +48,7 @@ g++ -std=c++17 not_declared.cpp -o not_declared
 
 </details>
 
+<!-- measure: filter="grep -o 'error:.*'" -->
 ```
 error: ‘add’ was not declared in this scope
 ```
@@ -91,6 +92,7 @@ g++ -std=c++17 -c no_definition.cpp -o no_definition.o && g++ no_definition.o -o
 
 </details>
 
+<!-- measure: -->
 ```
 /usr/bin/ld: no_definition.o: in function `main':
 no_definition.cpp:(.text+0x17): undefined reference to `add(int, int)'
@@ -119,6 +121,7 @@ echo 'int main() { return 0; }' >> simple.cpp
 g++ -E simple.cpp | wc -l
 ```
 
+<!-- measure: -->
 ```
 25325
 ```
@@ -168,6 +171,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic -c main.cpp
 
 </details>
 
+<!-- measure: files=no_guard.h,main.cpp -->
 ```
 In file included from main.cpp:3:
 no_guard.h:2:8: error: redefinition of ‘struct Point’
@@ -260,6 +264,7 @@ target_link_libraries(demo PRIVATE util)
 This program puts together declaration and definition, include guards, and translation units.
 
 ```cpp
+// try.cpp
 #include <iostream>
 
 // === DECLARATION vs DEFINITION ===
@@ -307,10 +312,11 @@ int main() {
 g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/Mb6nP5hMh)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/efvTx9PrE)
 
 <details markdown="1"><summary>Answer (actual output)</summary>
 
+<!-- measure: -->
 ```
 === Declaration vs Definition ===
 add(10, 20) = 30

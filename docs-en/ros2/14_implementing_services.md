@@ -69,6 +69,7 @@ Add the dependencies to `package.xml`.
 Create `py_srvcli/py_srvcli/service_member_function.py`.
 
 ```python
+# ~/ros2_ws/src/py_srvcli/py_srvcli/service_member_function.py
 from example_interfaces.srv import AddTwoInts
 
 import rclpy
@@ -131,6 +132,7 @@ From another terminal, check the behavior with the `ros2 service call` you used 
 ros2 service call /add_two_ints example_interfaces/srv/AddTwoInts "{a: 3, b: 4}"
 ```
 
+<!-- measure: env=ros files=src/py_srvcli/py_srvcli/service_member_function.py cmd="python3 src/py_srvcli/py_srvcli/service_member_function.py >/dev/null 2>&1 & S=$!; sleep 4; ros2 service call /add_two_ints example_interfaces/srv/AddTwoInts '{a: 3, b: 4}'; kill $S" filter="grep -v '^waiting for service'" -->
 ```
 requester: making request: example_interfaces.srv.AddTwoInts_Request(a=3, b=4)
 
@@ -145,6 +147,7 @@ An `Incoming request` log should also appear in the terminal on the server side.
 The side that calls the server is also written as a node. Create `py_srvcli/py_srvcli/client_member_function.py`.
 
 ```python
+# ~/ros2_ws/src/py_srvcli/py_srvcli/client_member_function.py
 import sys
 
 from example_interfaces.srv import AddTwoInts
@@ -213,6 +216,7 @@ source install/setup.bash
 ros2 run py_srvcli client 2 3
 ```
 
+<!-- measure: env=ros files=src/py_srvcli/py_srvcli/service_member_function.py,src/py_srvcli/py_srvcli/client_member_function.py cmd="python3 src/py_srvcli/py_srvcli/service_member_function.py >/dev/null 2>&1 & S=$!; sleep 4; python3 src/py_srvcli/py_srvcli/client_member_function.py 2 3; kill $S" filter="grep -v 'service not available'" -->
 ```
 [INFO] [1790937390.907519089] [minimal_client_async]: Result of add_two_ints: for 2 + 3 = 5
 ```

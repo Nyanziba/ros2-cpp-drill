@@ -223,6 +223,7 @@ Output:
 
 <details markdown="1"><summary>Answer (actual output)</summary>
 
+<!-- measure: -->
 ```
 == Passing by value ==
 Before: x = 10
@@ -317,6 +318,7 @@ gcc -std=c99 -Wall -Wextra -Wpedantic ch03_address.c -o ch03_address && ./ch03_a
 
 </details>
 
+<!-- measure: -->
 ```
 Variable x: 42
 Address of x (&x): 0x7ffffffc5a2c

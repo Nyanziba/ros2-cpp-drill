@@ -15,6 +15,7 @@
 ## 2.1 The shortest class
 
 ```cpp
+// counter.cpp
 #include <iostream>
 
 class Counter
@@ -43,8 +44,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/9o9rvGxde)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/7x5n7K9Kh)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic counter.cpp -o counter && ./counter" -->
 ```
 Created
 2
@@ -142,6 +144,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic config.cpp -o config
 
 </details>
 
+<!-- measure: -->
 ```
 config.cpp: In constructor ‘Config::Config(int)’:
 config.cpp:5:3: error: uninitialized const member in ‘const int’ [-fpermissive]
@@ -251,6 +254,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic ordered.cpp -o ordered && ./ordered
 
 </details>
 
+<!-- measure: -->
 ```
 ordered.cpp: In constructor ‘Ordered::Ordered()’:
 ordered.cpp:10:7: warning: ‘Ordered::b_’ will be initialized after [-Wreorder]
@@ -341,6 +345,7 @@ C++ has no syntax equivalent to Python's `with` or Java's `try-with-resources`.
 **It does not need one.** When you leave a scope, the destructor is called automatically.
 
 ```cpp
+// noisy.cpp
 #include <iostream>
 
 class Noisy
@@ -373,8 +378,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/z3b73ehzG)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/d77eo7xPz)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic noisy.cpp -o noisy && ./noisy" -->
 ```
 -- main starts
 a created
@@ -459,6 +465,7 @@ explicit ZeroCopyTalker(const rclcpp::NodeOptions & options);
 This causes a troublesome accident.
 
 ```cpp
+// meters_implicit.cpp
 #include <iostream>
 
 class Meters
@@ -484,8 +491,9 @@ int main()
 }
 ```
 
-[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/KPc6eMWj6)
+[▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/K5ajfc5ae)
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic meters_implicit.cpp -o meters_implicit && ./meters_implicit" -->
 ```
 move 1.5 m
 move 1.5 m
@@ -536,6 +544,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic meters.cpp -o meters
 
 </details>
 
+<!-- measure: -->
 ```
 meters.cpp: In function ‘int main()’:
 meters.cpp:21:14: error: could not convert ‘1.5e+0’ from ‘double’ to ‘Meters’

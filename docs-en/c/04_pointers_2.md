@@ -37,6 +37,7 @@ gcc -std=c99 -Wall -Wextra -Wpedantic array_decay.c -o array_decay && ./array_de
 
 </details>
 
+<!-- measure: -->
 ```
 arr = 0x7ffffffc5950
 &arr[0] = 0x7ffffffc5950
@@ -101,6 +102,7 @@ gcc -std=c99 -Wall -Wextra -Wpedantic pointer_step.c -o pointer_step && ./pointe
 
 When you advance `int_p`:
 
+<!-- measure: filter="head -n 3" -->
 ```
 int_p = 0x7ffffffc5938
 int_p + 1 = 0x7ffffffc593c
@@ -109,6 +111,7 @@ difference: 4 bytes (sizeof(int) = 4)
 
 When you advance `char_p`:
 
+<!-- measure: filter="tail -n 3" -->
 ```
 char_p = 0x7ffffffc5945
 char_p + 1 = 0x7ffffffc5946
@@ -157,6 +160,7 @@ gcc -std=c99 -Wall -Wextra -Wpedantic array_size.c -o array_size && ./array_size
 
 Measured values:
 
+<!-- measure: filter="head -n 2" -->
 ```
 sizeof(my_arr) = 20
 sizeof(my_ptr) = 8
@@ -170,6 +174,7 @@ size_t num_elements = sizeof(my_arr) / sizeof(my_arr[0]);  // 5
 
 Measured values:
 
+<!-- measure: filter="tail -n 1" -->
 ```
 num_elements = 5
 ```
@@ -221,6 +226,7 @@ gcc -std=c99 -Wall -Wextra -Wpedantic array_decay_broken.c -o array_decay_broken
 
 </details>
 
+<!-- measure: -->
 ```
 sizeof(data) = 20
 sizeof(arr) = 8
@@ -275,6 +281,7 @@ gcc -std=c99 -Wall -Wextra -Wpedantic print_array_safe.c -o print_array_safe && 
 
 </details>
 
+<!-- measure: -->
 ```
 arr[0] = 10
 arr[1] = 20
@@ -297,6 +304,28 @@ printf("*(test_arr + 2) = %d\n", *(test_arr + 2));
 
 Measured values:
 
+<details markdown="1"><summary>Full program that produced this output</summary>
+
+```c
+// array_subscript.c
+#include <stdio.h>
+
+int main(void)
+{
+    int test_arr[5] = {10, 20, 30, 40, 50};
+    printf("test_arr[2] = %d\n", test_arr[2]);
+    printf("*(test_arr + 2) = %d\n", *(test_arr + 2));
+    return 0;
+}
+```
+
+```bash
+gcc -std=c99 -Wall -Wextra -Wpedantic array_subscript.c -o array_subscript && ./array_subscript
+```
+
+</details>
+
+<!-- measure: -->
 ```
 test_arr[2] = 30
 *(test_arr + 2) = 30
@@ -339,6 +368,7 @@ gcc -std=c99 -Wall -Wextra -Wpedantic -g -fsanitize=address out_of_bounds.c -o o
 
 </details>
 
+<!-- measure: env=static reason="stack garbage read out of bounds, changes on every run" -->
 ```
 arr[5] = 32767
 arr[6] = 525268992
@@ -349,6 +379,7 @@ arr[7] = 1438676869
 
 The results of the next 3 runs:
 
+<!-- measure: env=static reason="stack garbage read out of bounds, changes on every run" -->
 ```
 === Run 1 ===
 arr[5] = 32767
@@ -372,6 +403,7 @@ The values are different every time, so you must not report these values as "mea
 
 Run again with `gcc -std=c99 -Wall -Wextra -Wpedantic -g -fsanitize=address`:
 
+<!-- measure: files=out_of_bounds.c cmd="gcc -std=c99 -Wall -Wextra -Wpedantic -g -fsanitize=address out_of_bounds.c -o out_of_bounds_asan && ./out_of_bounds_asan 2>&1 | head -n 16" -->
 ```
 =================================================================
 ==28==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffffcf00034 at pc 0x55555555544c bp 0x7ffffffc5910 sp 0x7ffffffc5900
@@ -484,6 +516,7 @@ gcc -std=c99 -Wall -Wextra -Wpedantic pointer_arithmetic.c -o pointer_arithmetic
 
 <details markdown="1"><summary>Answer (actual output)</summary>
 
+<!-- measure: env=static reason="out-of-bounds read of stack garbage (arr[6]) changes on every run" -->
 ```
 === Array-to-pointer decay ===
 arr == &arr[0]: yes
@@ -535,6 +568,7 @@ gcc -std=c99 -Wall -Wextra -Wpedantic -g -fsanitize=address pointer_arithmetic.c
 
 <details markdown="1"><summary>Answer (actual output)</summary>
 
+<!-- measure: -->
 ```
 =================================================================
 ==19==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffffcf00034 at pc 0x555555556560 bp 0x7ffffffc5620 sp 0x7ffffffc5610

@@ -326,6 +326,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic move_only_capture.cpp -o move_only_captu
 
 </details>
 
+<!-- measure: -->
 ```
 In file included from /usr/include/c++/13/functional:59,
                  from move_only_capture.cpp:2:
@@ -378,6 +379,7 @@ You measure when `std::function` allocates on the heap.
 You replace `operator new` and count. **Predict first, and then run it.**
 
 ```cpp
+// try.cpp
 #include <cstddef>
 #include <cstdlib>
 #include <functional>
@@ -433,6 +435,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 
 With Apple clang 17 (libc++), the result was this.
 
+<!-- measure: env=clang -->
 ```
 small capture : 0 allocation(s)
 large capture : 1 allocation(s)

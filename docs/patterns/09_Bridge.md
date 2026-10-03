@@ -207,6 +207,7 @@ private:
 「デストラクタは何もしないから」と `~LinkStats();` の宣言を消してみます。
 
 ```cpp
+// pimpl_bad.cpp
 #include <memory>
 
 class LinkStats
@@ -232,12 +233,13 @@ int main()
 c++ -std=c++17 -Wall -Wextra -Wpedantic -c pimpl_bad.cpp
 ```
 
+<!-- measure: files=pimpl_bad.cpp -->
 ```
 In file included from /usr/include/c++/13/memory:78,
-                 from pimpl_bad.cpp:1:
+                 from pimpl_bad.cpp:2:
 /usr/include/c++/13/bits/unique_ptr.h: In instantiation of ‘void std::default_delete<_Tp>::operator()(_Tp*) const [with _Tp = LinkStats::Impl]’:
 /usr/include/c++/13/bits/unique_ptr.h:404:17:   required from ‘std::unique_ptr<_Tp, _Dp>::~unique_ptr() [with _Tp = LinkStats::Impl; _Dp = std::default_delete<LinkStats::Impl>]’
-pimpl_bad.cpp:3:7:   required from here
+pimpl_bad.cpp:4:7:   required from here
 /usr/include/c++/13/bits/unique_ptr.h:97:23: error: invalid application of ‘sizeof’ to incomplete type ‘LinkStats::Impl’
    97 |         static_assert(sizeof(_Tp)>0,
       |                       ^~~~~~~~~~~
@@ -443,6 +445,7 @@ Qt（`Q_DECLARE_PRIVATE`）、`std::pmr` 以前の多くのライブラリが使
 課題を解く前に、この 1 ファイルをコンパイルして**出力を予想してから**実行してください。
 
 ```cpp
+// try.cpp
 #include <cstdio>
 #include <memory>
 #include <string>
@@ -529,6 +532,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 <details>
 <summary>予想: <code>sizeof(View)</code> は何になるか。<code>RepeatView</code> との差は</summary>
 
+<!-- measure: files=try.cpp -->
 ```
 [out] v=1
 [out] 0: v=1

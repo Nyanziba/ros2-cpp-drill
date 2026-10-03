@@ -163,6 +163,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic private_call.cpp -o private_call
 
 </details>
 
+<!-- measure: -->
 ```
 private_call.cpp: In member function ‘virtual void Imu::setup()’:
 private_call.cpp:13:18: error: ‘virtual void Sensor::setup()’ is private within this context
@@ -239,6 +240,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic override_const.cpp -o override_const
 
 </details>
 
+<!-- measure: -->
 ```
 override_const.cpp:11:8: error: ‘bool Imu::check(double)’ marked ‘override’, but does not override
    11 |   bool check(double value) override { return value > 0.0; }   // dropped const. Added override
@@ -294,6 +296,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic override_boot.cpp -o override_boot
 
 </details>
 
+<!-- measure: -->
 ```
 override_boot.cpp:11:8: error: ‘void Imu::boot()’ marked ‘override’, but does not override
    11 |   void boot() override { }     // Sensor::boot() is non-virtual
@@ -343,6 +346,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic final_setup.cpp -o final_setup
 
 </details>
 
+<!-- measure: -->
 ```
 final_setup.cpp:11:8: error: virtual function ‘virtual void Imu::setup()’ overriding final function
    11 |   void setup() override { }         // tried to replace a final function
@@ -415,6 +419,7 @@ clang++ -std=c++17 -Wall -Wextra -Wpedantic pure_virtual.cpp -o pure_virtual && 
 
 </details>
 
+<!-- measure: env=clang filter="head -n 7" -->
 ```
 pure_virtual.cpp:4:18: warning: call to pure virtual member function 'setup' has undefined behavior; overrides of 'setup' in subclasses are not available in the constructor of 'B' [-Wcall-to-pure-virtual-from-ctor-dtor]
     4 | struct B { B() { setup(); } virtual ~B() = default; virtual void setup() = 0; };
@@ -425,6 +430,7 @@ pure_virtual.cpp:4:53: note: 'setup' declared here
 1 warning generated.
 ```
 
+<!-- measure: env=clang filter="grep libc++abi" -->
 ```
 libc++abi: Pure virtual function called!
 ```
@@ -476,6 +482,7 @@ the main topic of chapter 10 (Strategy).
 Before you solve the exercise, compile this one file and **predict the output** before you run it.
 
 ```cpp
+// try.cpp
 #include <iostream>
 
 class Sensor
@@ -574,6 +581,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try_boot.cpp -o try_boot
 
 **No. The first time it is `Sensor::setup`.**
 
+<!-- measure: files=try.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try" -->
 ```
 Calling setup() from Sensor()
   Sensor::setup
@@ -591,6 +599,7 @@ You can also confirm two more things.
 
 Try adding `void boot() override { }` to `Imu`.
 
+<!-- measure: -->
 ```
 try_boot.cpp:29:8: error: ‘void Imu::boot()’ marked ‘override’, but does not override
    29 |   void boot() override { }      // tried to replace the non-virtual skeleton
@@ -631,6 +640,7 @@ You make the base class a template on "the type of the derived class".
 This form is called **CRTP (Curiously Recurring Template Pattern)**.
 
 ```cpp
+// crtp.cpp
 #include <cstdint>
 #include <cstdio>
 
@@ -696,6 +706,7 @@ int main()
 g++ -std=c++17 -Wall -Wextra -Wpedantic -fno-exceptions -fno-rtti crtp.cpp -o crtp && ./crtp
 ```
 
+<!-- measure: -->
 ```
 ok 0
 ok 20
@@ -709,6 +720,7 @@ and there is not a single `virtual`. With `static_cast<Derived &>(*this)`, you o
 The size also gets smaller. Compare classes that have the same members (one `bool` and one `unsigned`).
 
 ```cpp
+// sizeof_compare.cpp
 #include <cstdio>
 
 template <typename Derived>
@@ -726,6 +738,7 @@ int main()
 }
 ```
 
+<!-- measure: env=clang cmd="clang++ -std=c++17 -Wall -Wextra -Wpedantic sizeof_compare.cpp -o sizeof_compare && ./sizeof_compare" -->
 ```
 CRTP    : 8
 virtual : 16

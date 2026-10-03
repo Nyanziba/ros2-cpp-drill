@@ -381,6 +381,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic cycle.cpp -o cycle && ./cycle
 
 </details>
 
+<!-- measure: files=cycle.cpp -->
 ```
 straight: 0
 cyclic:   1
@@ -445,6 +446,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic self_owned.cpp -o self_owned && ./self_o
 
 </details>
 
+<!-- measure: files=self_owned.cpp -->
 ```
 head is null
 --- main を抜ける ---
@@ -501,6 +503,7 @@ try {
 特に、最後の `head.reset()` で出てくる `dtor` の**順番**を当ててください。
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <memory>
 #include <optional>
@@ -571,6 +574,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 <details>
 <summary>予想: <code>dtor</code> は先頭からか、末尾からか</summary>
 
+<!-- measure: files=try.cpp -->
 ```
 ctor low_voltage
 ctor over_current
@@ -593,6 +597,7 @@ dtor comm_timeout
 
 もう 1 つ。`set_next` の `return *next_;` を `return *this;` に変えると、こうなります。
 
+<!-- measure: files=try.cpp cmd="sed 's/return \*next_;/return *this;/' try.cpp > try_this.cpp && g++ -std=c++17 -Wall -Wextra -Wpedantic try_this.cpp -o try_this && ./try_this" -->
 ```
 ctor low_voltage
 ctor over_current
@@ -849,6 +854,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic -fno-exceptions -fno-rtti mcu.cpp -o mcu
 
 </details>
 
+<!-- measure: files=mcu.cpp -->
 ```
 low_voltage -> reduce_duty
 over_current -> cut_output

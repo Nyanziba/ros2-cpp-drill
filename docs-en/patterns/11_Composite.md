@@ -155,6 +155,7 @@ by_value[0].size();                        // ?
 
 Measured result (we run the whole program in 11.8).
 
+<!-- measure: files=try.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try" -->
 ```
 vector<Entry>            : 0
 vector<unique_ptr<Entry>>: 100
@@ -242,6 +243,7 @@ struct Good
 
 This is the result of measuring with logs in the destructors (the code is in the second half of 11.8).
 
+<!-- measure: files=try_parent.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic try_parent.cpp -o try_parent && ./try_parent" -->
 ```
 Bad  root.use_count = 2
 --- left the scope of Bad ---
@@ -321,6 +323,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic deep_list.cpp -o deep_list && ./deep_lis
 
 Measured with zsh on macOS (the `zsh: segmentation fault` line is a message printed by the shell).
 
+<!-- measure: env=clang files=deep_list.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic deep_list.cpp -o deep_list && python3 -c 'import os,pty,subprocess as s;m,w=pty.openpty();s.run([\"zsh\",\"-f\",\"-i\",\"-c\",\"./deep_list; echo exit code $?\"],stdin=w,stdout=w,stderr=w,start_new_session=True);print(os.read(m,99999).decode(),end=\"\")'" -->
 ```
 built
 zsh: segmentation fault  ./deep_list
@@ -365,6 +368,7 @@ Before you solve the exercise, run these 2 programs **after predicting the outpu
 ### Part 1: Slicing
 
 ```cpp
+// try.cpp
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -408,6 +412,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 <details>
 <summary>Predict: what is printed on the lines above? Is a warning printed?</summary>
 
+<!-- measure: files=try.cpp -->
 ```
 vector<Entry>            : 0
 vector<unique_ptr<Entry>>: 100
@@ -427,6 +432,7 @@ This is the practical reason to keep the base class of Composite abstract.
 ### Part 2: If you hold the parent with `shared_ptr`, it is not released
 
 ```cpp
+// try_parent.cpp
 #include <iostream>
 #include <memory>
 #include <string>
@@ -480,6 +486,7 @@ int main()
 
 **0 times.**
 
+<!-- measure: files=try_parent.cpp cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic try_parent.cpp -o try_parent && ./try_parent" -->
 ```
 Bad  root.use_count = 2
 --- left the scope of Bad ---

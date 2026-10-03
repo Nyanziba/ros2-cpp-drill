@@ -209,6 +209,7 @@ c++ -std=c++17 -Wall -Wextra -Wpedantic limiter.cpp config.cpp main_siof.cpp -o 
 
 This is the actual output.
 
+<!-- measure: files=config.hpp,config.cpp,limiter.cpp,main_siof.cpp -->
 ```
 Limiter constructor: limit_ = 0
 Config constructor
@@ -229,6 +230,7 @@ This is the nastiest way to break.
 c++ -std=c++17 -Wall -Wextra -Wpedantic config.cpp limiter.cpp main_siof.cpp -o siof2 && ./siof2
 ```
 
+<!-- measure: files=config.hpp,config.cpp,limiter.cpp,main_siof.cpp -->
 ```
 Config constructor
 Limiter constructor: limit_ = 100
@@ -335,6 +337,7 @@ c++ -std=c++17 -Wall -Wextra -Wpedantic main_meyers.cpp limiter2.cpp -o meyers2 
 
 </details>
 
+<!-- measure: files=config2.hpp,limiter2.cpp,main_meyers.cpp cmd="(c++ -std=c++17 -Wall -Wextra -Wpedantic limiter2.cpp main_meyers.cpp -o meyers1 && ./meyers1) > meyers1.txt; (c++ -std=c++17 -Wall -Wextra -Wpedantic main_meyers.cpp limiter2.cpp -o meyers2 && ./meyers2) > meyers2.txt; cmp meyers1.txt meyers2.txt && cat meyers1.txt" -->
 ```
 Config constructor
 Limiter constructor: limit_ = 100
@@ -419,6 +422,7 @@ but **please write all four.** It tells the reader that you prohibited them on p
 It is complete in one file. **Predict the output** before you run it.
 
 ```cpp
+// try.cpp
 #include <iostream>
 
 class Config
@@ -503,6 +507,7 @@ clang++ -std=c++17 -Wall -Wextra -Wpedantic try_deleted.cpp -o try_deleted
 
 **It compiles. There is no warning.** This is the output (the addresses change with the environment).
 
+<!-- measure: files=try_deleted.cpp cmd="grep -v '= delete' try_deleted.cpp > try_without_delete.cpp && g++ -std=c++17 -Wall -Wextra -Wpedantic try_without_delete.cpp -o try_without_delete && ./try_without_delete" -->
 ```
 instance: 0x555555558010 duty=100
 copied  : 0x7ffffffc5904 duty=30
@@ -521,6 +526,7 @@ Add the next two lines just before `private:`, and build again.
 
 This is the actual error (Apple clang 21).
 
+<!-- measure: env=clang -->
 ```
 try_deleted.cpp:25:10: error: call to deleted constructor of 'Config'
    25 |   Config copied = Config::instance();     // A copy is made
@@ -643,6 +649,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic destruction_order.cpp -o destruction_ord
 
 </details>
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic destruction_order.cpp -o destruction_order && ./destruction_order" -->
 ```
 main finished
 [log alive=0] Closed the Uart
@@ -654,6 +661,7 @@ but if it had a `std::string` or a `std::vector`, it would touch freed memory.
 
 If you touch `Logger::instance()` first and `Uart::instance()` after it, you get this.
 
+<!-- measure: cmd="g++ -std=c++17 -Wall -Wextra -Wpedantic destruction_order.cpp -o destruction_order && ./destruction_order logger_first" -->
 ```
 main finished
 [log alive=1] Closed the Uart

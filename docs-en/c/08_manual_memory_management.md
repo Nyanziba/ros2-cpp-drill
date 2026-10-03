@@ -138,26 +138,28 @@ gcc -std=c99 -Wall -Wextra -Wpedantic -g -fsanitize=address use_after_free.c -o 
 
 </details>
 
+<!-- measure: env=static reason="the heap address is randomized, so the value changes on every run" -->
 ```
-*p = 1431655769
+*p = 1497369821
 exit=0
-*p = 1431655769
+*p = 1512934265
 exit=0
-*p = 1431655769
+*p = 1665646610
 exit=0
-*p = 1431655769
+*p = 1572210789
 exit=0
-*p = 1431655769
+*p = 1473049545
 exit=0
 ```
 
-In this environment the same value came out all 5 times (on Linux with a randomized heap address, the value changes on every run). Either way, **it exits normally every time.** This is the most dangerous property of use-after-free.
+The value is different every time (because the heap address is randomized. The values above were measured on Linux (x86_64) on GitHub Actions; in some environments such as emulation, the same value can come out). Either way, **it exits normally every time.** This is the most dangerous property of use-after-free.
 If it crashed, you would notice, but it does not crash, so you cannot notice.
 Tests pass too, and it breaks only when it hits a different value in the field.
 
 So the only way is to **make it visible with tools**.
 First, `gcc` itself may notice (measured).
 
+<!-- measure: filter="head -n 7" -->
 ```
 use_after_free.c: In function ‘main’:
 use_after_free.c:10:5: warning: pointer ‘p’ used after ‘free’ [-Wuse-after-free]
@@ -170,6 +172,7 @@ use_after_free.c:9:5: note: call to ‘free’ here
 
 And Address Sanitizer stops it for sure. The actual detection message:
 
+<!-- measure: filter="tail -n 4" -->
 ```
 =================================================================
 ==28==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x5555555552e7 bp 0x7ffffffc5890 sp 0x7ffffffc5880
@@ -262,6 +265,7 @@ gcc -std=c99 -Wall -Wextra -Wpedantic memory_all.c -o memory_all && ./memory_all
 
 <details markdown="1"><summary>Answer (actual output)</summary>
 
+<!-- measure: -->
 ```
 == malloc and free ==
 p[0] = 10, p[1] = 20
@@ -287,6 +291,7 @@ gcc -std=c99 -Wall -Wextra -Wpedantic -fsanitize=address memory_uaf.c -o memory_
 Code example (`memory_uaf.c`):
 
 ```c
+// memory_uaf.c
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -302,6 +307,7 @@ int main(void)
 
 Output of Address Sanitizer:
 
+<!-- measure: filter="tail -n 12" -->
 ```
 =================================================================
 ==19==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x5555555552e7 bp 0x7ffffffc5a30 sp 0x7ffffffc5a20
