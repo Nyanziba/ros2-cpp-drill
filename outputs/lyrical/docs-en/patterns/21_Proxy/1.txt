@@ -1,0 +1,6 @@
+before the expression
+  Guard created
+  Real::work
+  Guard destroyed
+after the expression
+  Real::work

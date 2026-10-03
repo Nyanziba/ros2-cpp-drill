@@ -1,0 +1,11 @@
+meters.cpp: In function ‘int main()’:
+meters.cpp:21:14: error: could not convert ‘1.5e+0’ from ‘double’ to ‘Meters’
+   21 |   move_robot(1.5);   // error
+      |              ^~~
+      |              |
+      |              double
+meters.cpp:22:14: error: could not convert ‘true’ from ‘bool’ to ‘Meters’
+   22 |   move_robot(true);   // error
+      |              ^~~~
+      |              |
+      |              bool

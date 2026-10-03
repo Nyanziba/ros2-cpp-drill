@@ -1,0 +1,4 @@
+observer 1 got 42
+observer 3 got 42
+observer 3 got 42
+returned from notify

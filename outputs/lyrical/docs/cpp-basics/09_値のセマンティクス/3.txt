@@ -1,0 +1,9 @@
+=== pass by value ===
+Data(10)
+Data copy constructor
+~Data(10)
+~Data(10)
+
+=== pass by const& ===
+Data(20)
+~Data(20)

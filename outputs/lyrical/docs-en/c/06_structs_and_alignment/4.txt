@@ -1,0 +1,5 @@
+struct packed_attr: sizeof = 6
+  offsetof(a) = 0
+  offsetof(b) = 1
+  offsetof(c) = 5
+  _Alignof = 1

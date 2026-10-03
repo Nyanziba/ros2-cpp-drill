@@ -627,7 +627,7 @@ g++ -std=c++17 -c lambda.cpp -o /dev/null 2>&1 | wc -l
 22
 ```
 
-It printed **22 lines**. Most of them are template expansions of `std::_Bind_check_arity<...>` and `std::_Bind_helper<...>`,
+It printed **more than 20 lines** (the number in the output above). Most of them are template expansions of `std::_Bind_check_arity<...>` and `std::_Bind_helper<...>`,
 and the only line that tells you the number of arguments is wrong is `static assertion failed: Wrong number of arguments for pointer-to-member`.
 If you get the number of arguments wrong in a lambda, you get just 1 or 2 lines such as `too few arguments to function`.
 This is the practical reason we recommend "a lambda for new code".

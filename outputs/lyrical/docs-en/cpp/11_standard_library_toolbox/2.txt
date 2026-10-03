@@ -1,0 +1,7 @@
+printf_string.cpp: In function ‘int main()’:
+printf_string.cpp:8:21: warning: format ‘%s’ expects argument of type ‘char*’, but argument 2 has type ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} [-Wformat=]
+    8 |   printf("Message: %s\n", msg);  // undefined behavior
+      |   ~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+      |         |           |
+      |         |           char*
+      |         std::string {aka std::__cxx11::basic_string<char>}

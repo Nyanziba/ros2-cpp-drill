@@ -1,0 +1,4 @@
+buf[0..4] = t e s t X
+buf[4] の数値 = 88   ('X' = 88)
+strlen(buf) = 10   ← 4 ではない
+buf = "testXXXXXX"

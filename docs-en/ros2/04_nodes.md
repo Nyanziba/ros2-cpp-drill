@@ -8,12 +8,12 @@ Last time, we ran turtlesim and looked at how nodes and topics connect on the sc
 
 - Time needed: about 40 minutes (assume a little under 1 hour for self-study)
 - Audience: people learning this for the first time who have finished [03_getting_a_feel_with_turtlesim_and_rqt](03_getting_a_feel_with_turtlesim_and_rqt.md)
-- Prerequisites: ROS 2 Jazzy Jalisco is installed, and the turtlesim package works (`ros2 run turtlesim turtlesim_node` succeeds)
+- Prerequisites: ROS 2 Jazzy is installed, and the turtlesim package works (`ros2 run turtlesim turtlesim_node` succeeds)
 
 ## Using this as a course
 
 Things to prepare:
-- A PC (one per person) with Ubuntu 24.04 + ROS 2 Jazzy Jalisco installed
+- A PC (one per person) with Ubuntu 24.04 + ROS 2 Jazzy installed
 - The `turtlesim` package (installed with `sudo apt install ros-jazzy-turtlesim`. It may be missing in an environment with only ros-base, so check beforehand)
 - An environment where you can work with two or more terminals side by side (tmux or tabs are both fine)
 
@@ -58,7 +58,7 @@ In the second terminal, look at the list of nodes that are running now.
 ros2 node list
 ```
 
-<!-- measure: env=static reason="turtlesim_node の起動が要り、Docker イメージに turtlesim も無い" -->
+<!-- measure: env=static reason="needs turtlesim_node running, and the Docker image has no turtlesim" -->
 ```
 /turtlesim
 ```
@@ -95,7 +95,7 @@ When you check with `ros2 node list`, it is now registered as `/my_turtle` inste
 ros2 node list
 ```
 
-<!-- measure: env=static reason="turtlesim_node の起動が要り、Docker イメージに turtlesim も無い" -->
+<!-- measure: env=static reason="needs turtlesim_node running, and the Docker image has no turtlesim" -->
 ```
 /my_turtle
 ```
@@ -104,7 +104,7 @@ ros2 node list
 
 This is useful when you want to start several nodes of the same package and avoid name collisions. This is easy to misunderstand, but **ROS 2 does not stop two nodes with the same name from existing.** If you actually start two nodes with the same name, both keep running normally, and they appear twice in `ros2 node list`. The only thing you get is the following warning.
 
-<!-- measure: env=static reason="turtlesim_node を同名で 2 つ起動する必要があり、Docker イメージに turtlesim も無い" -->
+<!-- measure: env=static reason="needs two turtlesim_node instances with the same name, and the Docker image has no turtlesim" -->
 ```
 WARNING: Be aware that there are nodes in the graph that share an exact name, which can have unintended side effects.
 /turtlesim

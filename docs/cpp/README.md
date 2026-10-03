@@ -84,7 +84,12 @@ ROS の概念を学んでいるのか C++ の文法と戦っているのかが�
 g++ -std=c++17 -Wall -Wextra -Wpedantic try.cpp -o try && ./try
 ```
 
+<!-- only: jazzy -->
 `-std=c++17` は必須です。ROS 2 Jazzy が C++17 を対象にしているため、この講習も C++17 で揃えています。
+<!-- /only -->
+<!-- only: lyrical -->
+`-std=c++17` は必須です。ROS 2 Lyrical の ament は既定で C++20 を要求しますが（`ament_ros_core` の `ament_ros_cxx_standard` が `cxx_std_20`）、この講習は ROS 2 を使わず、C++17 で揃えています。
+<!-- /only -->
 `-Wall -Wextra -Wpedantic` はドリルの全課題の `CMakeLists.txt` でも有効にしてあるので、
 最初から同じ条件で書く癖を付けるために付けています。
 

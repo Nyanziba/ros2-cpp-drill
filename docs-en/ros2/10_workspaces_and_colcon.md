@@ -17,7 +17,7 @@ The prerequisite is that you have read up to [09_launch_and_ros2_bag](09_launch_
 
 ### What to prepare
 
-- An environment with Ubuntu 24.04 + ROS 2 Jazzy Jalisco set up ([02_environment_setup](02_environment_setup.md) finished)
+- An environment with Ubuntu 24.04 + ROS 2 Jazzy set up ([02_environment_setup](02_environment_setup.md) finished)
 - `python3-colcon-common-extensions` (if not installed, run `sudo apt install python3-colcon-common-extensions`)
 - `python3-rosdep` (`sudo apt install python3-rosdep`. Only the first time, you need `sudo rosdep init && rosdep update`)
 - A network environment where you can clone with git
@@ -155,9 +155,11 @@ Before writing a node yourself, let's experience the flow of the build with the 
 
 ```bash
 cd ~/ros2_ws/src
-git clone -b jazzy https://github.com/ros2/examples.git
+git clone -b "$ROS_DISTRO" https://github.com/ros2/examples.git
 cd ~/ros2_ws
 ```
+
+`$ROS_DISTRO`, which is passed to `-b`, is the name of the ROS 2 version you sourced (`jazzy` or `lyrical`). The branches of examples are named after the versions, so you get the one that matches.
 
 You only cloned it into `src`, and you have not built it yet. We use `rosdep` to check that the dependency packages are in place.
 
@@ -213,7 +215,12 @@ Next is [11_writing_pub_sub_in_cpp](11_writing_pub_sub_in_cpp.md), where you wri
 
 - [ROS 2 Documentation: Jazzy — Creating a workspace](https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Creating-A-Workspace/Creating-A-Workspace.html)
 - [ROS 2 Documentation: Jazzy — Using colcon to build packages](https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Colcon-Tutorial.html)
+<!-- only: jazzy -->
 - [ros2/examples (jazzy branch)](https://github.com/ros2/examples/tree/jazzy)
+<!-- /only -->
+<!-- only: lyrical -->
+- [ros2/examples (lyrical branch)](https://github.com/ros2/examples/tree/lyrical)
+<!-- /only -->
 - [05_topics](05_topics.md)
 - [09_launch_and_ros2_bag](09_launch_and_ros2_bag.md)
 - [11_writing_pub_sub_in_cpp](11_writing_pub_sub_in_cpp.md)

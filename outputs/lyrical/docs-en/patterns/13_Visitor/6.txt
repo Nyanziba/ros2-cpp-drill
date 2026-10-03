@@ -1,0 +1,1 @@
+sizeof(NodeV) = 8      // for SensorV{int} and MotorV{unsigned int}

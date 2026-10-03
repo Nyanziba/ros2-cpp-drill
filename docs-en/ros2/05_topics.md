@@ -16,7 +16,7 @@ The prerequisite is that you have read [04_nodes](04_nodes.md). If you do not kn
 
 ### Things to prepare
 
-- An environment with Ubuntu 24.04 + ROS 2 Jazzy Jalisco already set up ([02_environment_setup](02_environment_setup.md) done)
+- An environment with Ubuntu 24.04 + ROS 2 Jazzy already set up ([02_environment_setup](02_environment_setup.md) done)
 - The `ros-jazzy-turtlesim` package (if it is not installed, run `sudo apt install ros-jazzy-turtlesim`)
 - A screen where you can open two or three terminals side by side (tmux or window splitting are both fine)
 
@@ -99,7 +99,7 @@ You can see the detailed information of a topic (type, number of publishers, num
 ros2 topic info /turtle1/cmd_vel
 ```
 
-<!-- measure: env=static reason="turtlesim_node の起動が要り、Docker イメージに turtlesim も無い" -->
+<!-- measure: env=static reason="needs turtlesim_node running, and the Docker image has no turtlesim" -->
 ```
 Type: geometry_msgs/msg/Twist
 Publisher count: 1

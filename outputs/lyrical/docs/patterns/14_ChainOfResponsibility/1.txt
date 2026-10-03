@@ -1,0 +1,2 @@
+straight: 0
+cyclic:   1

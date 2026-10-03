@@ -1,0 +1,19 @@
+--- all succeed ---
+  power up
+  sensor up
+  calib up
+  link up
+  ready=true
+  link down
+  calib down
+  sensor down
+  power down
+--- calib fails ---
+  power up
+  sensor up
+  calib FAILED
+  link FAILED
+  ready=false
+  sensor down
+  power down
+--- left ---

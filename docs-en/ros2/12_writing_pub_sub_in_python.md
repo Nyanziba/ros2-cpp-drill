@@ -18,7 +18,7 @@ The prerequisite is that you have read [11_writing_pub_sub_in_cpp](11_writing_pu
 
 ### What to prepare
 
-- An environment with Ubuntu 24.04 + ROS 2 Jazzy Jalisco set up ([02_environment_setup](02_environment_setup.md) finished)
+- An environment with Ubuntu 24.04 + ROS 2 Jazzy set up ([02_environment_setup](02_environment_setup.md) finished)
 - The `cpp_pubsub` package (`talker`/`listener`) made in [11_writing_pub_sub_in_cpp](11_writing_pub_sub_in_cpp.md) is already built
 - The workspace `~/ros2_ws` exists, and you can put packages under `src`
 - A screen where you can open about three terminals side by side

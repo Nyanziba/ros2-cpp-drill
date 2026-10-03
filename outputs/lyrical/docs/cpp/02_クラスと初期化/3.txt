@@ -1,0 +1,17 @@
+ordered.cpp: In constructor ‘Ordered::Ordered()’:
+ordered.cpp:10:7: warning: ‘Ordered::b_’ will be initialized after [-Wreorder]
+   10 |   int b_;
+      |       ^~
+ordered.cpp:9:7: warning:   ‘int Ordered::a_’ [-Wreorder]
+    9 |   int a_;                 // 宣言順は a_ → b_
+      |       ^~
+ordered.cpp:5:3: warning:   when initialized here [-Wreorder]
+    5 |   Ordered()
+      |   ^~~~~~~
+ordered.cpp:6:15: warning: member ‘Ordered::b_’ is used uninitialized [-Wuninitialized]
+    6 |   : b_(1), a_(b_ + 1)    // 書いた順は b_ → a_
+      |               ^~
+ordered.cpp: In constructor ‘Ordered::Ordered()’:
+ordered.cpp:6:15: warning: ‘*this.Ordered::b_’ is used uninitialized [-Wuninitialized]
+    6 |   : b_(1), a_(b_ + 1)    // 書いた順は b_ → a_
+      |               ^~

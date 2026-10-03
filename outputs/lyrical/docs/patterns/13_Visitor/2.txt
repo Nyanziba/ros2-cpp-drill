@@ -1,0 +1,23 @@
+base_accept.cpp: In member function ‘void DiagNode::accept(DiagVisitor&) const’:
+base_accept.cpp:21:59: error: no matching function for call to ‘DiagVisitor::visit(const DiagNode&)’
+   21 |   void accept(DiagVisitor & visitor) const { visitor.visit(*this); }   // 基底に 1 個
+      |                                              ~~~~~~~~~~~~~^~~~~~~
+base_accept.cpp:21:59: note: there are 3 candidates
+base_accept.cpp:13:16: note: candidate 1: ‘virtual void DiagVisitor::visit(const SensorCheck&)’
+   13 |   virtual void visit(const SensorCheck & node) = 0;    // 変更点2
+      |                ^~~~~
+base_accept.cpp:13:42: note: no known conversion for argument 1 from ‘const DiagNode’ to ‘const SensorCheck&’
+   13 |   virtual void visit(const SensorCheck & node) = 0;    // 変更点2
+      |                      ~~~~~~~~~~~~~~~~~~~~^~~~
+base_accept.cpp:14:16: note: candidate 2: ‘virtual void DiagVisitor::visit(const MotorCheck&)’
+   14 |   virtual void visit(const MotorCheck & node) = 0;
+      |                ^~~~~
+base_accept.cpp:14:41: note: no known conversion for argument 1 from ‘const DiagNode’ to ‘const MotorCheck&’
+   14 |   virtual void visit(const MotorCheck & node) = 0;
+      |                      ~~~~~~~~~~~~~~~~~~~^~~~
+base_accept.cpp:15:16: note: candidate 3: ‘virtual void DiagVisitor::visit(const CheckGroup&)’
+   15 |   virtual void visit(const CheckGroup & node) = 0;
+      |                ^~~~~
+base_accept.cpp:15:41: note: no known conversion for argument 1 from ‘const DiagNode’ to ‘const CheckGroup&’
+   15 |   virtual void visit(const CheckGroup & node) = 0;
+      |                      ~~~~~~~~~~~~~~~~~~~^~~~

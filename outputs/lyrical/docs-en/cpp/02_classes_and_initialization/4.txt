@@ -1,0 +1,7 @@
+-- main starts
+a created
+b created
+-- end of the inner scope
+b destroyed
+-- main ends
+a destroyed

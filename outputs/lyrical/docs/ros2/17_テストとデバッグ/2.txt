@@ -1,0 +1,43 @@
+build/failpkg/Testing/20261002-1509/Test.xml: 1 test, 0 errors, 1 failure, 0 skipped
+- t
+  <<< failure message
+    -- run_test.py: invoking following command in '/home/ubuntu/ros2_ws/build/failpkg':
+     - /home/ubuntu/ros2_ws/build/failpkg/t --gtest_output=xml:/home/ubuntu/ros2_ws/build/failpkg/test_results/failpkg/t.gtest.xml
+    Running main() from ./googletest/src/gtest_main.cc
+    [==========] Running 2 tests from 1 test suite.
+    [----------] Global test environment set-up.
+    [----------] 2 tests from A
+    [ RUN      ] A.DeliberatelyFails
+    /home/ubuntu/ros2_ws/src/failpkg/test/t.cpp:4: Failure
+    Expected equality of these values:
+      1
+      2
+    これは意図的な失敗
+
+    [  FAILED  ] A.DeliberatelyFails (1 ms)
+    [ RUN      ] A.Passes
+    [       OK ] A.Passes (0 ms)
+    [----------] 2 tests from A (1 ms total)
+
+    [----------] Global test environment tear-down
+    [==========] 2 tests from 1 test suite ran. (2 ms total)
+    [  PASSED  ] 1 test.
+    [  FAILED  ] 1 test, listed below:
+    [  FAILED  ] A.DeliberatelyFails
+
+     1 FAILED TEST
+    -- run_test.py: return code 1
+    -- run_test.py: inject classname prefix into gtest result file '/home/ubuntu/ros2_ws/build/failpkg/test_results/failpkg/t.gtest.xml'
+    -- run_test.py: verify result file '/home/ubuntu/ros2_ws/build/failpkg/test_results/failpkg/t.gtest.xml'
+  >>>
+build/failpkg/test_results/failpkg/t.gtest.xml: 2 tests, 0 errors, 1 failure, 0 skipped
+- failpkg.A DeliberatelyFails (/home/ubuntu/ros2_ws/src/failpkg/test/t.cpp:3)
+  <<< failure message
+    /home/ubuntu/ros2_ws/src/failpkg/test/t.cpp:4
+    Expected equality of these values:
+      1
+      2
+    これは意図的な失敗
+  >>>
+
+Summary: 3 tests, 0 errors, 2 failures, 0 skipped

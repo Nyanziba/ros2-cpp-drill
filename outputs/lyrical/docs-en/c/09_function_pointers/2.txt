@@ -1,0 +1,3 @@
+Calling a NULL function pointer...
+Segmentation fault
+Exit code: 139

@@ -1,0 +1,13 @@
+enum_mix.cpp: In function ‘int main()’:
+enum_mix.cpp:7:11: error: no match for ‘operator==’ (operand types are ‘Color’ and ‘Status’)
+    7 |   if (RED == Status::RUNNING) { }  // error
+      |       ~~~ ^~ ~~~~~~~~~~~~~~~
+      |       |              |
+      |       Color          Status
+enum_mix.cpp:7:11: note: there are 2 candidates
+    7 |   if (RED == Status::RUNNING) { }  // error
+      |       ~~~~^~~~~~~~~~~~~~~~~~
+enum_mix.cpp:7:11: note: candidate 1: ‘operator==(Status, Status)’ (built-in)
+enum_mix.cpp:7:11: note: no known conversion for argument 1 from ‘Color’ to ‘Status’
+enum_mix.cpp:7:11: note: candidate 2: ‘operator==(Color, Color)’ (built-in)
+enum_mix.cpp:7:11: note: no known conversion for argument 2 from ‘Status’ to ‘Color’

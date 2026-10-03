@@ -1,0 +1,4 @@
+delete_warning.cpp: In function ‘int main()’:
+delete_warning.cpp:8:3: warning: deleting object of abstract class type ‘MotorActuator’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
+    8 |   delete m;
+      |   ^~~~~~~~

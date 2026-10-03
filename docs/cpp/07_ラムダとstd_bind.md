@@ -627,7 +627,7 @@ g++ -std=c++17 -c lambda.cpp -o /dev/null 2>&1 | wc -l
 22
 ```
 
-**22 行**出ました。しかもそのほとんどが `std::_Bind_check_arity<...>` や `std::_Bind_helper<...>` のテンプレート展開で、
+**20 行を超える行**が出ました（上の出力の数）。しかもそのほとんどが `std::_Bind_check_arity<...>` や `std::_Bind_helper<...>` のテンプレート展開で、
 引数の数が違うと読み取れるのは `static assertion failed: Wrong number of arguments for pointer-to-member` の 1 行だけです。
 ラムダで引数の数を間違えれば `too few arguments to function` の 1〜2 行で済みます。
 これが「新規ならラムダ」を勧める実務的な理由です。

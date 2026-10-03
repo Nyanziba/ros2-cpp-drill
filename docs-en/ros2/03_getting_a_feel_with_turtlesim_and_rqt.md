@@ -15,7 +15,7 @@ Last time, in [02_environment_setup](02_environment_setup.md), you built an envi
 
 ### Things to prepare
 
-- A machine with Ubuntu 24.04 + ROS 2 Jazzy Jalisco already set up (each person's laptop is fine)
+- A machine with Ubuntu 24.04 + ROS 2 Jazzy already set up (each person's laptop is fine)
 - A screen large enough to open two or more terminals side by side (an external monitor helps)
 - Whether you can install the `ros-jazzy-rqt*` packages depends on network speed, so if each machine installs them beforehand, they will not eat into the time on the day
 

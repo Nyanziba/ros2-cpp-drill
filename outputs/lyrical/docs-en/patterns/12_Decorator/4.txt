@@ -1,0 +1,3 @@
+~Border([INFO])
+~Border(12:00:00)
+~Plain

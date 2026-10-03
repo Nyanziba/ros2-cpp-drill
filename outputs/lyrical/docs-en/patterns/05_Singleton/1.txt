@@ -1,0 +1,3 @@
+Limiter constructor: limit_ = 0
+Config constructor
+main: g_config.max_duty() = 100

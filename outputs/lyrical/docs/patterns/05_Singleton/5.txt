@@ -1,0 +1,2 @@
+main 終了
+[log alive=0] Uart を閉じました

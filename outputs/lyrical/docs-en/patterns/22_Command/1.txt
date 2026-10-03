@@ -1,0 +1,10 @@
+In file included from /usr/include/c++/15/functional:61,
+                 from move_only_capture.cpp:2:
+/usr/include/c++/15/bits/std_function.h: In instantiation of ‘std::function<_Res(_ArgTypes ...)>::function(_Functor&&) [with _Functor = main()::<lambda()>; _Constraints = void; _Res = void; _ArgTypes = {}]’:
+move_only_capture.cpp:7:34:   required from here
+    7 |   std::function<void()> action = [p = std::make_unique<int>(3)]() { (void)p; };
+      |                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/15/bits/std_function.h:441:69: error: static assertion failed: std::function target must be copy-constructible
+  441 |           static_assert(is_copy_constructible<__decay_t<_Functor>>::value,
+      |                                                                     ^~~~~
+/usr/include/c++/15/bits/std_function.h:441:69: note: ‘std::integral_constant<bool, false>::value’ evaluates to false

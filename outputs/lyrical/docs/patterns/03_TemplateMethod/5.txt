@@ -1,0 +1,4 @@
+Sensor() から setup() を呼ぶ
+  Sensor::setup
+boot() から setup() を呼ぶ
+  Imu::setup

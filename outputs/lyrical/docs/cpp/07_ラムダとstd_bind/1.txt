@@ -1,0 +1,7 @@
+member_pointer.cpp: In function ‘int main()’:
+member_pointer.cpp:11:17: error: cannot convert ‘void (MinimalPublisher::*)()’ to ‘void (*)()’ in initialization
+   11 |   void (*f)() = &MinimalPublisher::timer_callback;   // エラー
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+member_pointer.cpp:11:10: warning: unused variable ‘f’ [-Wunused-variable]
+   11 |   void (*f)() = &MinimalPublisher::timer_callback;   // エラー
+      |          ^

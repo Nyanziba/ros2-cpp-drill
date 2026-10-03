@@ -1,0 +1,53 @@
+=== 宣言を読む練習 ===
+
+1. int x
+   読み方: x は int
+   x = 10
+
+2. int * p = &x
+   読み方: p は int へのポインタ
+   p (アドレス) = 0x7ffffffc09c0
+   *p (指す先) = 10
+   *p = 20; で x も変わった: 20
+
+3. const int * q
+   読み方: q は (変更できない int) へのポインタ
+   q (アドレス) = 0x7ffffffc09c4
+   *q (指す先、読むだけ) = 100
+   試験: エラーになるはずなので行を消しています
+   // *q = 99;   ← できない
+
+4. int * const r = &val
+   読み方: r は 変更できない (int へのポインタ)
+   r (アドレス) = 0x7ffffffc09c8
+   *r (指す先) = 50
+   *r = 60; で val も変わった: 60
+   試験: r 自身は再指向できません
+   // r = &x;   ← できない
+
+5. const int * const s = &val2
+   読み方: s は 変更できない (変更できない int へのポインタ)
+   s (アドレス) = 0x7ffffffc09cc
+   *s (指す先、読むだけ) = 200
+   試験: 両方できません
+   // *s = 99;   ← できない (指す先が const)
+   // s = &x;    ← できない (ポインタが const)
+
+=== const の左右の法則 ===
+
+const int * と int const * は同じ意味
+  const int * a = &const_val;    // 指す先が const
+  int const * b = &const_val;    // 指す先が const
+  結果: 両方とも指す先を変更できない
+
+int * const はポインタ自身が const
+  int * const c = &val;
+  結果: ポインタ自身を再指向できない
+
+=== 応用: ポインタの配列 ===
+
+int * array[] = {&v1, &v2, &v3};
+読み方: array は (int へのポインタ) の配列
+  array[0] = 0x7ffffffc09d0 -> *array[0] = 1
+  array[1] = 0x7ffffffc09d4 -> *array[1] = 2
+  array[2] = 0x7ffffffc09d8 -> *array[2] = 3

@@ -1,0 +1,4 @@
+struct unordered:  sizeof = 12
+  offsetof(a) = 0
+  offsetof(b) = 4
+  offsetof(c) = 8

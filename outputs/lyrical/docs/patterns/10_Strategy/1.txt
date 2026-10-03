@@ -1,0 +1,6 @@
+err.cpp: In function ‘int main()’:
+err.cpp:5:26: error: cannot convert ‘main()::<lambda(double)>’ to ‘double (*)(double)’ in initialization
+    5 |   double (*fp)(double) = [scale](double raw) { return raw * scale; };
+      |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                          |
+      |                          main()::<lambda(double)>

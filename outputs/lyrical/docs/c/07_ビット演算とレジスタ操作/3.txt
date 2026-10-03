@@ -1,0 +1,1 @@
+neg = -1, neg >> 1 = -1 (arithmetic right shift)

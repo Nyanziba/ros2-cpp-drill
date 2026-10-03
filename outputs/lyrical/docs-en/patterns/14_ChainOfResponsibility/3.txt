@@ -1,0 +1,10 @@
+ctor low_voltage
+ctor over_current
+ctor comm_timeout
+hit=comm_timeout
+miss=(none)
+--- dropping head ---
+dtor low_voltage
+dtor over_current
+dtor comm_timeout
+--- after dropping ---

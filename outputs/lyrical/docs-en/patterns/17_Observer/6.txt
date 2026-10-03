@@ -1,0 +1,10 @@
+protected_dtor.cpp: In function ‘void f(SensorObserver*)’:
+protected_dtor.cpp:64:30: warning: deleting object of abstract class type ‘SensorObserver’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
+   64 | void f(SensorObserver * p) { delete p; }
+      |                              ^~~~~~~~
+protected_dtor.cpp:64:37: error: ‘SensorObserver::~SensorObserver()’ is protected within this context
+   64 | void f(SensorObserver * p) { delete p; }
+      |                                     ^
+protected_dtor.cpp:13:3: note: declared protected here
+   13 |   ~SensorObserver() = default;
+      |   ^

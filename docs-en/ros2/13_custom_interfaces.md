@@ -17,7 +17,7 @@ The prerequisites are that you have finished up to [06_services](06_services.md)
 
 ### What to prepare
 
-- An environment with Ubuntu 24.04 + ROS 2 Jazzy Jalisco set up
+- An environment with Ubuntu 24.04 + ROS 2 Jazzy set up
 - A workspace (such as `~/ros2_ws`, already created in [02_environment_setup](02_environment_setup.md))
 - `sudo apt install ros-jazzy-rosidl-default-generators` is installed (normally already included if you installed `ros-jazzy-desktop`)
 

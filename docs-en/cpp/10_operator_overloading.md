@@ -158,7 +158,7 @@ int main()
 
 [⚠ See this error in your browser (gcc 13.3)](https://godbolt.org/z/98ffMj7M1)
 
-As we saw in the previous chapter, this gives a 78-line error, and it is 3 lines (all with the same cause) if you narrow it down with `grep "error:"`. The output looks like this.
+As we saw in the previous chapter, this gives a long error, and it is 3 lines (all with the same cause) if you narrow it down with `grep "error:"`. The output looks like this.
 
 <details markdown="1"><summary>Full program that produced this output</summary>
 
@@ -257,8 +257,8 @@ bool operator!=(const Vec2 & a, const Vec2 & b)
 Implementing `!=` with `==` is the standard approach. It is so that you **do not write the logic in 2 places**.
 
 (In C++20, if you write one line `auto operator<=>(const Vec2 &) const = default;`,
-all 6 comparison operators are generated. **ROS 2 Jazzy uses C++17, so you cannot use it.**
-Just know that you will be able to use it in the future.)
+all 6 comparison operators are generated. **This drill uses C++17, so we do not use it.**
+Just know that such a way of writing exists.)
 
 ### Be careful with `==` on floating point
 

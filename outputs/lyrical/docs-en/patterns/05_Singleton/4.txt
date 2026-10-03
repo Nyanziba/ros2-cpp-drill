@@ -1,0 +1,2 @@
+instance: 0x555555558010 duty=100
+copied  : 0x7ffffffc0904 duty=30

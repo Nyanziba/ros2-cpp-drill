@@ -1,6 +1,6 @@
 # 1. How build and link work
 
-> **Goal of this chapter**: C++ has no "modules" (C++20 has them, but ROS 2 Jazzy uses C++17).
+> **Goal of this chapter**: C++ has no "modules" (C++20 has them, but this drill uses C++17).
 > Instead it has **`#include`, which only pastes text**, and **a linker that resolves names later**.
 > If you do not know this two-step design, errors such as `undefined reference` and `redefinition`
 > look like mysterious errors that "will not pass even though the syntax is correct".
@@ -36,7 +36,7 @@ g++ -std=c++17 -E hello.cpp | wc -l
 [▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/e1Wax65x1)
 
 `-E` is an option that runs only the preprocessor.
-A 2-line file became **25258 lines**. `<string>` and everything it `#include`s
+A 2-line file became **over 25,000 lines** (the number in the output above). `<string>` and everything it `#include`s
 were really expanded and pasted.
 
 This "paste only" property decides everything about the C++ build.
@@ -259,7 +259,7 @@ y.cpp:(.text+0x0): multiple definition of `add(int, int)'; /tmp/ccMSxLb3.o:x.cpp
 collect2: error: ld returned 1 exit status
 ```
 
-A line that starts with `/usr/bin/ld:` is the mark of a linker message.
+A line that starts with the linker's name (`ld`), such as `/usr/bin/ld:`, is the mark of a linker message.
 **Compiler errors come with a line, a column, and a source excerpt, but linker errors do not.**
 The linker does not look at the source, so it can only give an offset inside the object file, such as `.text+0x0`.
 This difference in appearance tells you directly "at which stage it failed".
@@ -384,7 +384,7 @@ nm -C mp.o | grep timer_callback
 
 </details>
 
-<!-- measure: env=ros files=drill/minimal_publisher.hpp,minimal_publisher.cpp cmd="g++ -std=c++17 -I. $(find /opt/ros/jazzy/include -maxdepth 1 -mindepth 1 -type d -printf '-I%p ') -c minimal_publisher.cpp -o mp.o && nm -C mp.o | grep timer_callback" filter="grep ' T '" -->
+<!-- measure: env=ros files=drill/minimal_publisher.hpp,minimal_publisher.cpp cmd="g++ -std=c++17 -I. $(find /opt/ros/$ROS_DISTRO/include -maxdepth 1 -mindepth 1 -type d -printf '-I%p ') -c minimal_publisher.cpp -o mp.o && nm -C mp.o | grep timer_callback" filter="grep ' T '" -->
 ```
 00000000000004b4 T MinimalPublisher::timer_callback()
 ```

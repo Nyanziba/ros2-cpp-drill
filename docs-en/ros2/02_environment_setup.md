@@ -4,7 +4,7 @@ Previous: [01_start_here_course_hub](01_start_here_course_hub.md)
 
 ## Introduction
 
-When you finish this article, ROS 2 Jazzy Jalisco will run on your PC (or WSL2), and you will have checked that the bundled sample nodes can talk to each other. ROS 2 depends strongly on the OS, so if you get stuck here, all the later lectures stop. Do not rush. Go one step at a time and check as you go.
+When you finish this article, ROS 2 Jazzy will run on your PC (or WSL2), and you will have checked that the bundled sample nodes can talk to each other. ROS 2 depends strongly on the OS, so if you get stuck here, all the later lectures stop. Do not rush. Go one step at a time and check as you go.
 
 ## Lecture goals / how to proceed
 
@@ -55,7 +55,13 @@ Preparation:
 
 Content:
 
-The OS supported by ROS 2 Jazzy Jalisco is Ubuntu 24.04 (Noble Numbat). First, prepare your environment in the following order of priority.
+<!-- only: jazzy -->
+The OS supported by ROS 2 Jazzy is Ubuntu 24.04 (Noble Numbat).
+<!-- /only -->
+<!-- only: lyrical -->
+The OS supported by ROS 2 Lyrical is Ubuntu 26.04 (Resolute Raccoon).
+<!-- /only -->
+First, prepare your environment in the following order of priority.
 
 1. **Native Ubuntu 24.04 (recommended)**. Install it directly on the PC, or set up dual boot. GUI tools (such as rviz2 and Gazebo) run most stably. In robot-competition debugging on real hardware, native is often required in the end, so it is a good idea to get used to it early.
 2. **Ubuntu 24.04 on WSL2 (second choice)**. For people who want to keep using Windows. You can develop on the command line without problems, but the GUI display (WSLg) is sometimes unstable. See "Common pitfalls" below for details.
@@ -108,6 +114,13 @@ curl -L -o /tmp/ros2-apt-source.deb "https://github.com/ros-infrastructure/ros-a
 sudo apt install /tmp/ros2-apt-source.deb
 ```
 
+<!-- only: jazzy -->
+In the command, `$VERSION_CODENAME` becomes `noble` on Ubuntu 24.04.
+<!-- /only -->
+<!-- only: lyrical -->
+In the command, `$VERSION_CODENAME` becomes `resolute` on Ubuntu 26.04 (`ros2-apt-source_*.resolute_all.deb` is published).
+<!-- /only -->
+
 This package sets up both the GPG key and the apt source list. The old method of adding the key to `apt-key` by hand is deprecated now, so do not copy the steps of old articles and blogs.
 
 Finally, update the package list and install ROS 2 itself (the Desktop version).
@@ -153,7 +166,7 @@ To check that the line was added, open a new terminal and run the following.
 
 ```bash
 echo $ROS_DISTRO
-# If it shows jazzy, you are OK
+# If it shows jazzy or lyrical, you are OK
 ```
 
 ### Task 4: Check that it works with talker/listener
@@ -192,7 +205,7 @@ This is the goal of this article. When you have confirmed that the logs above fl
 
 <details markdown="1"><summary>Answer (steps to check if you are stuck)</summary>
 
-1. In both terminals, check that `echo $ROS_DISTRO` shows `jazzy` (you may not have sourced)
+1. In both terminals, check that `echo $ROS_DISTRO` shows `jazzy` or `lyrical` (you may not have sourced)
 2. Look carefully at the log in the first terminal to see whether `ros2 run demo_nodes_cpp talker` started without errors
 3. Run `ros2 topic list` and check that `/chatter` appears (it should appear if talker is running)
 4. If all of the above is fine, check that `ROS_DOMAIN_ID` is the same in both terminals (see the Advanced section below)
@@ -229,6 +242,11 @@ Next: [03_getting_a_feel_with_turtlesim_and_rqt](03_getting_a_feel_with_turtlesi
 
 ## References
 
+<!-- only: jazzy -->
 - [Ubuntu (deb packages) — ROS 2 Documentation: Jazzy](https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html)
+<!-- /only -->
+<!-- only: lyrical -->
+- [Ubuntu (deb packages) — ROS 2 Documentation: Lyrical](https://docs.ros.org/en/lyrical/Get-Started/Installation/Ubuntu-Install-Debs.html)
+<!-- /only -->
 - [Configuring ROS 2 environment — ROS 2 Documentation: Jazzy](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Configuring-ROS2-Environment.html)
 - [Understanding ROS 2 nodes (source of the talker/listener demo) — ROS 2 Documentation: Jazzy](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Nodes/Understanding-ROS2-Nodes.html)

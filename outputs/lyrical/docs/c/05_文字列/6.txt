@@ -1,0 +1,2 @@
+snprintf wrote: 11 bytes (limited to 10)
+buf: hello wor

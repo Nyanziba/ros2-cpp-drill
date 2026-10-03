@@ -9,6 +9,10 @@ docs/cpp/06_スマートポインタ.md   ←→   exercises/cpp06_smart_pointer
 **課題を動かすところから始めるなら [はじめかた](はじめかた.md) をどうぞ。**
 Docker でも、Ubuntu に直接入れる形でも進められます。
 
+この教材には **Jazzy 版（既定）と Lyrical 版**があります。
+サイトのページ最上部の切替で行き来できます。
+Lyrical 版の URL は <https://nyanziba.github.io/ros2-cpp-drill/lyrical/> です。
+
 行き方は 2 通りあります。
 
 ```bash
@@ -45,7 +49,7 @@ Docker でも、Ubuntu に直接入れる形でも進められます。
 課題にも章にも紐づかない、横断的な読み物です。
 
 - [rclcpp の設計思想](rclcpp-の設計思想.md) — なぜその API 設計なのか。
-  `/opt/ros/jazzy/include/` のヘッダを実際に読んで書いたもの
+  rclcpp のヘッダ（Jazzy のもの）を実際に読んで書いたもの
 - [ROS 2 のコーディング規約](ros2-コーディング規約.md) — 公式の
   Code style and language versions の要約
 - [発表資料（スライド）](発表資料.md) — この教材について発表するときのスライド。

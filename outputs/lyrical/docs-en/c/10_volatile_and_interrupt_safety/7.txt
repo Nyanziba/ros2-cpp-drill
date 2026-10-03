@@ -1,0 +1,4 @@
+access_uart:
+	movl	$65, 1073758208
+	ret
+	.size	access_uart, .-access_uart

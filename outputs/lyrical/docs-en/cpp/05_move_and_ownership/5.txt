@@ -1,0 +1,5 @@
+pessimizing.cpp: In function ‘std::string make_bad()’:
+pessimizing.cpp:8:19: warning: moving a local object in a return statement prevents copy elision [-Wpessimizing-move]
+    8 |   return std::move(s);       // <- do not write this
+      |          ~~~~~~~~~^~~
+pessimizing.cpp:8:19: note: remove ‘std::move’ call

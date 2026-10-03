@@ -1,0 +1,3 @@
+next_id() = 101
+next_id() = 102
+next_id() = 103

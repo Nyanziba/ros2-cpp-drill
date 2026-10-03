@@ -1,0 +1,7 @@
+  [Resource A] acquired
+  [Resource B] acquired
+  may_throw() running
+  [Resource B] released
+  [Resource A] released
+Caught exception: error
+Resources were released for sure

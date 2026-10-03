@@ -17,7 +17,7 @@ The prerequisite is that you have read [10_workspaces_and_colcon](10_workspaces_
 
 ### What to prepare
 
-- An environment with Ubuntu 24.04 + ROS 2 Jazzy Jalisco set up ([02_environment_setup](02_environment_setup.md) finished)
+- An environment with Ubuntu 24.04 + ROS 2 Jazzy set up ([02_environment_setup](02_environment_setup.md) finished)
 - A workspace (for example `~/ros2_ws`) is already created, and `colcon build` has passed at least once ([10_workspaces_and_colcon](10_workspaces_and_colcon.md) finished)
 - An editor (such as VS Code) with C++ syntax highlighting working
 - A screen where you can open three terminals side by side (for building, for running the publisher, and for running the subscriber)

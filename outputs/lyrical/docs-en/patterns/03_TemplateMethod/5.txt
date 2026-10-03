@@ -1,0 +1,4 @@
+Calling setup() from Sensor()
+  Sensor::setup
+Calling setup() from boot()
+  Imu::setup

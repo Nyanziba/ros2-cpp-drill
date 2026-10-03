@@ -1,0 +1,30 @@
+string_all.c: In function ‘main’:
+string_all.c:22:3: warning: ‘strncpy’ output truncated before terminating nul copying 4 bytes from a string of the same length [-Wstringop-truncation]
+   22 |   strncpy(buf1, "test", 4);
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~
+string_all.c:38:57: warning: ‘hello world’ directive output truncated writing 11 bytes into a region of size 10 [-Wformat-truncation=]
+   38 |   int written = snprintf(buf3, sizeof(buf3), "hello world");
+      |                                               ~~~~~~~~~~^
+string_all.c:38:17: note: ‘snprintf’ output 12 bytes into a destination of size 10
+   38 |   int written = snprintf(buf3, sizeof(buf3), "hello world");
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+== NUL-terminated string ==
+s: hello
+strlen(s): 5, sizeof(s): 6
+
+== sizeof vs actual length ==
+sizeof(arr): 4, strlen(arr): 3
+
+== strncpy doesn't add NUL ==
+After strncpy(buf1, "test", 4):
+  buf1[0]=t, buf1[1]=e, buf1[2]=s, buf1[3]=t, buf1[4]=X
+  strlen(buf1)=10  buf1="testXXXXXX"
+
+== Safe: strncpy + manual NUL ==
+buf2: test
+
+== snprintf with size limit ==
+Written 11 bytes (size limit 10), buf3: hello wor
+
+== strlen is always linear ==
+1st strlen: 10, 2nd strlen: 10

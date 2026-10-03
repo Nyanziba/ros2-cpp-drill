@@ -1,0 +1,4 @@
+=== Returning by value in C++17 ===
+Data(40)
+=== Done ===
+~Data(40)

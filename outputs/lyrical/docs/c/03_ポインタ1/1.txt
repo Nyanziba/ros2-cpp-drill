@@ -1,0 +1,18 @@
+== Passing by value ==
+Before: x = 10
+After increment_by_value(x): x = 10
+
+== Passing by pointer ==
+Before: y = 10
+After increment_by_pointer(&y): y = 11
+
+== Pointer to pointer ==
+value = 42
+*p = 42
+**pp = 42
+
+== const pointer ==
+const int *cp = &a: 100
+After cp = &b: 200
+int * const p_const = &a: 100
+After *p_const = 150: a = 150

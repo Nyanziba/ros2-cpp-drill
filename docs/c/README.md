@@ -92,7 +92,7 @@ gcc -std=c99 -Wall -Wextra -Wpedantic try.c -o try && ./try
   ```
   `_Static_assert` を使うため c11 標準が必要です。
 
-掲載しているコードと出力は、すべて手元の gcc 13.3.0 / Ubuntu 24.04 で実際にコンパイル・実行した値です。
+掲載しているコードと出力は、すべて手元の gcc / Ubuntu 24.04 で実際にコンパイル・実行した値です（gcc は Jazzy 版が 13.3.0、Lyrical 版が 15.2.0）。
 
 ## 所要時間の目安
 

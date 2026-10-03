@@ -4,6 +4,10 @@ This is a summary, in English, of the key points of the official document
 [Code style and language versions](https://docs.ros.org/en/jazzy/The-ROS2-Project/Contributing/Code-Style-Language-Versions.html)
 (original: `ros2_documentation/source/The-ROS2-Project/Contributing/Code-Style-Language-Versions.rst`, jazzy branch).
 **This is only a summary, so when you are unsure, always check the original.**
+<!-- only: lyrical -->
+
+**Note for the Lyrical site**: This summary is based on the Jazzy original. In the Lyrical original, the C++ target is **C++20** (the C++17 in the table below is the Jazzy one). Check the other points against the Lyrical original as well.
+<!-- /only -->
 
 If the original gives a 403 error, you can read the raw file directly.
 

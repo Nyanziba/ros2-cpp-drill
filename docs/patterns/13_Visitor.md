@@ -499,7 +499,7 @@ g++ -std=c++17 -Wall -Wextra -Wpedantic not_exhaustive.cpp -o not_exhaustive 2>&
 
 </details>
 
-エラーは 5 件で数十行続くので、コマンドの `grep -m1` で最初の `error:` の行だけを抜き出しています。
+エラーは何件も続いて長くなるので、コマンドの `grep -m1` で最初の `error:` の行だけを抜き出しています。
 
 <!-- measure: files=not_exhaustive.cpp -->
 ```

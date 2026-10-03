@@ -1,0 +1,15 @@
+--- Start
+(ignored)
+--- PowerOn
+Stopped -> Idle
+--- Start
+Idle -> Running
+--- EStop
+motor:stop
+brake:engage
+Running -> Faulted
+--- Start
+(ignored)
+--- Reset
+Faulted -> Stopped
+sizeof(Machine)=1 sizeof(kTable)=20

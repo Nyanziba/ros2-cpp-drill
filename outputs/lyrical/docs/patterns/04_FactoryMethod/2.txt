@@ -1,0 +1,3 @@
+  UART1: boot ok
+  3 個目: nullptr
+  used = 2

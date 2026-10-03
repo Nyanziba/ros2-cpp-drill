@@ -1,0 +1,5 @@
+  [motor] duty=0.5
+スコープを抜けます
+  Logger 破棄
+空タグ: nullptr
+created_count = 1

@@ -155,7 +155,7 @@ Result:   133656
 
 [▶ Run in your browser (gcc 13.3)](https://godbolt.org/z/c54aMWoWr)
 
-**The values in the output depend on the environment.** The output above was measured in Docker (`linux/arm64`, Ubuntu 24.04 / g++ 13.3 / aarch64, 10 cores). In this environment every one of the 8 runs gave a value below 500000, so the data race showed up. The numbers also differ from those in the Japanese edition, which is expected.
+**The values in the output depend on the environment.** The output above was measured in Docker (`linux/arm64` / aarch64, 10 cores). In this environment every one of the 8 runs gave a value below 500000, so the data race showed up. The numbers also differ from those in the Japanese edition, which is expected.
 
 On the author's 12-core machine, on the other hand, the same code **gave the right answer (500000) in all 8 runs.** The result was the same with `-O2`, and without `-pthread`.
 That is because one thread finishes its 100000 loops in less than 0.5 milliseconds, and

@@ -1,0 +1,15 @@
+--- 12.0 V ---
+clock on
+power on
+imu init
+can open
+ready
+can close
+imu deinit
+power off
+clock off
+--- 10.5 V ---
+clock on
+power FAILED (10500 mV)
+not ready
+clock off

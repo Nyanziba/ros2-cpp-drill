@@ -1,0 +1,3 @@
+rosbag2_transport
+  rosbag2_transport::Player
+  rosbag2_transport::Recorder

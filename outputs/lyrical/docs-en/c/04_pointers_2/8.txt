@@ -1,0 +1,2 @@
+test_arr[2] = 30
+*(test_arr + 2) = 30

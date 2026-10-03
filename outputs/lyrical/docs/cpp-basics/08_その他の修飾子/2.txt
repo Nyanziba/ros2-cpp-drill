@@ -1,0 +1,5 @@
+=== Without inline ===
+0000000000000000 T add_one(int)
+
+=== With inline ===
+0000000000000000 W add_one(int)

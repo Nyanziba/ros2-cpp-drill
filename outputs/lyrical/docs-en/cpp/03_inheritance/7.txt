@@ -1,0 +1,9 @@
+override.cpp:18:10: error: ‘double Circle::area()’ marked ‘override’, but does not override
+   18 |   double area() override { return 3.14159 * r_ * r_; }   // forgot const
+      |          ^~~~
+override.cpp:10:18: warning: ‘virtual double Shape::area() const’ was hidden [-Woverloaded-virtual=]
+   10 |   virtual double area() const = 0;             // = 0 means "the derived class writes the contents"
+      |                  ^~~~
+override.cpp:18:10: note:   by ‘double Circle::area()’
+   18 |   double area() override { return 3.14159 * r_ * r_; }   // forgot const
+      |          ^~~~

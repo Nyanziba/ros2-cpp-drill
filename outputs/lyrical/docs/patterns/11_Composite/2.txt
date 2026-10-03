@@ -1,0 +1,6 @@
+Bad  root.use_count = 2
+--- Bad のスコープを抜けた ---
+Good root.use_count = 1
+~Good root
+~Good leaf
+--- Good のスコープを抜けた ---

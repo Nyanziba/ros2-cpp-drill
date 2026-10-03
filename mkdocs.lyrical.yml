@@ -1,0 +1,38 @@
+# ROS 2 Lyrical 版（日本語）。Jazzy 版（mkdocs.yml）の設定を引き継ぎ、違うところだけ上書きする。
+#
+#   mkdocs build                              # Jazzy 版 日本語 → site/
+#   mkdocs build -f mkdocs.en.yml             # Jazzy 版 英語   → site/en/
+#   mkdocs build -f mkdocs.lyrical.yml        # Lyrical 版 日本語 → site/lyrical/
+#   mkdocs build -f mkdocs.lyrical.en.yml     # Lyrical 版 英語   → site/lyrical/en/
+#
+# **この順番で建てる。** 先に建てたほうが、後のビルドの掃除で消えないように。
+#
+# 本文は Jazzy 版と同じで、hooks/drill_version.py が測った出力（outputs/lyrical/）と版の名前を差し替える。
+INHERIT: mkdocs.yml
+
+site_name: ROS 2 練習帳（Lyrical 版） — C++ と ROS 2 の教材
+site_url: https://nyanziba.github.io/ros2-cpp-drill/lyrical/
+site_dir: site/lyrical
+
+extra:
+  drill_version_label: "ROS 2 の版:"
+  drill_versions:
+    - name: Jazzy
+      link: ../index.html
+    - name: Lyrical
+      link: index.html
+      current: true
+  drill_distro: lyrical
+  # Lyrical 版で置き換える語。版の名前と環境だけ（Compiler Explorer の「gcc 13.3」はリンク先が
+  # 実際に gcc 13.3 で動くので置き換えない）。版で中身が変わる文は <!-- only: ... --> で書き分ける。
+  drill_replacements:
+    - ["Jazzy Jalisco", "Lyrical Luth"]          # 版の正式名。下の「ROS 2 Jazzy」より先に置き換える
+    - ["/opt/ros/jazzy", "/opt/ros/lyrical"]
+    - ["ros-jazzy-", "ros-lyrical-"]
+    # docs.ros.org の URL は置き換えない。Lyrical の公式ドキュメントは章の構成が変わっていて、
+    # 同じパスの多くが 404 になる。版で中身が違うリンクは本文で <!-- only: ... --> に書き分ける。
+    - ["ROS 2 Jazzy", "ROS 2 Lyrical"]
+    - ["Ubuntu 24.04", "Ubuntu 26.04"]
+    - ["g++ 13.3.0", "g++ 15.2.0"]
+    - ["g++ 13.3", "g++ 15.2"]
+    - ["ros2-drill:jazzy", "ros2-drill:lyrical"]

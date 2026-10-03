@@ -1,0 +1,9 @@
+Variable x: 42
+Address of x (&x): 0x7ffffffc0a1c
+Pointer p: 0x7ffffffc0a1c
+Value pointed to (*p): 42
+
+== Modifying through pointer ==
+After *p = 100:
+x = 100
+*p = 100

@@ -1,0 +1,3 @@
+Limiter のコンストラクタ: limit_ = 0
+Config のコンストラクタ
+main: g_config.max_duty() = 100

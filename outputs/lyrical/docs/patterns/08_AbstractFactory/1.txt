@@ -1,0 +1,4 @@
+mixed:  0
+paired: 10
+sizeof(SimMotor)     = 16
+sizeof(SimMotorCore) = 8

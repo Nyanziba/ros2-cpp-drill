@@ -1,0 +1,5 @@
+int main(void)
+{
+    ((1 == 1) ? (void) (0) : __assert_fail ("1 == 1", "assert_expansion.c", 6, __extension__ __PRETTY_FUNCTION__));
+    return 0;
+}

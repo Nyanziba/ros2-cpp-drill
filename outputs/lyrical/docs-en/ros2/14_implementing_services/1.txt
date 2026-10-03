@@ -1,0 +1,4 @@
+requester: making request: example_interfaces.srv.AddTwoInts_Request(a=3, b=4)
+
+response:
+example_interfaces.srv.AddTwoInts_Response(sum=7)

@@ -1,0 +1,7 @@
+rtti.cpp: In function ‘void report(const DiagNode&)’:
+rtti.cpp:13:37: error: ‘dynamic_cast’ not permitted with ‘-fno-rtti’
+   13 |   if (const SensorCheck * const s = dynamic_cast<const SensorCheck *>(&node)) { /* ... */ }
+      |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rtti.cpp:14:41: error: ‘dynamic_cast’ not permitted with ‘-fno-rtti’
+   14 |   else if (const MotorCheck * const m = dynamic_cast<const MotorCheck *>(&node)) { /* ... */ }
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

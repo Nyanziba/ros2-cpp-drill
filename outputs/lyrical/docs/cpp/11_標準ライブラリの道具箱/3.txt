@@ -1,0 +1,7 @@
+concat_literals.cpp: In function ‘int main()’:
+concat_literals.cpp:6:27: error: invalid operands of types ‘const char [6]’ and ‘const char [7]’ to binary ‘operator+’
+    6 |   std::string s = "hello" + " world";  // エラー
+      |                   ~~~~~~~ ^ ~~~~~~~~
+      |                   |         |
+      |                   |         const char [7]
+      |                   const char [6]

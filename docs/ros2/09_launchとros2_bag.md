@@ -15,9 +15,9 @@
 
 ### 準備物
 
-- Ubuntu 24.04 + ROS 2 Jazzy Jalisco がセットアップ済みの端末
+- Ubuntu 24.04 + ROS 2 Jazzy がセットアップ済みの端末
 - `ros-jazzy-turtlesim`（03で導入済みのはず）
-- `ros-jazzy-rosbag2*`系パッケージ（Jazzyのデスクトップ変種インストールなら通常同梱。`ros2 bag --help`が通るか事前確認しておく）
+- `ros-jazzy-rosbag2*`系パッケージ（デスクトップ変種のインストールなら通常同梱。`ros2 bag --help`が通るか事前確認しておく）
 - ターミナルを3枚以上並べて開ける画面
 
 ### 口頭試問
@@ -145,7 +145,7 @@ ros2 bag record -a -o all_topics_bag
 
 `-a`は起動中の全トピックを対象にする指定、`-o`は出力先ディレクトリ名の指定です。Ctrl+Cで記録を止めます。
 
-なお**Jazzyでは記録形式のデフォルトが`mcap`です**（`ros2 bag record --help`に`-s {mcap,sqlite3} ... defaults to 'mcap'`と出ます）。Humble以前の資料やネットの記事では`.db3`（sqlite3）ができる前提で書かれているものが多いので、出力ファイルの拡張子が違っても慌てないでください。どうしてもsqlite3で残したい場合は`-s sqlite3`を付けます。
+なお**記録形式のデフォルトは`mcap`です**（`ros2 bag record --help`に`-s {mcap,sqlite3} ... defaults to 'mcap'`と出ます）。Humble以前の資料やネットの記事では`.db3`（sqlite3）ができる前提で書かれているものが多いので、出力ファイルの拡張子が違っても慌てないでください。どうしてもsqlite3で残したい場合は`-s sqlite3`を付けます。
 
 トピックを指定して記録する場合は次のようにします。
 ```bash
@@ -349,7 +349,14 @@ stamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
 
 **出力先は`ros2 launch`を実行したディレクトリからの相対パス**です。launchファイルが置いてある場所ではありません。`-o mimic_bag`のように相対パスで書くと、どこで`ros2 launch`を打ったかによってbagの出来る場所が変わります。迷うなら絶対パスにしてください。
 
-**`--topics`を付けてください。** トピック名を位置引数として並べる書き方（`ros2 bag record -o foo /topic_a`）も動きますが、Jazzyでは非推奨の警告が出ます。
+**`--topics`を付けてください。** トピック名を位置引数として並べる書き方（`ros2 bag record -o foo /topic_a`）も動きますが、版によっては非推奨の警告が出ます。
+
+<!-- only: jazzy -->
+Jazzyでは、次の警告が出ます。
+<!-- /only -->
+<!-- only: lyrical -->
+この版では警告が出ないので、次の出力は空です。
+<!-- /only -->
 
 <!-- measure: env=ros cmd="timeout -s INT 3 ros2 bag record -o /tmp/positional_bag /chatter" filter="grep WARN" -->
 ```
@@ -391,7 +398,7 @@ ros2 launch mimic_record_launch.py record:=false
 
 ### ExecuteProcessではなくノードとして起動する方法
 
-`ros2 bag record`はCLIコマンドですが、rosbag2の中身はROSノードです。Jazzyではコンポーネントとして公開されています。
+`ros2 bag record`はCLIコマンドですが、rosbag2の中身はROSノードです。コンポーネントとしても公開されています。
 
 ```bash
 ros2 component types | grep rosbag

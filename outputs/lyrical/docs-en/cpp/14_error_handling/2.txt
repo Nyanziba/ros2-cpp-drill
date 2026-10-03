@@ -1,0 +1,5 @@
+Caught as base: Custom error
+Restored as MyError: 99
+
+Catching by value causes slicing:
+Slicing: std::exception

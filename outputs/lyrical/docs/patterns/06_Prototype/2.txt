@@ -1,0 +1,13 @@
+abstract_slicing.cpp: In function ‘int main()’:
+abstract_slicing.cpp:18:21: error: cannot allocate an object of abstract type ‘Waveform’
+   18 |   Waveform sliced = pulse;
+      |                     ^~~~~
+abstract_slicing.cpp:2:7: note:   because the following virtual functions are pure within ‘Waveform’:
+    2 | class Waveform
+      |       ^~~~~~~~
+abstract_slicing.cpp:6:18: note:     ‘virtual double Waveform::sample(double) const’
+    6 |   virtual double sample(double time) const = 0;   // 純粋仮想関数 = 抽象クラス
+      |                  ^~~~~~
+abstract_slicing.cpp:18:12: error: cannot declare variable ‘sliced’ to be of abstract type ‘Waveform’
+   18 |   Waveform sliced = pulse;
+      |            ^~~~~~

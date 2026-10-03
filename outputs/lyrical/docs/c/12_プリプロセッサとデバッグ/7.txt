@@ -1,0 +1,3 @@
+static_assert_fail.c:8:1: error: static assertion failed: "MyStruct must be 16 bytes"
+    8 | _Static_assert(sizeof(MyStruct) == 16, "MyStruct must be 16 bytes");
+      | ^~~~~~~~~~~~~~

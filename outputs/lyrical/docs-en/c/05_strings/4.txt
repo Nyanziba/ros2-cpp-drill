@@ -1,0 +1,4 @@
+buf[0..4] = t e s t X
+numeric value of buf[4] = 88   ('X' = 88)
+strlen(buf) = 10   ← not 4
+buf = "testXXXXXX"

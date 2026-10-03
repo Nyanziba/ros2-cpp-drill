@@ -1,0 +1,8 @@
+In file included from main.cpp:3:
+no_guard.h:2:8: error: redefinition of ‘struct Point’
+    2 | struct Point {
+      |        ^~~~~
+In file included from main.cpp:2:
+no_guard.h:2:8: note: previous definition of ‘struct Point’
+    2 | struct Point {
+      |        ^~~~~

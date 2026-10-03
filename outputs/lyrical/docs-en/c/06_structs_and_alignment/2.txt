@@ -1,0 +1,4 @@
+struct reordered:  sizeof = 8
+  offsetof(b) = 0
+  offsetof(a) = 4
+  offsetof(c) = 5

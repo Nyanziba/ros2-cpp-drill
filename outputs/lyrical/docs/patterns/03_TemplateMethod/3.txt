@@ -1,0 +1,3 @@
+override_boot.cpp:11:8: error: ‘void Imu::boot()’ marked ‘override’, but does not override
+   11 |   void boot() override { }     // Sensor::boot() は非仮想
+      |        ^~~~

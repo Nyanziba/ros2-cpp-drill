@@ -1,0 +1,3 @@
+/usr/bin/x86_64-linux-gnu-ld.bfd: /tmp/ccnbEXD3.o: in function `add(int, int)':
+y.cpp:(.text+0x0): multiple definition of `add(int, int)'; /tmp/cckS8G29.o:x.cpp:(.text+0x0): first defined here
+collect2: error: ld returned 1 exit status

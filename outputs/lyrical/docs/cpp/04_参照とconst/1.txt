@@ -1,0 +1,5 @@
+生成:
+  [生成]
+by_value(t):
+  [コピー]
+by_const_ref(t):

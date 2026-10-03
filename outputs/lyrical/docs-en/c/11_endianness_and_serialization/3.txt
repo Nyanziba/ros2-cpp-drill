@@ -1,0 +1,9 @@
+=== Endianness test ===
+0x12345678 -> 78 56 34 12
+
+=== float <-> bytes ===
+1.0 -> 00 00 80 3f
+recovered: 1.0
+
+=== Sign extension test ===
+Byte sequence 80 ff 00 00 -> 0x0000ff80

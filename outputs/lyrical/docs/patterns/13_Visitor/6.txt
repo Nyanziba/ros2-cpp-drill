@@ -1,0 +1,1 @@
+sizeof(NodeV) = 8      // SensorV{int} と MotorV{unsigned int} の場合

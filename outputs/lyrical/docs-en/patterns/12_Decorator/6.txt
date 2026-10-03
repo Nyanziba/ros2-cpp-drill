@@ -1,0 +1,2 @@
+[INFO] 12:00:00.000 moving
+sizeof(sink) = 24

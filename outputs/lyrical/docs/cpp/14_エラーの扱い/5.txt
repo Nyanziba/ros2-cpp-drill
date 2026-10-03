@@ -1,0 +1,4 @@
+安全な操作
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  例外をスロー
+Aborted

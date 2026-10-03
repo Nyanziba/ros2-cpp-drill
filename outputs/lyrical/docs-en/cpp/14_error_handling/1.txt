@@ -1,0 +1,4 @@
+10 / 2 = 5
+Trying 10 / 0...
+Caught exception: Cannot divide by 0
+Program continues

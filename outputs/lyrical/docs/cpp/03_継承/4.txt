@@ -1,0 +1,9 @@
+note: declared here
+error: no matching function for call to ‘rclcpp::Node::Node()’
+note: there are 3 candidates
+note: candidate 1: ‘rclcpp::Node::Node(const rclcpp::Node&, const std::string&)’
+note: candidate expects 2 arguments, 0 provided
+note: candidate 2: ‘rclcpp::Node::Node(const std::string&, const std::string&, const rclcpp::NodeOptions&)’
+note: candidate expects 3 arguments, 0 provided
+note: candidate 3: ‘rclcpp::Node::Node(const std::string&, const rclcpp::NodeOptions&)’
+note: candidate expects 2 arguments, 0 provided

@@ -1,0 +1,7 @@
+Starting >>> failpkg
+Finished <<< failpkg [0.43s]	[ with test failures ]
+
+Summary: 1 package finished [0.58s]
+  1 package had test failures: failpkg
+$ echo $?
+0

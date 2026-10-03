@@ -1,0 +1,3 @@
+char_p = 0x7ffffffc0975
+char_p + 1 = 0x7ffffffc0976
+difference: 1 bytes (sizeof(char) = 1)

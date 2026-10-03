@@ -1,0 +1,12 @@
+== const object ==
+r.area() = 12
+access_count: 1
+
+== const reference parameter ==
+area: 12
+
+== const pointer ==
+pointee is const: *p1 = 10, can move pointer
+now p1 points to b: *p1 = 20
+pointer is const: *p2 = 10, can modify pointee
+after *p2 = 99: a = 99

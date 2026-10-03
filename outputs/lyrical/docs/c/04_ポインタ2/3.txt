@@ -1,0 +1,3 @@
+char_p = 0x7ffffffc08e5
+char_p + 1 = 0x7ffffffc08e6
+差分: 1 バイト（sizeof(char) = 1）

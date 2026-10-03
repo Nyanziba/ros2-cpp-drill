@@ -1,0 +1,8 @@
+/usr/bin/x86_64-linux-gnu-ld.bfd: static_undefined.o: warning: relocation against `_ZN7Counter6count_E' in read-only section `.text._ZN7Counter9get_totalEv[_ZN7Counter9get_totalEv]'
+/usr/bin/x86_64-linux-gnu-ld.bfd: static_undefined.o: in function `Counter::Counter()':
+static_undefined.cpp:(.text._ZN7CounterC2Ev[_ZN7CounterC5Ev]+0xe): undefined reference to `Counter::count_'
+/usr/bin/x86_64-linux-gnu-ld.bfd: static_undefined.cpp:(.text._ZN7CounterC2Ev[_ZN7CounterC5Ev]+0x17): undefined reference to `Counter::count_'
+/usr/bin/x86_64-linux-gnu-ld.bfd: static_undefined.o: in function `Counter::get_total()':
+static_undefined.cpp:(.text._ZN7Counter9get_totalEv[_ZN7Counter9get_totalEv]+0xa): undefined reference to `Counter::count_'
+/usr/bin/x86_64-linux-gnu-ld.bfd: warning: creating DT_TEXTREL in a PIE
+collect2: error: ld returned 1 exit status

@@ -17,7 +17,7 @@
 
 ### 準備物
 
-- Ubuntu 24.04 + ROS 2 Jazzy Jaliscoがセットアップ済みの環境（[02_環境構築](02_環境構築.md)完了）
+- Ubuntu 24.04 + ROS 2 Jazzyがセットアップ済みの環境（[02_環境構築](02_環境構築.md)完了）
 - `ros-jazzy-ros2-control`と`ros-jazzy-ros2-controllers`パッケージ（`sudo apt install ros-jazzy-ros2-control ros-jazzy-ros2-controllers`）
 - `ros2_control_demos`のクローン先ワークスペース（[10_ワークスペースとcolcon](10_ワークスペースとcolcon.md)完了）
 - Gazeboは不要。mockハードウェアで動くデモを使うため、このデモ単体ではシミュレータのインストールを待たなくてよい
@@ -105,6 +105,7 @@ interfaceの型（position/velocity/effort）はコントローラが要求す�
 
 ワークスペースのsrc以下にデモをcloneします。
 
+<!-- only: jazzy -->
 ```bash
 cd ~/ros2_ws/src
 git clone -b jazzy https://github.com/ros-controls/ros2_control_demos.git
@@ -112,6 +113,18 @@ cd ~/ros2_ws
 colcon build --packages-up-to ros2_control_demo_example_2
 source install/setup.bash
 ```
+<!-- /only -->
+<!-- only: lyrical -->
+```bash
+cd ~/ros2_ws/src
+git clone https://github.com/ros-controls/ros2_control_demos.git
+cd ~/ros2_ws
+colcon build --packages-up-to ros2_control_demo_example_2
+source install/setup.bash
+```
+
+ros2_control_demos には、執筆時点で lyrical ブランチがありません（`git ls-remote --heads` で確かめました）。上は既定のブランチを取っています。Lyrical で `ros2_control_demo_example_2` がそのまま動くかは確かめていないので、リポジトリの README で対応を確認してください。
+<!-- /only -->
 
 diffbot例（`ros2_control_demo_example_2`）はmockハードウェアで動作するため、実機もGazeboも不要です。URDFの`<ros2_control>`タグの中でmockハードウェアプラグインを指定しているだけで、controller_managerやdiff_drive_controllerの挙動そのものはそのまま確認できます。
 
@@ -179,7 +192,12 @@ ros2_controlはURDFがあることが前提の仕組みです。前提を整え�
 
 ## 資料
 
+<!-- only: jazzy -->
 - [ros2_control公式（control.ros.org）](https://control.ros.org/jazzy/index.html)
+<!-- /only -->
+<!-- only: lyrical -->
+- [ros2_control公式（control.ros.org）](https://control.ros.org/lyrical/index.html)
+<!-- /only -->
 - [ROS 2 Documentation: Jazzy — ros2_control関連ページ](https://docs.ros.org/en/jazzy/p/ros2_control/)
 - [ros2_control_demos（GitHub）](https://github.com/ros-controls/ros2_control_demos)
 - [19_URDFの書き方](19_URDFの書き方.md)

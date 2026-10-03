@@ -1,0 +1,7 @@
+signcompare.cpp: In function ‘int main()’:
+signcompare.cpp:9:21: warning: comparison of integer expressions of different signedness: ‘int’ and ‘std::vector<int>::size_type’ {aka ‘long unsigned int’} [-Wsign-compare]
+    9 |   for (int i = 0; i < v.size(); ++i) {
+      |                   ~~^~~~~~~~~~
+10
+20
+30

@@ -1,0 +1,2 @@
+head is null
+--- main を抜ける ---

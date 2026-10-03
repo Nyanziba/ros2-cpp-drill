@@ -1,0 +1,6 @@
+式の前
+  Guard 生成
+  Real::work
+  Guard 破棄
+式の後
+  Real::work

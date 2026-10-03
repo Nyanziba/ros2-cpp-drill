@@ -51,12 +51,16 @@ fix: C 03章の実行結果を実測に合わせる
 
 ### 環境を用意する
 
-課題のビルドには ROS 2 Jazzy（Ubuntu 24.04）が要ります。**Docker を使うのがいちばん確実です。**
+課題のビルドには ROS 2 Jazzy（Ubuntu 24.04）または ROS 2 Lyrical（Ubuntu 26.04）が要ります。**Docker を使うのがいちばん確実です。**
 手順は [README](README.md) と [はじめかた](docs/はじめかた.md) にあります。
 
 ```bash
 docker compose build
 docker compose run --rm drill ./drill verify     # 全課題をテストする
+
+# Lyrical 版は ROS_DISTRO=lyrical を付ける（付けないと Jazzy のイメージ）
+ROS_DISTRO=lyrical docker compose build
+ROS_DISTRO=lyrical docker compose run --rm drill ./drill verify
 ```
 
 読み物のサイトを手元で確かめるには、次のようにします。
@@ -66,6 +70,8 @@ python3 -m venv .venv-docs
 .venv-docs/bin/pip install -r docs-requirements.txt
 .venv-docs/bin/mkdocs build --strict                    # 日本語版 → site/
 .venv-docs/bin/mkdocs build --strict -f mkdocs.en.yml   # 英語版 → site/en/（必ず日本語版の後）
+.venv-docs/bin/mkdocs build --strict -f mkdocs.lyrical.yml      # Lyrical 版 日本語 → site/lyrical/
+.venv-docs/bin/mkdocs build --strict -f mkdocs.lyrical.en.yml   # Lyrical 版 英語 → site/lyrical/en/（必ず Lyrical 版 日本語の後）
 ```
 
 ## いちばん大事なルール: 出力は実測
@@ -73,9 +79,11 @@ python3 -m venv .venv-docs
 **読み物に載せるコンパイルエラー・警告・実行結果は、すべて実際に動かした出力にしてください。**
 予想や記憶で書いた出力、手で書き換えた出力は載せません。
 
-- **環境は Ubuntu 24.04 / g++ 13.3.0 / ROS 2 Jazzy です。** リポジトリの Docker イメージがこの環境です。
+- **環境は、Jazzy 版（本文）が Ubuntu 24.04 / g++ 13.3.0 / ROS 2 Jazzy、Lyrical 版が Ubuntu 26.04 / g++ 15.2.0 / ROS 2 Lyrical です。**
+  リポジトリの Docker イメージがこの環境です（Lyrical は `ROS_DISTRO=lyrical`）。
   - これまでの出力は x86_64 で取ってあります。Apple Silicon の Mac なら、
-    `docker build --platform linux/amd64 -t ros2-drill:jazzy-amd64 .` で x86_64 のイメージを作って測ってください。
+    `docker build --platform linux/amd64 -t ros2-drill:jazzy-amd64 .` で x86_64 のイメージを作って測ってください
+    （Lyrical は `docker build --platform linux/amd64 --build-arg ROS_DISTRO=lyrical -t ros2-drill:lyrical-amd64 .`）。
     実行結果は arm64 でもほぼ同じですが、`char` の符号など、アーキテクチャで変わる箇所があり得ます。
   - 別の環境（例: macOS の Apple clang）で測ったときは、**本文にその環境を明記**してください
     （デザインパターン編には「Apple clang / arm64 で実測」と明記した箇所があります）。
@@ -99,6 +107,34 @@ python3 -m venv .venv-docs
   動かせないもの（GUI・実機など）は `env=static reason="..."` です。くわしくは `tools/measure.py` の先頭に書いてあります。
 - 出力を新しく載せる・コードを変えたら、`python3 tools/measure.py --write <ページ>` で測り直して書き込み、
   `python3 tools/measure.py --check <ページ>` で食い違いが無いことを確かめます。CI（measure.yml）でも同じ検査を回します。
+
+### Lyrical 版の出力と、版ごとの書き分け
+
+本文は 1 つで、載せている出力は Jazzy 版のものです。Lyrical 版のサイトは `mkdocs.lyrical.yml` / `mkdocs.lyrical.en.yml` で建て、
+`hooks/drill_version.py` が出力と版の名前を差し替えます。
+
+- **Lyrical の出力は `outputs/lyrical/` に置きます。** 作るのは `python3 tools/measure.py --write --distro lyrical`、
+  本文の印と食い違いが無いかの検査は `python3 tools/measure.py --check --distro lyrical` です。
+  `env=clang` と `env=static` は版に依らないので、Lyrical では測りません。CI（measure.yml）は Jazzy と Lyrical の両方を検査します。
+- **本文は、版に依らない書き方を基本にします。** たとえば「エラーは 3 行出ます」ではなく「エラーが何行か出ます」、
+  「上の出力の `error:` の行」のように、版で変わる数や文面に頼らない形にします。
+- **版の名前や数値そのものが要点の文だけ、`<!-- only: ... -->` で書き分けます。** 段落単位で使い、
+  コードブロックの中や表の行の途中には置きません。日本語版と英語版で、同じ箇所に同じように置きます。
+
+  ```markdown
+  <!-- only: jazzy -->
+  Jazzy 版だけに出す段落
+  <!-- /only -->
+  <!-- only: lyrical -->
+  Lyrical 版だけに出す段落
+  <!-- /only -->
+  ```
+
+- 版の名前だけが違う語（`Jazzy Jalisco`、`/opt/ros/jazzy`、`ros-jazzy-`、`ROS 2 Jazzy`、`Ubuntu 24.04`、`g++ 13.3.0`、`g++ 13.3`、
+  `ros2-drill:jazzy`）は、書き分けずに hook が置き換えます。置き換えの一覧は `mkdocs.lyrical.yml` の `drill_replacements` です。
+- `docs.ros.org` の URL は置き換えません。Lyrical の公式ドキュメントは章の構成が変わっていて（例: Installation は `Get-Started/Installation/` の下）、
+  同じパスの多くが開けないためです。Lyrical 版でも Jazzy 版のページを指します。版で中身が違うリンクだけ `<!-- only: ... -->` で書き分けてください。
+- Compiler Explorer の「（gcc 13.3）」のリンクは、リンク先が実際に gcc 13.3 で動くので、どちらの版でもそのままです。
 
 C++ の章のコードには [Compiler Explorer](https://godbolt.org/) のリンク（`▶ ブラウザで実行する`）が付いています。
 **コードを変えたら、リンクも作り直してください。** Compiler Explorer でコードを貼り替え、
@@ -232,7 +268,7 @@ PR のテンプレートにも同じ項目があります。
 
 - [ ] 載せた出力は、すべて実際に動かした結果（環境が既定と違えば本文に明記）
 - [ ] コードを変えたなら、出力と Compiler Explorer のリンクも作り直した
-- [ ] `mkdocs build --strict`（読み物を変えたなら英語版の `-f mkdocs.en.yml` も）が通る
+- [ ] `mkdocs build --strict`（読み物を変えたなら英語版の `-f mkdocs.en.yml` と、Lyrical 版の `-f mkdocs.lyrical.yml` / `-f mkdocs.lyrical.en.yml` も）が通る
 - [ ] 課題を変えたなら、未解答で落ち、解答例で通ることを確かめた
 - [ ] 英語版も直した（または PR に「英語版は未対応」と書いた）
 - [ ] `python3 tools/check_docs.py` が通る（日英のページ構造、課題データ、テンプレートの整合を機械で確かめます）

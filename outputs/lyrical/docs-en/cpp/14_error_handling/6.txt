@@ -1,0 +1,4 @@
+noexcept_violation.cpp: In function ‘void unsafe_operation()’:
+noexcept_violation.cpp:12:3: warning: ‘throw’ will always call ‘terminate’ [-Wterminate]
+   12 |   throw std::runtime_error("Throwing an exception");  // noexcept violation
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

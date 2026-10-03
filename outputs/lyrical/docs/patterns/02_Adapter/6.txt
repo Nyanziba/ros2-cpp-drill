@@ -1,0 +1,5 @@
+try_range.cpp: In function ‘int main()’:
+try_range.cpp:31:16: error: no matching function for call to ‘begin(std::stack<int>&)’
+   31 |   for (int v : default_stack) { (void)v; }   // ← コメントを外すとエラーになる
+      |                ^~~~~~~~~~~~~
+...

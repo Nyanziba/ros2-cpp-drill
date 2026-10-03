@@ -17,7 +17,7 @@
 
 ### 準備物
 
-- Ubuntu 24.04 + ROS 2 Jazzy Jaliscoがセットアップ済みの環境（[02_環境構築](02_環境構築.md)完了）
+- Ubuntu 24.04 + ROS 2 Jazzyがセットアップ済みの環境（[02_環境構築](02_環境構築.md)完了）
 - `python3-colcon-common-extensions`（未インストールなら`sudo apt install python3-colcon-common-extensions`）
 - `python3-rosdep`（`sudo apt install python3-rosdep`。初回のみ`sudo rosdep init && rosdep update`が必要）
 - gitでクローンできるネットワーク環境
@@ -155,9 +155,11 @@ underlayは`~/.bashrc`に書いておけば新しいターミナルで自動的�
 
 ```bash
 cd ~/ros2_ws/src
-git clone -b jazzy https://github.com/ros2/examples.git
+git clone -b "$ROS_DISTRO" https://github.com/ros2/examples.git
 cd ~/ros2_ws
 ```
+
+`-b` に渡している `$ROS_DISTRO` は、source した ROS 2 の版の名前（`jazzy` か `lyrical`）です。examples のブランチ名は版の名前なので、版に合うものが取れます。
 
 `src`の中にクローンしただけで、ビルドはまだしていません。依存パッケージが揃っているかを確認するために`rosdep`を使います。
 
@@ -213,7 +215,12 @@ publisherを実行しているターミナルとは別のターミナルでこ�
 
 - [ROS 2 Documentation: Jazzy — Creating a workspace](https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Creating-A-Workspace/Creating-A-Workspace.html)
 - [ROS 2 Documentation: Jazzy — Using colcon to build packages](https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Colcon-Tutorial.html)
+<!-- only: jazzy -->
 - [ros2/examples (jazzy branch)](https://github.com/ros2/examples/tree/jazzy)
+<!-- /only -->
+<!-- only: lyrical -->
+- [ros2/examples (lyrical branch)](https://github.com/ros2/examples/tree/lyrical)
+<!-- /only -->
 - [05_トピック](05_トピック.md)
 - [09_launchとros2_bag](09_launchとros2_bag.md)
 - [11_C++でpub_subを書く](11_C++でpub_subを書く.md)

@@ -1,0 +1,2 @@
+const char *greeting = "hello";
+int foo_bar;

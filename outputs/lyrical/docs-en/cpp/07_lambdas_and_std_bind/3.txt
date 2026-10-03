@@ -1,0 +1,7 @@
+bind_noamp.cpp: In member function ‘void MinimalSubscriber::start()’:
+bind_noamp.cpp:17:36: error: invalid use of non-static member function ‘void MinimalSubscriber::topic_callback(const std::string&)’
+   17 |       std::bind(MinimalSubscriber::topic_callback, this, _1)   // forgot the &
+      |                 ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+bind_noamp.cpp:12:8: note: declared here
+   12 |   void topic_callback(const std::string & msg) { (void)msg; }
+      |        ^~~~~~~~~~~~~~

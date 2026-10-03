@@ -1,0 +1,7 @@
+private.cpp: In member function ‘void Derived::bad()’:
+private.cpp:20:29: error: ‘std::string Base::name_’ is private within this context
+   20 |   void bad() { std::cout << name_; }   // エラー
+      |                             ^~~~~
+private.cpp:14:15: note: declared private here
+   14 |   std::string name_;
+      |               ^~~~~

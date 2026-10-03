@@ -1,0 +1,19 @@
+== 関数ポインタ: 減衰と typedef ==
+op1(3, 4) = 7
+op2(3, 4) = 12
+
+== コールバック: qsort ==
+元の配列: 5 2 8 1 9 3
+昇順: 1 2 3 5 8 9
+降順: 9 8 5 3 2 1
+
+== テーブル駆動ディスパッチ ==
+  [START] param=100
+  [STOP] param=200
+  [RESET] param=300
+  Unknown command: 99
+
+== NULL チェック ==
+Handler is NULL. Calling it would crash.
+
+完了

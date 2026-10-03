@@ -1,0 +1,58 @@
+=== Pointers 1 (addresses and dereferencing) ===
+
+--- 1. Why do we need pointers? ---
+Are references enough? ... No. Reasons:
+  1. A pointer can be null (it can express an uninitialized state)
+  2. A pointer can be reseated (switched to another object)
+  3. A pointer can walk an array (pointer arithmetic)
+
+--- 2. Taking an address (&) ---
+int x = 42;
+address of x: &x = 0x7ffffffc0a18
+size of int: sizeof(int) = 4 bytes
+
+--- 3. Pointer variable (int *) ---
+int * p = &x;
+p (address) = 0x7ffffffc0a18
+*p (dereference: the value pointed to) = 42
+sizeof(int*) = 8 bytes (depends on the architecture)
+
+--- 4. Writing through a dereference ---
+*p = 100;
+x = 100 (x changed through p)
+
+--- 5. nullptr check ---
+int * nullable = nullptr;
+nullable = 0 (null pointer)
+You can check it with if (nullable) { ... }
+pointer is null
+
+--- 6. Dereferencing a null pointer crashes ---
+Warning: the next code is not executed. We only explain it
+int * bad_ptr = nullptr;
+std::cout << *bad_ptr;  // Segmentation fault!
+If you really ran it, this program would crash
+
+--- 7. Reseating a pointer ---
+int * ptr = &x;  // ptr points to x
+*ptr = 100
+ptr = &y;  // ptr now points to y
+*ptr = 99
+x = 100 (unchanged)
+
+--- 8. Accessing struct members ---
+struct Point { int x, y; };
+Point pt{10, 20};
+Point * pp = &pt;
+(*pp).x = 10
+pp->x = 10 (same)
+pp->y = 20
+
+--- 9. Comparing value, reference, and pointer ---
++----------+----------+----------+----------+
+| Kind     | nullable | reseat   | Meaning  |
++----------+----------+----------+----------+
+| Value    | no       | N/A      | Copy     |
+| Ref      | no       | no       | Alias    |
+| Pointer  | yes      | yes      | Address  |
++----------+----------+----------+----------+

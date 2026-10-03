@@ -1,0 +1,19 @@
+--- 全部成功 ---
+  power up
+  sensor up
+  calib up
+  link up
+  ready=true
+  link down
+  calib down
+  sensor down
+  power down
+--- calib で失敗 ---
+  power up
+  sensor up
+  calib FAILED
+  link FAILED
+  ready=false
+  sensor down
+  power down
+--- 抜けた ---

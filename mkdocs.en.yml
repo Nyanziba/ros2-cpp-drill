@@ -21,6 +21,8 @@ site_dir: site/en
 
 theme:
   name: material
+  # 版の切替をページ最上部に出すための上書き（overrides/main.html）
+  custom_dir: overrides
   language: en
   font: false
   features:
@@ -73,6 +75,13 @@ markdown_extensions:
 
 # 言語切替。リンクはページからの相対で解決されるので、site/en/ から見た日本語版のトップ。
 extra:
+  drill_version_label: "ROS 2 distro:"
+  drill_versions:
+    - name: Jazzy
+      link: index.html
+      current: true
+    - name: Lyrical
+      link: ../lyrical/en/index.html
   alternate:
     - name: English
       link: index.html

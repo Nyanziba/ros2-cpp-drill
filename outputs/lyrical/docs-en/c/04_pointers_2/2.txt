@@ -1,0 +1,3 @@
+int_p = 0x7ffffffc0948
+int_p + 1 = 0x7ffffffc094c
+difference: 4 bytes (sizeof(int) = 4)

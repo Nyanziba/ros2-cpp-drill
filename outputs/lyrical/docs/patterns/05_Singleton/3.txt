@@ -1,0 +1,3 @@
+Config のコンストラクタ
+Limiter のコンストラクタ: limit_ = 100
+main: 100

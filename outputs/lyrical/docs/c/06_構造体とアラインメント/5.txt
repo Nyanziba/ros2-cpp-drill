@@ -1,0 +1,36 @@
+struct_all.c: In function ‘main’:
+struct_all.c:37:38: warning: ISO C99 does not support ‘_Alignof’ [-Wpedantic]
+   37 |     printf("_Alignof(char) = %zu\n", _Alignof(char));
+      |                                      ^~~~~~~~
+struct_all.c:38:37: warning: ISO C99 does not support ‘_Alignof’ [-Wpedantic]
+   38 |     printf("_Alignof(int) = %zu\n", _Alignof(int));
+      |                                     ^~~~~~~~
+struct_all.c:39:50: warning: ISO C99 does not support ‘_Alignof’ [-Wpedantic]
+   39 |     printf("_Alignof(struct unordered) = %zu\n", _Alignof(struct unordered));
+      |                                                  ^~~~~~~~
+== Padding and sizeof ==
+struct unordered:  sizeof = 12
+  offsetof(a) = 0
+  offsetof(b) = 4
+  offsetof(c) = 8
+
+struct reordered:  sizeof = 8
+  offsetof(b) = 0
+  offsetof(a) = 4
+  offsetof(c) = 5
+
+== _Alignof ==
+_Alignof(char) = 1
+_Alignof(int) = 4
+_Alignof(struct unordered) = 4
+
+== __attribute__((packed)) ==
+struct packed_example: sizeof = 6
+  offsetof(a) = 0
+  offsetof(b) = 1
+  offsetof(c) = 5
+
+== In-memory sizes ==
+sizeof(u) = 12 (with padding)
+sizeof(r) = 8 (with less padding)
+sizeof(p) = 6 (no padding)

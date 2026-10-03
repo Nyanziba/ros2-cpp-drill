@@ -1,0 +1,10 @@
+address_of_rvalue.cpp: In function ‘int main()’:
+address_of_rvalue.cpp:7:3: warning: statement has no effect [-Wunused-value]
+    7 |   &a;                     // OK → 左辺値
+      |   ^~
+address_of_rvalue.cpp:8:9: error: taking address of rvalue [-fpermissive]
+    8 |   &std::string("hi");     // エラー → 右辺値
+      |         ^~~~~~~~~~~~
+address_of_rvalue.cpp:8:3: warning: value computed is not used [-Wunused-value]
+    8 |   &std::string("hi");     // エラー → 右辺値
+      |   ^~~~~~~~~~~~~~~~~~

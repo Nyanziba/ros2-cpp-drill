@@ -1,0 +1,6 @@
+try_no_begin.cpp: In function ‘int main()’:
+try_no_begin.cpp:31:28: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+   31 |   for (const Book & book : shelf) {
+      |                            ^~~~~
+      |                            std::begin
+...

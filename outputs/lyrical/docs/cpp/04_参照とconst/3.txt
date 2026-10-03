@@ -1,0 +1,11 @@
+log_only(m):
+  read: hello
+log_value(m):
+  copy
+  read: hello
+keep_it(m):
+  copy=
+  copy
+-- 範囲 for（コピーする版）
+  copy
+-- 範囲 for（const auto &）

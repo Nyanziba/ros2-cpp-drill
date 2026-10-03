@@ -1,0 +1,7 @@
+use_after_free.c: In function ‘main’:
+use_after_free.c:10:5: warning: pointer ‘p’ used after ‘free’ [-Wuse-after-free]
+   10 |     printf("*p = %d\n", *p);  // 解放後使用。ここが厄介なところ
+      |     ^~~~~~~~~~~~~~~~~~~~~~~
+use_after_free.c:9:5: note: call to ‘free’ here
+    9 |     free(p);
+      |     ^~~~~~~

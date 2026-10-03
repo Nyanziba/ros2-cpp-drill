@@ -1,0 +1,13 @@
+multistatement_macro.c: In function ‘main’:
+multistatement_macro.c:10:5: warning: macro expands to multiple statements [-Wmultistatement-macros]
+   10 |     printf("DEBUG: " fmt "\n"); \
+      |     ^~~~~~
+multistatement_macro.c:18:9: note: in expansion of macro ‘LOG_BROKEN’
+   18 |         LOG_BROKEN("message");  // the else is ignored ✗
+      |         ^~~~~~~~~~
+multistatement_macro.c:17:5: note: some parts of macro expansion are not guarded by this ‘if’ clause
+   17 |     if (condition)
+      |     ^~
+multistatement_macro.c:19:5: error: ‘else’ without a previous ‘if’
+   19 |     else
+      |     ^~~~

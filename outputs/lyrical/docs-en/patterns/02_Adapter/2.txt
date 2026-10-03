@@ -1,0 +1,4 @@
+diamond.cpp: In function ‘int main()’:
+diamond.cpp:16:16: error: ‘Device’ is an ambiguous base of ‘Adapter’
+   16 |   Device * d = &a;
+      |                ^~

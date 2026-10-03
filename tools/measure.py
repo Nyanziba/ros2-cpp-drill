@@ -20,6 +20,12 @@
   filter  出力に通すシェルのパイプ（例: "grep 'error:'"、"head -n 5"）
   tty     yes なら疑似端末で動かす（シェルが出す Segmentation fault などを拾うため）
 
+版（--distro、既定は jazzy）:
+  jazzy    出力は本文にそのまま載っている。本文と比べ、--write では本文を書き換える。
+  lyrical  出力は outputs/lyrical/<docs か docs-en>/<ページ>/<番号>.txt に置く（mkdocs の hook が差し込む）。
+           番号は、そのページで版ごとに測る印（env が gcc か ros）を上から数えたもの。
+           env=clang と env=static は版に依らないので、Lyrical では測らない。
+
 使い方:
   python3 tools/measure.py --check              食い違いがあれば一覧を出して終了コード 1
   python3 tools/measure.py --write              測り直した出力を読み物に書き込む
@@ -41,7 +47,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DOC_DIRECTORIES = ("docs", "docs-en")
-DOCKER_IMAGE = "ros2-drill:jazzy-amd64"
+DEFAULT_DISTRO = "jazzy"
+VERSION_DEPENDENT_ENVIRONMENTS = ("gcc", "ros")
 DOCKER_PLATFORM = "linux/amd64"
 
 MARKER = re.compile(r"^\s*<!--\s*measure:(.*?)-->\s*$")
@@ -182,10 +189,16 @@ def share_with_container(directory):
         os.chmod(path, 0o777 if path.is_dir() else 0o666)
 
 
-def run(measurement):
+def docker_image(distro):
+    return f"ros2-drill:{distro}-amd64"
+
+
+def run(measurement, distro=DEFAULT_DISTRO):
     """測った出力（末尾の空白を除く）を返す。測らない印なら None。"""
     environment = measurement.options.get("env", "gcc")
     if environment == "static":
+        return None
+    if distro != DEFAULT_DISTRO and environment not in VERSION_DEPENDENT_ENVIRONMENTS:
         return None
     script = measurement.command
     if measurement.options.get("tty") == "yes":
@@ -211,12 +224,12 @@ def run(measurement):
         share_with_container(directory)
         if environment == "gcc":
             argv = ["docker", "run", "--rm", "--platform", DOCKER_PLATFORM,
-                    "-v", f"{directory}:/w", "-w", "/w", DOCKER_IMAGE, "bash", "-c", script]
+                    "-v", f"{directory}:/w", "-w", "/w", docker_image(distro), "bash", "-c", script]
         elif environment == "ros":
             # 本文のコマンドは ~/ros2_ws で打つ前提なので、そこに置いて同じパスで動かす。
-            ros_script = f"source /opt/ros/jazzy/setup.bash && cd {ROS_WORKSPACE} && {script.replace('~/ros2_ws', ROS_WORKSPACE)}"
+            ros_script = f"source /opt/ros/{distro}/setup.bash && cd {ROS_WORKSPACE} && {script.replace('~/ros2_ws', ROS_WORKSPACE)}"
             argv = ["docker", "run", "--rm", "--platform", DOCKER_PLATFORM,
-                    "-v", f"{directory}:{ROS_WORKSPACE}", "-w", ROS_WORKSPACE, DOCKER_IMAGE, "bash", "-c", ros_script]
+                    "-v", f"{directory}:{ROS_WORKSPACE}", "-w", ROS_WORKSPACE, docker_image(distro), "bash", "-c", ros_script]
         elif environment == "clang":
             if sys.platform != "darwin":
                 return None
@@ -248,13 +261,33 @@ def collect_pages(arguments):
     return sorted(path for directory in DOC_DIRECTORIES for path in (ROOT / directory).rglob("*.md"))
 
 
+def output_file_for(page, number, distro):
+    """Lyrical などの版の出力を置くファイル。hooks/drill_version.py と同じ規則。"""
+    relative = page.relative_to(ROOT)
+    language_directory, page_path = relative.parts[0], Path(*relative.parts[1:]).with_suffix("")
+    return ROOT / "outputs" / distro / language_directory / page_path / f"{number}.txt"
+
+
+def numbered(measurements):
+    """版ごとに測る印に、hook と同じ番号（1 始まり）を振る。"""
+    number = 0
+    for measurement in measurements:
+        if measurement.options.get("env", "gcc") in VERSION_DEPENDENT_ENVIRONMENTS:
+            number += 1
+            yield number, measurement
+        else:
+            yield None, measurement
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--check", action="store_true", help="食い違いを検査する")
     mode.add_argument("--write", action="store_true", help="測り直した出力を書き込む")
+    parser.add_argument("--distro", default=DEFAULT_DISTRO, help="ROS 2 の版（jazzy / lyrical）")
     parser.add_argument("pages", nargs="*", help="対象のページ（省略すると全部）")
     arguments = parser.parse_args()
+    distro = arguments.distro
 
     mismatches = []
     measured_count = skipped_count = 0
@@ -262,29 +295,38 @@ def main():
         lines = page.read_text(encoding="utf-8").split("\n")
         changed = False
         # 後ろから書き換えれば、前の印の行番号はずれない。
-        for measurement in reversed(find_measurements(page)):
-            actual = run(measurement)
+        for number, measurement in reversed(list(numbered(find_measurements(page)))):
+            actual = run(measurement, distro)
             if actual is None:
                 skipped_count += 1
                 continue
             measured_count += 1
-            shown = measurement.output_block.content
-            if normalized(actual) == normalized(shown):
-                continue
             location = f"{page.relative_to(ROOT)}:{measurement.marker_line + 1}"
-            if arguments.write:
+            if distro == DEFAULT_DISTRO:
+                shown = measurement.output_block.content
+            else:
+                output_file = output_file_for(page, number, distro)
+                shown = output_file.read_text(encoding="utf-8") if output_file.exists() else ""
+            missing_file = distro != DEFAULT_DISTRO and not output_file.exists()
+            if normalized(actual) == normalized(shown) and not missing_file:
+                continue
+            if not arguments.write:
+                mismatches.append((location, shown, actual))
+                continue
+            if distro == DEFAULT_DISTRO:
                 block = measurement.output_block
                 lines[block.start_line + 1:block.end_line] = actual.split("\n")
                 changed = True
-                print(f"書き換え: {location}")
             else:
-                mismatches.append((location, shown, actual))
+                output_file.parent.mkdir(parents=True, exist_ok=True)
+                output_file.write_text(actual + "\n", encoding="utf-8")
+            print(f"書き換え: {location}")
         if changed:
             page.write_text("\n".join(lines), encoding="utf-8")
 
     for location, shown, actual in reversed(mismatches):
         print(f"\n✗ {location}\n--- 本文\n{shown}\n--- 実測\n{actual}")
-    print(f"\n測った: {measured_count}  測らなかった（static / この環境で動かせない clang）: {skipped_count}"
+    print(f"\n版: {distro}  測った: {measured_count}  測らなかった（static / この環境で動かせない clang / 版に依らない出力）: {skipped_count}"
           f"  食い違い: {len(mismatches)}")
     return 1 if mismatches else 0
 

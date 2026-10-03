@@ -1,0 +1,11 @@
+log_only(m):
+  read: hello
+log_value(m):
+  copy
+  read: hello
+keep_it(m):
+  copy=
+  copy
+-- range for (copying version)
+  copy
+-- range for (const auto &)
