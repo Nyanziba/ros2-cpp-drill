@@ -32,6 +32,7 @@ import argparse
 import os
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -197,8 +198,11 @@ def run(measurement):
         script += f" | {measurement.options['filter']}"
     # コンテナが作ったファイルも、手元（ランナー）のユーザーが後片付けで消せるようにする。
     script = f"umask 000; {script}"
-    # コンテナが特別な権限でファイルを作っても検査全体が止まらないよう、後片付けの失敗は無視する。
-    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as directory:
+    # 後片付けは自分でする。コンテナが読み取り専用で作ったもの（install/ の中など）は Linux では
+    # 消せないことがあり、TemporaryDirectory の後片付けはそこで例外を投げて検査全体を止めてしまう。
+    # 消せないものは無視する（CI のランナーは使い捨て。手元の Mac では全部消える）。
+    directory = tempfile.mkdtemp()
+    try:
         for name, content in measurement.files.items():
             path = Path(directory) / name
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -224,6 +228,8 @@ def run(measurement):
         if completed.returncode in (125, 126, 127) and not completed.stdout.strip():
             raise RuntimeError(f"{measurement.page}:{measurement.marker_line + 1}: 測る仕組みが動きませんでした:\n{completed.stderr}")
         output = completed.stdout
+    finally:
+        shutil.rmtree(directory, ignore_errors=True)
     return "\n".join(line.rstrip() for line in output.rstrip().split("\n"))
 
 
