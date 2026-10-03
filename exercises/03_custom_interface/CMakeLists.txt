@@ -19,12 +19,11 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 )
 ament_export_dependencies(rosidl_default_runtime)
 
-# 同じパッケージ内で生成した型を C++ から使うときの Jazzy の作法。
+# 同じパッケージ内で生成した型を C++ から使うときの作法。
 # 別パッケージの型を使うだけなら find_package(<pkg> REQUIRED) と
-# ament_target_dependencies(... <pkg>) だけで済むが、同一パッケージ内では
-# rosidl_generate_interfaces() が作るターゲットが ament_target_dependencies から
-# 見える形で「まだ存在しない」段階なので、生成された typesupport ターゲットを
-# 名前で取得して直接 target_link_libraries する。
+# target_link_libraries(... PUBLIC ${<pkg>_TARGETS}) だけで済むが、同一パッケージ内では
+# rosidl_generate_interfaces() が作るターゲットは ${<pkg>_TARGETS} の形では
+# 見えないので、生成された typesupport ターゲットを名前で取得して直接リンクする。
 rosidl_get_typesupport_target(cpp_typesupport_target
   ${PROJECT_NAME} rosidl_typesupport_cpp)
 
@@ -34,12 +33,12 @@ add_library(${PROJECT_NAME}_node src/num_publisher.cpp)
 target_include_directories(${PROJECT_NAME}_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
-ament_target_dependencies(${PROJECT_NAME}_node rclcpp)
-target_link_libraries(${PROJECT_NAME}_node "${cpp_typesupport_target}")
+target_link_libraries(${PROJECT_NAME}_node PUBLIC rclcpp::rclcpp)
+target_link_libraries(${PROJECT_NAME}_node PUBLIC "${cpp_typesupport_target}")
 
 add_executable(num_node src/num_node_main.cpp)
-target_link_libraries(num_node ${PROJECT_NAME}_node)
-ament_target_dependencies(num_node rclcpp)
+target_link_libraries(num_node PUBLIC ${PROJECT_NAME}_node)
+target_link_libraries(num_node PUBLIC rclcpp::rclcpp)
 
 install(TARGETS num_node
   DESTINATION lib/${PROJECT_NAME})
@@ -50,7 +49,7 @@ if(BUILD_TESTING)
   ament_add_gtest(test_exercise test/test_exercise.cpp)
   target_include_directories(test_exercise PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../tools)
   target_link_libraries(test_exercise ${PROJECT_NAME}_node)
-  ament_target_dependencies(test_exercise rclcpp)
+  target_link_libraries(test_exercise rclcpp::rclcpp)
 endif()
 
 ament_package()

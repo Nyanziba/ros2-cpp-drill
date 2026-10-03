@@ -52,7 +52,7 @@ void FibonacciActionServer::execute(const std::shared_ptr<GoalHandleFibonacci> g
   rclcpp::Rate loop_rate(20ms);
   const auto goal = goal_handle->get_goal();
   auto feedback = std::make_shared<Fibonacci::Feedback>();
-  auto & sequence = feedback->partial_sequence;
+  auto & sequence = feedback->sequence;
   sequence.push_back(0);
   sequence.push_back(1);
   auto result = std::make_shared<Fibonacci::Result>();

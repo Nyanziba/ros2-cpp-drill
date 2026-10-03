@@ -28,12 +28,12 @@ add_library(${PROJECT_NAME}_node src/velocity_limiter_node.cpp)
 target_include_directories(${PROJECT_NAME}_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
-target_link_libraries(${PROJECT_NAME}_node velocity_limiter)
-ament_target_dependencies(${PROJECT_NAME}_node rclcpp std_msgs)
+target_link_libraries(${PROJECT_NAME}_node PUBLIC velocity_limiter)
+target_link_libraries(${PROJECT_NAME}_node PUBLIC rclcpp::rclcpp ${std_msgs_TARGETS})
 
 add_executable(velocity_limiter_node src/velocity_limiter_node_main.cpp)
-target_link_libraries(velocity_limiter_node ${PROJECT_NAME}_node)
-ament_target_dependencies(velocity_limiter_node rclcpp std_msgs)
+target_link_libraries(velocity_limiter_node PUBLIC ${PROJECT_NAME}_node)
+target_link_libraries(velocity_limiter_node PUBLIC rclcpp::rclcpp ${std_msgs_TARGETS})
 
 install(TARGETS velocity_limiter_node
   DESTINATION lib/${PROJECT_NAME})
