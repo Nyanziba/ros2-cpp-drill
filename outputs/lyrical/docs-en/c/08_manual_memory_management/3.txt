@@ -1,4 +1,11 @@
-=================================================================
-==31==ERROR: AddressSanitizer: heap-use-after-free on address 0x7c1ffe1e0010 at pc 0x5555555552e7 bp 0x7ffffffc0950 sp 0x7ffffffc0940
-READ of size 4 at 0x7c1ffe1e0010 thread T0
-    #0 0x5555555552e6 in main /w/use_after_free.c:10
+== malloc and free ==
+p[0] = 10, p[1] = 20
+
+== calloc (zeroed) ==
+q[0] = 0, q[1] = 0, q[2] = 0
+
+== Multiple allocations ==
+arr[0][0] = 0, arr[0][1] = 0
+arr[1][0] = 10, arr[1][1] = 100
+arr[2][0] = 20, arr[2][1] = 200
+All cleaned up

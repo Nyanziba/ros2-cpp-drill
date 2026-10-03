@@ -1,11 +1,12 @@
-== malloc and free ==
-p[0] = 10, p[1] = 20
+=================================================================
+==21==ERROR: AddressSanitizer: heap-use-after-free on address 0x7c1ffe1e0010 at pc 0x5555555552e7 bp 0x7ffffffc0a10 sp 0x7ffffffc0a00
+READ of size 4 at 0x7c1ffe1e0010 thread T0
+    #0 0x5555555552e6 in main (/w/memory_uaf+0x12e6) (BuildId: 8abf99dab91804a29fb737160bfc69ccde0043de)
+    #1 0x7ffffeeb2600  (/usr/lib/x86_64-linux-gnu/libc.so.6+0x2a600) (BuildId: 066527e430a32768d82741e00b81eebb1a872294)
+    #2 0x7ffffeeb2717 in __libc_start_main (/usr/lib/x86_64-linux-gnu/libc.so.6+0x2a717) (BuildId: 066527e430a32768d82741e00b81eebb1a872294)
+    #3 0x555555555184 in _start (/w/memory_uaf+0x1184) (BuildId: 8abf99dab91804a29fb737160bfc69ccde0043de)
 
-== calloc (zeroed) ==
-q[0] = 0, q[1] = 0, q[2] = 0
-
-== Multiple allocations ==
-arr[0][0] = 0, arr[0][1] = 0
-arr[1][0] = 10, arr[1][1] = 100
-arr[2][0] = 20, arr[2][1] = 200
-All cleaned up
+0x7c1ffe1e0010 is located 0 bytes inside of 4-byte region [0x7c1ffe1e0010,0x7c1ffe1e0014)
+freed by thread T0 here:
+    #0 0x7fffff1d33ff in free ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:51
+    #1 0x5555555552af in main (/w/memory_uaf+0x12af) (BuildId: 8abf99dab91804a29fb737160bfc69ccde0043de)

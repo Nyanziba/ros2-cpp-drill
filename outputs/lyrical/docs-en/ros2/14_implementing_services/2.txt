@@ -1,1 +1,1 @@
-[INFO] [1790954160.474833836] [minimal_client_async]: Result of add_two_ints: for 2 + 3 = 5
+[INFO] [1790994677.351673253] [minimal_client_async]: Result of add_two_ints: for 2 + 3 = 5
