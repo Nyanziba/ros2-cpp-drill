@@ -167,10 +167,10 @@ published to `sum`.
 
 | Test | What it checks |
 | --- | --- |
-| `サブスクライバとクライアントが別のコールバックグループにいる` (the subscriber and the client are in different callback groups) | Whether the two groups are created separately |
-| `triggerに21を送るとsumに42がpublishされる` (sending 21 to trigger publishes 42 to sum) | The whole behavior, and that it does not deadlock |
-| `連続してtriggerを送っても毎回応答する` (it responds every time even when trigger is sent repeatedly) | Whether it is solved as a structure and not by a one-time coincidence |
-| `負の値でも正しく計算する` (calculates correctly even with negative values) | Whether it does not break at boundary values |
+| `SubscriptionAndClientAreInDifferentCallbackGroups` | Whether the two groups are created separately |
+| `Trigger21PublishesSum42` | The whole behavior, and that it does not deadlock |
+| `RespondsToEveryConsecutiveTrigger` | Whether it is solved as a structure and not by a one-time coincidence |
+| `HandlesNegativeValues` | Whether it does not break at boundary values |
 
 ## References
 

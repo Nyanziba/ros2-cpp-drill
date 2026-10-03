@@ -95,10 +95,10 @@ ros2 topic echo /parameter_events
 
 | テスト | 見ているところ |
 | --- | --- |
-| `an_int_paramが整数型で既定値0で宣言されている` | `declare_parameter()` の型と既定値 |
-| `an_int_paramをsetするとlatest_valueが更新される` | コールバックが実際に呼ばれているか |
-| `公式と同じcbログを出している` | `RCLCPP_INFO` の書式 |
-| `2回目の変更でもコールバックが呼ばれる` | ハンドルを保持し続けられているか |
+| `AnIntParamIsDeclaredAsIntegerWithDefaultZero` | `declare_parameter()` の型と既定値 |
+| `SettingAnIntParamUpdatesLatestValue` | コールバックが実際に呼ばれているか |
+| `LogsSameCbMessageAsOfficial` | `RCLCPP_INFO` の書式 |
+| `CallbackFiresOnSecondChangeToo` | ハンドルを保持し続けられているか |
 
 ## 参考
 

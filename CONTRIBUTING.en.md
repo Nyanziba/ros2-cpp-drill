@@ -166,6 +166,9 @@ solutions/<id>/...          # sample solution (shown by ./drill solution)
 - Tests that use ROS 2 use the shared helper [`tools/drill_harness.hpp`](tools/drill_harness.hpp).
 - Write test failure messages so the learner knows **what to check next**
   (example: "Did you put `create_publisher<std_msgs::msg::String>("topic", 10)` into `publisher_`?").
+- Test names (`TEST(Suite, Name)` or pytest `def test_...`) are **English identifiers**, shared by both languages (example: `SwapsTwoVariables`).
+- Wrap failure messages in `drill::localized("日本語", "English")` ([`tools/drill_i18n.hpp`](tools/drill_i18n.hpp)). `DRILL_LANG` switches between Japanese and English.
+- `static_assert` is printed at compile time, so it cannot switch. Write its message as one string, `"日本語 / English"`.
 
 ### Register it in exercises.json
 

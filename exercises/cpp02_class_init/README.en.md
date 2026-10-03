@@ -39,10 +39,10 @@ Also implement the member functions `advance()`, `elapsed()`, and `max_time()`.
 
 | Test | What it checks |
 | --- | --- |
-| `コンストラクタでmaxTimeが設定される` (maxTime is set in the constructor) | correct use of the member initializer list |
-| `初期状態では経過時間は0` (elapsed time is 0 in the initial state) | initialization of elapsed_ |
-| `advanceで経過時間が増える` (advance increases the elapsed time) | the implementation of the advance() method |
-| `constメンバ関数で値を取得できる` (you can get the value with a const member function) | the syntax of const member functions |
+| `ConstructorSetsMaxTime` | correct use of the member initializer list |
+| `ElapsedTimeIsZeroInitially` | initialization of elapsed_ |
+| `AdvanceIncreasesElapsedTime` | the implementation of the advance() method |
+| `ConstMemberFunctionsReturnValues` | the syntax of const member functions |
 
 ## References
 

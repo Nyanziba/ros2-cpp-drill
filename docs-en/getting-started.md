@@ -35,7 +35,7 @@ docker compose run --rm drill ./drill list
 
 If you see the list of exercises and your progress, it worked.
 
-To get English output from drill, set `DRILL_LANG=en`, for example `DRILL_LANG=en docker compose run --rm drill ./drill list` (with a direct install, `DRILL_LANG=en ./drill list`).
+To get English output from drill and from the test failure messages, set `DRILL_LANG=en`, for example `DRILL_LANG=en docker compose run --rm drill ./drill list` (with a direct install, `DRILL_LANG=en ./drill list`).
 
 **The container uses the source files on the host as they are.** Edit them in your usual editor.
 

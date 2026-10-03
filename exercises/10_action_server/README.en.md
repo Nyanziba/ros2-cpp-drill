@@ -104,10 +104,10 @@ If you stop the sending with `Ctrl-C`, it becomes a cancel request, and the serv
 
 | Test | What it checks |
 | --- | --- |
-| `fibonacciアクションサーバを公開している` (provides the fibonacci action server) | Whether `create_server` is stored in `action_server_` |
-| `order5の目標を送るとフィボナッチ数列を返す` (sending a goal with order 5 returns the Fibonacci sequence) | The calculation logic and `succeed(result)` |
-| `実行中にfeedbackが1回以上届く` (feedback arrives at least once during execution) | Whether `publish_feedback` is called |
-| `キャンセル要求を受理する` (accepts the cancel request) | `handle_cancel` and `is_canceling()` / `canceled(result)` |
+| `ExposesFibonacciActionServer` | Whether `create_server` is stored in `action_server_` |
+| `Order5GoalReturnsFibonacciSequence` | The calculation logic and `succeed(result)` |
+| `DeliversFeedbackAtLeastOnceWhileRunning` | Whether `publish_feedback` is called |
+| `AcceptsCancelRequest` | `handle_cancel` and `is_canceling()` / `canceled(result)` |
 
 ## References
 

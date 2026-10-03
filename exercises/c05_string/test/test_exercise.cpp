@@ -4,7 +4,7 @@
 
 #include "drill/string_ops.h"
 
-TEST(StringOpsTest, 文字列の長さを計算する)
+TEST(StringOpsTest, ComputesStringLength)
 {
   EXPECT_EQ(string_length("hello"), 5);
   EXPECT_EQ(string_length(""), 0);
@@ -12,12 +12,12 @@ TEST(StringOpsTest, 文字列の長さを計算する)
   EXPECT_EQ(string_length("Hello, World!"), 13);
 }
 
-TEST(StringOpsTest, NULLで長さ関数がエラーを返す)
+TEST(StringOpsTest, LengthReturnsMinusOneOnNull)
 {
   EXPECT_EQ(string_length(NULL), -1);
 }
 
-TEST(StringOpsTest, 文字列をコピーする)
+TEST(StringOpsTest, CopiesString)
 {
   char dest[10] = {};
   EXPECT_EQ(string_copy(dest, "hello", 10), 0);
@@ -29,7 +29,7 @@ TEST(StringOpsTest, 文字列をコピーする)
   EXPECT_STREQ(dest2, "test");
 }
 
-TEST(StringOpsTest, 文字列コピーで長さを制限する)
+TEST(StringOpsTest, CopyTruncatesToBufferSize)
 {
   char dest[4] = {};  // "abc\0" が入る
   EXPECT_EQ(string_copy(dest, "hello", 4), 0);
@@ -37,7 +37,7 @@ TEST(StringOpsTest, 文字列コピーで長さを制限する)
   EXPECT_EQ(dest[3], '\0');
 }
 
-TEST(StringOpsTest, copyで空文字列を扱う)
+TEST(StringOpsTest, CopyHandlesEmptyString)
 {
   char dest[10] = {};
   EXPECT_EQ(string_copy(dest, "", 10), 0);
@@ -45,7 +45,7 @@ TEST(StringOpsTest, copyで空文字列を扱う)
   EXPECT_EQ(dest[0], '\0');
 }
 
-TEST(StringOpsTest, copyでエラーチェック)
+TEST(StringOpsTest, CopyReturnsMinusOneOnInvalidArguments)
 {
   char dest[10] = {};
   EXPECT_EQ(string_copy(NULL, "hello", 10), -1);
@@ -53,7 +53,7 @@ TEST(StringOpsTest, copyでエラーチェック)
   EXPECT_EQ(string_copy(dest, "hello", 0), -1);
 }
 
-TEST(StringOpsTest, 文字列を連結する)
+TEST(StringOpsTest, ConcatenatesStrings)
 {
   char dest[20] = "hello";
   EXPECT_EQ(string_concat(dest, " world", 20), 0);
@@ -65,7 +65,7 @@ TEST(StringOpsTest, 文字列を連結する)
   EXPECT_STREQ(dest2, "foobar");
 }
 
-TEST(StringOpsTest, concatで長さを制限する)
+TEST(StringOpsTest, ConcatTruncatesToBufferSize)
 {
   char dest[10] = "hi";
   EXPECT_EQ(string_concat(dest, "bye", 10), 0);
@@ -79,14 +79,14 @@ TEST(StringOpsTest, concatで長さを制限する)
   EXPECT_EQ(dest2[7], '\0');
 }
 
-TEST(StringOpsTest, concatで空文字列を追加)
+TEST(StringOpsTest, ConcatAppendsEmptyString)
 {
   char dest[20] = "hello";
   EXPECT_EQ(string_concat(dest, "", 20), 0);
   EXPECT_STREQ(dest, "hello");
 }
 
-TEST(StringOpsTest, concatでエラーチェック)
+TEST(StringOpsTest, ConcatReturnsMinusOneOnInvalidArguments)
 {
   char dest[20] = "hello";
   EXPECT_EQ(string_concat(NULL, "world", 20), -1);

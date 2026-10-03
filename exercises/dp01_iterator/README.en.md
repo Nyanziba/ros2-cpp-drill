@@ -30,7 +30,7 @@ Implement 4 things in `src/book_shelf.cpp`.
 ## Common pitfalls
 
 - `next()` returns `const Book &`. If it returns `Book`, a **copy happens every time**.
-  The test "nextはコピーではなく本棚の中身を指す" (next points to the contents of the shelf, not a copy) compares addresses and fails it
+  The test `NextReturnsReferenceNotCopy` compares addresses and fails it
 - `iterator()` returns `std::unique_ptr<Iterator>`. With a raw pointer,
   the type does not say who `delete`s it
 - The position (`index_`) is held by the **iterator side**. If you put it on the shelf side,

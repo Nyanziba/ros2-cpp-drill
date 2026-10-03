@@ -51,12 +51,12 @@ Implement 6 things in `src/control_panel.cpp`.
   `widget_changed()` → `update_enabled_states()` → `set_enabled()` → `widget_changed()` is
   an infinite recursion. "The entry called from the Mediator" and "the entry called from a Colleague" are different things
 - Do not touch another Colleague from inside a Colleague. The test
-  "Mediatorを外すとColleague間に影響が伝わらない" (if you remove the Mediator, the effect is not passed between Colleagues) fails it
+  `WithoutMediatorColleaguesDoNotAffectEachOther` fails it
 - Do not hold a `std::shared_ptr` in `set_mediator()`. The test
-  "ColleagueはMediatorを所有しない" (a Colleague does not own the Mediator) checks it with `use_count()`
+  `ColleagueDoesNotOwnMediator` checks it with `use_count()`
 - You cannot wire them up in the constructor's initializer list. To make a Colleague you need the Mediator, and
   to pass the Mediator you need the Colleague. That is why it is two-phase initialization
-- If you report when the value has not changed, the test "同じ値をもう一度入れても報告されない" (setting the same value again is not reported) fails
+- If you report when the value has not changed, the test `SettingSameValueAgainIsNotReported` fails
 
 ## Tests
 

@@ -3,7 +3,7 @@
 
 #include "drill/buffer.hpp"
 
-TEST(MoveTest, ムーブコンストラクタがデータを転送する)
+TEST(MoveTest, MoveConstructorTransfersData)
 {
   Buffer buf1(10);
   int* original_ptr = buf1.data();
@@ -17,7 +17,7 @@ TEST(MoveTest, ムーブコンストラクタがデータを転送する)
   EXPECT_EQ(buf1.data(), nullptr);
 }
 
-TEST(MoveTest, ムーブ代入がデータを転送する)
+TEST(MoveTest, MoveAssignmentTransfersData)
 {
   Buffer buf1(10);
   Buffer buf2(5);

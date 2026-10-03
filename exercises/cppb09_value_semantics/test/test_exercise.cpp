@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 #include "drill/data.hpp"
 
-TEST(ValueSemanticsTest, CopyCtorが数えられる)
+TEST(ValueSemanticsTest, CopyConstructorIsCounted)
 {
   Data::reset();
   Data d1(10);
@@ -12,7 +12,7 @@ TEST(ValueSemanticsTest, CopyCtorが数えられる)
   EXPECT_EQ(d2.value(), 10);
 }
 
-TEST(ValueSemanticsTest, CopyAssignが数えられる)
+TEST(ValueSemanticsTest, CopyAssignmentIsCounted)
 {
   Data::reset();
   Data d1(10);
@@ -23,7 +23,7 @@ TEST(ValueSemanticsTest, CopyAssignが数えられる)
   EXPECT_EQ(d2.value(), 10);
 }
 
-TEST(ValueSemanticsTest, 値渡しはコピーが2回起きる)
+TEST(ValueSemanticsTest, PassByValueCopiesTwice)
 {
   Data::reset();
   Data orig(5);
@@ -37,7 +37,7 @@ TEST(ValueSemanticsTest, 値渡しはコピーが2回起きる)
   EXPECT_EQ(result.value(), 5);
 }
 
-TEST(ValueSemanticsTest, ConstRefはコピーが起きない)
+TEST(ValueSemanticsTest, PassByConstRefDoesNotCopy)
 {
   Data::reset();
   Data orig(5);

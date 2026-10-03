@@ -51,7 +51,7 @@ Implement `src/velocity_filter.cpp`. It is divided into 3 blocks.
 
 - **All three must give the same output.** Only the means differ; the algorithm is the same
 - If `VirtualCommander` holds a copy of the Strategy, the test
-  "仮想関数版はStrategyを所有せず参照で指している" (the virtual function version does not own the Strategy and points to it by reference) fails it by comparing addresses
+  `VirtualFunctionVersionReferencesStrategyWithoutOwningIt` fails it by comparing addresses
 - You may want to make `filter_` a `const VelocityFilter &` (a reference), but
   **a reference cannot be reseated**, so you cannot swap it. That is why it is a pointer
 - `VirtualCommander` does **not own** the Strategy.

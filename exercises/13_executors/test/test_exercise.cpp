@@ -6,6 +6,7 @@
 
 #include "drill/relay_with_service.hpp"
 #include "drill_harness.hpp"
+#include "drill_i18n.hpp"
 
 using DrillTest = drill::DrillTest;
 using AddTwoInts = RelayWithService::AddTwoInts;
@@ -51,7 +52,7 @@ struct Probe
 
 }  // namespace
 
-TEST_F(DrillTest, サブスクライバとクライアントが別のコールバックグループにいる)
+TEST_F(DrillTest, SubscriptionAndClientAreInDifferentCallbackGroups)
 {
   auto node = std::make_shared<RelayWithService>();
 
@@ -59,20 +60,32 @@ TEST_F(DrillTest, サブスクライバとクライアントが別のコール�
   auto client_group = node->client_group();
 
   ASSERT_NE(sub_group, nullptr)
-    << "subscription_group() が nullptr です。\n"
-    << "  - コンストラクタで create_callback_group() を呼び、\n"
-    << "    subscription_group_ に入れましたか？";
+    << drill::localized(
+    "subscription_group() が nullptr です。\n"
+    "  - コンストラクタで create_callback_group() を呼び、\n"
+    "    subscription_group_ に入れましたか？",
+    "subscription_group() is nullptr.\n"
+    "  - Did you call create_callback_group() in the constructor and\n"
+    "    assign the result to subscription_group_?");
   ASSERT_NE(client_group, nullptr)
-    << "client_group() が nullptr です。\n"
-    << "  - コンストラクタで create_callback_group() を呼び、\n"
-    << "    client_group_ に入れましたか？";
+    << drill::localized(
+    "client_group() が nullptr です。\n"
+    "  - コンストラクタで create_callback_group() を呼び、\n"
+    "    client_group_ に入れましたか？",
+    "client_group() is nullptr.\n"
+    "  - Did you call create_callback_group() in the constructor and\n"
+    "    assign the result to client_group_?");
   EXPECT_NE(sub_group, client_group)
-    << "subscription_group() と client_group() が同じオブジェクトです。\n"
-    << "  - コールバックグループは 2 つ、別々に create_callback_group() を\n"
-    << "    呼んで作る必要があります。同じ変数を両方に代入していませんか？";
+    << drill::localized(
+    "subscription_group() と client_group() が同じオブジェクトです。\n"
+    "  - コールバックグループは 2 つ、別々に create_callback_group() を\n"
+    "    呼んで作る必要があります。同じ変数を両方に代入していませんか？",
+    "subscription_group() and client_group() are the same object.\n"
+    "  - You need 2 callback groups, each made by its own call to\n"
+    "    create_callback_group(). Did you assign the same variable to both?");
 }
 
-TEST_F(DrillTest, triggerに21を送るとsumに42がpublishされる)
+TEST_F(DrillTest, Trigger21PublishesSum42)
 {
   auto node = std::make_shared<RelayWithService>();
   Probe probe;
@@ -95,18 +108,29 @@ TEST_F(DrillTest, triggerに21を送るとsumに42がpublishされる)
           sent = true;
         }
       }))
-    << "\"trigger\" に 21 を送りましたが、\"sum\" に何も届きませんでした。\n"
-    << "コールバックグループを分けましたか？ "
-       "同じグループだと応答を待つ間に応答処理が実行できず、必ずタイムアウトします";
+    << drill::localized(
+    "\"trigger\" に 21 を送りましたが、\"sum\" に何も届きませんでした。\n"
+    "コールバックグループを分けましたか？ "
+    "同じグループだと応答を待つ間に応答処理が実行できず、必ずタイムアウトします",
+    "Sent 21 to \"trigger\", but nothing arrived on \"sum\".\n"
+    "Did you split the callback groups? "
+    "With the same group, the response cannot be handled while waiting for it, "
+    "so it always times out");
 
   ASSERT_FALSE(probe.received.empty());
   EXPECT_EQ(probe.received.front(), 42)
-    << "\"sum\" に届いた値が 42 ではありません。実際の値: " << probe.received.front() << "\n"
-    << "  - request->a = request->b = msg.data にしていますか？\n"
-    << "  - future.get()->sum を publish していますか？";
+    << drill::localized(
+    "\"sum\" に届いた値が 42 ではありません。実際の値: ",
+    "The value that arrived on \"sum\" is not 42. Actual value: ")
+    << probe.received.front() << "\n"
+    << drill::localized(
+    "  - request->a = request->b = msg.data にしていますか？\n"
+    "  - future.get()->sum を publish していますか？",
+    "  - Do you set request->a = request->b = msg.data?\n"
+    "  - Do you publish future.get()->sum?");
 }
 
-TEST_F(DrillTest, 連続してtriggerを送っても毎回応答する)
+TEST_F(DrillTest, RespondsToEveryConsecutiveTrigger)
 {
   auto node = std::make_shared<RelayWithService>();
   Probe probe;
@@ -133,18 +157,32 @@ TEST_F(DrillTest, 連続してtriggerを送っても毎回応答する)
             sent = true;
           }
         }))
-      << (i + 1) << " 回目の trigger (" << inputs[i] << ") に応答がありませんでした。\n"
-      << "デッドロックしている可能性があります。"
-         "コールバックグループを分けましたか？ "
-         "同じグループだと応答を待つ間に応答処理が実行できず、必ずタイムアウトします";
+      << drill::localized("", "No response to trigger number ")
+      << (i + 1)
+      << drill::localized(" 回目の trigger (", " (")
+      << inputs[i]
+      << drill::localized(
+      ") に応答がありませんでした。\n"
+      "デッドロックしている可能性があります。"
+      "コールバックグループを分けましたか？ "
+      "同じグループだと応答を待つ間に応答処理が実行できず、必ずタイムアウトします",
+      ").\n"
+      "It may be deadlocked. "
+      "Did you split the callback groups? "
+      "With the same group, the response cannot be handled while waiting for it, "
+      "so it always times out");
 
     EXPECT_EQ(probe.received.back(), expected[i])
-      << (i + 1) << " 回目の応答が " << expected[i] << " になっていません。"
-      << "実際の値: " << probe.received.back();
+      << drill::localized("", "The response of call number ")
+      << (i + 1)
+      << drill::localized(" 回目の応答が ", " is not ")
+      << expected[i]
+      << drill::localized(" になっていません。実際の値: ", ". Actual value: ")
+      << probe.received.back();
   }
 }
 
-TEST_F(DrillTest, 負の値でも正しく計算する)
+TEST_F(DrillTest, HandlesNegativeValues)
 {
   auto node = std::make_shared<RelayWithService>();
   Probe probe;
@@ -164,8 +202,13 @@ TEST_F(DrillTest, 負の値でも正しく計算する)
           sent = true;
         }
       }))
-    << "-7 を送りましたが \"sum\" に何も届きませんでした。";
+    << drill::localized(
+    "-7 を送りましたが \"sum\" に何も届きませんでした。",
+    "Sent -7, but nothing arrived on \"sum\".");
 
   EXPECT_EQ(probe.received.front(), -14)
-    << "-7 + -7 の応答が -14 になっていません。実際の値: " << probe.received.front();
+    << drill::localized(
+    "-7 + -7 の応答が -14 になっていません。実際の値: ",
+    "The response for -7 + -7 is not -14. Actual value: ")
+    << probe.received.front();
 }

@@ -76,7 +76,7 @@ if (completed_stages >= 1) { power_off(log); }
 - `std::move` した後のオブジェクトも**デストラクタは走ります**。
   「ムーブしたから消えた」ではありません。ムーブ元を空にしないと電源が 2 回落ちます
 - 電源投入で失敗した場合、成功した段は 0 個です。**`power_off` を呼んではいけません**。
-  テスト「電源投入で失敗すると後始末は何も走らない」がそこを見ます
+  テスト`PowerOnFailureRunsNoCleanup`がそこを見ます
 - `append()` は `const char *` を取ります。`drive()` は `std::string` を作るので、
   `log_->push_back()` を直接使ってください（`log_` が `nullptr` のことがあります）
 - 自由関数版を「`RobotSession` を作って捨てるだけ」で実装したくなりますが、

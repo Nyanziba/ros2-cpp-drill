@@ -81,8 +81,8 @@ Before you add `inline` it shows `T add_one(int)`, and after you add it it shows
 
 | Test | What it checks |
 | --- | --- |
-| `add_oneが1増やす` (add_one adds 1) | whether you fixed TODO(1) and the build passes |
-| `next_idが順番に増える` (next_id increases in order) | whether the `static` local variable keeps its value |
+| `AddOneIncrementsByOne` | whether you fixed TODO(1) and the build passes |
+| `NextIdIncreasesInOrder` | whether the `static` local variable keeps its value |
 
 ## References
 

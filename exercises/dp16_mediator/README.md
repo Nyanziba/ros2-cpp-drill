@@ -51,12 +51,12 @@ C++ での急所は**相互参照**です。Mediator は Colleague を持ち、C
   `widget_changed()` → `update_enabled_states()` → `set_enabled()` → `widget_changed()` と
   無限再帰します。「Mediator から呼ばれる入口」と「Colleague から呼ぶ入口」は別物です
 - Colleague の中から他の Colleague を触らないこと。テスト
-  「Mediatorを外すとColleague間に影響が伝わらない」がそれを落とします
+  `WithoutMediatorColleaguesDoNotAffectEachOther`がそれを落とします
 - `set_mediator()` で `std::shared_ptr` を持ち返さないこと。テスト
-  「ColleagueはMediatorを所有しない」が `use_count()` で見ています
+  `ColleagueDoesNotOwnMediator`が `use_count()` で見ています
 - コンストラクタの初期化子リストでは結線できません。Colleague を作るには Mediator が要り、
   Mediator を渡すには Colleague が要るからです。だから 2 段階初期化になります
-- 値が変わっていないときに報告すると、テスト「同じ値をもう一度入れても報告されない」が落ちます
+- 値が変わっていないときに報告すると、テスト`SettingSameValueAgainIsNotReported`が落ちます
 
 ## テスト
 

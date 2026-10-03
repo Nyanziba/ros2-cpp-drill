@@ -55,10 +55,10 @@ Use the `offsetof` macro from the C99 `<stddef.h>`.
 
 | Test | What it checks |
 | --- | --- |
-| `Point2D_のサイズ` (size of Point2D) | How many bytes a struct of two int16_t becomes |
-| `RGB_のサイズ` (size of RGB) | The case of three uint8_t (no padding) |
-| `PackedData_のサイズ` (size of PackedData) | How padding is inserted when small and large types are mixed |
-| `*_のオフセット` (offset of *) | At which byte position each member is actually placed |
+| `Point2dSizeIs4Bytes` | How many bytes a struct of two int16_t becomes |
+| `RgbSizeIs3Bytes` | The case of three uint8_t (no padding) |
+| `PackedDataSizeIs24Bytes` | How padding is inserted when small and large types are mixed |
+| `Point2dXOffsetIs0` and the other 7 `*OffsetIs*` tests | At which byte position each member is actually placed |
 
 ## References
 

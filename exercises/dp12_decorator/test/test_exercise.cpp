@@ -7,6 +7,8 @@
 #include <vector>
 
 #include "drill/log_sink.hpp"
+#include "drill_i18n.hpp"
+#include "drill_i18n.hpp"
 
 namespace
 {
@@ -15,30 +17,30 @@ const char * const kStamp = "12:00:00.000";
 
 }  // namespace
 
-TEST(DecoratorTest, joinTagはタグと本文をスペースでつなぐ)
+TEST(DecoratorTest, JoinTagJoinsTagAndBodyWithSpace)
 {
   EXPECT_EQ(join_tag("[INFO]", "moving"), "[INFO] moving");
 }
 
-TEST(DecoratorTest, 素のメッセージは何も足さずに返る)
+TEST(DecoratorTest, PlainMessageIsReturnedUnchanged)
 {
   const PlainMessage sink;
   EXPECT_EQ(sink.format("moving"), "moving");
 }
 
-TEST(DecoratorTest, レベルタグが前に付く)
+TEST(DecoratorTest, LevelTagIsPrepended)
 {
   const LevelTag sink(std::make_unique<PlainMessage>(), "INFO");
   EXPECT_EQ(sink.format("moving"), "[INFO] moving");
 }
 
-TEST(DecoratorTest, 発生箇所タグはファイル名と行番号を並べる)
+TEST(DecoratorTest, LocationTagListsFileNameAndLineNumber)
 {
   const SourceTag sink(std::make_unique<PlainMessage>(), "sensor.cpp", 42);
   EXPECT_EQ(sink.format("moving"), "sensor.cpp:42 moving");
 }
 
-TEST(DecoratorTest, 包む順番を変えると出力が変わる)
+TEST(DecoratorTest, WrappingOrderChangesOutput)
 {
   // レベルで包んでから時刻で包む → 時刻が外側
   const TimestampTag outer_time(
@@ -53,16 +55,16 @@ TEST(DecoratorTest, 包む順番を変えると出力が変わる)
   EXPECT_NE(outer_time.format("moving"), outer_level.format("moving"));
 }
 
-TEST(DecoratorTest, 何重にも包める)
+TEST(DecoratorTest, CanWrapMultipleLayers)
 {
   auto sink = with_level(
     with_timestamp(with_source(plain(), "sensor.cpp", 42), kStamp), "WARN");
-  ASSERT_NE(sink, nullptr) << "ヘルパ関数が nullptr を返しています";
+  ASSERT_NE(sink, nullptr) << drill::localized("ヘルパ関数が nullptr を返しています", "The helper function returned nullptr");
 
   EXPECT_EQ(sink->format("timeout"), "[WARN] 12:00:00.000 sensor.cpp:42 timeout");
 }
 
-TEST(DecoratorTest, ヘルパ関数で組んでもmakeuniqueで組んでも同じ)
+TEST(DecoratorTest, HelperAndMakeUniqueProduceSameResult)
 {
   auto by_helper = with_level(with_timestamp(plain(), kStamp), "INFO");
   ASSERT_NE(by_helper, nullptr);
@@ -73,26 +75,29 @@ TEST(DecoratorTest, ヘルパ関数で組んでもmakeuniqueで組んでも同�
   EXPECT_EQ(by_helper->format("moving"), by_make_unique->format("moving"));
 }
 
-TEST(DecoratorTest, 一番外側を破棄すると内側まで全部破棄される)
+TEST(DecoratorTest, DestroyingOutermostDestroysAllInner)
 {
   DestructionLog::clear();
 
   {
     auto sink = with_level(with_timestamp(plain(), kStamp), "INFO");
     ASSERT_NE(sink, nullptr);
-    EXPECT_TRUE(DestructionLog::entries().empty()) << "組み立てただけで何かが壊れています";
+    EXPECT_TRUE(DestructionLog::entries().empty()) << drill::localized("組み立てただけで何かが壊れています", "Something was destroyed just by building");
   }
 
   // 外側から順に、内側まで到達すること。
   const std::vector<std::string> expected = {"LevelTag", "TimestampTag", "PlainMessage"};
   EXPECT_EQ(DestructionLog::entries(), expected)
-    << "入れ子の内側が解放されていません。SinkDecorator が中身を unique_ptr で"
-       "所有しているか、各デストラクタが記録しているかを確認してください";
+    << drill::localized(
+         "入れ子の内側が解放されていません。SinkDecorator が中身を unique_ptr で"
+         "所有しているか、各デストラクタが記録しているかを確認してください",
+         "The inner part of the nesting was not released. Check that SinkDecorator owns its content with unique_ptr, "
+         "and that each destructor records its destruction");
 
   DestructionLog::clear();
 }
 
-TEST(DecoratorTest, テンプレート版はunique_ptr版と同じ文字列を返す)
+TEST(DecoratorTest, TemplateVersionReturnsSameStringAsUniquePtrVersion)
 {
   const StaticLevelTag<StaticTimestampTag<StaticPlainMessage>> static_sink(
     StaticTimestampTag<StaticPlainMessage>(StaticPlainMessage{}, kStamp), "INFO");
@@ -104,13 +109,13 @@ TEST(DecoratorTest, テンプレート版はunique_ptr版と同じ文字列を�
   EXPECT_EQ(static_sink.format("moving"), dynamic_sink->format("moving"));
 }
 
-TEST(DecoratorTest, テンプレート版は仮想関数を持たない)
+TEST(DecoratorTest, TemplateVersionHasNoVirtualFunctions)
 {
   using StaticSink = StaticLevelTag<StaticTimestampTag<StaticPlainMessage>>;
 
-  static_assert(!std::is_polymorphic_v<StaticPlainMessage>, "vtable があってはいけません");
-  static_assert(!std::is_polymorphic_v<StaticSink>, "vtable があってはいけません");
-  static_assert(std::is_polymorphic_v<LevelTag>, "unique_ptr 版はこちらが多態です");
+  static_assert(!std::is_polymorphic_v<StaticPlainMessage>, "vtable があってはいけません / There must be no vtable");
+  static_assert(!std::is_polymorphic_v<StaticSink>, "vtable があってはいけません / There must be no vtable");
+  static_assert(std::is_polymorphic_v<LevelTag>, "unique_ptr 版はこちらが多態です / The unique_ptr version is the polymorphic one");
 
   // vtable ポインタが無いので、メンバの合計より大きくなりません。
   EXPECT_LT(sizeof(StaticPlainMessage), sizeof(LevelTag));

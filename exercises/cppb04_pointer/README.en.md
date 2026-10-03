@@ -28,10 +28,10 @@ Implement try_read() in `src/checker.cpp`.
 
 | Test | What it checks |
 | --- | --- |
-| `両方がvalidな場合` (both are valid) | normal case |
-| `読み込みポインタがnullptr` (the read pointer is nullptr) | nullptr check |
-| `書き込みポインタがnullptr` (the write pointer is nullptr) | nullptr check |
-| `両方がnullptr` (both are nullptr) | check of both |
+| `ReadsWhenBothPointersAreValid` | normal case |
+| `ReturnsFalseWhenReadPointerIsNull` | nullptr check |
+| `ReturnsFalseWhenWritePointerIsNull` | nullptr check |
+| `ReturnsFalseWhenBothPointersAreNull` | check of both |
 
 ## References
 

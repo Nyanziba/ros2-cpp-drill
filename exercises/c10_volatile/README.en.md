@@ -117,14 +117,14 @@ if (state == STATE_IDLE) {
 
 | Test | What it checks |
 | --- | --- |
-| `初期化と状態確認` (initialization and checking the state) | `machine_init` and the state-checking functions |
-| `IDLE_から_RUNNING_に遷移` (transition from IDLE to RUNNING) | `machine_start` |
-| `RUNNING_から_STOPPED_に遷移` (transition from RUNNING to STOPPED) | `machine_stop` |
-| `複数回の状態遷移` (several state transitions) | That several state changes work correctly |
-| `外部から状態が変更されたことを検出できる` (can detect that the state was changed from outside) | **The importance of volatile** — correctly seeing changes from outside |
-| `外部から複数回の変更を検出できる` (can detect several changes from outside) | Several external changes |
-| `ポーリングループで状態を監視できる` (can monitor the state in a polling loop) | A typical polling pattern |
-| `get_state_は毎回読み込みをしている` (get_state reads every time) | The guarantee of reading every time by volatile |
+| `InitializesToIdle` | `machine_init` and the state-checking functions |
+| `TransitionsFromIdleToRunning` | `machine_start` |
+| `TransitionsFromRunningToStopped` | `machine_stop` |
+| `HandlesMultipleTransitions` | That several state changes work correctly |
+| `DetectsExternalChange` | **The importance of volatile** — correctly seeing changes from outside |
+| `DetectsRepeatedExternalChanges` | Several external changes |
+| `WatchesStateInPollingLoop` | A typical polling pattern |
+| `GetStateReadsEveryTime` | The guarantee of reading every time by volatile |
 
 ## References
 

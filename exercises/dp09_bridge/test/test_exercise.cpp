@@ -9,6 +9,8 @@
 
 #include "drill/link_stats.hpp"
 #include "drill/telemetry_view.hpp"
+#include "drill_i18n.hpp"
+#include "drill_i18n.hpp"
 
 namespace
 {
@@ -33,7 +35,7 @@ std::vector<std::string> run_show_repeat(
 
 }  // namespace
 
-TEST(BridgeTest, 機能側はopenとput_lineとcloseをこの順で呼ぶ)
+TEST(BridgeTest, AbstractionCallsOpenPutLineCloseInOrder)
 {
   std::vector<std::string> log;
   const std::vector<std::string> result = run_show(std::make_unique<RecordingSink>(log), log);
@@ -42,7 +44,7 @@ TEST(BridgeTest, 機能側はopenとput_lineとcloseをこの順で呼ぶ)
   EXPECT_EQ(result, expected);
 }
 
-TEST(BridgeTest, 機能を増やしても実装側は変えずに済む)
+TEST(BridgeTest, ExtendingAbstractionLeavesImplementationUnchanged)
 {
   std::vector<std::string> log;
   const std::vector<std::string> result =
@@ -54,7 +56,7 @@ TEST(BridgeTest, 機能を増やしても実装側は変えずに済む)
   EXPECT_EQ(result, expected);
 }
 
-TEST(BridgeTest, 繰り返し回数が0でもopenとcloseは呼ばれる)
+TEST(BridgeTest, OpenAndCloseAreCalledEvenWithZeroRepeats)
 {
   std::vector<std::string> log;
   const std::vector<std::string> result =
@@ -64,7 +66,7 @@ TEST(BridgeTest, 繰り返し回数が0でもopenとcloseは呼ばれる)
   EXPECT_EQ(result, expected);
 }
 
-TEST(BridgeTest, 実装を差し替えても機能側のコードは1行も変わらない)
+TEST(BridgeTest, SwappingImplementationLeavesAbstractionUnchanged)
 {
   // 呼んでいる関数は上のテストとまったく同じ run_show。渡す実装だけが違う。
   std::vector<std::string> log;
@@ -74,7 +76,7 @@ TEST(BridgeTest, 実装を差し替えても機能側のコードは1行も変�
   EXPECT_EQ(result, expected);
 }
 
-TEST(BridgeTest, 機能2つと実装2つの組み合わせが4通りとも動く)
+TEST(BridgeTest, TwoAbstractionsAndTwoImplementationsWorkInAllFourCombinations)
 {
   {
     std::vector<std::string> log;
@@ -101,7 +103,7 @@ TEST(BridgeTest, 機能2つと実装2つの組み合わせが4通りとも動く
   }
 }
 
-TEST(BridgeTest, 機能側の基底ポインタから解放しても派生が正しく壊れる)
+TEST(BridgeTest, DeletingThroughAbstractionBasePointerDestroysDerived)
 {
   // 仮想デストラクタの確認。無いと RepeatView のメンバが解放されません。
   EXPECT_TRUE(std::has_virtual_destructor<TelemetryView>::value);
@@ -116,26 +118,26 @@ TEST(BridgeTest, 機能側の基底ポインタから解放しても派生が正
   EXPECT_EQ(log, (std::vector<std::string>{"<open>", "hb", "<close>"}));
 }
 
-TEST(PimplTest, ヘッダに実装の詳細が出ていない)
+TEST(PimplTest, HeaderDoesNotExposeImplementationDetails)
 {
   // LinkStats が持っているのはポインタ 1 個だけ。
   // Impl に何個メンバを足しても、このサイズは変わりません。
   static_assert(
     sizeof(LinkStats) == sizeof(std::unique_ptr<void *>),
-    "LinkStats はポインタ 1 個分のはずです。実装をヘッダに書いていませんか");
+    "LinkStats はポインタ 1 個分のはずです。実装をヘッダに書いていませんか / LinkStats must be the size of one pointer. Did you put the implementation in the header?");
 
   LinkStats stats;
   EXPECT_EQ(stats.count(), 0u);
   stats.add_sample(1.0);
-  EXPECT_EQ(stats.count(), 1u) << "コンストラクタで impl_ を作っていますか";
+  EXPECT_EQ(stats.count(), 1u) << drill::localized("コンストラクタで impl_ を作っていますか", "Does the constructor create impl_?");
 }
 
-TEST(PimplTest, ムーブ可能でコピー不可)
+TEST(PimplTest, MovableButNotCopyable)
 {
-  static_assert(std::is_move_constructible<LinkStats>::value, "ムーブ構築できるはずです");
-  static_assert(std::is_move_assignable<LinkStats>::value, "ムーブ代入できるはずです");
-  static_assert(!std::is_copy_constructible<LinkStats>::value, "コピーは禁止のはずです");
-  static_assert(!std::is_copy_assignable<LinkStats>::value, "コピー代入は禁止のはずです");
+  static_assert(std::is_move_constructible<LinkStats>::value, "ムーブ構築できるはずです / It must be move-constructible");
+  static_assert(std::is_move_assignable<LinkStats>::value, "ムーブ代入できるはずです / It must be move-assignable");
+  static_assert(!std::is_copy_constructible<LinkStats>::value, "コピーは禁止のはずです / Copying must be prohibited");
+  static_assert(!std::is_copy_assignable<LinkStats>::value, "コピー代入は禁止のはずです / Copy assignment must be prohibited");
 
   LinkStats stats;
   stats.add_sample(2.0);
@@ -151,7 +153,7 @@ TEST(PimplTest, ムーブ可能でコピー不可)
   EXPECT_DOUBLE_EQ(assigned.max(), 4.0);
 }
 
-TEST(PimplTest, 統計の計算が合う)
+TEST(PimplTest, StatisticsAreCalculatedCorrectly)
 {
   LinkStats stats;
   EXPECT_EQ(stats.count(), 0u);

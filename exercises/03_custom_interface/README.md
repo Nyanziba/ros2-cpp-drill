@@ -160,11 +160,11 @@ ros2 service call /add_three_ints drill_03_custom_interface/srv/AddThreeInts "{a
 
 | テスト | 見ているところ |
 | --- | --- |
-| `Num型がint64のnumという1フィールドで定義されている` | `msg/Num.msg` のフィールド名・型（コンパイル自体が検証） |
-| `numトピックにNumがpublishされている` | Publisher とタイマが動いているか、`count_++` |
-| `add_three_intsサービスを公開している` | `srv/AddThreeInts.srv` の定義、`create_service` を `service_` に入れているか |
-| `3つの整数の和を返す` | `response->sum = request->a + request->b + request->c;`、負の数を含む計算 |
-| `公式と同じ書式でIncoming_requestログを出している` | `RCLCPP_INFO` の書式（04課題の3引数版） |
+| `NumMessageHasSingleInt64NumField` | `msg/Num.msg` のフィールド名・型（コンパイル自体が検証） |
+| `PublishesNumOnNumTopic` | Publisher とタイマが動いているか、`count_++` |
+| `ExposesAddThreeIntsService` | `srv/AddThreeInts.srv` の定義、`create_service` を `service_` に入れているか |
+| `ReturnsSumOfThreeIntegers` | `response->sum = request->a + request->b + request->c;`、負の数を含む計算 |
+| `LogsIncomingRequestInOfficialFormat` | `RCLCPP_INFO` の書式（04課題の3引数版） |
 
 ## 参考
 

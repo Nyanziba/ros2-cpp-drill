@@ -7,7 +7,7 @@
 
 #include "drill/vec2.hpp"
 
-TEST(OperatorsTest, 足し算と引き算)
+TEST(OperatorsTest, AdditionAndSubtraction)
 {
   const Vec2 a{1.0, 2.0};
   const Vec2 b{3.0, 4.0};
@@ -21,7 +21,7 @@ TEST(OperatorsTest, 足し算と引き算)
   EXPECT_DOUBLE_EQ(diff.y, 2.0);
 }
 
-TEST(OperatorsTest, スカラー倍は左右どちらの順番でも書ける)
+TEST(OperatorsTest, ScalarMultiplicationWorksInEitherOrder)
 {
   const Vec2 a{2.0, 3.0};
 
@@ -35,7 +35,7 @@ TEST(OperatorsTest, スカラー倍は左右どちらの順番でも書ける)
   EXPECT_DOUBLE_EQ(left.y, 6.0);
 }
 
-TEST(OperatorsTest, 加算代入は自分自身への参照を返す)
+TEST(OperatorsTest, CompoundAdditionReturnsReferenceToSelf)
 {
   Vec2 a{1.0, 2.0};
   const Vec2 b{3.0, 4.0};
@@ -48,7 +48,7 @@ TEST(OperatorsTest, 加算代入は自分自身への参照を返す)
   EXPECT_EQ(&returned, &a);
 }
 
-TEST(OperatorsTest, 等価比較と非等価比較)
+TEST(OperatorsTest, EqualityAndInequality)
 {
   const Vec2 a{1.0, 2.0};
   const Vec2 b{1.0, 2.0};
@@ -67,7 +67,7 @@ TEST(OperatorsTest, 等価比較と非等価比較)
   EXPECT_TRUE(a != x_differs);
 }
 
-TEST(OperatorsTest, 大小比較は厳密弱順序である)
+TEST(OperatorsTest, LessThanIsStrictWeakOrdering)
 {
   const Vec2 small{1.0, 1.0};   // length_squared = 2
   const Vec2 large{3.0, 4.0};   // length_squared = 25
@@ -85,7 +85,7 @@ TEST(OperatorsTest, 大小比較は厳密弱順序である)
   EXPECT_FALSE(q < p);
 }
 
-TEST(OperatorsTest, std_sortで並べられる)
+TEST(OperatorsTest, CanBeSortedWithStdSort)
 {
   std::vector<Vec2> v{{3.0, 4.0}, {1.0, 0.0}, {0.0, 2.0}};
   std::sort(v.begin(), v.end());
@@ -96,7 +96,7 @@ TEST(OperatorsTest, std_sortで並べられる)
   EXPECT_DOUBLE_EQ(v[2].length_squared(), 25.0);
 }
 
-TEST(OperatorsTest, ostreamに流せる)
+TEST(OperatorsTest, CanBeStreamedToOstream)
 {
   const Vec2 v{1.5, 2.5};
   std::ostringstream oss;
@@ -104,7 +104,7 @@ TEST(OperatorsTest, ostreamに流せる)
   EXPECT_EQ(oss.str(), "(1.5, 2.5)");
 }
 
-TEST(OperatorsTest, ostream演算子は繋げられる)
+TEST(OperatorsTest, StreamOperatorCanBeChained)
 {
   // os を返していなければ、この行はコンパイルできないか結果が壊れる。
   const Vec2 a{1.0, 2.0};

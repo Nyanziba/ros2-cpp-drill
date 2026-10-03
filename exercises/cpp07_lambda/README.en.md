@@ -31,8 +31,8 @@ Functions to implement:
 
 | Test | What it checks |
 | --- | --- |
-| `コールバックが呼び出される` (the callback is called) | the behavior of register_callback and fire |
-| `複数のコールバックが登録できる` (you can register multiple callbacks) | managing multiple callbacks |
+| `CallbackIsCalled` | the behavior of register_callback and fire |
+| `MultipleCallbacksCanBeRegistered` | managing multiple callbacks |
 
 ## References
 

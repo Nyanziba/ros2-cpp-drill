@@ -152,11 +152,11 @@ ros2 launch drill_08_params_yaml param_demo.launch.py
 
 | テスト | 見ているところ |
 | --- | --- |
-| `testパラメータYAMLが構文として読み込める` | `config/params.yaml` がYAMLとして構文エラーなく読めるか |
-| `test_3段構造になっている_ノード名からros__parametersまで` | `param_echo` → `ros__parameters` の階層になっているか |
-| `test_4つのパラメータが正しい型と値になっている` | 4つのパラメータの型と値が仕様どおりか |
-| `testEndToEndでparam_echoが正しい値をログに出す` | 実際に `param_echo` を起動し、ログに正しい値が出るか |
-| `test_launchファイルがparam_echoをparams_yaml付きで起動する` | launch が `param_echo` を `config/params.yaml` 付きで起動しているか |
+| `test_params_yaml_is_valid_yaml` | `config/params.yaml` がYAMLとして構文エラーなく読めるか |
+| `test_has_three_level_structure` | `param_echo` → `ros__parameters` の階層になっているか |
+| `test_four_parameters_have_correct_types_and_values` | 4つのパラメータの型と値が仕様どおりか |
+| `test_param_echo_logs_correct_values_end_to_end` | 実際に `param_echo` を起動し、ログに正しい値が出るか |
+| `test_launch_file_starts_param_echo_with_params_yaml` | launch が `param_echo` を `config/params.yaml` 付きで起動しているか |
 
 ## 参考
 

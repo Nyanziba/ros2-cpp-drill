@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 #include "drill/swapper.hpp"
 
-TEST(ReferenceTest, 参照経由のSwap)
+TEST(ReferenceTest, SwapsTwoVariablesByReference)
 {
   int x = 10, y = 20;
   swap_values(x, y);
@@ -10,7 +10,7 @@ TEST(ReferenceTest, 参照経由のSwap)
   EXPECT_EQ(y, 10);
 }
 
-TEST(ReferenceTest, 参照を返して呼び出し元を変更)
+TEST(ReferenceTest, ReturnsReferenceSoCallerCanModify)
 {
   int a = 3, b = 7;
   int & ref = largest(a, b);
@@ -18,7 +18,7 @@ TEST(ReferenceTest, 参照を返して呼び出し元を変更)
   EXPECT_EQ(b, 99);  // b への参照が返されたので b が変わる
 }
 
-TEST(ReferenceTest, 等しい場合は最初の方)
+TEST(ReferenceTest, ReturnsFirstWhenEqual)
 {
   int a = 5, b = 5;
   int & ref = largest(a, b);

@@ -31,9 +31,9 @@
 
 | テスト | 見ているところ |
 | --- | --- |
-| `Add` | math.cpp |
-| `Multiply` | util.cpp |
-| `両方を一緒に使う` | リンク成功 |
+| `AddsIntegers` | math.cpp |
+| `MultipliesIntegers` | util.cpp |
+| `UsesAddAndMultiplyTogether` | リンク成功 |
 
 ## 参考
 

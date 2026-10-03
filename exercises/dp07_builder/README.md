@@ -64,7 +64,7 @@
 ## つまずきポイント
 
 - セッタが `MotorConfigBuilder`（値）を返していると、テスト
-  「チェーンは同じBuilderの参照を返す」がアドレス比較で落とします
+  「ChainReturnsReferenceToSameBuilder」がアドレス比較で落とします
 - `build() &&` と `build() const &` は**両方**実装します。片方だけだと、
   もう片方の呼び方がコンパイルエラーになります
   （`error: 'this' argument to member function 'build' is an lvalue, but function has rvalue ref-qualifier`）

@@ -28,10 +28,10 @@ Implement sum() and find_first() in `src/array_util.cpp`.
 
 | Test | What it checks |
 | --- | --- |
-| `Sum` | looping over an array |
-| `Sum空の配列` (Sum of an empty array) | handling count==0 |
-| `FindFirst見つかる` (FindFirst finds it) | returning a pointer |
-| `FindFirst見つからない` (FindFirst does not find it) | returning nullptr |
+| `SumsAllElements` | looping over an array |
+| `SumOfEmptyArrayIsZero` | handling count==0 |
+| `FindFirstReturnsPointerToMatch` | returning a pointer |
+| `FindFirstReturnsNullptrWhenNotFound` | returning nullptr |
 
 ## References
 

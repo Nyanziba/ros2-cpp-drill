@@ -39,10 +39,10 @@ Stopwatch::Stopwatch(int max_time_ms)
 
 | テスト | 見ているところ |
 | --- | --- |
-| `コンストラクタでmaxTimeが設定される` | メンバ初期化リストの正確性 |
-| `初期状態では経過時間は0` | elapsed_ の初期化 |
-| `advanceで経過時間が増える` | advance() メソッドの実装 |
-| `constメンバ関数で値を取得できる` | const メンバ関数の構文 |
+| `ConstructorSetsMaxTime` | メンバ初期化リストの正確性 |
+| `ElapsedTimeIsZeroInitially` | elapsed_ の初期化 |
+| `AdvanceIncreasesElapsedTime` | advance() メソッドの実装 |
+| `ConstMemberFunctionsReturnValues` | const メンバ関数の構文 |
 
 ## 参考
 

@@ -129,11 +129,11 @@ ros2 topic list
 
 | テスト | 見ているところ |
 | --- | --- |
-| `test_python版でtalkerとlistenerの2ノードを起動している` | Python 版に 2 つの `Node`（正しい package/executable）があるか |
-| `test_python版のnamespaceとremapがdemoとchatterになっている` | Python 版の namespace と remap の値 |
-| `test_xml版がpython版と同じ構造になっている` | XML 版が Python 版と同じ構造か |
-| `test_yaml版がpython版と同じ構造になっている` | YAML 版が Python 版と同じ構造か |
-| `test_3つの書式がすべて等価である` | 3 書式すべての構造が完全一致するか |
+| `test_python_launch_starts_talker_and_listener` | Python 版に 2 つの `Node`（正しい package/executable）があるか |
+| `test_python_launch_has_demo_namespace_and_chatter_remap` | Python 版の namespace と remap の値 |
+| `test_xml_launch_matches_python_structure` | XML 版が Python 版と同じ構造か |
+| `test_yaml_launch_matches_python_structure` | YAML 版が Python 版と同じ構造か |
+| `test_all_three_formats_are_equivalent` | 3 書式すべての構造が完全一致するか |
 
 テストは実際にノードのプロセスを起動しません。`launch` / `launch_ros` の
 API を使って launch ファイルを読み込み、`package` / `executable` / `namespace` /

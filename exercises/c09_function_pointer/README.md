@@ -109,13 +109,13 @@ handler(led_id, state);      /* 通常の書き方 */
 
 | テスト | 見ているところ |
 | --- | --- |
-| `コントローラー作成と破棄` | `create` で確保、NULL チェック、全ハンドラー初期化 |
-| `ハンドラーを登録できる` | `register_handler` と `is_null` |
-| `登録されたハンドラーが呼ばれる` | 関数ポインタ経由での呼び出し |
-| `未登録のスロットを呼んでも落ちない` | **NULL チェックの重要性** |
-| `ハンドラーを複数登録して正しく呼び分ける` | テーブル駆動型の基本 |
-| `ハンドラーを NULL で削除できる` | NULL 再登録で解除 |
-| `ハンドラーを上書きできる` | 同じスロットへの再登録 |
+| `CreatesAndDestroysController` | `create` で確保、NULL チェック、全ハンドラー初期化 |
+| `RegistersHandler` | `register_handler` と `is_null` |
+| `CallsRegisteredHandler` | 関数ポインタ経由での呼び出し |
+| `DoesNotCrashOnUnregisteredSlot` | **NULL チェックの重要性** |
+| `DispatchesToCorrectHandler` | テーブル駆動型の基本 |
+| `RemovesHandlerWithNull` | NULL 再登録で解除 |
+| `OverwritesHandler` | 同じスロットへの再登録 |
 
 ## 参考
 

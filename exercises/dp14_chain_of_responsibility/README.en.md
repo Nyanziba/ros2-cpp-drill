@@ -52,7 +52,7 @@ Implement 6 things in `src/fault_chain.cpp`.
 - **After** you `std::move(next)` in `set_next()`, `next` is empty.
   If you return `*next`, it crashes. Put it into `next_` and then return `*next_`
 - If `set_next()` returns `*this`, then in `a.set_next(b).set_next(c)`
-  **b is silently freed**. The test "setNextは次のハンドラ自身への参照を返す" (setNext returns a reference to the next handler itself) fails it
+  **b is silently freed**. The test `SetNextReturnsReferenceToNextHandler` fails it
 - After the destructor body runs, the member `next_` is destroyed.
   That is, the destruction log is in the order **from the head to the tail**
 - If you want to touch `next_` inside `resolve()`, the design is broken.

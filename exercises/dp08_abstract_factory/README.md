@@ -39,7 +39,7 @@
 ## つまずきポイント
 
 - `create_motor()` と `create_encoder()` に**別の bus を渡す**と、製品群が混ざります。
-  テスト「同じファクトリから出た部品どうしは繋がっている」が落とします
+  テスト「PartsFromSameFactoryAreConnected」が落とします
 - `run_open_loop()` の中に `SimulationKitFactory` と書いたら設計が壊れています。
   引数は `const ActuatorKitFactory &` だけです
 - 実機側は 4 逓倍エンコーダなので、同じ duty でもカウントは 4 倍進みます。

@@ -68,17 +68,17 @@ The specification of the **speed target command** of the example CAN protocol (f
 
 | Test | What it checks |
 | --- | --- |
-| `float_1_0_往復` (float 1.0 round trip) | Round-trip conversion of 1.0f (basic) |
-| `float_2_5_往復` (float 2.5 round trip) | Round-trip conversion of a fractional value |
-| `float_負数_往復` (float negative round trip) | A negative floating-point number |
-| `float_ゼロ_往復` (float zero round trip) | Handling of zero |
-| `float_オフセット付き_往復` (float with offset round trip) | Reading and writing with an offset |
-| `uint32_往復` (uint32 round trip) | Round-trip conversion of a 32-bit integer |
-| `uint32_オフセット付き_往復` (uint32 with offset round trip) | Reading and writing with an offset |
-| `uint32_ゼロ_往復` (uint32 zero round trip) | uint32_t zero |
-| `速度目標コマンド構築` (build the speed target command) | The basics of building the payload |
-| `速度目標コマンド構築_負の速度` (build the speed target command, negative speed) | A negative speed value |
-| `速度目標コマンド往路` (speed target command outbound) | Building and restoring the payload |
+| `RoundTripsFloatOnePointZero` | Round-trip conversion of 1.0f (basic) |
+| `RoundTripsFloatTwoPointFive` | Round-trip conversion of a fractional value |
+| `RoundTripsNegativeFloat` | A negative floating-point number |
+| `RoundTripsFloatZero` | Handling of zero |
+| `RoundTripsFloatWithOffset` | Reading and writing with an offset |
+| `RoundTripsUint32` | Round-trip conversion of a 32-bit integer |
+| `RoundTripsUint32WithOffset` | Reading and writing with an offset |
+| `RoundTripsUint32Zero` | uint32_t zero |
+| `BuildsSpeedTargetCommand` | The basics of building the payload |
+| `BuildsSpeedTargetCommandWithNegativeSpeed` | A negative speed value |
+| `RoundTripsSpeedTargetCommand` | Building and restoring the payload |
 
 ## References
 

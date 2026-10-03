@@ -4,7 +4,7 @@
 
 /* ===== CAN ID テスト ===== */
 
-TEST(CanIdTest, 組み立てと抽出が往復する)
+TEST(CanIdTest, RoundTripsCreateAndExtract)
 {
   uint16_t id = can_id_create(3, 5, 7);
   EXPECT_EQ(can_id_extract_type(id), 3);
@@ -12,7 +12,7 @@ TEST(CanIdTest, 組み立てと抽出が往復する)
   EXPECT_EQ(can_id_extract_cmd(id), 7);
 }
 
-TEST(CanIdTest, ReceiverType_MDの例)
+TEST(CanIdTest, ExtractsMotorDriverReceiverType)
 {
   // MD = 1
   uint16_t id = can_id_create(1, 0, 0);
@@ -21,7 +21,7 @@ TEST(CanIdTest, ReceiverType_MDの例)
   EXPECT_EQ(can_id_extract_cmd(id), 0);
 }
 
-TEST(CanIdTest, 複合的な値)
+TEST(CanIdTest, HandlesCombinedValues)
 {
   // Type=6 (MAINBOARD_PC), Device=15 (max), Cmd=14
   uint16_t id = can_id_create(6, 15, 14);
@@ -30,7 +30,7 @@ TEST(CanIdTest, 複合的な値)
   EXPECT_EQ(can_id_extract_cmd(id), 14);
 }
 
-TEST(CanIdTest, ReadModifyWrite_Device_だけ変更)
+TEST(CanIdTest, ReadModifyWriteChangesOnlyDevice)
 {
   uint16_t id = can_id_create(2, 3, 5);  // Type=2, Device=3, Cmd=5
   id = can_id_set_device(id, 10);       // Device を 3 → 10
@@ -40,7 +40,7 @@ TEST(CanIdTest, ReadModifyWrite_Device_だけ変更)
   EXPECT_EQ(can_id_extract_cmd(id), 5);      // 変わらない
 }
 
-TEST(CanIdTest, ReadModifyWrite_他のビットを壊さない)
+TEST(CanIdTest, ReadModifyWritePreservesOtherBits)
 {
   uint16_t id = can_id_create(7, 1, 15);
   id = can_id_set_device(id, 8);
@@ -52,7 +52,7 @@ TEST(CanIdTest, ReadModifyWrite_他のビットを壊さない)
 
 /* ===== レジスタ操作テスト ===== */
 
-TEST(RegisterTest, ビットを立てる)
+TEST(RegisterTest, SetsBit)
 {
   uint16_t reg = 0x0000;
   reg = register_set_bit(reg, 3);
@@ -62,7 +62,7 @@ TEST(RegisterTest, ビットを立てる)
   EXPECT_EQ(reg, 0x0088);  // bit 3 と 7
 }
 
-TEST(RegisterTest, ビットを落とす)
+TEST(RegisterTest, ClearsBit)
 {
   uint16_t reg = 0xFFFF;
   reg = register_clear_bit(reg, 3);
@@ -72,7 +72,7 @@ TEST(RegisterTest, ビットを落とす)
   EXPECT_EQ(reg, 0xFF77);  // bit 3 と 7
 }
 
-TEST(RegisterTest, ビットを読む)
+TEST(RegisterTest, ReadsBit)
 {
   uint16_t reg = 0x0088;  // bit 3 = 1, bit 7 = 1
   EXPECT_EQ(register_read_bit(reg, 3), 1);
@@ -80,28 +80,28 @@ TEST(RegisterTest, ビットを読む)
   EXPECT_EQ(register_read_bit(reg, 0), 0);
 }
 
-TEST(RegisterTest, ビット範囲を設定_単一ビット)
+TEST(RegisterTest, SetsBitRangeWithSingleBit)
 {
   uint16_t reg = 0x0000;
   reg = register_set_bits(reg, 5, 5, 1);  // bit [5:5] = 1
   EXPECT_EQ(reg, 0x0020);
 }
 
-TEST(RegisterTest, ビット範囲を設定_複数ビット)
+TEST(RegisterTest, SetsBitRangeWithMultipleBits)
 {
   uint16_t reg = 0x0000;
   reg = register_set_bits(reg, 7, 4, 0x0F);  // bits [7:4] = 0xF
   EXPECT_EQ(reg, 0x00F0);
 }
 
-TEST(RegisterTest, ビット範囲を設定_既存値を保持)
+TEST(RegisterTest, SetsBitRangePreservingExistingBits)
 {
   uint16_t reg = 0xF00F;  // [15:12] = F, [3:0] = F
   reg = register_set_bits(reg, 7, 4, 0x05);  // [7:4] = 0x5
   EXPECT_EQ(reg, 0xF05F);  // [15:12], [7:4], [3:0] が保存される
 }
 
-TEST(RegisterTest, ビット範囲を設定_値のマスキング)
+TEST(RegisterTest, SetsBitRangeMaskingValue)
 {
   uint16_t reg = 0x0000;
   reg = register_set_bits(reg, 3, 0, 0xFF);  // 4bit 領域に 0xFF を設定（マスクされる）

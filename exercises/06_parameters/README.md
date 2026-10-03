@@ -75,10 +75,10 @@ ros2 param set /minimal_param_node my_parameter earth
 
 | テスト | 見ているところ |
 | --- | --- |
-| `my_parameterが文字列で既定値worldになっている` | パラメータの型と既定値 |
-| `ParameterDescriptorのdescriptionが設定されている` | `declare_parameter()` に渡す description |
-| `タイマがHello_worldとログを出している` | タイマが動いていて `get_parameter()` を読んでいるか |
-| `ros2_param_setで変えても1秒後にworldへ戻る` | `set_parameters()` で毎周期 `"world"` に戻しているか |
+| `MyParameterIsStringWithDefaultWorld` | パラメータの型と既定値 |
+| `ParameterDescriptorHasDescription` | `declare_parameter()` に渡す description |
+| `TimerLogsHelloWorld` | タイマが動いていて `get_parameter()` を読んでいるか |
+| `RevertsToWorldAfterParamSet` | `set_parameters()` で毎周期 `"world"` に戻しているか |
 
 ## 参考
 

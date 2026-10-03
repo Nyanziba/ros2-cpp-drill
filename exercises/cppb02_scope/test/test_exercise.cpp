@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 #include "drill/scope.hpp"
 
-TEST(ScopeTest, スコープを抜けるとき逆順に破棄される)
+TEST(ScopeTest, DestroysInReverseOrderOnScopeExit)
 {
   g_trace_log.clear();
   trace_something();

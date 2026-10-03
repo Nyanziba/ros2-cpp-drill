@@ -3,19 +3,19 @@
 
 #include "drill/stopwatch.hpp"
 
-TEST(StopwatchTest, コンストラクタでmaxTimeが設定される)
+TEST(StopwatchTest, ConstructorSetsMaxTime)
 {
   Stopwatch sw(5000);
   EXPECT_EQ(sw.max_time(), 5000);
 }
 
-TEST(StopwatchTest, 初期状態では経過時間は0)
+TEST(StopwatchTest, ElapsedTimeIsZeroInitially)
 {
   Stopwatch sw(5000);
   EXPECT_EQ(sw.elapsed(), 0);
 }
 
-TEST(StopwatchTest, advanceで経過時間が増える)
+TEST(StopwatchTest, AdvanceIncreasesElapsedTime)
 {
   Stopwatch sw(5000);
   sw.advance(100);
@@ -25,7 +25,7 @@ TEST(StopwatchTest, advanceで経過時間が増える)
   EXPECT_EQ(sw.elapsed(), 300);
 }
 
-TEST(StopwatchTest, constメンバ関数で値を取得できる)
+TEST(StopwatchTest, ConstMemberFunctionsReturnValues)
 {
   const Stopwatch sw(3000);
   EXPECT_EQ(sw.max_time(), 3000);

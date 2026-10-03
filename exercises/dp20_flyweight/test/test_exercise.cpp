@@ -1,6 +1,8 @@
 // このファイルは編集しません（採点用）。
 #include <gtest/gtest.h>
 
+#include "drill_i18n.hpp"
+
 #include <cstddef>
 #include <cstdlib>
 #include <iterator>
@@ -56,7 +58,7 @@ using drill::find_spec;
 
 }  // namespace
 
-TEST(FlyweightTest, 同じ型番を二度引くと同一のインスタンスが返る)
+TEST(FlyweightTest, SameModelNumberReturnsSameInstance)
 {
   CalibrationTable::reset_counts();
   CalibrationRegistry registry;
@@ -64,16 +66,16 @@ TEST(FlyweightTest, 同じ型番を二度引くと同一のインスタンスが
   const CalibrationRegistry::Handle first = registry.get("MPU6050-GYRO");
   const CalibrationRegistry::Handle second = registry.get("MPU6050-GYRO");
 
-  ASSERT_NE(first, nullptr) << "get() が nullptr を返しています";
+  ASSERT_NE(first, nullptr) << drill::localized("get() が nullptr を返しています", "get() returned nullptr");
   ASSERT_NE(second, nullptr);
 
   // Flyweight の本体。中身が等しいのではなく、同じオブジェクトであること。
   EXPECT_EQ(first.get(), second.get())
-    << "同じ型番なのに別のインスタンスが返っています。プールから引けていません";
+    << drill::localized("同じ型番なのに別のインスタンスが返っています。プールから引けていません", "The same model number returned a different instance. It is not taken from the pool");
   EXPECT_EQ(first.use_count(), 2);
 }
 
-TEST(FlyweightTest, 生成回数は引いた回数ではなく種類の数と一致する)
+TEST(FlyweightTest, CreationCountMatchesKindsNotLookups)
 {
   CalibrationTable::reset_counts();
   CalibrationRegistry registry;
@@ -90,11 +92,11 @@ TEST(FlyweightTest, 生成回数は引いた回数ではなく種類の数と一
   }
 
   EXPECT_EQ(CalibrationTable::construction_count(), 3u)
-    << "5 回引いていますが、種類は 3 つです。3 個だけ作られるはずです";
+    << drill::localized("5 回引いていますが、種類は 3 つです。3 個だけ作られるはずです", "get() was called 5 times but there are only 3 kinds. Only 3 should be created");
   EXPECT_EQ(registry.pool_size(), 3u);
 }
 
-TEST(FlyweightTest, ROMに無い型番はnullptrを返す)
+TEST(FlyweightTest, UnknownModelNumberReturnsNullptr)
 {
   CalibrationTable::reset_counts();
   CalibrationRegistry registry;
@@ -104,16 +106,16 @@ TEST(FlyweightTest, ROMに無い型番はnullptrを返す)
   ASSERT_NE(known, nullptr);
 
   const CalibrationRegistry::Handle handle = registry.get("NO-SUCH-SENSOR");
-  EXPECT_EQ(handle, nullptr) << "未知の型番では nullptr を返してください";
+  EXPECT_EQ(handle, nullptr) << drill::localized("未知の型番では nullptr を返してください", "Return nullptr for an unknown model number");
   EXPECT_EQ(CalibrationTable::construction_count(), 1u);
   EXPECT_EQ(registry.pool_size(), 1u)
-    << "作れなかった型番をプールに登録してはいけません";
+    << drill::localized("作れなかった型番をプールに登録してはいけません", "Do not register a model number that could not be created");
 
   const Sensor broken{"unknown", handle, 3.0};
   EXPECT_DOUBLE_EQ(broken.convert(100), 0.0);
 }
 
-TEST(FlyweightTest, 全員が手放すとFlyweightは解放されプールからも消える)
+TEST(FlyweightTest, FlyweightIsFreedAndLeavesPoolWhenAllReleaseIt)
 {
   CalibrationTable::reset_counts();
   CalibrationRegistry registry;
@@ -125,13 +127,13 @@ TEST(FlyweightTest, 全員が手放すとFlyweightは解放されプールから
     ASSERT_NE(second, nullptr);
 
     EXPECT_EQ(first.use_count(), 2)
-      << "プールが shared_ptr を握っていると use_count が 3 になります。weak_ptr で持ってください";
+      << drill::localized("プールが shared_ptr を握っていると use_count が 3 になります。weak_ptr で持ってください", "If the pool holds a shared_ptr, use_count becomes 3. Hold a weak_ptr instead");
     EXPECT_EQ(CalibrationTable::destruction_count(), 0u);
   }
 
   // 利用者が全員いなくなったので、ここで破棄されているはず。
   EXPECT_EQ(CalibrationTable::destruction_count(), 1u)
-    << "プールが shared_ptr で握り続けているため解放されていません";
+    << drill::localized("プールが shared_ptr で握り続けているため解放されていません", "It was not freed because the pool keeps holding a shared_ptr");
 
   // ただし map のエントリ自体は残っています。weak_ptr は自分で自分を消せません。
   EXPECT_EQ(registry.pool_size(), 1u);
@@ -140,7 +142,7 @@ TEST(FlyweightTest, 全員が手放すとFlyweightは解放されプールから
   EXPECT_EQ(registry.sweep_expired(), 0u);
 }
 
-TEST(FlyweightTest, 手放したあとに引き直すと作り直される)
+TEST(FlyweightTest, LookupAfterReleaseRecreatesIt)
 {
   CalibrationTable::reset_counts();
   CalibrationRegistry registry;
@@ -156,7 +158,7 @@ TEST(FlyweightTest, 手放したあとに引き直すと作り直される)
 
   const CalibrationRegistry::Handle again = registry.get("NTC-10K");
   ASSERT_NE(again, nullptr)
-    << "expired な残骸に当たったとき、作り直さずに nullptr を返しています";
+    << drill::localized("expired な残骸に当たったとき、作り直さずに nullptr を返しています", "On hitting an expired entry, nullptr was returned instead of creating it again");
   EXPECT_EQ(again.use_count(), 1);
   EXPECT_EQ(CalibrationTable::construction_count(), 2u);
   EXPECT_EQ(registry.pool_size(), 1u);
@@ -167,7 +169,7 @@ TEST(FlyweightTest, 手放したあとに引き直すと作り直される)
   (void)first_address;
 }
 
-TEST(FlyweightTest, 付帯的状態は共有されない)
+TEST(FlyweightTest, ExtrinsicStateIsNotShared)
 {
   CalibrationTable::reset_counts();
   CalibrationRegistry registry;
@@ -189,17 +191,17 @@ TEST(FlyweightTest, 付帯的状態は共有されない)
   EXPECT_DOUBLE_EQ(left.convert(100), 100 * spec->gain + spec->offset + 1.5);
   EXPECT_DOUBLE_EQ(right.convert(100), 100 * spec->gain + spec->offset - 2.0);
   EXPECT_NE(left.convert(100), right.convert(100))
-    << "zero_offset を Flyweight 側に持たせると、この 2 つが同じ値になります";
+    << drill::localized("zero_offset を Flyweight 側に持たせると、この 2 つが同じ値になります", "If the Flyweight holds zero_offset, these 2 values become the same");
 }
 
-TEST(FlyweightTest, ROMテーブルはconstexprで実行時確保がゼロ)
+TEST(FlyweightTest, RomTableIsConstexprWithNoRuntimeAllocation)
 {
   // コンパイル時に引けている＝実行時には何も起きていない。
   constexpr const CalibrationSpec * ntc = find_spec("NTC-10K");
-  static_assert(ntc != nullptr, "find_spec がコンパイル時に評価できていません");
-  static_assert(ntc->offset == -40.0, "ROM の値が違います");
-  static_assert(find_spec("NO-SUCH-SENSOR") == nullptr, "未知の型番は nullptr のはず");
-  static_assert(std::size(drill::kCalibrationRom) == 4, "ROM の要素数");
+  static_assert(ntc != nullptr, "find_spec がコンパイル時に評価できていません / find_spec cannot be evaluated at compile time");
+  static_assert(ntc->offset == -40.0, "ROM の値が違います / The ROM value is wrong");
+  static_assert(find_spec("NO-SUCH-SENSOR") == nullptr, "未知の型番は nullptr のはず / An unknown model must give nullptr");
+  static_assert(std::size(drill::kCalibrationRom) == 4, "ROM の要素数 / Number of ROM elements");
 
   // 実行時に引いても確保は 1 回も走らない。
   const std::size_t before = g_allocation_count;
@@ -207,7 +209,7 @@ TEST(FlyweightTest, ROMテーブルはconstexprで実行時確保がゼロ)
   const double gain = current->gain;
   const std::size_t after = g_allocation_count;
 
-  EXPECT_EQ(after, before) << "constexpr テーブルを引くのにヒープ確保は不要です";
+  EXPECT_EQ(after, before) << drill::localized("constexpr テーブルを引くのにヒープ確保は不要です", "Looking up a constexpr table needs no heap allocation");
   EXPECT_GT(gain, 0.0);
 
   // 実行時プールは、同じ ROM の値を持ってくるだけ。

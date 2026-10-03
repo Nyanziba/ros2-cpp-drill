@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 #include "drill/checker.hpp"
 
-TEST(PointerTest, 両方がvalidな場合)
+TEST(PointerTest, ReadsWhenBothPointersAreValid)
 {
   int val = 42;
   int result = 0;
@@ -10,20 +10,20 @@ TEST(PointerTest, 両方がvalidな場合)
   EXPECT_EQ(result, 42);
 }
 
-TEST(PointerTest, 読み込みポインタがnullptr)
+TEST(PointerTest, ReturnsFalseWhenReadPointerIsNull)
 {
   int result = 0;
   EXPECT_FALSE(try_read(nullptr, &result));
   EXPECT_EQ(result, 0);
 }
 
-TEST(PointerTest, 書き込みポインタがnullptr)
+TEST(PointerTest, ReturnsFalseWhenWritePointerIsNull)
 {
   int val = 42;
   EXPECT_FALSE(try_read(&val, nullptr));
 }
 
-TEST(PointerTest, 両方がnullptr)
+TEST(PointerTest, ReturnsFalseWhenBothPointersAreNull)
 {
   EXPECT_FALSE(try_read(nullptr, nullptr));
 }

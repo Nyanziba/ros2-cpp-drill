@@ -5,7 +5,7 @@
 
 using namespace std::chrono_literals;
 
-TEST(ChronoTest, ticksをカウントする)
+TEST(ChronoTest, CountsTicks)
 {
   int ticks = count_ticks(1000ms, 100ms);
   EXPECT_EQ(ticks, 10);
@@ -17,7 +17,7 @@ TEST(ChronoTest, ticksをカウントする)
   EXPECT_EQ(ticks, 9);  // 切り下げ
 }
 
-TEST(ChronoTest, 秒をmillisecondsに変換する)
+TEST(ChronoTest, ConvertsSecondsToMilliseconds)
 {
   auto ms = seconds_to_ms(1.0);
   EXPECT_EQ(ms.count(), 1000);

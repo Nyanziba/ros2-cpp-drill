@@ -6,6 +6,7 @@
 
 #include "drill/add_two_ints_server.hpp"
 #include "drill_harness.hpp"
+#include "drill_i18n.hpp"
 
 using DrillTest = drill::DrillTest;
 using AddTwoInts = AddTwoIntsServer::AddTwoInts;
@@ -56,7 +57,7 @@ std::optional<int64_t> call_add(
 
 }  // namespace
 
-TEST_F(DrillTest, add_two_intsサービスを公開している)
+TEST_F(DrillTest, ExposesAddTwoIntsService)
 {
   auto server = std::make_shared<AddTwoIntsServer>();
   Probe probe;
@@ -65,41 +66,58 @@ TEST_F(DrillTest, add_two_intsサービスを公開している)
     drill::spin_until(
       {server, probe.node},
       [&probe]() {return probe.client->service_is_ready();}, 5s))
-    << "\"add_two_ints\" サービスが 5 秒待っても見つかりませんでした。\n"
-    << "  - create_service<AddTwoInts>(\"add_two_ints\", ...) を service_ に入れましたか？\n"
-    << "  - コンストラクタの中で呼んでいますか？";
+    << drill::localized(
+    "\"add_two_ints\" サービスが 5 秒待っても見つかりませんでした。\n"
+    "  - create_service<AddTwoInts>(\"add_two_ints\", ...) を service_ に入れましたか？\n"
+    "  - コンストラクタの中で呼んでいますか？",
+    "The \"add_two_ints\" service was not found after waiting 5 seconds.\n"
+    "  - Did you assign create_service<AddTwoInts>(\"add_two_ints\", ...) to service_?\n"
+    "  - Do you call it inside the constructor?");
 }
 
-TEST_F(DrillTest, 2つの整数の和を返す)
+TEST_F(DrillTest, ReturnsSumOfTwoIntegers)
 {
   auto server = std::make_shared<AddTwoIntsServer>();
   Probe probe;
 
   auto sum = call_add(server, probe, 20, 22);
   ASSERT_TRUE(sum.has_value())
-    << "add_two_ints を呼びましたが応答が返ってきませんでした。\n"
-    << "  - add() の中で response に書き込んでいますか（return ではありません）？";
+    << drill::localized(
+    "add_two_ints を呼びましたが応答が返ってきませんでした。\n"
+    "  - add() の中で response に書き込んでいますか（return ではありません）？",
+    "Called add_two_ints but no response came back.\n"
+    "  - Does add() write to response (not return it)?");
   EXPECT_EQ(sum.value(), 42)
-    << "20 + 22 の応答が 42 になっていません。実際の値: " << sum.value() << "\n"
-    << "  response->sum = request->a + request->b; を書きましたか？";
+    << drill::localized(
+    "20 + 22 の応答が 42 になっていません。実際の値: ",
+    "The response for 20 + 22 is not 42. Actual value: ")
+    << sum.value() << "\n"
+    << drill::localized(
+    "  response->sum = request->a + request->b; を書きましたか？",
+    "  Did you write response->sum = request->a + request->b; ?");
 }
 
-TEST_F(DrillTest, 0や負の数でも正しく計算する)
+TEST_F(DrillTest, HandlesZeroAndNegativeNumbers)
 {
   auto server = std::make_shared<AddTwoIntsServer>();
   Probe probe;
 
   auto zero = call_add(server, probe, 0, 0);
-  ASSERT_TRUE(zero.has_value()) << "0 + 0 の呼び出しに応答がありませんでした。";
-  EXPECT_EQ(zero.value(), 0) << "0 + 0 が 0 になっていません。実際の値: " << zero.value();
+  ASSERT_TRUE(zero.has_value())
+    << drill::localized("0 + 0 の呼び出しに応答がありませんでした。", "No response to the call 0 + 0.");
+  EXPECT_EQ(zero.value(), 0)
+    << drill::localized("0 + 0 が 0 になっていません。実際の値: ", "0 + 0 is not 0. Actual value: ")
+    << zero.value();
 
   auto negative = call_add(server, probe, -5, 3);
-  ASSERT_TRUE(negative.has_value()) << "-5 + 3 の呼び出しに応答がありませんでした。";
+  ASSERT_TRUE(negative.has_value())
+    << drill::localized("-5 + 3 の呼び出しに応答がありませんでした。", "No response to the call -5 + 3.");
   EXPECT_EQ(negative.value(), -2)
-    << "-5 + 3 が -2 になっていません。実際の値: " << negative.value();
+    << drill::localized("-5 + 3 が -2 になっていません。実際の値: ", "-5 + 3 is not -2. Actual value: ")
+    << negative.value();
 }
 
-TEST_F(DrillTest, 連続して呼び出しても応答する)
+TEST_F(DrillTest, RespondsToConsecutiveCalls)
 {
   auto server = std::make_shared<AddTwoIntsServer>();
   Probe probe;
@@ -110,26 +128,38 @@ TEST_F(DrillTest, 連続して呼び出しても応答する)
   for (int i = 0; i < 3; ++i) {
     auto sum = call_add(server, probe, inputs[i][0], inputs[i][1]);
     ASSERT_TRUE(sum.has_value())
-      << (i + 1) << " 回目の呼び出しに応答がありませんでした。"
-      << "サーバは複数回のリクエストを処理できる必要があります。";
+      << drill::localized(
+      "", "No response to call number ")
+      << (i + 1)
+      << drill::localized(
+      " 回目の呼び出しに応答がありませんでした。"
+      "サーバは複数回のリクエストを処理できる必要があります。",
+      ". The server must be able to handle multiple requests.");
     EXPECT_EQ(sum.value(), expected[i])
-      << (i + 1) << " 回目の応答が " << expected[i] << " になっていません。"
-      << "実際の値: " << sum.value();
+      << drill::localized("", "The response of call number ")
+      << (i + 1)
+      << drill::localized(" 回目の応答が ", " is not ")
+      << expected[i]
+      << drill::localized(" になっていません。実際の値: ", ". Actual value: ")
+      << sum.value();
   }
 }
 
-TEST_F(DrillTest, 公式と同じIncoming_requestログを出している)
+TEST_F(DrillTest, LogsSameIncomingRequestAsOfficial)
 {
   drill::LogCapture logs;
   auto server = std::make_shared<AddTwoIntsServer>();
   Probe probe;
 
   auto sum = call_add(server, probe, 20, 22);
-  ASSERT_TRUE(sum.has_value()) << "add_two_ints の呼び出しに応答がありませんでした。";
+  ASSERT_TRUE(sum.has_value())
+    << drill::localized(
+    "add_two_ints の呼び出しに応答がありませんでした。",
+    "No response to the add_two_ints call.");
 
   EXPECT_TRUE(logs.contains("Incoming request"))
-    << "公式と同じログが出ていません。\n"
+    << drill::localized("公式と同じログが出ていません。\n", "The same log as the official example is missing.\n")
     << "  RCLCPP_INFO(this->get_logger(), \"Incoming request\\na: %ld b: %ld\","
     << " request->a, request->b);\n"
-    << "  実際に出ていたログ:" << logs.dump();
+    << drill::localized("  実際に出ていたログ:", "  Logs that were printed:") << logs.dump();
 }

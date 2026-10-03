@@ -18,7 +18,7 @@
 //
 // ただし、このテストだけではバグを検出できません（正常系しか見ていないため）。
 // 下の TODO を埋めて、観点を増やしてください。
-TEST(VelocityLimiterTest, 制限にかからない場合はtargetがそのまま返る)
+TEST(VelocityLimiterTest, ReturnsTargetUnchangedWhenNoLimitApplies)
 {
   const double result = limit_velocity(/*target=*/1.0, /*previous=*/0.0,
     /*max_speed=*/10.0, /*max_delta=*/10.0);

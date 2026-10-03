@@ -31,9 +31,9 @@ Implement add() in `src/math.cpp` and multiply() in `src/util.cpp`.
 
 | Test | What it checks |
 | --- | --- |
-| `Add` | math.cpp |
-| `Multiply` | util.cpp |
-| `両方を一緒に使う` (use both together) | the link succeeds |
+| `AddsIntegers` | math.cpp |
+| `MultipliesIntegers` | util.cpp |
+| `UsesAddAndMultiplyTogether` | the link succeeds |
 
 ## References
 

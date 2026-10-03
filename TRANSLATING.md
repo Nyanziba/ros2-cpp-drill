@@ -13,8 +13,10 @@
 | `exercises.json` の `title` / `hints` など | 同じ課題に `title_en` / `hints_en` / `level_en` / `level_note_en` / `chapter_en` / `lecture_en` |
 | `drill` の出力 | `DRILL_LANG=en ./drill ...` で英語になる |
 
-ソースコード・テスト・テンプレート・解答のコメントと、テストの失敗メッセージは
-**日本語のまま**です（二重管理を避けるため）。
+ソースコード・テスト・テンプレート・解答のコメントは**日本語のまま**です（二重管理を避けるため）。
+テスト名は日英共通の英語の識別子です。テストの失敗メッセージは `drill::localized("日本語", "English")`
+（Python は `localized`）で書き、`DRILL_LANG` で切り替わります。`static_assert` はコンパイル時に出るので、
+`"日本語 / English"` の 1 つの文字列にします。
 
 ## ファイル名
 
@@ -150,8 +152,10 @@
     出力中の日本語は訳さずに残します。
 - 宣言の読み下し（「p は int へのポインタ」）は英語の読み下し（"p is a pointer to int"）にします。
   右から左に読む手順が英語でも成り立つように訳してください。
-- 課題 README のテスト名（例: `ConstPtrは読み取り専用`）はテストのコードが日本語のままなので
-  **そのまま残し**、隣に英訳を添えます。例: `` `ConstPtrは読み取り専用` (const pointer is read-only) ``
+- 課題 README のテスト名（例: `AllowsCallsOnConstObject`）は日英共通の英語の識別子なので、日英どちらの README にも
+  そのまま書きます（訳を添えません）。
+- テストの失敗メッセージは `drill::localized("日本語", "English")` で書きます。英語は用語集に従い、平易で短くします。
+  `static_assert` のメッセージは `"日本語 / English"` の 1 つの文字列にし、README などで引用するときも同じ文字列にします。
 
 ## 用語集
 

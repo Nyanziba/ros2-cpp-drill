@@ -129,10 +129,10 @@ qos_demo が publish し終わったあとに実行しても何も表示され�
 
 | テスト | 見ているところ |
 | --- | --- |
-| `publisherの実効QoSがTRANSIENT_LOCALかつRELIABLEでdepth1になっている` | `actual_qos()` の中身 |
-| `あとから起動した購読者にも過去にpublishした値が届く` | TRANSIENT_LOCAL の本質（latch 配信） |
-| `新しい値をpublishすれば購読者に届く` | 普通の配信経路が壊れていないか |
-| `VOLATILEで購読すると過去の値は届かない` | durability は「購読側が要求した設定」で決まることの確認 |
+| `PublisherEffectiveQosIsTransientLocalReliableDepth1` | `actual_qos()` の中身 |
+| `LateSubscriberReceivesPastPublishedValue` | TRANSIENT_LOCAL の本質（latch 配信） |
+| `SubscriberReceivesNewlyPublishedValue` | 普通の配信経路が壊れていないか |
+| `VolatileSubscriberDoesNotReceivePastValue` | durability は「購読側が要求した設定」で決まることの確認 |
 
 ## 参考
 

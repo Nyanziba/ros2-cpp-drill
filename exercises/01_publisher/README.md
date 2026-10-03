@@ -53,10 +53,10 @@ ros2 node info /minimal_publisher
 
 | テスト | 見ているところ |
 | --- | --- |
-| `topicトピックにpublishしている` | Publisher とタイマが動いているか |
-| `本文がHello_worldと連番になっている` | 本文の組み立てと `count_++` |
-| `おおよそ500ミリ秒周期でpublishしている` | タイマの周期 |
-| `公式と同じPublishingログを出している` | `RCLCPP_INFO` の書式 |
+| `PublishesToTopicTopic` | Publisher とタイマが動いているか |
+| `BodyIsHelloWorldWithSequenceNumber` | 本文の組み立てと `count_++` |
+| `PublishesAboutEvery500Milliseconds` | タイマの周期 |
+| `LogsSameAsOfficialPublishing` | `RCLCPP_INFO` の書式 |
 
 ## 参考
 
