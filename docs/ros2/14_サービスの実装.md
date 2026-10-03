@@ -216,7 +216,7 @@ source install/setup.bash
 ros2 run py_srvcli client 2 3
 ```
 
-<!-- measure: env=ros files=src/py_srvcli/py_srvcli/service_member_function.py,src/py_srvcli/py_srvcli/client_member_function.py cmd="python3 src/py_srvcli/py_srvcli/service_member_function.py >/dev/null 2>&1 & S=$!; sleep 4; python3 src/py_srvcli/py_srvcli/client_member_function.py 2 3; kill $S" -->
+<!-- measure: env=ros files=src/py_srvcli/py_srvcli/service_member_function.py,src/py_srvcli/py_srvcli/client_member_function.py cmd="python3 src/py_srvcli/py_srvcli/service_member_function.py >/dev/null 2>&1 & S=$!; sleep 4; python3 src/py_srvcli/py_srvcli/client_member_function.py 2 3; kill $S" filter="grep -v 'service not available'" -->
 ```
 [INFO] [1790937390.907519089] [minimal_client_async]: Result of add_two_ints: for 2 + 3 = 5
 ```

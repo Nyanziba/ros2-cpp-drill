@@ -138,21 +138,21 @@ gcc -std=c99 -Wall -Wextra -Wpedantic -g -fsanitize=address use_after_free.c -o 
 
 </details>
 
-<!-- measure: filter="sed -n 8,17p" -->
+<!-- measure: env=static reason="the heap address is randomized, so the value changes on every run" -->
 ```
-*p = 1431655769
+*p = 1497369821
 exit=0
-*p = 1431655769
+*p = 1512934265
 exit=0
-*p = 1431655769
+*p = 1665646610
 exit=0
-*p = 1431655769
+*p = 1572210789
 exit=0
-*p = 1431655769
+*p = 1473049545
 exit=0
 ```
 
-In this environment the same value came out all 5 times (on Linux with a randomized heap address, the value changes on every run). Either way, **it exits normally every time.** This is the most dangerous property of use-after-free.
+The value is different every time (because the heap address is randomized. The values above were measured on Linux (x86_64) on GitHub Actions; in some environments such as emulation, the same value can come out). Either way, **it exits normally every time.** This is the most dangerous property of use-after-free.
 If it crashed, you would notice, but it does not crash, so you cannot notice.
 Tests pass too, and it breaks only when it hits a different value in the field.
 
