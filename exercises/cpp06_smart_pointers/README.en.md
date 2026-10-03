@@ -33,7 +33,7 @@ Functions to implement:
 
 | Test | What it checks |
 | --- | --- |
-| `生きているItemだけが出力される` (only alive Items are printed) | the expired() check of weak_ptr |
+| `OnlyAliveItemsArePrinted` | the expired() check of weak_ptr |
 
 ## References
 

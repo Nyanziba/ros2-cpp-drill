@@ -7,11 +7,12 @@
 
 #include "drill/qos_nodes.hpp"
 #include "drill_harness.hpp"
+#include "drill_i18n.hpp"
 
 using DrillTest = drill::DrillTest;
 using namespace std::chrono_literals;
 
-TEST_F(DrillTest, publisherの実効QoSがTRANSIENT_LOCALかつRELIABLEでdepth1になっている)
+TEST_F(DrillTest, PublisherEffectiveQosIsTransientLocalReliableDepth1)
 {
   auto publisher_node = std::make_shared<LatchedPublisher>();
   const auto qos = publisher_node->actual_qos();
@@ -19,24 +20,38 @@ TEST_F(DrillTest, publisherの実効QoSがTRANSIENT_LOCALかつRELIABLEでdepth1
   // rclcpp::QoS::durability() / reliability() は RMW の enum
   // （RMW_QOS_POLICY_DURABILITY_* など）をラップした rclcpp 側の enum class を返す。
   EXPECT_EQ(qos.durability(), rclcpp::DurabilityPolicy::TransientLocal)
-    << "publisher_ の QoS が TRANSIENT_LOCAL になっていません"
-       "（実際の値: " << static_cast<int>(qos.durability())
+    << drill::localized(
+    "publisher_ の QoS が TRANSIENT_LOCAL になっていません（実際の値: ",
+    "The QoS of publisher_ is not TRANSIENT_LOCAL (actual value: ")
+    << static_cast<int>(qos.durability())
     << " / RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL = "
-    << static_cast<int>(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL) << "）。\n"
-    << "  rclcpp::QoS qos(rclcpp::KeepLast(1)); qos.transient_local(); を"
-       " create_publisher に渡しましたか？";
+    << static_cast<int>(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL)
+    << drill::localized(
+    "）。\n"
+    "  rclcpp::QoS qos(rclcpp::KeepLast(1)); qos.transient_local(); を"
+    " create_publisher に渡しましたか？",
+    ").\n"
+    "  Did you pass rclcpp::QoS qos(rclcpp::KeepLast(1)); qos.transient_local(); "
+    "to create_publisher?");
 
   EXPECT_EQ(qos.reliability(), rclcpp::ReliabilityPolicy::Reliable)
-    << "publisher_ の QoS が RELIABLE になっていません"
-       "（実際の値: " << static_cast<int>(qos.reliability()) << "）。"
-       "qos.reliable(); を呼びましたか？";
+    << drill::localized(
+    "publisher_ の QoS が RELIABLE になっていません（実際の値: ",
+    "The QoS of publisher_ is not RELIABLE (actual value: ")
+    << static_cast<int>(qos.reliability())
+    << drill::localized(
+    "）。qos.reliable(); を呼びましたか？",
+    "). Did you call qos.reliable();?");
 
   EXPECT_EQ(qos.depth(), 1u)
-    << "publisher_ の History depth が 1 になっていません。"
-       "rclcpp::KeepLast(1) で QoS を作りましたか？";
+    << drill::localized(
+    "publisher_ の History depth が 1 になっていません。"
+    "rclcpp::KeepLast(1) で QoS を作りましたか？",
+    "The History depth of publisher_ is not 1. "
+    "Did you create the QoS with rclcpp::KeepLast(1)?");
 }
 
-TEST_F(DrillTest, あとから起動した購読者にも過去にpublishした値が届く)
+TEST_F(DrillTest, LateSubscriberReceivesPastPublishedValue)
 {
   // publisher を先に作って publish しておく。
   auto publisher_node = std::make_shared<LatchedPublisher>();
@@ -49,16 +64,22 @@ TEST_F(DrillTest, あとから起動した購読者にも過去にpublishした�
     drill::spin_until(
       {publisher_node, subscriber_node},
       [&subscriber_node]() {return subscriber_node->count() >= 1;}, 5s))
-    << "あとから起動した購読者に、過去に publish した値が 5 秒待っても届きませんでした。\n"
-    << "  publisher と subscription の両方を transient_local にしましたか？"
-       " 片方だけでは繋がりません";
+    << drill::localized(
+    "あとから起動した購読者に、過去に publish した値が 5 秒待っても届きませんでした。\n"
+    "  publisher と subscription の両方を transient_local にしましたか？"
+    " 片方だけでは繋がりません",
+    "The value published in the past did not reach the late subscriber after waiting 5 seconds.\n"
+    "  Did you make both the publisher and the subscription transient_local?"
+    " One side alone does not connect");
 
   EXPECT_EQ(subscriber_node->last_received(), "config-v1")
-    << "届いた値が publish したものと一致しません。"
-       "実際の値: \"" << subscriber_node->last_received() << "\"";
+    << drill::localized(
+    "届いた値が publish したものと一致しません。実際の値: \"",
+    "The received value does not match the published one. Actual value: \"")
+    << subscriber_node->last_received() << "\"";
 }
 
-TEST_F(DrillTest, 新しい値をpublishすれば購読者に届く)
+TEST_F(DrillTest, SubscriberReceivesNewlyPublishedValue)
 {
   // 今度は subscriber を先に作り、通常の経路（同時に動いている状態での配送）が
   // 壊れていないことを確認する。
@@ -71,15 +92,20 @@ TEST_F(DrillTest, 新しい値をpublishすれば購読者に届く)
     drill::spin_until(
       {publisher_node, subscriber_node},
       [&subscriber_node]() {return subscriber_node->count() >= 1;}, 4s, tick))
-    << "publish した値が購読者に届きませんでした。普通の経路（VOLATILE でも動くはずの経路）"
-       "まで壊れていませんか？";
+    << drill::localized(
+    "publish した値が購読者に届きませんでした。普通の経路（VOLATILE でも動くはずの経路）"
+    "まで壊れていませんか？",
+    "The published value did not reach the subscriber. Is even the normal path "
+    "(the one that should work with VOLATILE) broken?");
 
   EXPECT_EQ(subscriber_node->last_received(), "config-v2")
-    << "届いた値が publish したものと一致しません。"
-       "実際の値: \"" << subscriber_node->last_received() << "\"";
+    << drill::localized(
+    "届いた値が publish したものと一致しません。実際の値: \"",
+    "The received value does not match the published one. Actual value: \"")
+    << subscriber_node->last_received() << "\"";
 }
 
-TEST_F(DrillTest, VOLATILEで購読すると過去の値は届かない)
+TEST_F(DrillTest, VolatileSubscriberDoesNotReceivePastValue)
 {
   // 先に publish しておく（LatchedSubscriber ならこれが後から届く値）。
   auto publisher_node = std::make_shared<LatchedPublisher>();
@@ -105,19 +131,32 @@ TEST_F(DrillTest, VOLATILEで購読すると過去の値は届かない)
     {publisher_node, probe_node}, [&received]() {return !received.empty();}, 1s);
 
   EXPECT_FALSE(got_old_value)
-    << "VOLATILE で購読したのに過去の値が届いてしまいました"
-       "（実際に受信した値: \"" << (received.empty() ? "" : received.front()) << "\"）。\n"
-    << "  LatchedPublisher の QoS は本当に TRANSIENT_LOCAL になっていますか？"
-       " このテストは受講者の実装ではなく DDS の durability の仕様を確認するものです。";
+    << drill::localized(
+    "VOLATILE で購読したのに過去の値が届いてしまいました（実際に受信した値: \"",
+    "A past value arrived even though the subscription is VOLATILE (value actually received: \"")
+    << (received.empty() ? "" : received.front()) << "\""
+    << drill::localized(
+    "）。\n"
+    "  LatchedPublisher の QoS は本当に TRANSIENT_LOCAL になっていますか？"
+    " このテストは受講者の実装ではなく DDS の durability の仕様を確認するものです。",
+    ").\n"
+    "  Is the QoS of LatchedPublisher really TRANSIENT_LOCAL?"
+    " This test checks the DDS durability specification, not your implementation.");
 
   // discovery 自体はできていることを、新しい値が届くことで確認する。
   publisher_node->publish("config-after-volatile-subscribe");
   ASSERT_TRUE(
     drill::spin_until(
       {publisher_node, probe_node}, [&received]() {return !received.empty();}, 4s))
-    << "VOLATILE で購読した probe に、あとから publish した新しい値すら届きませんでした。"
-       "discovery 自体が失敗しています（publisher の QoS 設定を見直してください）。";
+    << drill::localized(
+    "VOLATILE で購読した probe に、あとから publish した新しい値すら届きませんでした。"
+    "discovery 自体が失敗しています（publisher の QoS 設定を見直してください）。",
+    "Even a new value published later did not reach the VOLATILE probe. "
+    "Discovery itself failed (review the QoS settings of the publisher).");
 
   EXPECT_EQ(received.back(), "config-after-volatile-subscribe")
-    << "VOLATILE 購読者に届いた値が想定と違います。実際の値: \"" << received.back() << "\"";
+    << drill::localized(
+    "VOLATILE 購読者に届いた値が想定と違います。実際の値: \"",
+    "The value that reached the VOLATILE subscriber is not what was expected. Actual value: \"")
+    << received.back() << "\"";
 }

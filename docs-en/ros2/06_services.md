@@ -107,7 +107,7 @@ ros2 interface show turtlesim/srv/Spawn
 
 The output looks like this.
 
-<!-- measure: env=static reason="turtlesim_node の起動が要り、Docker イメージに turtlesim も無い" -->
+<!-- measure: env=static reason="needs turtlesim_node running, and the Docker image has no turtlesim" -->
 ```
 float32 x
 float32 y
@@ -131,7 +131,7 @@ ros2 service call /spawn turtlesim/srv/Spawn "{x: 2, y: 2, theta: 0.2, name: ''}
 
 Another turtle appears in the turtlesim window, and a response like the following is shown in the terminal.
 
-<!-- measure: env=static reason="turtlesim_node の起動が要り、Docker イメージに turtlesim も無い" -->
+<!-- measure: env=static reason="needs turtlesim_node running, and the Docker image has no turtlesim" -->
 ```
 requester: making request: turtlesim.srv.Spawn_Request(x=2.0, y=2.0, theta=0.2, name='')
 

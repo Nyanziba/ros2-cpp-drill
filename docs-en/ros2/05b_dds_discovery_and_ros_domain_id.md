@@ -145,12 +145,12 @@ ros2 node list
 ros2 topic list
 ```
 
-<!-- measure: env=static reason="talker の起動が要り、Docker イメージに demo_nodes_cpp も無い" -->
+<!-- measure: env=static reason="needs the talker running, and the Docker image has no demo_nodes_cpp" -->
 ```
 /talker
 ```
 
-<!-- measure: env=static reason="talker の起動が要り、Docker イメージに demo_nodes_cpp も無い" -->
+<!-- measure: env=static reason="needs the talker running, and the Docker image has no demo_nodes_cpp" -->
 ```
 /chatter
 /parameter_events
@@ -182,7 +182,7 @@ In terminal 2, look from the **same domain**.
 ROS_DOMAIN_ID=42 ros2 node list
 ```
 
-<!-- measure: env=static reason="talker の起動が要り、Docker イメージに demo_nodes_cpp も無い" -->
+<!-- measure: env=static reason="needs the talker running, and the Docker image has no demo_nodes_cpp" -->
 ```
 /talker
 ```
@@ -208,7 +208,7 @@ ss -ulnp | grep "$pid"
 
 This is the actual output when run in domain 42 (an excerpt).
 
-<!-- measure: env=static reason="talker を動かしたまま ss で UDP ポートを見る必要があり、PID も毎回変わる" -->
+<!-- measure: env=static reason="needs the talker running while ss shows the UDP ports, and the PID changes every run" -->
 ```
 UNCONN 0  0  0.0.0.0:17900  0.0.0.0:*  users:(("talker",pid=155463,fd=26))
 UNCONN 0  0  0.0.0.0:17910  0.0.0.0:*  users:(("talker",pid=155463,fd=25))
@@ -294,7 +294,7 @@ From terminal 2, look with the same settings.
 ROS_DOMAIN_ID=45 ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST ros2 node list
 ```
 
-<!-- measure: env=static reason="talker の起動が要り、Docker イメージに demo_nodes_cpp も無い" -->
+<!-- measure: env=static reason="needs the talker running, and the Docker image has no demo_nodes_cpp" -->
 ```
 /talker
 ```
@@ -425,14 +425,14 @@ ros2 multicast send
 
 The sender prints this and ends.
 
-<!-- measure: env=static reason="ros2 multicast の送信側と受信側を別プロセスで動かす必要がある" -->
+<!-- measure: env=static reason="needs the ros2 multicast sender and receiver in separate processes" -->
 ```
 Sending one UDP multicast datagram...
 ```
 
 If the receiver shows this, multicast is passing (measured on the same machine).
 
-<!-- measure: env=static reason="ros2 multicast の送信側と受信側を別プロセスで動かす必要があり、受信元の IP とポートも毎回変わる" -->
+<!-- measure: env=static reason="needs the ros2 multicast sender and receiver in separate processes, and the source IP and port change every run" -->
 ```
 Waiting for UDP multicast datagram...
 Received from 10.28.0.217:37857: 'Hello World!'

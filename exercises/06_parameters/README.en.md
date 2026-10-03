@@ -73,10 +73,10 @@ it should be back to `world`. This is because the node itself writes it back wit
 
 | Test | What it checks |
 | --- | --- |
-| `my_parameterが文字列で既定値worldになっている` (my_parameter is a string with the default value world) | The type and the default value of the parameter |
-| `ParameterDescriptorのdescriptionが設定されている` (the description of the ParameterDescriptor is set) | The description passed to `declare_parameter()` |
-| `タイマがHello_worldとログを出している` (the timer prints a Hello_world log) | Whether the timer is running and reads with `get_parameter()` |
-| `ros2_param_setで変えても1秒後にworldへ戻る` (even if changed with ros2_param_set, it returns to world after 1 second) | Whether it resets to `"world"` every period with `set_parameters()` |
+| `MyParameterIsStringWithDefaultWorld` | The type and the default value of the parameter |
+| `ParameterDescriptorHasDescription` | The description passed to `declare_parameter()` |
+| `TimerLogsHelloWorld` | Whether the timer is running and reads with `get_parameter()` |
+| `RevertsToWorldAfterParamSet` | Whether it resets to `"world"` every period with `set_parameters()` |
 
 ## References
 

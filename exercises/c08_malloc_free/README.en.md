@@ -47,10 +47,10 @@ The only file you edit is `src/malloc_free.c`. Implement the following functions
 
 | Test | What it checks |
 | --- | --- |
-| `配列を確保できる` (can allocate an array) | Whether the array is allocated with `malloc` and can be accessed |
-| `異なるサイズで動く` (works with different sizes) | Whether several arrays can be managed independently |
-| `リストを作成できる` (can create a list) | Whether a linked list can be created with `malloc` |
-| `複数のリストを独立して管理` (manage several lists independently) | Whether the memory is not mixed up |
+| `AllocatesArray` | Whether the array is allocated with `malloc` and can be accessed |
+| `WorksWithDifferentSizes` | Whether several arrays can be managed independently |
+| `CreatesList` | Whether a linked list can be created with `malloc` |
+| `ManagesMultipleListsIndependently` | Whether the memory is not mixed up |
 
 ## References
 

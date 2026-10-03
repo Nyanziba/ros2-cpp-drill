@@ -35,11 +35,11 @@
 
 | テスト | 見ているところ |
 | --- | --- |
-| `TemperatureSensorが正しい値を返す` | TemperatureSensor の read() 実装 |
-| `HumiditySensorが正しい値を返す` | HumiditySensor の read() 実装 |
-| `TemperatureSensorはデフォルトのlabelを使う` | デフォルト実装の継承 |
-| `HumiditySensorはlabelをoverrideしている` | override の実装 |
-| `ポリモーフィズムで正しくディスパッチされる` | 基底クラスポインタでの動的ディスパッチ |
+| `TemperatureSensorReturnsCorrectValue` | TemperatureSensor の read() 実装 |
+| `HumiditySensorReturnsCorrectValue` | HumiditySensor の read() 実装 |
+| `TemperatureSensorUsesDefaultLabel` | デフォルト実装の継承 |
+| `HumiditySensorOverridesLabel` | override の実装 |
+| `DispatchesPolymorphically` | 基底クラスポインタでの動的ディスパッチ |
 
 ## 参考
 

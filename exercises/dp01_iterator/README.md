@@ -30,7 +30,7 @@
 ## つまずきポイント
 
 - `next()` は `const Book &` を返します。`Book` を返すと**毎回コピー**が走ります。
-  テスト「nextはコピーではなく本棚の中身を指す」がアドレスを比較して落とします
+  テスト「NextReturnsReferenceNotCopy」がアドレスを比較して落とします
 - `iterator()` は `std::unique_ptr<Iterator>` を返します。生ポインタだと
   誰が `delete` するかが型に書かれません
 - 位置（`index_`）は**イテレータ側**が持ちます。本棚側に持たせると、

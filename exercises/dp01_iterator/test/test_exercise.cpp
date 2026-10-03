@@ -6,6 +6,8 @@
 #include <vector>
 
 #include "drill/book_shelf.hpp"
+#include "drill_i18n.hpp"
+#include "drill_i18n.hpp"
 
 namespace
 {
@@ -21,12 +23,12 @@ BookShelf make_shelf()
 
 }  // namespace
 
-TEST(IteratorTest, GoF版が順番どおりに走査する)
+TEST(IteratorTest, GofIteratorTraversesInOrder)
 {
   const BookShelf shelf = make_shelf();
 
   auto it = shelf.iterator();
-  ASSERT_NE(it, nullptr) << "iterator() が nullptr を返しています";
+  ASSERT_NE(it, nullptr) << drill::localized("iterator() が nullptr を返しています", "iterator() returned nullptr");
 
   std::vector<std::string> names;
   while (it->has_next()) {
@@ -38,7 +40,7 @@ TEST(IteratorTest, GoF版が順番どおりに走査する)
   EXPECT_EQ(names, expected);
 }
 
-TEST(IteratorTest, 空の本棚では最初から終端)
+TEST(IteratorTest, EmptyShelfHasNoNextFromStart)
 {
   const BookShelf shelf;
 
@@ -47,7 +49,7 @@ TEST(IteratorTest, 空の本棚では最初から終端)
   EXPECT_FALSE(it->has_next());
 }
 
-TEST(IteratorTest, 2つのイテレータが互いに干渉しない)
+TEST(IteratorTest, TwoIteratorsDoNotInterfere)
 {
   const BookShelf shelf = make_shelf();
 
@@ -64,7 +66,7 @@ TEST(IteratorTest, 2つのイテレータが互いに干渉しない)
   EXPECT_EQ(first->next().name(), "Effective C++");
 }
 
-TEST(IteratorTest, nextはコピーではなく本棚の中身を指す)
+TEST(IteratorTest, NextReturnsReferenceNotCopy)
 {
   const BookShelf shelf = make_shelf();
 
@@ -76,10 +78,10 @@ TEST(IteratorTest, nextはコピーではなく本棚の中身を指す)
 
   // 参照を返せていれば、同じオブジェクトを指しているはず。
   EXPECT_EQ(&from_iterator, &from_shelf)
-    << "next() が Book をコピーして返しています。const Book & を返してください";
+    << drill::localized("next() が Book をコピーして返しています。const Book & を返してください", "next() returns a copy of Book. Return const Book &");
 }
 
-TEST(IteratorTest, STL版でrangebasedforが回る)
+TEST(IteratorTest, StlIteratorWorksWithRangeBasedFor)
 {
   const BookShelf shelf = make_shelf();
 
@@ -93,7 +95,7 @@ TEST(IteratorTest, STL版でrangebasedforが回る)
   EXPECT_EQ(names, expected);
 }
 
-TEST(IteratorTest, STL版でalgorithmが使える)
+TEST(IteratorTest, StlIteratorWorksWithAlgorithms)
 {
   const BookShelf shelf = make_shelf();
 
@@ -112,7 +114,7 @@ TEST(IteratorTest, STL版でalgorithmが使える)
   EXPECT_EQ(std::distance(shelf.begin(), shelf.end()), 3);
 }
 
-TEST(IteratorTest, GoF版とSTL版が同じ順番を返す)
+TEST(IteratorTest, GofAndStlIteratorsReturnSameOrder)
 {
   const BookShelf shelf = make_shelf();
 

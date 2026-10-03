@@ -427,7 +427,7 @@ struct GainState
 
 static_assert(
   std::is_trivially_copyable<GainState>::value,
-  "GainState は memcpy で保存するので trivially copyable でなければなりません");
+  "GainState は memcpy で保存するので trivially copyable でなければなりません / GainState is saved with memcpy, so it must be trivially copyable");
 
 // 2. 固定長リングバッファ。動的確保ゼロ
 class GainHistory

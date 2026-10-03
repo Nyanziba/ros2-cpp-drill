@@ -1,6 +1,8 @@
 // このファイルは編集しません（採点用）。
 #include <gtest/gtest.h>
 
+#include "drill_i18n.hpp"
+
 #include <memory>
 #include <string>
 #include <type_traits>
@@ -24,7 +26,7 @@ std::unique_ptr<Command> gripper(RobotArm & arm, bool closed)
 
 }  // namespace
 
-TEST(CommandTest, コマンドは積んだ順に実行される)
+TEST(CommandTest, CommandsRunInQueuedOrder)
 {
   RobotArm arm;
   CommandHistory history;
@@ -34,7 +36,7 @@ TEST(CommandTest, コマンドは積んだ順に実行される)
   history.run(rotate(arm, -10.0));
 
   const std::vector<std::string> expected = {"rotate 30", "grip", "rotate -10"};
-  EXPECT_EQ(arm.log(), expected) << "実行の順序が積んだ順になっていません";
+  EXPECT_EQ(arm.log(), expected) << drill::localized("実行の順序が積んだ順になっていません", "The commands did not run in the order they were queued");
 
   EXPECT_DOUBLE_EQ(arm.angle_deg(), 20.0);
   EXPECT_TRUE(arm.gripper_closed());
@@ -42,7 +44,7 @@ TEST(CommandTest, コマンドは積んだ順に実行される)
   EXPECT_EQ(history.redo_depth(), 0u);
 }
 
-TEST(CommandTest, undoは1つずつ逆順に戻る)
+TEST(CommandTest, UndoRevertsOneByOneInReverseOrder)
 {
   RobotArm arm;
   CommandHistory history;
@@ -53,7 +55,7 @@ TEST(CommandTest, undoは1つずつ逆順に戻る)
   arm.clear_log();
 
   EXPECT_TRUE(history.undo());
-  EXPECT_DOUBLE_EQ(arm.angle_deg(), 30.0) << "最後に実行したコマンドから取り消してください";
+  EXPECT_DOUBLE_EQ(arm.angle_deg(), 30.0) << drill::localized("最後に実行したコマンドから取り消してください", "Undo from the command that ran last");
   EXPECT_EQ(history.undo_depth(), 1u);
   EXPECT_EQ(history.redo_depth(), 1u);
 
@@ -62,13 +64,13 @@ TEST(CommandTest, undoは1つずつ逆順に戻る)
   EXPECT_EQ(history.undo_depth(), 0u);
   EXPECT_EQ(history.redo_depth(), 2u);
 
-  EXPECT_FALSE(history.undo()) << "履歴が空なら undo は false を返します";
+  EXPECT_FALSE(history.undo()) << drill::localized("履歴が空なら undo は false を返します", "If the history is empty, undo returns false");
 
   const std::vector<std::string> expected = {"rotate -5", "rotate -30"};
-  EXPECT_EQ(arm.log(), expected) << "undo が逆順（後に実行したものが先）になっていません";
+  EXPECT_EQ(arm.log(), expected) << drill::localized("undo が逆順（後に実行したものが先）になっていません", "undo is not in reverse order (the latest command should be undone first)");
 }
 
-TEST(CommandTest, redoで再実行できる)
+TEST(CommandTest, RedoReruns)
 {
   RobotArm arm;
   CommandHistory history;
@@ -82,12 +84,12 @@ TEST(CommandTest, redoで再実行できる)
   arm.clear_log();
 
   EXPECT_TRUE(history.redo());
-  EXPECT_DOUBLE_EQ(arm.angle_deg(), 30.0) << "redo は取り消した順の逆から戻します";
+  EXPECT_DOUBLE_EQ(arm.angle_deg(), 30.0) << drill::localized("redo は取り消した順の逆から戻します", "redo redoes in the reverse order of the undos");
 
   EXPECT_TRUE(history.redo());
   EXPECT_DOUBLE_EQ(arm.angle_deg(), 35.0);
 
-  EXPECT_FALSE(history.redo()) << "redo するものが無ければ false";
+  EXPECT_FALSE(history.redo()) << drill::localized("redo するものが無ければ false", "false if there is nothing to redo");
   EXPECT_EQ(history.undo_depth(), 2u);
   EXPECT_EQ(history.redo_depth(), 0u);
 
@@ -95,7 +97,7 @@ TEST(CommandTest, redoで再実行できる)
   EXPECT_EQ(arm.log(), expected);
 }
 
-TEST(CommandTest, 新しいコマンドを実行するとredoの履歴は捨てられる)
+TEST(CommandTest, RunningNewCommandDiscardsRedoHistory)
 {
   RobotArm arm;
   CommandHistory history;
@@ -107,12 +109,12 @@ TEST(CommandTest, 新しいコマンドを実行するとredoの履歴は捨て�
   history.run(rotate(arm, 7.0));
 
   EXPECT_EQ(history.redo_depth(), 0u)
-    << "run() のたびに redo 履歴を捨ててください。分岐した歴史に redo すると状態が壊れます";
+    << drill::localized("run() のたびに redo 履歴を捨ててください。分岐した歴史に redo すると状態が壊れます", "Discard the redo history on every run(). Redoing a branched history breaks the state");
   EXPECT_FALSE(history.redo());
   EXPECT_DOUBLE_EQ(arm.angle_deg(), 7.0);
 }
 
-TEST(CommandTest, 逆操作が自明でない操作は実行前の状態を保存する)
+TEST(CommandTest, NonTrivialInverseSavesStateBeforeExecution)
 {
   RobotArm arm;
   arm.set_gripper(true);  // もともと閉じている
@@ -121,12 +123,12 @@ TEST(CommandTest, 逆操作が自明でない操作は実行前の状態を保�
   GripperCommand close_again(arm, true);
   close_again.execute();
   EXPECT_TRUE(close_again.previous())
-    << "execute() が実行前の状態を控えていません";
+    << drill::localized("execute() が実行前の状態を控えていません", "execute() did not save the state before running");
   EXPECT_TRUE(arm.gripper_closed());
 
   close_again.undo();
   EXPECT_TRUE(arm.gripper_closed())
-    << "「閉じる」の逆は「開く」ではありません。実行前が閉じていたなら閉じたままです";
+    << drill::localized("「閉じる」の逆は「開く」ではありません。実行前が閉じていたなら閉じたままです", "The inverse of \"close\" is not \"open\". If it was closed before, it stays closed");
 
   // 逆に、開いている状態から閉じたなら undo で開く。
   arm.set_gripper(false);
@@ -138,7 +140,7 @@ TEST(CommandTest, 逆操作が自明でない操作は実行前の状態を保�
   EXPECT_FALSE(arm.gripper_closed());
 }
 
-TEST(CommandTest, マクロコマンドは1つのコマンドとして扱える)
+TEST(CommandTest, MacroCommandIsTreatedAsOneCommand)
 {
   RobotArm arm;
 
@@ -152,13 +154,13 @@ TEST(CommandTest, マクロコマンドは1つのコマンドとして扱える)
   // MacroCommand は Command でもある（Composite）。
   static_assert(
     std::is_base_of<Command, MacroCommand>::value,
-    "MacroCommand は Command を実装している必要があります");
+    "MacroCommand は Command を実装している必要があります / MacroCommand must implement Command");
 
   CommandHistory history;
   history.run(std::move(macro));
 
   EXPECT_EQ(history.undo_depth(), 1u)
-    << "マクロは 3 個ではなく 1 個のコマンドとして積まれます";
+    << drill::localized("マクロは 3 個ではなく 1 個のコマンドとして積まれます", "A macro is queued as 1 command, not 3");
 
   const std::vector<std::string> after_execute = {"rotate 90", "grip", "rotate -20"};
   EXPECT_EQ(arm.log(), after_execute);
@@ -170,14 +172,14 @@ TEST(CommandTest, マクロコマンドは1つのコマンドとして扱える)
   EXPECT_TRUE(history.undo());
   const std::vector<std::string> after_undo = {"rotate 20", "release", "rotate -90"};
   EXPECT_EQ(arm.log(), after_undo)
-    << "マクロの undo は末尾のコマンドから逆順に取り消してください";
+    << drill::localized("マクロの undo は末尾のコマンドから逆順に取り消してください", "A macro's undo must undo from the last command in reverse order");
 
   EXPECT_DOUBLE_EQ(arm.angle_deg(), 0.0);
   EXPECT_FALSE(arm.gripper_closed());
   EXPECT_EQ(history.undo_depth(), 0u);
 }
 
-TEST(CommandTest, マクロの中にマクロを入れられる)
+TEST(CommandTest, MacroCanContainMacro)
 {
   RobotArm arm;
 
@@ -204,7 +206,7 @@ TEST(CommandTest, マクロの中にマクロを入れられる)
   EXPECT_EQ(arm.log(), undone);
 }
 
-TEST(CommandTest, std_function版でも同じ実行結果になる)
+TEST(CommandTest, StdFunctionVersionGivesSameResult)
 {
   RobotArm class_arm;
   RobotArm function_arm;
@@ -221,7 +223,7 @@ TEST(CommandTest, std_function版でも同じ実行結果になる)
   queue.push([&function_arm]() { function_arm.rotate(30.0); });
   queue.push([&function_arm]() { function_arm.set_gripper(true); });
   queue.push([&function_arm]() { function_arm.rotate(-10.0); });
-  EXPECT_EQ(queue.size(), 3u) << "積んだだけでは実行されません";
+  EXPECT_EQ(queue.size(), 3u) << drill::localized("積んだだけでは実行されません", "Queueing alone does not run the commands");
 
   // 積んだ時点ではまだ何も起きていない。これが Command の目的そのものです。
   EXPECT_DOUBLE_EQ(function_arm.angle_deg(), 0.0);
@@ -229,27 +231,27 @@ TEST(CommandTest, std_function版でも同じ実行結果になる)
   queue.run_all();
 
   EXPECT_EQ(function_arm.log(), class_arm.log())
-    << "std::function 版とクラス版で実行結果が一致しません";
+    << drill::localized("std::function 版とクラス版で実行結果が一致しません", "The std::function version and the class version give different results");
   EXPECT_DOUBLE_EQ(function_arm.angle_deg(), class_arm.angle_deg());
-  EXPECT_TRUE(queue.empty()) << "run_all() のあとキューは空になります";
+  EXPECT_TRUE(queue.empty()) << drill::localized("run_all() のあとキューは空になります", "The queue should be empty after run_all()");
 
   // 空の std::function は積まない（呼ぶと std::bad_function_call）。
   queue.push(std::function<void()>{});
   EXPECT_EQ(queue.size(), 0u);
 }
 
-TEST(CommandTest, マイコン版のコマンドはPODで割り込みから積める)
+TEST(CommandTest, MicrocontrollerCommandIsPodAndCanBeQueuedFromInterrupt)
 {
   // 動的確保も仮想関数も無いこと。ISR から触るのでこれが条件です。
   static_assert(
     std::is_trivially_copyable<MotorCommand>::value,
-    "MotorCommand は trivially copyable でなければなりません");
+    "MotorCommand は trivially copyable でなければなりません / MotorCommand must be trivially copyable");
   static_assert(
     !std::is_polymorphic<MotorCommand>::value,
-    "MotorCommand に vtable があってはいけません");
+    "MotorCommand に vtable があってはいけません / MotorCommand must not have a vtable");
   static_assert(
     sizeof(MotorCommand) <= 4,
-    "MotorCommand が大きすぎます。enum + 引数だけにしてください");
+    "MotorCommand が大きすぎます。enum + 引数だけにしてください / MotorCommand is too large. Keep only an enum and its arguments");
 
   RobotArm arm;
   MotorCommandRing ring;
@@ -272,36 +274,36 @@ TEST(CommandTest, マイコン版のコマンドはPODで割り込みから積�
   EXPECT_TRUE(arm.gripper_closed());
 
   const std::vector<std::string> expected = {"rotate 45", "grip", "rotate -5"};
-  EXPECT_EQ(arm.log(), expected) << "リングバッファは積んだ順に取り出します（FIFO）";
+  EXPECT_EQ(arm.log(), expected) << drill::localized("リングバッファは積んだ順に取り出します（FIFO）", "The ring buffer pops in the order pushed (FIFO)");
 
-  EXPECT_FALSE(ring.pop(command)) << "空のときは false";
+  EXPECT_FALSE(ring.pop(command)) << drill::localized("空のときは false", "false when empty");
 }
 
-TEST(CommandTest, リングバッファは容量を超えると古いコマンドから落ちる)
+TEST(CommandTest, RingBufferDropsOldestCommandWhenOverCapacity)
 {
   MotorCommandRing ring;
 
   for (std::size_t i = 0; i < MotorCommandRing::kCapacity; ++i) {
     const std::int16_t argument = static_cast<std::int16_t>(i);
     EXPECT_TRUE(ring.push(MotorCommand{MotorCommandKind::kRotate, argument}))
-      << "満杯になるまでは何も落ちません（i = " << i << "）";
+      << drill::localized("満杯になるまでは何も落ちません（i = ", "Nothing is dropped until the buffer is full (i = ") << i << drill::localized("）", ")");
   }
   EXPECT_EQ(ring.size(), MotorCommandRing::kCapacity);
 
   // ここから先は最古のものを押し出す。
   EXPECT_FALSE(ring.push(MotorCommand{MotorCommandKind::kRotate, 100}))
-    << "満杯で押し出したときは false を返します";
+    << drill::localized("満杯で押し出したときは false を返します", "Return false when pushing out an item from a full buffer");
   EXPECT_FALSE(ring.push(MotorCommand{MotorCommandKind::kRotate, 101}));
 
   EXPECT_EQ(ring.size(), MotorCommandRing::kCapacity)
-    << "容量を超えて増えています。リングバッファになっていません";
+    << drill::localized("容量を超えて増えています。リングバッファになっていません", "The size grew over the capacity. This is not a ring buffer");
 
   // 残っているのは古い方から 2 個が落ちた残り。
   MotorCommand command;
   for (std::size_t i = 2; i < MotorCommandRing::kCapacity; ++i) {
     ASSERT_TRUE(ring.pop(command));
     EXPECT_EQ(command.argument, static_cast<std::int16_t>(i))
-      << "落とすのは最も古いものです（i = " << i << "）";
+      << drill::localized("落とすのは最も古いものです（i = ", "The oldest item should be dropped (i = ") << i << drill::localized("）", ")");
   }
   ASSERT_TRUE(ring.pop(command));
   EXPECT_EQ(command.argument, 100);

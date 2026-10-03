@@ -50,10 +50,10 @@
 
 | テスト | 見ているところ |
 | --- | --- |
-| `組み立てと抽出が往復する` | ビット操作の基本（シフト・マスク） |
-| `ReadModifyWrite_他のビットを壊さない` | read-modify-write パターン |
-| `ビットを立てる/落とす` | レジスタ操作の単一ビット |
-| `ビット範囲を設定` | 複数ビットの read-modify-write |
+| `RoundTripsCreateAndExtract` | ビット操作の基本（シフト・マスク） |
+| `ReadModifyWritePreservesOtherBits` | read-modify-write パターン |
+| `SetsBit` / `ClearsBit` / `ReadsBit` | レジスタ操作の単一ビット |
+| `SetsBitRangeWithSingleBit` ほか（`SetsBitRange*`） | 複数ビットの read-modify-write |
 
 ## 参考
 

@@ -3,7 +3,7 @@
 
 #include "drill/callbackmanager.hpp"
 
-TEST(LambdaTest, コールバックが呼び出される)
+TEST(LambdaTest, CallbackIsCalled)
 {
   CallbackManager mgr;
   int result = 0;
@@ -14,7 +14,7 @@ TEST(LambdaTest, コールバックが呼び出される)
   EXPECT_EQ(result, 10);
 }
 
-TEST(LambdaTest, 複数のコールバックが登録できる)
+TEST(LambdaTest, MultipleCallbacksCanBeRegistered)
 {
   CallbackManager mgr;
   int result1 = 0, result2 = 0;

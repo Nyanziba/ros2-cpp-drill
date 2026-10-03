@@ -151,11 +151,11 @@ ros2 launch drill_08_params_yaml param_demo.launch.py
 
 | Test | What it checks |
 | --- | --- |
-| `testパラメータYAMLが構文として読み込める` (test the parameter YAML can be loaded as valid syntax) | Whether `config/params.yaml` can be read as YAML without syntax errors |
-| `test_3段構造になっている_ノード名からros__parametersまで` (test it has the 3-level structure, from the node name to ros__parameters) | Whether the hierarchy is `param_echo` → `ros__parameters` |
-| `test_4つのパラメータが正しい型と値になっている` (test the four parameters have the correct types and values) | Whether the types and values of the four parameters match the specification |
-| `testEndToEndでparam_echoが正しい値をログに出す` (test End-to-End that param_echo prints the correct values in the log) | Whether it actually starts `param_echo` and the correct values appear in the log |
-| `test_launchファイルがparam_echoをparams_yaml付きで起動する` (test the launch file starts param_echo with params_yaml) | Whether launch starts `param_echo` with `config/params.yaml` |
+| `test_params_yaml_is_valid_yaml` | Whether `config/params.yaml` can be read as YAML without syntax errors |
+| `test_has_three_level_structure` | Whether the hierarchy is `param_echo` → `ros__parameters` |
+| `test_four_parameters_have_correct_types_and_values` | Whether the types and values of the four parameters match the specification |
+| `test_param_echo_logs_correct_values_end_to_end` | Whether it actually starts `param_echo` and the correct values appear in the log |
+| `test_launch_file_starts_param_echo_with_params_yaml` | Whether launch starts `param_echo` with `config/params.yaml` |
 
 ## References
 

@@ -31,8 +31,8 @@ CallbackManager はコールバック関数を登録・実行するクラスで�
 
 | テスト | 見ているところ |
 | --- | --- |
-| `コールバックが呼び出される` | register_callback と fire の動作 |
-| `複数のコールバックが登録できる` | 複数コールバックの管理 |
+| `CallbackIsCalled` | register_callback と fire の動作 |
+| `MultipleCallbacksCanBeRegistered` | 複数コールバックの管理 |
 
 ## 参考
 

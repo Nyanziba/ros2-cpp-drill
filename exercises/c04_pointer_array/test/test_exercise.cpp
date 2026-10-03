@@ -5,7 +5,7 @@
 
 #include "drill/array_ops.h"
 
-TEST(ArrayOpsTest, 配列の合計を計算する)
+TEST(ArrayOpsTest, SumsArray)
 {
   int arr[] = {1, 2, 3, 4, 5};
   EXPECT_EQ(sum_array(arr, 5), 15);
@@ -17,12 +17,12 @@ TEST(ArrayOpsTest, 配列の合計を計算する)
   EXPECT_EQ(sum_array(arr3, 1), 0);
 }
 
-TEST(ArrayOpsTest, 空配列の合計はゼロ)
+TEST(ArrayOpsTest, SumOfEmptyArrayIsZero)
 {
   EXPECT_EQ(sum_array(nullptr, 0), 0);
 }
 
-TEST(ArrayOpsTest, 配列の最大値を見つける)
+TEST(ArrayOpsTest, FindsMaxElement)
 {
   int arr[] = {1, 5, 3, 2, 4};
   EXPECT_EQ(max_element(arr, 5), 5);
@@ -34,12 +34,12 @@ TEST(ArrayOpsTest, 配列の最大値を見つける)
   EXPECT_EQ(max_element(arr3, 1), 42);
 }
 
-TEST(ArrayOpsTest, 空配列の最大値はINT_MIN)
+TEST(ArrayOpsTest, MaxOfEmptyArrayIsIntMin)
 {
   EXPECT_EQ(max_element(nullptr, 0), INT_MIN);
 }
 
-TEST(ArrayOpsTest, 配列の要素を2倍にする)
+TEST(ArrayOpsTest, DoublesElements)
 {
   int arr[] = {1, 2, 3, 4, 5};
   double_elements(arr, 5);
@@ -49,7 +49,7 @@ TEST(ArrayOpsTest, 配列の要素を2倍にする)
   }
 }
 
-TEST(ArrayOpsTest, 負の数も2倍にできる)
+TEST(ArrayOpsTest, DoublesNegativeElements)
 {
   int arr[] = {-3, 5, -1};
   double_elements(arr, 3);
@@ -58,7 +58,7 @@ TEST(ArrayOpsTest, 負の数も2倍にできる)
   EXPECT_EQ(arr[2], -2);
 }
 
-TEST(ArrayOpsTest, 空配列は何もしない)
+TEST(ArrayOpsTest, DoesNothingForEmptyArray)
 {
   // nullptr 渡しでも segfault しないはず
   double_elements(nullptr, 0);

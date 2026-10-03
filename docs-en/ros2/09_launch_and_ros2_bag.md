@@ -272,7 +272,7 @@ ros2 launch ~/ros2_lecture/launch/mimic_record_launch.py
 
 Lines from the recorder are mixed into the log. `[ros2-4]` means the output of the fourth element (`ExecuteProcess`).
 
-<!-- measure: env=static reason="turtlesim_node の起動が要り、Docker イメージに turtlesim も無い" -->
+<!-- measure: env=static reason="needs turtlesim_node running, and the Docker image has no turtlesim" -->
 ```
 [ros2-4] [INFO] [rosbag2_recorder]: Starting recording to 'mimic_bag'
 [ros2-4] [INFO] [rosbag2_recorder]: Listening for topics...
@@ -282,7 +282,7 @@ Lines from the recorder are mixed into the log. `[ros2-4]` means the output of t
 
 Leave it for about 10 seconds, and then press **Ctrl+C once** in the launch terminal. The recorder also shuts down properly.
 
-<!-- measure: env=static reason="turtlesim_node の起動が要り、Docker イメージに turtlesim も無い" -->
+<!-- measure: env=static reason="needs turtlesim_node running, and the Docker image has no turtlesim" -->
 ```
 [ros2-4] [INFO] [rosbag2_recorder]: Pausing recording.
 [mimic-3] [INFO] [rclcpp]: signal_handler(SIGINT/SIGTERM)
@@ -298,7 +298,7 @@ Leave it for about 10 seconds, and then press **Ctrl+C once** in the launch term
 ros2 bag info mimic_bag
 ```
 
-<!-- measure: env=static reason="turtlesim_node の起動が要り、Docker イメージに turtlesim も無い" -->
+<!-- measure: env=static reason="needs turtlesim_node running, and the Docker image has no turtlesim" -->
 ```
 Files:             mimic_bag_0.mcap
 Bag size:          43.7 KiB
@@ -322,7 +322,7 @@ As an exercise, check the following by yourself.
 
 2. Recording does not start, because of an error.
 
-<!-- measure: env=static reason="turtlesim_node の起動が要り、Docker イメージに turtlesim も無い" -->
+<!-- measure: env=static reason="needs turtlesim_node running, and the Docker image has no turtlesim" -->
 ```
 [ERROR] [ros2bag]: Output folder 'mimic_bag' already exists.
 ```

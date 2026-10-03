@@ -130,10 +130,10 @@ python3 -m venv .venv-docs
   <!-- /only -->
   ```
 
-- 版の名前だけが違う語（`/opt/ros/jazzy`、`ros-jazzy-`、`docs.ros.org/en/jazzy/`、`ROS 2 Jazzy`、`Ubuntu 24.04`、`g++ 13.3.0`、`g++ 13.3`、
+- 版の名前だけが違う語（`Jazzy Jalisco`、`/opt/ros/jazzy`、`ros-jazzy-`、`ROS 2 Jazzy`、`Ubuntu 24.04`、`g++ 13.3.0`、`g++ 13.3`、
   `ros2-drill:jazzy`）は、書き分けずに hook が置き換えます。置き換えの一覧は `mkdocs.lyrical.yml` の `drill_replacements` です。
-- `docs.ros.org` は、Lyrical では章の構成が変わっています（例: Installation は `Get-Started/Installation/` の下）。置き換えた URL が開けないことがあるので、
-  リンクを足したら Lyrical のサイトでも開けるか確かめてください。
+- `docs.ros.org` の URL は置き換えません。Lyrical の公式ドキュメントは章の構成が変わっていて（例: Installation は `Get-Started/Installation/` の下）、
+  同じパスの多くが開けないためです。Lyrical 版でも Jazzy 版のページを指します。版で中身が違うリンクだけ `<!-- only: ... -->` で書き分けてください。
 - Compiler Explorer の「（gcc 13.3）」のリンクは、リンク先が実際に gcc 13.3 で動くので、どちらの版でもそのままです。
 
 C++ の章のコードには [Compiler Explorer](https://godbolt.org/) のリンク（`▶ ブラウザで実行する`）が付いています。
@@ -215,6 +215,9 @@ solutions/<id>/...          # 解答例（./drill solution で表示する）
 - ROS 2 を使うテストは、共通ヘルパ [`tools/drill_harness.hpp`](tools/drill_harness.hpp) を使います。
 - テストの失敗メッセージは、**次に何を確かめればよいか**が分かるように書きます
   （例: 「`create_publisher<std_msgs::msg::String>("topic", 10)` を `publisher_` に入れましたか？」）。
+- テスト名（`TEST(Suite, 名前)` や pytest の `def test_...`）は、日英共通の**英語の識別子**にします（例: `SwapsTwoVariables`）。
+- 失敗メッセージは `drill::localized("日本語", "English")`（[`tools/drill_i18n.hpp`](tools/drill_i18n.hpp)）で囲みます。`DRILL_LANG` で日英が切り替わります。
+- `static_assert` はコンパイル時に出るので切り替えられません。メッセージは `"日本語 / English"` の 1 つの文字列にします。
 
 ### exercises.json に登録する
 
@@ -246,6 +249,8 @@ docker compose run --rm drill ./drill reset <id>   # 元に戻す
 
 `exercises/` には未解答の状態でコミットしてください（`// I AM NOT DONE` が残った状態）。
 
+全課題をまとめて確かめるには `docker compose run --rm drill python3 tools/verify_exercises.py` を使います（`--track cppb` や `--id cppb06` で絞れます）。課題ごとに「未解答で落ちる」「解答例で通る」を見て、終わると `templates/` の内容に戻します。CI（`.github/workflows/exercises.yml`）も同じスクリプトを回します。
+
 ## 英語版
 
 英語版の読み物は `docs-en/`、課題文は `exercises/<id>/README.en.md`、
@@ -254,6 +259,7 @@ docker compose run --rm drill ./drill reset <id>   # 元に戻す
 - 日本語版を直したら、**できれば同じ PR で英語版も直してください。** 規則・ファイル名の対応表・用語集は
   [TRANSLATING.md](TRANSLATING.md) にあります。
 - 英語が難しければ、日本語版だけ直して PR の本文に「英語版は未対応」と書いてください。メンテナが追います。
+- 日本語版だけが変わった PR には、CI（translation-drift）が警告を出します。警告だけで落ちはしませんが、「英語版は未対応」と書いていないと要約で促されます。
 - 英語版でコードを英訳したときも、出力は[実測](#いちばん大事なルール-出力は実測)し直します。
 
 ## 送る前のチェックリスト
@@ -265,4 +271,5 @@ PR のテンプレートにも同じ項目があります。
 - [ ] `mkdocs build --strict`（読み物を変えたなら英語版の `-f mkdocs.en.yml` と、Lyrical 版の `-f mkdocs.lyrical.yml` / `-f mkdocs.lyrical.en.yml` も）が通る
 - [ ] 課題を変えたなら、未解答で落ち、解答例で通ることを確かめた
 - [ ] 英語版も直した（または PR に「英語版は未対応」と書いた）
+- [ ] `python3 tools/check_docs.py` が通る（日英のページ構造、課題データ、テンプレートの整合を機械で確かめます）
 - [ ] 1 つの PR に 1 つの話題だけ

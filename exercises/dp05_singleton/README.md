@@ -59,13 +59,13 @@
 
 | テスト | 見ているもの |
 | --- | --- |
-| `instanceは何度呼んでも同じオブジェクトを返す` | アドレスが一致するか |
-| `状態が唯一のインスタンスで共有される` | 別経路から同じ状態が見えるか |
-| `初期化は何度instanceを呼んでも一度しか走らない` | コンストラクタが 1 回だけか |
-| `resetでボーレートが既定値に戻る` / `resetで送信履歴が空になる` | `reset()` の中身 |
-| `resetはオブジェクトを作り直さない` | アドレスと構築回数が変わらないか |
-| `前のテストの状態が残っていない` | テスト間の状態の漏れ |
-| `初期化は最初のinstance呼び出しまで走らない` | 遅延初期化になっているか |
+| `InstanceReturnsSameObjectEveryTime` | アドレスが一致するか |
+| `StateIsSharedByTheOnlyInstance` | 別経路から同じ状態が見えるか |
+| `InitializationRunsOnlyOnceNoMatterHowManyInstanceCalls` | コンストラクタが 1 回だけか |
+| `ResetRestoresDefaultBaudRate` / `ResetClearsTransmitHistory` | `reset()` の中身 |
+| `ResetDoesNotRecreateObject` | アドレスと構築回数が変わらないか |
+| `StateFromPreviousTestDoesNotLeak` | テスト間の状態の漏れ |
+| `InitializationWaitsForFirstInstanceCall` | 遅延初期化になっているか |
 
 `static_assert` でコピー・ムーブ・外部からの構築が禁止されていることも見ています。
 

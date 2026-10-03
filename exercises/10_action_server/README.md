@@ -106,10 +106,10 @@ ros2 action send_goal /fibonacci example_interfaces/action/Fibonacci "{order: 5}
 
 | テスト | 見ているところ |
 | --- | --- |
-| `fibonacciアクションサーバを公開している` | `create_server` を `action_server_` に入れているか |
-| `order5の目標を送るとフィボナッチ数列を返す` | 計算ロジックと `succeed(result)` |
-| `実行中にfeedbackが1回以上届く` | `publish_feedback` を呼んでいるか |
-| `キャンセル要求を受理する` | `handle_cancel` と `is_canceling()` / `canceled(result)` |
+| `ExposesFibonacciActionServer` | `create_server` を `action_server_` に入れているか |
+| `Order5GoalReturnsFibonacciSequence` | 計算ロジックと `succeed(result)` |
+| `DeliversFeedbackAtLeastOnceWhileRunning` | `publish_feedback` を呼んでいるか |
+| `AcceptsCancelRequest` | `handle_cancel` と `is_canceling()` / `canceled(result)` |
 
 ## 参考
 

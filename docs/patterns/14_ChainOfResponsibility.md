@@ -150,7 +150,7 @@ head->set_next(std::move(b)).set_next(std::move(c));
 
 `*this` 版が単に「順番が違う」で済まないのが C++ です。
 2 回目の `set_next` で `head` の `next_` が上書きされ、**b はそこで解放されます**。
-課題のテスト「連鎖の途中を差し替えると古い残りは破棄される」がこれを見ています。
+課題のテスト`ReplacingMiddleDestroysOldRemainder`がこれを見ています。
 
 ## 14.3 C++ 固有の危険 — 連鎖の寿命
 

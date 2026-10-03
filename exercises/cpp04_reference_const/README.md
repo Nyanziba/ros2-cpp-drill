@@ -35,8 +35,8 @@ const 参照と const メンバ関数を学びます。
 
 | テスト | 見ているところ |
 | --- | --- |
-| `constReferencePolicyで大文字に変換` | const 参照での効率的な受け取り |
-| `constMemberFunctionが説明を返す` | const メンバ関数の構文 |
+| `ConvertsToUppercaseWithConstReference` | const 参照での効率的な受け取り |
+| `ConstMemberFunctionReturnsDescription` | const メンバ関数の構文 |
 
 ## 参考
 

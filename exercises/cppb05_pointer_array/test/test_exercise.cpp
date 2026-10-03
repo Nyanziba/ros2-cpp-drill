@@ -2,19 +2,19 @@
 #include <gtest/gtest.h>
 #include "drill/array_util.hpp"
 
-TEST(ArrayTest, Sum)
+TEST(ArrayTest, SumsAllElements)
 {
   int arr[] = {1, 2, 3, 4, 5};
   EXPECT_EQ(sum(arr, 5), 15);
 }
 
-TEST(ArrayTest, Sum空の配列)
+TEST(ArrayTest, SumOfEmptyArrayIsZero)
 {
   int arr[] = {1};
   EXPECT_EQ(sum(arr, 0), 0);
 }
 
-TEST(ArrayTest, FindFirst見つかる)
+TEST(ArrayTest, FindFirstReturnsPointerToMatch)
 {
   int arr[] = {10, 20, 30, 40};
   const int * p = find_first(arr, 4, 30);
@@ -22,7 +22,7 @@ TEST(ArrayTest, FindFirst見つかる)
   EXPECT_EQ(p, &arr[2]);
 }
 
-TEST(ArrayTest, FindFirst見つからない)
+TEST(ArrayTest, FindFirstReturnsNullptrWhenNotFound)
 {
   int arr[] = {10, 20, 30, 40};
   const int * p = find_first(arr, 4, 99);

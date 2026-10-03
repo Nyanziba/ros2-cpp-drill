@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 #include "drill/volatile_state.h"
 
-TEST(VolatileStateTest, 初期化と状態確認)
+TEST(VolatileStateTest, InitializesToIdle)
 {
   machine_init();
   EXPECT_EQ(machine_get_state(), STATE_IDLE);
@@ -11,7 +11,7 @@ TEST(VolatileStateTest, 初期化と状態確認)
   EXPECT_FALSE(machine_is_stopped());
 }
 
-TEST(VolatileStateTest, IDLE_から_RUNNING_に遷移)
+TEST(VolatileStateTest, TransitionsFromIdleToRunning)
 {
   machine_init();
   machine_start();
@@ -21,7 +21,7 @@ TEST(VolatileStateTest, IDLE_から_RUNNING_に遷移)
   EXPECT_FALSE(machine_is_stopped());
 }
 
-TEST(VolatileStateTest, RUNNING_から_STOPPED_に遷移)
+TEST(VolatileStateTest, TransitionsFromRunningToStopped)
 {
   machine_init();
   machine_start();
@@ -32,7 +32,7 @@ TEST(VolatileStateTest, RUNNING_から_STOPPED_に遷移)
   EXPECT_TRUE(machine_is_stopped());
 }
 
-TEST(VolatileStateTest, 複数回の状態遷移)
+TEST(VolatileStateTest, HandlesMultipleTransitions)
 {
   machine_init();
 
@@ -47,7 +47,7 @@ TEST(VolatileStateTest, 複数回の状態遷移)
   EXPECT_TRUE(machine_is_running());
 }
 
-TEST(VolatileStateTest, 外部から状態が変更されたことを検出できる)
+TEST(VolatileStateTest, DetectsExternalChange)
 {
   machine_init();
   EXPECT_TRUE(machine_is_idle());
@@ -62,7 +62,7 @@ TEST(VolatileStateTest, 外部から状態が変更されたことを検出で�
   EXPECT_EQ(machine_get_state(), STATE_RUNNING);
 }
 
-TEST(VolatileStateTest, 外部から複数回の変更を検出できる)
+TEST(VolatileStateTest, DetectsRepeatedExternalChanges)
 {
   machine_init();
 
@@ -76,7 +76,7 @@ TEST(VolatileStateTest, 外部から複数回の変更を検出できる)
   EXPECT_TRUE(machine_is_idle());
 }
 
-TEST(VolatileStateTest, ポーリングループで状態を監視できる)
+TEST(VolatileStateTest, WatchesStateInPollingLoop)
 {
   /* 典型的なポーリングループのシミュレーション */
   machine_init();
@@ -103,7 +103,7 @@ TEST(VolatileStateTest, ポーリングループで状態を監視できる)
   EXPECT_GE(state_changes, 2);
 }
 
-TEST(VolatileStateTest, get_state_は毎回読み込みをしている)
+TEST(VolatileStateTest, GetStateReadsEveryTime)
 {
   /* volatile 変数を読む関数を複数回呼び出して、毎回新しい値を取得できることを確認 */
   machine_init();

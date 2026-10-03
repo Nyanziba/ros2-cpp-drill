@@ -44,9 +44,9 @@ C++ 版の Proxy は継承ではなく **`operator->` を書く**のが本体で
 
 - `error: no viable overloaded '='` / `but method is not marked const`
   → `operator->` は `const` です。ヘッダの `mutable std::unique_ptr<...> real_;` を見てください
-- 「最初のアクセスまで本体は作られない」が落ちる
+- `RealObjectIsNotCreatedUntilFirstAccess`が落ちる
   → `CalibrationProxy` のコンストラクタで本体を作ってしまっています
-- 「二度目以降のアクセスで本体は作り直されない」が落ちる
+- `RealObjectIsNotRecreatedOnLaterAccess`が落ちる
   → `if (!real_)` の判定を忘れて毎回 `make_unique` しています
 - `proxy->write_raw(...)` が動かない
   → `RegisterAccess::operator->()` が `nullptr` を返しています。

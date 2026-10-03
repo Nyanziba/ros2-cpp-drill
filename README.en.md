@@ -7,7 +7,7 @@
 **ROS 2 comes in a Jazzy version (the default) and a Lyrical version.** You can switch between them with the switcher at the top of each page of the site.
 The Lyrical version is at <https://nyanziba.github.io/ros2-cpp-drill/lyrical/en/> (Japanese: <https://nyanziba.github.io/ros2-cpp-drill/lyrical/>).
 
-**English version:** All tracks are translated. Comments in the exercise source code and the test failure messages stay in Japanese.
+**English version:** All tracks are translated. Comments in the exercise source code stay in Japanese. Test names are in English, and test failure messages switch to English with `DRILL_LANG=en`.
 
 **You can run the code examples in your browser.** The code examples in the C++ chapters
 have links to Compiler Explorer, so you can follow along even without `g++`.

@@ -2701,7 +2701,7 @@
         }
       ],
       "hints": [
-        "`next()` は `const Book &` を返します。`Book` を返すと毎回コピーが走ります。 テスト「nextはコピーではなく本棚の中身を指す」がアドレスを比較して落とします",
+        "`next()` は `const Book &` を返します。`Book` を返すと毎回コピーが走ります。 テスト「NextReturnsReferenceNotCopy」がアドレスを比較して落とします",
         "`iterator()` は `std::unique_ptr<Iterator>` を返します。生ポインタだと 誰が `delete` するかが型に書かれません",
         "位置（`index_`）はイテレータ側が持ちます。本棚側に持たせると、 2 つのイテレータを同時に使ったとき互いに干渉します",
         "`BookShelfIterator` は `BookShelf` への参照を持っています。 本棚より長生きさせられません。Java には無い制約です"
@@ -2718,7 +2718,7 @@
       "title_en": "Iterator: GoF and STL versions",
       "chapter_en": "Patterns ch.1",
       "hints_en": [
-        "`next()` returns `const Book &`. If it returns `Book`, a copy runs every time. The test \"next points into the shelf, not to a copy\" catches this by comparing addresses.",
+        "`next()` returns `const Book &`. If it returns `Book`, a copy runs every time. The test \"NextReturnsReferenceNotCopy\" catches this by comparing addresses.",
         "`iterator()` returns `std::unique_ptr<Iterator>`. With a raw pointer, the type does not say who calls `delete`.",
         "The iterator holds the position (`index_`). If the shelf held it, two iterators used at the same time would interfere with each other.",
         "`BookShelfIterator` holds a reference to `BookShelf`. It cannot outlive the shelf. Java has no such restriction."
@@ -3020,7 +3020,7 @@
         }
       ],
       "hints": [
-        "セッタが `MotorConfigBuilder`（値）を返していると、テスト 「チェーンは同じBuilderの参照を返す」がアドレス比較で落とします",
+        "セッタが `MotorConfigBuilder`（値）を返していると、テスト 「ChainReturnsReferenceToSameBuilder」がアドレス比較で落とします",
         "`build() &&` と `build() const &` は両方実装します。片方だけだと、 もう片方の呼び方がコンパイルエラーになります （`error: 'this' argument to member function 'build' is an lvalue, but function has rvalue ref-qualifier`）",
         "`build() const &` で `std::move` すると、Builder が壊れて 2 回目の `build()` が空になります。 左辺値版はコピーです",
         "Director に書式を書き始めたら手が滑っています。Director は `make_header` / `make_field` / `make_footer` を順に呼ぶだけです",
@@ -3038,7 +3038,7 @@
       "title_en": "Builder: chaining, ref qualifiers",
       "chapter_en": "Patterns ch.7",
       "hints_en": [
-        "If a setter returns `MotorConfigBuilder` (by value), the test \"the chain returns a reference to the same Builder\" catches it by comparing addresses.",
+        "If a setter returns `MotorConfigBuilder` (by value), the test \"ChainReturnsReferenceToSameBuilder\" catches it by comparing addresses.",
         "Implement both `build() &&` and `build() const &`. If you implement only one, the other way of calling it is a compile error (`error: 'this' argument to member function 'build' is an lvalue, but function has rvalue ref-qualifier`).",
         "If you `std::move` in `build() const &`, the Builder breaks and the second `build()` is empty. The lvalue version is a copy.",
         "If you start writing formatting in the Director, your hand slipped. The Director only calls `make_header` / `make_field` / `make_footer` in order.",
@@ -3075,7 +3075,7 @@
         }
       ],
       "hints": [
-        "`create_motor()` と `create_encoder()` に別の bus を渡すと、製品群が混ざります。 テスト「同じファクトリから出た部品どうしは繋がっている」が落とします",
+        "`create_motor()` と `create_encoder()` に別の bus を渡すと、製品群が混ざります。 テスト「PartsFromSameFactoryAreConnected」が落とします",
         "`run_open_loop()` の中に `SimulationKitFactory` と書いたら設計が壊れています。 引数は `const ActuatorKitFactory &` だけです",
         "実機側は 4 逓倍エンコーダなので、同じ duty でもカウントは 4 倍進みます。 製品群が違えば挙動も違って当然です。合わせようとしないでください",
         "テンプレート版で `typename KitTraits::Motor` の `typename` を忘れるとコンパイルエラーです",
@@ -3093,7 +3093,7 @@
       "title_en": "Abstract Factory: kits, templates",
       "chapter_en": "Patterns ch.8",
       "hints_en": [
-        "If you pass different buses to `create_motor()` and `create_encoder()`, the product family gets mixed. The test \"parts from the same factory are connected to each other\" catches it.",
+        "If you pass different buses to `create_motor()` and `create_encoder()`, the product family gets mixed. The test \"PartsFromSameFactoryAreConnected\" catches it.",
         "If you write `SimulationKitFactory` inside `run_open_loop()`, the design is broken. The only argument is `const ActuatorKitFactory &`.",
         "The real hardware has a 4x encoder, so the count advances 4 times as much with the same duty. Different families naturally behave differently. Do not try to make them match.",
         "In the template version, forgetting `typename` in `typename KitTraits::Motor` is a compile error.",
@@ -3183,7 +3183,7 @@
       ],
       "hints": [
         "3 つとも同じ出力でなければいけません。手段が違うだけで、アルゴリズムは同じものです",
-        "`VirtualCommander` が Strategy をコピーして持つと、テスト 「仮想関数版はStrategyを所有せず参照で指している」がアドレス比較で落とします",
+        "`VirtualCommander` が Strategy をコピーして持つと、テスト 「VirtualFunctionVersionReferencesStrategyWithoutOwningIt」がアドレス比較で落とします",
         "`filter_` を `const VelocityFilter &`（参照）にしたくなりますが、 参照は再束縛できないので差し替えができません。だからポインタです",
         "`VirtualCommander` は Strategy を所有しません。 `ClampFilter` の実体を Commander より先に殺すと未定義動作です",
         "`ClampPolicy` に `virtual` を付けると `static_assert` で落ちます。 vtable が付いて `sizeof` も増えます"
@@ -3201,7 +3201,7 @@
       "chapter_en": "Patterns ch.10",
       "hints_en": [
         "All three must give the same output. Only the means differ. The algorithm is the same.",
-        "If `VirtualCommander` holds a copy of the Strategy, the test \"the virtual version does not own the Strategy and points to it by reference\" catches it by comparing addresses.",
+        "If `VirtualCommander` holds a copy of the Strategy, the test \"VirtualFunctionVersionReferencesStrategyWithoutOwningIt\" catches it by comparing addresses.",
         "You may want to make `filter_` a `const VelocityFilter &` (reference), but a reference cannot be re-bound, so you cannot swap it. That is why it is a pointer.",
         "`VirtualCommander` does not own the Strategy. If you destroy the `ClampFilter` object before the Commander, it is undefined behavior.",
         "If you add `virtual` to `ClampPolicy`, a `static_assert` fails. A vtable is added and `sizeof` grows."
@@ -3294,7 +3294,7 @@
         "`inner()` は `const LogSink &` を返します。`LogSink` は抽象クラスなので値では返せません",
         "`format()` の中で先に中身を呼ぶこと。順番を間違えるとタグの位置が入れ替わります",
         "包む順番で出力が変わるのが Decorator です。テストがそれを見ています",
-        "デストラクタの記録を忘れると「一番外側を破棄すると内側まで全部破棄される」が落ちます"
+        "デストラクタの記録を忘れると「DestroyingOutermostDestroysAllInner」が落ちます"
       ],
       "lecture": [
         {
@@ -3312,7 +3312,7 @@
         "`inner()` returns `const LogSink &`. `LogSink` is an abstract class, so you cannot return it by value.",
         "In `format()`, call the inner one first. If you get the order wrong, the positions of the tags are swapped.",
         "The output changes with the order of wrapping. That is what a Decorator is. The test checks it.",
-        "If you forget to record in the destructor, \"destroying the outermost one destroys all the inner ones too\" fails."
+        "If you forget to record in the destructor, \"DestroyingOutermostDestroysAllInner\" fails."
       ],
       "lecture_en": [
         {
@@ -3345,7 +3345,7 @@
       ],
       "hints": [
         "`accept` を実装していないうちは、`variant` 版のテストが `C++ exception with description \"vector\"` で落ちます。 `DiagArena::add` が何も保存していないので `at()` が範囲外になっているだけです",
-        "`accept` が仮想でないと、基底ポインタ経由の呼び出しで種類が消えます。 テスト「基底ポインタ経由でも派生ごとのvisitが選ばれる」がそこを見ます",
+        "`accept` が仮想でないと、基底ポインタ経由の呼び出しで種類が消えます。 テスト`VisitIsChosenPerDerivedClassViaBasePointer`がそこを見ます",
         "`visit` の引数を `const SensorCheck &` ではなく `SensorCheck` にするとコピーが走ります。 基底型で受けるとスライシングします",
         "`overloaded` の推論ガイドを忘れると `no viable constructor or deduction guide for deduction of template arguments` になります",
         "ラムダの中から自分を再帰呼び出しはできません。 無名名前空間に名前付きの関数を用意して、その中で `std::visit` してください"
@@ -3363,7 +3363,7 @@
       "chapter_en": "Patterns ch.13",
       "hints_en": [
         "Until you implement `accept`, the `variant` test fails with `C++ exception with description \"vector\"`. `DiagArena::add` stores nothing, so `at()` is simply out of range.",
-        "If `accept` is not virtual, the kind is lost when you call through a base pointer. The test \"the visit for each derived class is chosen even through a base pointer\" checks this.",
+        "If `accept` is not virtual, the kind is lost when you call through a base pointer. The test `VisitIsChosenPerDerivedClassViaBasePointer` checks this.",
         "If the argument of `visit` is `SensorCheck` instead of `const SensorCheck &`, a copy runs. If you take it by the base type, it slices.",
         "If you forget the deduction guide of `overloaded`, you get `no viable constructor or deduction guide for deduction of template arguments`.",
         "A lambda cannot call itself recursively. Prepare a named function in an anonymous namespace and call `std::visit` inside it."
@@ -3399,7 +3399,7 @@
       ],
       "hints": [
         "`set_next()` で `std::move(next)` したあとの `next` は空です。 `*next` を返すと落ちます。`next_` に入れてから `*next_` を返してください",
-        "`set_next()` が `*this` を返すと、`a.set_next(b).set_next(c)` で b が黙って解放されます。テスト「setNextは次のハンドラ自身への参照を返す」が落とします",
+        "`set_next()` が `*this` を返すと、`a.set_next(b).set_next(c)` で b が黙って解放されます。テスト`SetNextReturnsReferenceToNextHandler`が落とします",
         "デストラクタ本体が走ったあとにメンバ `next_` が破棄されます。 つまり破棄ログは先頭から末尾の順に並びます",
         "`resolve()` の中で `next_` を触りたくなったら設計が壊れています。 たらい回しは `support()` だけの仕事です",
         "「誰も処理しなかった」は `std::nullopt` です。`throw` しないでください （マイコンでは `-fno-exceptions` が普通のため）"
@@ -3417,7 +3417,7 @@
       "chapter_en": "Patterns ch.14",
       "hints_en": [
         "After `std::move(next)` in `set_next()`, `next` is empty. Returning `*next` crashes. Put it into `next_` and then return `*next_`.",
-        "If `set_next()` returns `*this`, then in `a.set_next(b).set_next(c)`, b is silently freed. The test \"setNext returns a reference to the next handler itself\" catches it.",
+        "If `set_next()` returns `*this`, then in `a.set_next(b).set_next(c)`, b is silently freed. The test `SetNextReturnsReferenceToNextHandler` catches it.",
         "The member `next_` is destroyed after the body of the destructor runs. So the destruction log is in order from the head to the tail.",
         "If you want to touch `next_` inside `resolve()`, the design is broken. Passing the request on is the job of `support()` only.",
         "\"Nobody handled it\" is `std::nullopt`. Do not `throw` (microcontrollers usually use `-fno-exceptions`)."
@@ -3454,7 +3454,7 @@
       "hints": [
         "コンストラクタの途中で `return` してもデストラクタは必ず走ります。 オブジェクトは構築済みだからです。だから巻き戻しはデストラクタに書けます",
         "`std::move` した後のオブジェクトもデストラクタは走ります。 「ムーブしたから消えた」ではありません。ムーブ元を空にしないと電源が 2 回落ちます",
-        "電源投入で失敗した場合、成功した段は 0 個です。`power_off` を呼んではいけません。 テスト「電源投入で失敗すると後始末は何も走らない」がそこを見ます",
+        "電源投入で失敗した場合、成功した段は 0 個です。`power_off` を呼んではいけません。 テスト`PowerOnFailureRunsNoCleanup`がそこを見ます",
         "`append()` は `const char *` を取ります。`drive()` は `std::string` を作るので、 `log_->push_back()` を直接使ってください（`log_` が `nullptr` のことがあります）",
         "自由関数版を「`RobotSession` を作って捨てるだけ」で実装したくなりますが、 手で巻き戻す形で書いてください。 RAII 版との差を体で知るのがこの課題の主眼です"
       ],
@@ -3472,7 +3472,7 @@
       "hints_en": [
         "Even if you `return` in the middle of a constructor, the destructor always runs, because the object is already constructed. So you can write the rollback in the destructor.",
         "The destructor also runs for an object after `std::move`. It does not mean \"it was moved, so it is gone\". If you do not empty the moved-from object, the power goes off twice.",
-        "If power-on fails, the number of steps that succeeded is 0. Do not call `power_off`. The test \"if power-on fails, no cleanup runs\" checks this.",
+        "If power-on fails, the number of steps that succeeded is 0. Do not call `power_off`. The test `PowerOnFailureRunsNoCleanup` checks this.",
         "`append()` takes `const char *`. `drive()` makes a `std::string`, so use `log_->push_back()` directly (`log_` can be `nullptr`).",
         "You may want to implement the free-function version by \"just creating a `RobotSession` and discarding it\", but write it so that it rolls back by hand. Feeling the difference from the RAII version is the point of this exercise."
       ],
@@ -3507,10 +3507,10 @@
       ],
       "hints": [
         "`set_enabled()` から `notify_changed()` を呼ばないこと。 `widget_changed()` → `update_enabled_states()` → `set_enabled()` → `widget_changed()` と 無限再帰します。「Mediator から呼ばれる入口」と「Colleague から呼ぶ入口」は別物です",
-        "Colleague の中から他の Colleague を触らないこと。テスト 「Mediatorを外すとColleague間に影響が伝わらない」がそれを落とします",
-        "`set_mediator()` で `std::shared_ptr` を持ち返さないこと。テスト 「ColleagueはMediatorを所有しない」が `use_count()` で見ています",
+        "Colleague の中から他の Colleague を触らないこと。テスト `WithoutMediatorColleaguesDoNotAffectEachOther`がそれを落とします",
+        "`set_mediator()` で `std::shared_ptr` を持ち返さないこと。テスト `ColleagueDoesNotOwnMediator`が `use_count()` で見ています",
         "コンストラクタの初期化子リストでは結線できません。Colleague を作るには Mediator が要り、 Mediator を渡すには Colleague が要るからです。だから 2 段階初期化になります",
-        "値が変わっていないときに報告すると、テスト「同じ値をもう一度入れても報告されない」が落ちます"
+        "値が変わっていないときに報告すると、テスト`SettingSameValueAgainIsNotReported`が落ちます"
       ],
       "lecture": [
         {
@@ -3525,10 +3525,10 @@
       "chapter_en": "Patterns ch.16",
       "hints_en": [
         "Do not call `notify_changed()` from `set_enabled()`. It recurses forever: `widget_changed()` → `update_enabled_states()` → `set_enabled()` → `widget_changed()`. \"The entry called from the Mediator\" and \"the entry called from a Colleague\" are different things.",
-        "Do not touch another Colleague from inside a Colleague. The test \"without the Mediator, effects do not propagate between Colleagues\" catches it.",
-        "Do not keep a `std::shared_ptr` in `set_mediator()`. The test \"a Colleague does not own the Mediator\" checks it with `use_count()`.",
+        "Do not touch another Colleague from inside a Colleague. The test `WithoutMediatorColleaguesDoNotAffectEachOther` catches it.",
+        "Do not keep a `std::shared_ptr` in `set_mediator()`. The test `ColleagueDoesNotOwnMediator` checks it with `use_count()`.",
         "You cannot wire them in the constructor initializer list. To create a Colleague you need the Mediator, and to pass the Mediator you need the Colleague. That is why it is two-step initialization.",
-        "If you report when the value has not changed, the test \"setting the same value again is not reported\" fails."
+        "If you report when the value has not changed, the test `SettingSameValueAgainIsNotReported` fails."
       ],
       "lecture_en": [
         {
@@ -3777,8 +3777,8 @@
       ],
       "hints": [
         "`error: no viable overloaded '='` / `but method is not marked const` → `operator->` は `const` です。ヘッダの `mutable std::unique_ptr<...> real_;` を見てください",
-        "「最初のアクセスまで本体は作られない」が落ちる → `CalibrationProxy` のコンストラクタで本体を作ってしまっています",
-        "「二度目以降のアクセスで本体は作り直されない」が落ちる → `if (!real_)` の判定を忘れて毎回 `make_unique` しています",
+        "`RealObjectIsNotCreatedUntilFirstAccess`が落ちる → `CalibrationProxy` のコンストラクタで本体を作ってしまっています",
+        "`RealObjectIsNotRecreatedOnLaterAccess`が落ちる → `if (!real_)` の判定を忘れて毎回 `make_unique` しています",
         "`proxy->write_raw(...)` が動かない → `RegisterAccess::operator->()` が `nullptr` を返しています。 `SafeRegisterProxy` の `friend` なので `owner_.file_` に直接届きます",
         "「弾いたのに本体に触っています」で落ちる → 範囲外の分岐で `file_.read_raw()` / `file_.write_raw()` を呼んでいます。 実機ではここが別のペリフェラルの破壊になります"
       ],
@@ -3795,10 +3795,10 @@
       "chapter_en": "Patterns ch.21",
       "hints_en": [
         "`error: no viable overloaded '='` / `but method is not marked const` → `operator->` is `const`. Look at `mutable std::unique_ptr<...> real_;` in the header.",
-        "\"The real object is not created until the first access\" fails → the constructor of `CalibrationProxy` creates the real object.",
-        "\"The real object is not re-created on the second and later accesses\" fails → you forgot the `if (!real_)` check and call `make_unique` every time.",
+        "`RealObjectIsNotCreatedUntilFirstAccess` fails → the constructor of `CalibrationProxy` creates the real object.",
+        "`RealObjectIsNotRecreatedOnLaterAccess` fails → you forgot the `if (!real_)` check and call `make_unique` every time.",
         "`proxy->write_raw(...)` does not work → `RegisterAccess::operator->()` returns `nullptr`. It is a `friend` of `SafeRegisterProxy`, so it can reach `owner_.file_` directly.",
-        "\"It touched the real object although it rejected the access\" fails → the out-of-range branch calls `file_.read_raw()` / `file_.write_raw()`. On real hardware, this corrupts another peripheral."
+        "The failure message \"The request was rejected but the real object (RegisterFile) was touched\" means → the out-of-range branch calls `file_.read_raw()` / `file_.write_raw()`. On real hardware, this corrupts another peripheral."
       ],
       "lecture_en": [
         {

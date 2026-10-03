@@ -1,6 +1,8 @@
 // このファイルは編集しません（採点用）。
 #include <gtest/gtest.h>
 
+#include "drill_i18n.hpp"
+
 #include <cstddef>
 #include <string>
 #include <type_traits>
@@ -37,36 +39,36 @@ Log run_session(const StartupConfig & config)
 
 }  // namespace
 
-TEST(FacadeTest, 起動に成功すると4手順が正しい順序で走る)
+TEST(FacadeTest, SuccessfulStartupRunsFourStepsInOrder)
 {
   Log log;
   const RobotSession session{ok_config(), &log};
 
-  EXPECT_TRUE(session.is_ready()) << "全部成功する設定なのに起動できていません";
+  EXPECT_TRUE(session.is_ready()) << drill::localized("全部成功する設定なのに起動できていません", "Every step is set to succeed, but startup failed");
 
   const Log expected = {"power_on", "sensor_init", "calibrate", "link_up"};
   EXPECT_EQ(log, expected)
-    << "Facade を 1 回作るだけで、内部の 4 手順がこの順に走るはずです";
+    << drill::localized("Facade を 1 回作るだけで、内部の 4 手順がこの順に走るはずです", "Creating the Facade once should run the 4 internal steps in this order");
 }
 
-TEST(FacadeTest, スコープを抜けると後始末が逆順で走る)
+TEST(FacadeTest, LeavingScopeRunsCleanupInReverseOrder)
 {
   Log log;
   {
     const RobotSession session{ok_config(), &log};
     ASSERT_TRUE(session.is_ready());
     const Log during = {"power_on", "sensor_init", "calibrate", "link_up"};
-    ASSERT_EQ(log, during) << "まだ後始末は走らないはずです";
+    ASSERT_EQ(log, during) << drill::localized("まだ後始末は走らないはずです", "Cleanup should not run yet");
   }
 
   const Log expected = {
     "power_on", "sensor_init", "calibrate", "link_up",
     "link_down", "calibration_clear", "sensor_deinit", "power_off"};
   EXPECT_EQ(log, expected)
-    << "デストラクタで、初期化と逆順に後始末するはずです";
+    << drill::localized("デストラクタで、初期化と逆順に後始末するはずです", "The destructor should clean up in the reverse order of initialization");
 }
 
-TEST(FacadeTest, キャリブレーションで失敗するとそれ以降は走らない)
+TEST(FacadeTest, CalibrationFailureSkipsLaterSteps)
 {
   StartupConfig config = ok_config();
   config.calibration_ok = false;
@@ -82,10 +84,10 @@ TEST(FacadeTest, キャリブレーションで失敗するとそれ以降は走
     "power_on", "sensor_init", "calibrate_failed",
     "sensor_deinit", "power_off"};
   EXPECT_EQ(log, expected)
-    << "link_up が走ってはいけません。かつ、成功済みの 2 段だけが巻き戻るはずです";
+    << drill::localized("link_up が走ってはいけません。かつ、成功済みの 2 段だけが巻き戻るはずです", "link_up must not run, and only the 2 steps that succeeded should be rolled back");
 }
 
-TEST(FacadeTest, センサ初期化で失敗すると電源だけが巻き戻る)
+TEST(FacadeTest, SensorInitFailureRollsBackOnlyPower)
 {
   StartupConfig config = ok_config();
   config.sensor_present = false;
@@ -101,7 +103,7 @@ TEST(FacadeTest, センサ初期化で失敗すると電源だけが巻き戻る
   EXPECT_EQ(log, expected);
 }
 
-TEST(FacadeTest, 電源投入で失敗すると後始末は何も走らない)
+TEST(FacadeTest, PowerOnFailureRunsNoCleanup)
 {
   StartupConfig config = ok_config();
   config.battery_mv = robot::kMinBatteryMv - 1;
@@ -115,10 +117,10 @@ TEST(FacadeTest, 電源投入で失敗すると後始末は何も走らない)
 
   const Log expected = {"power_on_failed"};
   EXPECT_EQ(log, expected)
-    << "成功した段が 0 個なのだから、power_off を呼んではいけません";
+    << drill::localized("成功した段が 0 個なのだから、power_off を呼んではいけません", "No step succeeded, so power_off must not be called");
 }
 
-TEST(FacadeTest, 通信確立で失敗すると3段が巻き戻る)
+TEST(FacadeTest, LinkUpFailureRollsBackThreeSteps)
 {
   StartupConfig config = ok_config();
   config.link_ok = false;
@@ -136,7 +138,7 @@ TEST(FacadeTest, 通信確立で失敗すると3段が巻き戻る)
   EXPECT_EQ(log, expected);
 }
 
-TEST(FacadeTest, 起動できていなければdriveできない)
+TEST(FacadeTest, DriveFailsWhenNotStarted)
 {
   StartupConfig config = ok_config();
   config.link_ok = false;
@@ -145,14 +147,14 @@ TEST(FacadeTest, 起動できていなければdriveできない)
   RobotSession session{config, &log};
   ASSERT_FALSE(session.is_ready());
   EXPECT_EQ(session.failed_stage(), StartupStage::kLink);
-  ASSERT_FALSE(log.empty()) << "起動を試みた記録が残っていません";
+  ASSERT_FALSE(log.empty()) << drill::localized("起動を試みた記録が残っていません", "There is no record of the startup attempt");
   const std::size_t before = log.size();
 
-  EXPECT_FALSE(session.drive(50)) << "起動していないのに drive できています";
-  EXPECT_EQ(log.size(), before) << "drive できないならログも残らないはずです";
+  EXPECT_FALSE(session.drive(50)) << drill::localized("起動していないのに drive できています", "drive succeeded although the session is not started");
+  EXPECT_EQ(log.size(), before) << drill::localized("drive できないならログも残らないはずです", "If drive fails, nothing should be logged");
 }
 
-TEST(FacadeTest, 起動していればdriveできる)
+TEST(FacadeTest, DriveSucceedsWhenStarted)
 {
   Log log;
   RobotSession session{ok_config(), &log};
@@ -163,7 +165,7 @@ TEST(FacadeTest, 起動していればdriveできる)
   EXPECT_EQ(log.back(), "drive:50");
 }
 
-TEST(FacadeTest, 自由関数版とRAIIクラス版のログが一致する)
+TEST(FacadeTest, FreeFunctionAndRaiiClassLogsMatch)
 {
   StartupConfig fail_at_calibration = ok_config();
   fail_at_calibration.calibration_ok = false;
@@ -179,8 +181,8 @@ TEST(FacadeTest, 自由関数版とRAIIクラス版のログが一致する)
     const Log from_session = run_session(config);
 
     EXPECT_EQ(from_free_function, from_session)
-      << "名前空間 + 自由関数版と RAII クラス版で、走る手順が違います";
-    EXPECT_FALSE(from_free_function.empty()) << "start_once() が何もしていません";
+      << drill::localized("名前空間 + 自由関数版と RAII クラス版で、走る手順が違います", "The free-function version and the RAII class version run different steps");
+    EXPECT_FALSE(from_free_function.empty()) << drill::localized("start_once() が何もしていません", "start_once() does nothing");
 
     RobotSession probe{config, nullptr};
     EXPECT_EQ(result.ok, probe.is_ready());
@@ -190,7 +192,7 @@ TEST(FacadeTest, 自由関数版とRAIIクラス版のログが一致する)
   }
 }
 
-TEST(FacadeTest, ムーブしても後始末は一度だけ走る)
+TEST(FacadeTest, CleanupRunsOnlyOnceAfterMove)
 {
   Log log;
   {
@@ -198,33 +200,33 @@ TEST(FacadeTest, ムーブしても後始末は一度だけ走る)
     ASSERT_TRUE(original.is_ready());
 
     const RobotSession moved{std::move(original)};
-    EXPECT_TRUE(moved.is_ready()) << "ムーブ先が起動状態を引き継いでいません";
+    EXPECT_TRUE(moved.is_ready()) << drill::localized("ムーブ先が起動状態を引き継いでいません", "The moved-to object did not take over the started state");
   }
 
   const Log expected = {
     "power_on", "sensor_init", "calibrate", "link_up",
     "link_down", "calibration_clear", "sensor_deinit", "power_off"};
   EXPECT_EQ(log, expected)
-    << "後始末が 2 回走っています。ムーブ元を空にしましたか";
+    << drill::localized("後始末が 2 回走っています。ムーブ元を空にしましたか", "Cleanup ran twice. Did you empty the moved-from object?");
 }
 
-TEST(FacadeTest, セッションの型の性質)
+TEST(FacadeTest, SessionTypeProperties)
 {
   static_assert(
     !std::is_copy_constructible<RobotSession>::value,
-    "起動済みのハードウェア 1 台を表す型はコピーできてはいけません");
+    "起動済みのハードウェア 1 台を表す型はコピーできてはいけません / A type that represents one started piece of hardware must not be copyable");
   static_assert(
     !std::is_copy_assignable<RobotSession>::value,
-    "コピー代入も禁止です");
+    "コピー代入も禁止です / Copy assignment is also prohibited");
   static_assert(
     std::is_move_constructible<RobotSession>::value,
-    "関数から返せるようにムーブ構築は許します");
+    "関数から返せるようにムーブ構築は許します / Move construction is allowed so it can be returned from a function");
   static_assert(
     !std::is_convertible<StartupConfig, RobotSession>::value,
-    "コンストラクタは explicit です。StartupConfig から暗黙変換されてはいけません");
+    "コンストラクタは explicit です。StartupConfig から暗黙変換されてはいけません / The constructor is explicit. It must not convert implicitly from StartupConfig");
   static_assert(
     !std::is_move_assignable<RobotSession>::value,
-    "ムーブ代入は禁止です");
+    "ムーブ代入は禁止です / Move assignment is prohibited");
 
   // 型の性質だけでは実装の有無が分からないので、1 つだけ実挙動も見ておく。
   Log log;

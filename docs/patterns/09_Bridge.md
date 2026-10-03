@@ -359,7 +359,7 @@ Pimpl ありなら 1 ファイルです。
 ```cpp
 static_assert(
   sizeof(LinkStats) == sizeof(std::unique_ptr<void *>),
-  "LinkStats はポインタ 1 個分のはずです。実装をヘッダに書いていませんか");
+  "LinkStats はポインタ 1 個分のはずです。実装をヘッダに書いていませんか / LinkStats must be the size of one pointer. Did you put the implementation in the header?");
 ```
 
 **代償**もはっきりしています。

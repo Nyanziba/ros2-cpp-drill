@@ -50,10 +50,10 @@ The only file you edit is `src/bit_ops.c`. Implement the following functions:
 
 | Test | What it checks |
 | --- | --- |
-| `組み立てと抽出が往復する` (building and extracting round-trip) | The basics of bit operations (shifts and masks) |
-| `ReadModifyWrite_他のビットを壊さない` (ReadModifyWrite does not break the other bits) | The read-modify-write pattern |
-| `ビットを立てる/落とす` (set / clear a bit) | Single-bit register operations |
-| `ビット範囲を設定` (set a bit range) | Read-modify-write of several bits |
+| `RoundTripsCreateAndExtract` | The basics of bit operations (shifts and masks) |
+| `ReadModifyWritePreservesOtherBits` | The read-modify-write pattern |
+| `SetsBit` / `ClearsBit` / `ReadsBit` | Single-bit register operations |
+| `SetsBitRangeWithSingleBit` and the other `SetsBitRange*` tests | Read-modify-write of several bits |
 
 ## References
 

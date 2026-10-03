@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 #include "drill/counter.hpp"
 
-TEST(StaticTest, 関数内Staticは値を保持)
+TEST(StaticTest, FunctionStaticKeepsValue)
 {
   // static なので、関数を抜けても値が残ります。
   EXPECT_EQ(next_id(), 1);
@@ -10,7 +10,7 @@ TEST(StaticTest, 関数内Staticは値を保持)
   EXPECT_EQ(next_id(), 3);
 }
 
-TEST(StaticTest, クラスStaticメンバは共有される)
+TEST(StaticTest, ClassStaticMemberIsShared)
 {
   IdGenerator::reset();
 
@@ -26,7 +26,7 @@ TEST(StaticTest, クラスStaticメンバは共有される)
   EXPECT_EQ(IdGenerator::get_count(), 3);
 }
 
-TEST(StaticTest, 関数内StaticはResetの影響を受けない)
+TEST(StaticTest, FunctionStaticIgnoresReset)
 {
   // next_id() の static は IdGenerator::reset() とは無関係です。
   // 1 つ目のテストで 3 まで進んでいるので、ここは 4 から続きます。

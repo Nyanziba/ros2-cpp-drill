@@ -1,6 +1,8 @@
 // このファイルは編集しません（採点用）。
 #include <gtest/gtest.h>
 
+#include "drill_i18n.hpp"
+
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -104,17 +106,17 @@ const Events kScenario = {
 // 遷移規則
 // ---------------------------------------------------------------------------
 
-TEST(StateTest, enum版の遷移表が仕様どおり)
+TEST(StateTest, EnumTransitionTableMatchesSpec)
 {
   for (const MachineState current : kAllStates) {
     for (const MachineEvent event : kAllEvents) {
       EXPECT_EQ(EnumStateMachine::next_state(current, event), expected_next(current, event))
-        << "状態 " << to_string(current) << " でイベント " << to_string(event);
+        << drill::localized("状態 ", "state ") << to_string(current) << drill::localized(" でイベント ", " with event ") << to_string(event);
     }
   }
 }
 
-TEST(StateTest, 許されない入力は無視され状態が変わらない)
+TEST(StateTest, InvalidInputIsIgnoredAndStateStays)
 {
   for (const MachineState start : kAllStates) {
     for (const MachineEvent event : kAllEvents) {
@@ -131,17 +133,17 @@ TEST(StateTest, 許されない入力は無視され状態が変わらない)
 
       EXPECT_EQ(machine.state(), expected);
       EXPECT_EQ(changed, expected != start)
-        << "handle() の戻り値は「実際に遷移したか」です: " << to_string(start) << " / "
+        << drill::localized("handle() の戻り値は「実際に遷移したか」です: ", "handle() must return whether a transition really happened: ") << to_string(start) << " / "
         << to_string(event);
       if (!changed) {
         EXPECT_TRUE(log.entries().empty())
-          << "遷移しなかったのに入場/退場アクションが走っています";
+          << drill::localized("遷移しなかったのに入場/退場アクションが走っています", "Enter/exit actions ran although no transition happened");
       }
     }
   }
 }
 
-TEST(StateTest, 異常からは手動リセットでしか出られない)
+TEST(StateTest, FaultedCanOnlyBeLeftByManualReset)
 {
   TransitionLog log;
   EnumStateMachine machine{log};
@@ -152,7 +154,7 @@ TEST(StateTest, 異常からは手動リセットでしか出られない)
     if (event == MachineEvent::Reset) {
       continue;
     }
-    EXPECT_FALSE(machine.handle(event)) << to_string(event) << " で Faulted を抜けています";
+    EXPECT_FALSE(machine.handle(event)) << to_string(event) << drill::localized(" で Faulted を抜けています", " left Faulted");
     EXPECT_EQ(machine.state(), MachineState::Faulted);
   }
 
@@ -160,7 +162,7 @@ TEST(StateTest, 異常からは手動リセットでしか出られない)
   EXPECT_EQ(machine.state(), MachineState::Stopped);
 }
 
-TEST(StateTest, 非常停止はどの状態からでも入れる)
+TEST(StateTest, EmergencyStopWorksFromAnyState)
 {
   for (const MachineState start : kAllStates) {
     if (start == MachineState::Faulted) {
@@ -182,7 +184,7 @@ TEST(StateTest, 非常停止はどの状態からでも入れる)
 // 入場・退場アクション
 // ---------------------------------------------------------------------------
 
-TEST(StateTest, 退場が先で入場が後)
+TEST(StateTest, ExitComesBeforeEnter)
 {
   TransitionLog log;
   EnumStateMachine machine{log};
@@ -192,7 +194,7 @@ TEST(StateTest, 退場が先で入場が後)
   EXPECT_EQ(log.entries(), expected);
 }
 
-TEST(StateTest, 走行から抜けるときはモータを止めてから状態を抜ける)
+TEST(StateTest, LeavingRunningStopsMotorBeforeLeavingState)
 {
   TransitionLog log;
   EnumStateMachine machine{log};
@@ -207,7 +209,7 @@ TEST(StateTest, 走行から抜けるときはモータを止めてから状態�
   EXPECT_EQ(log.entries(), expected);
 }
 
-TEST(StateTest, Stateクラス版の入退場アクションも同じ)
+TEST(StateTest, StateClassVersionHasSameEnterExitActions)
 {
   TransitionLog log;
   ClassStateMachine machine{log};
@@ -220,29 +222,29 @@ TEST(StateTest, Stateクラス版の入退場アクションも同じ)
 
   const Log expected = {"exit:Running", "motor:stop", "enter:Faulted", "brake:engage"};
   EXPECT_EQ(log.entries(), expected)
-    << "RunningStateObject::on_exit / FaultedStateObject::on_enter を override してください";
+    << drill::localized("RunningStateObject::on_exit / FaultedStateObject::on_enter を override してください", "Override RunningStateObject::on_exit and FaultedStateObject::on_enter");
 }
 
 // ---------------------------------------------------------------------------
 // 遷移中に状態を差し替えても壊れないこと
 // ---------------------------------------------------------------------------
 
-TEST(StateTest, 状態オブジェクトは唯一で遷移してもアドレスが変わらない)
+TEST(StateTest, StateObjectIsUniqueAndKeepsAddress)
 {
   // 自分自身を差し替える手段がそもそも無い、ということを型でも確認します。
   static_assert(
     std::is_same_v<decltype(&State::handle), const State * (State::*)(MachineEvent) const>,
-    "State::handle は Context を受け取らず、遷移先を戻り値で返すだけにしてください");
+    "State::handle は Context を受け取らず、遷移先を戻り値で返すだけにしてください / State::handle must not take a Context. It should only return the next state");
 
   for (const MachineState id : kAllStates) {
     const State * const first = state_object(id);
     ASSERT_NE(first, nullptr);
-    EXPECT_EQ(first, state_object(id)) << "呼ぶたびに別の実体を作っています";
+    EXPECT_EQ(first, state_object(id)) << drill::localized("呼ぶたびに別の実体を作っています", "A new object is created on every call");
     EXPECT_EQ(first->id(), id);
   }
 }
 
-TEST(StateTest, 遷移しても元の状態オブジェクトが生きている)
+TEST(StateTest, OriginalStateObjectStaysAliveAfterTransition)
 {
   TransitionLog log;
   ClassStateMachine machine{log};
@@ -273,22 +275,22 @@ TEST(StateTest, 遷移しても元の状態オブジェクトが生きている)
 // std::variant 版
 // ---------------------------------------------------------------------------
 
-TEST(StateTest, variant版は非多態でヒープを使わない)
+TEST(StateTest, VariantVersionIsNonPolymorphicAndUsesNoHeap)
 {
-  static_assert(!std::is_polymorphic_v<StoppedState>, "variant の状態に vtable は要りません");
-  static_assert(!std::is_polymorphic_v<IdleState>, "variant の状態に vtable は要りません");
-  static_assert(!std::is_polymorphic_v<RunningState>, "variant の状態に vtable は要りません");
-  static_assert(!std::is_polymorphic_v<FaultedState>, "variant の状態に vtable は要りません");
-  static_assert(!std::is_polymorphic_v<VariantStateMachine>, "Context にも vtable は要りません");
-  static_assert(std::is_trivially_destructible_v<StateVariant>, "デストラクタも要りません");
-  static_assert(sizeof(StateVariant) <= 8, "状態はすべて直和型の中に収まります");
+  static_assert(!std::is_polymorphic_v<StoppedState>, "variant の状態に vtable は要りません / The states of the variant need no vtable");
+  static_assert(!std::is_polymorphic_v<IdleState>, "variant の状態に vtable は要りません / The states of the variant need no vtable");
+  static_assert(!std::is_polymorphic_v<RunningState>, "variant の状態に vtable は要りません / The states of the variant need no vtable");
+  static_assert(!std::is_polymorphic_v<FaultedState>, "variant の状態に vtable は要りません / The states of the variant need no vtable");
+  static_assert(!std::is_polymorphic_v<VariantStateMachine>, "Context にも vtable は要りません / The Context needs no vtable either");
+  static_assert(std::is_trivially_destructible_v<StateVariant>, "デストラクタも要りません / No destructor is needed either");
+  static_assert(sizeof(StateVariant) <= 8, "状態はすべて直和型の中に収まります / All states fit inside the sum type");
 
   // 型だけでなく、id_of() が std::visit で正しく振り分けられているかも見ます。
   EXPECT_EQ(id_of(StateVariant{IdleState{}}), MachineState::Idle);
   EXPECT_EQ(id_of(StateVariant{RunningState{}}), MachineState::Running);
 }
 
-TEST(StateTest, variant版は状態ごとのデータを持てる)
+TEST(StateTest, VariantVersionHoldsPerStateData)
 {
   TransitionLog log;
   VariantStateMachine machine{log};
@@ -304,7 +306,7 @@ TEST(StateTest, variant版は状態ごとのデータを持てる)
   EXPECT_EQ(std::get<FaultedState>(machine.raw()).cause, MachineEvent::EmergencyStop);
 }
 
-TEST(StateTest, variant版のnext_stateは遷移しないならnullopt)
+TEST(StateTest, VariantNextStateIsNulloptWithoutTransition)
 {
   const StateVariant faulted{FaultedState{MachineEvent::EmergencyStop}};
   EXPECT_FALSE(VariantStateMachine::next_state(faulted, MachineEvent::Start).has_value());
@@ -321,20 +323,20 @@ TEST(StateTest, variant版のnext_stateは遷移しないならnullopt)
 // 3 実装の一致
 // ---------------------------------------------------------------------------
 
-TEST(StateTest, 3つの実装が同じ遷移列と同じログを返す)
+TEST(StateTest, ThreeImplementationsGiveSameTransitionsAndLog)
 {
   const RunResult<EnumStateMachine> by_enum = execute<EnumStateMachine>(kScenario);
   const RunResult<ClassStateMachine> by_class = execute<ClassStateMachine>(kScenario);
   const RunResult<VariantStateMachine> by_variant = execute<VariantStateMachine>(kScenario);
 
-  EXPECT_EQ(by_enum.states, by_class.states) << "enum 版と State クラス版で遷移が違います";
-  EXPECT_EQ(by_enum.states, by_variant.states) << "enum 版と variant 版で遷移が違います";
+  EXPECT_EQ(by_enum.states, by_class.states) << drill::localized("enum 版と State クラス版で遷移が違います", "The enum version and the State class version transition differently");
+  EXPECT_EQ(by_enum.states, by_variant.states) << drill::localized("enum 版と variant 版で遷移が違います", "The enum version and the variant version transition differently");
 
   EXPECT_EQ(by_enum.changed, by_class.changed);
   EXPECT_EQ(by_enum.changed, by_variant.changed);
 
-  EXPECT_EQ(by_enum.log, by_class.log) << "入退場アクションの並びが違います";
-  EXPECT_EQ(by_enum.log, by_variant.log) << "入退場アクションの並びが違います";
+  EXPECT_EQ(by_enum.log, by_class.log) << drill::localized("入退場アクションの並びが違います", "The order of enter/exit actions is different");
+  EXPECT_EQ(by_enum.log, by_variant.log) << drill::localized("入退場アクションの並びが違います", "The order of enter/exit actions is different");
 
   // 期待値そのものも固定しておきます（3 つとも同じように間違えている場合の保険）。
   const States expected_states = {

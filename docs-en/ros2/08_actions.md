@@ -114,7 +114,7 @@ ros2 interface show turtlesim/action/RotateAbsolute
 
 The output has the following structure (notice that it is split into three parts by `---`).
 
-<!-- measure: env=static reason="turtlesim_node の起動が要り、Docker イメージに turtlesim も無い" -->
+<!-- measure: env=static reason="needs turtlesim_node running, and the Docker image has no turtlesim" -->
 ```
 float32 theta
 ---
@@ -145,7 +145,7 @@ Hint: The unit of theta is radians. 1.57 is about 90 degrees (π/2). If you want
 
 <details markdown="1"><summary>Answer (example of actual output)</summary>
 
-<!-- measure: env=static reason="turtlesim_node の起動が要り、Docker イメージに turtlesim も無い"（GUI の亀も回る） -->
+<!-- measure: env=static reason="needs turtlesim_node running (the turtle in the GUI also moves), and the Docker image has no turtlesim" -->
 ```
 Waiting for an action server to become available...
 Sending goal:

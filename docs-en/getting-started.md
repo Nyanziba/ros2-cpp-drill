@@ -54,7 +54,7 @@ ROS_DISTRO=lyrical docker compose run --rm drill ./drill list
 
 If you see the list of exercises and your progress, it worked.
 
-To get English output from drill, set `DRILL_LANG=en`, for example `DRILL_LANG=en docker compose run --rm drill ./drill list` (with a direct install, `DRILL_LANG=en ./drill list`).
+To get English output from drill and from the test failure messages, set `DRILL_LANG=en`, for example `DRILL_LANG=en docker compose run --rm drill ./drill list` (with a direct install, `DRILL_LANG=en ./drill list`).
 
 **The container uses the source files on the host as they are.** Edit them in your usual editor.
 
@@ -142,7 +142,7 @@ If you get stuck, you can get hints. They go step by step, and the last one show
 
 When you open an exercise in VS Code, you may see this.
 
-<!-- measure: env=static reason="VS Code の IntelliSense のメッセージで、コマンドの出力ではなく Docker では出せない" -->
+<!-- measure: env=static reason="a VS Code IntelliSense message, not command output, so it cannot be produced in Docker" -->
 ```
 #include errors detected. Please update your includePath.
 Squiggles are disabled for this translation unit.

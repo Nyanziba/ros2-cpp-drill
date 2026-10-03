@@ -105,20 +105,20 @@ _Static_assert(sizeof(CanPayload) == 8, "CanPayload must be 8 bytes");
 
 | Test | What it checks |
 | --- | --- |
-| `CanPayloadのサイズは8バイト` (the size of CanPayload is 8 bytes) | Whether the struct size is 8 bytes |
-| `CanPayload構造体が正しく定義されている` (the CanPayload struct is defined correctly) | Whether member access works |
-| `デバッグモードが有効` (debug mode is enabled) | Whether `is_debug_mode()` returns 1 |
-| `ポート検証_有効なID1` (port validation, valid ID 1) | Whether 1 is valid |
-| `ポート検証_有効なID8` (port validation, valid ID 8) | Whether 8 is valid |
-| `ポート検証_有効なID5` (port validation, valid ID 5) | Whether 5 is valid |
-| `ポート検証_無効なID0` (port validation, invalid ID 0) | Whether 0 is invalid |
-| `ポート検証_無効なID9` (port validation, invalid ID 9) | Whether 9 is invalid |
-| `SQUARE_マクロ_1_0` (SQUARE macro, 1.0) | Whether the macro works (basic) |
-| `SQUARE_マクロ_5` (SQUARE macro, 5) | Whether the calculation result is exact |
-| `SQUARE_マクロ_負数` (SQUARE macro, negative number) | Handling of negative numbers |
-| `DOUBLE_SQ_マクロ` (DOUBLE_SQ macro) | Whether the multi-statement macro works |
-| `DOUBLE_SQ_マクロ_0` (DOUBLE_SQ macro, 0) | Handling of zero |
-| `DOUBLE_SQ_マクロ_複数回呼び出し` (DOUBLE_SQ macro, called several times) | Consecutive calls |
+| `CanPayloadSizeIs8Bytes` | Whether the struct size is 8 bytes |
+| `CanPayloadIsDefinedCorrectly` | Whether member access works |
+| `DebugModeIsEnabled` | Whether `is_debug_mode()` returns 1 |
+| `ValidatesPortId1AsValid` | Whether 1 is valid |
+| `ValidatesPortId8AsValid` | Whether 8 is valid |
+| `ValidatesPortId5AsValid` | Whether 5 is valid |
+| `ValidatesPortId0AsInvalid` | Whether 0 is invalid |
+| `ValidatesPortId9AsInvalid` | Whether 9 is invalid |
+| `SquareOfOne` | Whether the macro works (basic) |
+| `SquareOfFive` | Whether the calculation result is exact |
+| `SquareOfNegativeNumber` | Handling of negative numbers |
+| `DoubleSquareSquaresVariable` | Whether the multi-statement macro works |
+| `DoubleSquareOfZero` | Handling of zero |
+| `DoubleSquareCalledRepeatedly` | Consecutive calls |
 
 ## References
 

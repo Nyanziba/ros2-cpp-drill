@@ -105,20 +105,20 @@ _Static_assert(sizeof(CanPayload) == 8, "CanPayload must be 8 bytes");
 
 | テスト | 見ているところ |
 | --- | --- |
-| `CanPayloadのサイズは8バイト` | 構造体サイズが 8 バイトか |
-| `CanPayload構造体が正しく定義されている` | メンバアクセスが機能するか |
-| `デバッグモードが有効` | `is_debug_mode()` が 1 を返すか |
-| `ポート検証_有効なID1` | 1 は有効か |
-| `ポート検証_有効なID8` | 8 は有効か |
-| `ポート検証_有効なID5` | 5 は有効か |
-| `ポート検証_無効なID0` | 0 は無効か |
-| `ポート検証_無効なID9` | 9 は無効か |
-| `SQUARE_マクロ_1_0` | マクロが機能するか（基本） |
-| `SQUARE_マクロ_5` | 正確な計算結果か |
-| `SQUARE_マクロ_負数` | 負数の扱い |
-| `DOUBLE_SQ_マクロ` | 複文マクロが機能するか |
-| `DOUBLE_SQ_マクロ_0` | ゼロの扱い |
-| `DOUBLE_SQ_マクロ_複数回呼び出し` | 連続呼び出し |
+| `CanPayloadSizeIs8Bytes` | 構造体サイズが 8 バイトか |
+| `CanPayloadIsDefinedCorrectly` | メンバアクセスが機能するか |
+| `DebugModeIsEnabled` | `is_debug_mode()` が 1 を返すか |
+| `ValidatesPortId1AsValid` | 1 は有効か |
+| `ValidatesPortId8AsValid` | 8 は有効か |
+| `ValidatesPortId5AsValid` | 5 は有効か |
+| `ValidatesPortId0AsInvalid` | 0 は無効か |
+| `ValidatesPortId9AsInvalid` | 9 は無効か |
+| `SquareOfOne` | マクロが機能するか（基本） |
+| `SquareOfFive` | 正確な計算結果か |
+| `SquareOfNegativeNumber` | 負数の扱い |
+| `DoubleSquareSquaresVariable` | 複文マクロが機能するか |
+| `DoubleSquareOfZero` | ゼロの扱い |
+| `DoubleSquareCalledRepeatedly` | 連続呼び出し |
 
 ## 参考
 

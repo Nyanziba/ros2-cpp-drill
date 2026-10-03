@@ -131,10 +131,10 @@ and `hooks/drill_version.py` swaps in the output and the version names.
   <!-- /only -->
   ```
 
-- Words that differ only by the version name (`/opt/ros/jazzy`, `ros-jazzy-`, `docs.ros.org/en/jazzy/`, `ROS 2 Jazzy`, `Ubuntu 24.04`, `g++ 13.3.0`, `g++ 13.3`,
+- Words that differ only by the version name (`Jazzy Jalisco`, `/opt/ros/jazzy`, `ros-jazzy-`, `ROS 2 Jazzy`, `Ubuntu 24.04`, `g++ 13.3.0`, `g++ 13.3`,
   `ros2-drill:jazzy`) need no separate writing; the hook replaces them. The list is `drill_replacements` in `mkdocs.lyrical.yml`.
-- The structure of `docs.ros.org` changed in Lyrical (for example, Installation is under `Get-Started/Installation/`). A replaced URL may not open,
-  so after you add a link, check that it also opens on the Lyrical site.
+- `docs.ros.org` URLs are not replaced. The structure of the official Lyrical docs changed (for example, Installation is under `Get-Started/Installation/`),
+  so many of the same paths do not open. The Lyrical version also points to the Jazzy pages. Write only the links whose content differs by version with `<!-- only: ... -->`.
 - The "(gcc 13.3)" Compiler Explorer links run on a real gcc 13.3 at the link target, so they stay as they are in both versions.
 
 The code in the C++ chapters has a [Compiler Explorer](https://godbolt.org/) link (`▶ Run in your browser`).
@@ -216,6 +216,9 @@ solutions/<id>/...          # sample solution (shown by ./drill solution)
 - Tests that use ROS 2 use the shared helper [`tools/drill_harness.hpp`](tools/drill_harness.hpp).
 - Write test failure messages so the learner knows **what to check next**
   (example: "Did you put `create_publisher<std_msgs::msg::String>("topic", 10)` into `publisher_`?").
+- Test names (`TEST(Suite, Name)` or pytest `def test_...`) are **English identifiers**, shared by both languages (example: `SwapsTwoVariables`).
+- Wrap failure messages in `drill::localized("日本語", "English")` ([`tools/drill_i18n.hpp`](tools/drill_i18n.hpp)). `DRILL_LANG` switches between Japanese and English.
+- `static_assert` is printed at compile time, so it cannot switch. Write its message as one string, `"日本語 / English"`.
 
 ### Register it in exercises.json
 
@@ -247,6 +250,8 @@ docker compose run --rm drill ./drill reset <id>   # restore
 
 Commit `exercises/` in the unsolved state (with `// I AM NOT DONE` still in place).
 
+To check every exercise at once, run `docker compose run --rm drill python3 tools/verify_exercises.py` (narrow it with `--track cppb` or `--id cppb06`). For each exercise it checks "fails when unsolved" and "passes with the solution", then restores `templates/`. CI (`.github/workflows/exercises.yml`) runs the same script.
+
 ## English version
 
 The English readings are in `docs-en/`, the exercise text is in `exercises/<id>/README.en.md`,
@@ -254,7 +259,8 @@ and in `exercises.json` they are the `*_en` fields. **The Japanese version is th
 
 - If you fix the Japanese version, **please fix the English version in the same PR if you can.** The rules, the file name table, and the glossary
   are in [TRANSLATING.md](TRANSLATING.md).
-- If English is hard for you, fix only the Japanese version and write "English version not done" in the PR body. A maintainer will follow up.
+- If English is hard for you, fix only the Japanese version and write "English not updated" in the PR body. A maintainer will follow up.
+- For a PR that changes only the Japanese version, CI (translation-drift) shows a warning. It does not fail, but the summary asks you to write "English not updated" if you have not.
 - When you translate code in the English version, [measure](#the-most-important-rule-output-is-measured) the output again too.
 
 ## Checklist before you send
@@ -265,5 +271,6 @@ The PR template has the same items.
 - [ ] If I changed code, I also made the output and the Compiler Explorer link again
 - [ ] `mkdocs build --strict` passes (also the English `-f mkdocs.en.yml` and the Lyrical `-f mkdocs.lyrical.yml` / `-f mkdocs.lyrical.en.yml` if I changed the readings)
 - [ ] If I changed an exercise, I checked that it fails when unsolved and passes with the sample solution
-- [ ] I fixed the English version too (or wrote "English version not done" in the PR)
+- [ ] I fixed the English version too (or wrote "English not updated" in the PR)
+- [ ] `python3 tools/check_docs.py` passes (it checks the JA/EN page structure, the exercise data, and the templates)
 - [ ] Only one topic in one PR

@@ -99,7 +99,7 @@ You can see the detailed information of a topic (type, number of publishers, num
 ros2 topic info /turtle1/cmd_vel
 ```
 
-<!-- measure: env=static reason="turtlesim_node の起動が要り、Docker イメージに turtlesim も無い" -->
+<!-- measure: env=static reason="needs turtlesim_node running, and the Docker image has no turtlesim" -->
 ```
 Type: geometry_msgs/msg/Twist
 Publisher count: 1

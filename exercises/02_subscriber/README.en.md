@@ -55,9 +55,9 @@ If `I heard: 'Hello'` appears in the terminal where `listener` is running, it wo
 
 | Test | What it checks |
 | --- | --- |
-| `topicを購読してログに出している` (subscribes to topic and prints a log) | Whether the subscription is running and prints `I heard: '<message text>'` |
-| `複数通受信しても毎回ログが出る` (prints a log every time, even for multiple messages) | Whether the subscription stops after the first message |
-| `ノード名がminimal_subscriberになっている` (the node name is minimal_subscriber) | Setting the node name in the constructor |
+| `SubscribesToTopicAndLogs` | Whether the subscription is running and prints `I heard: '<message text>'` |
+| `LogsEveryTimeForMultipleMessages` | Whether the subscription stops after the first message |
+| `NodeNameIsMinimalSubscriber` | Setting the node name in the constructor |
 
 ## References
 

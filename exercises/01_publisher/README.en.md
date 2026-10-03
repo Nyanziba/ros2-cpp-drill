@@ -53,10 +53,10 @@ ros2 node info /minimal_publisher
 
 | Test | What it checks |
 | --- | --- |
-| `topicトピックにpublishしている` (publishes to the topic `topic`) | Whether the publisher and the timer are running |
-| `本文がHello_worldと連番になっている` (the message text is Hello_world with a sequence number) | Building the message text and `count_++` |
-| `おおよそ500ミリ秒周期でpublishしている` (publishes at about a 500 ms period) | The timer period |
-| `公式と同じPublishingログを出している` (prints the same Publishing log as the official one) | The format of `RCLCPP_INFO` |
+| `PublishesToTopicTopic` | Whether the publisher and the timer are running |
+| `BodyIsHelloWorldWithSequenceNumber` | Building the message text and `count_++` |
+| `PublishesAboutEvery500Milliseconds` | The timer period |
+| `LogsSameAsOfficialPublishing` | The format of `RCLCPP_INFO` |
 
 ## References
 

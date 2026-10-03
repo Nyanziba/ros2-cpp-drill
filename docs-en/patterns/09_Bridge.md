@@ -359,7 +359,7 @@ The test of the exercise checks this with `static_assert`.
 ```cpp
 static_assert(
   sizeof(LinkStats) == sizeof(std::unique_ptr<void *>),
-  "LinkStats should be the size of one pointer. Did you write the implementation in the header?");
+  "LinkStats must be the size of one pointer. Did you put the implementation in the header?");
 ```
 
 The **costs** are also clear.

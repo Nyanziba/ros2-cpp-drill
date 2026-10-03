@@ -33,8 +33,8 @@ Functions to implement:
 
 | Test | What it checks |
 | --- | --- |
-| `ムーブコンストラクタがデータを転送する` (the move constructor transfers the data) | pointer transfer in the move constructor |
-| `ムーブ代入がデータを転送する` (the move assignment transfers the data) | a correct implementation of the move assignment |
+| `MoveConstructorTransfersData` | pointer transfer in the move constructor |
+| `MoveAssignmentTransfersData` | a correct implementation of the move assignment |
 
 ## References
 

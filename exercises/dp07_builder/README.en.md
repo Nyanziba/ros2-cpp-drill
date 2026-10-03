@@ -64,7 +64,7 @@ It is an example where, if you build with only `constexpr`, it can be placed in 
 ## Common pitfalls
 
 - If a setter returns `MotorConfigBuilder` (by value), the test
-  "チェーンは同じBuilderの参照を返す" (the chain returns a reference to the same Builder) fails it by comparing addresses
+  `ChainReturnsReferenceToSameBuilder` fails it by comparing addresses
 - Implement **both** `build() &&` and `build() const &`. If you implement only one,
   the other way of calling it becomes a compile error
   (`error: 'this' argument to member function 'build' is an lvalue, but function has rvalue ref-qualifier`)

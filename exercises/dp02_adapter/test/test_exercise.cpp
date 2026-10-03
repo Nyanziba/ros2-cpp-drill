@@ -7,8 +7,10 @@
 #include <vector>
 
 #include "drill/motor_adapter.hpp"
+#include "drill_i18n.hpp"
+#include "drill_i18n.hpp"
 
-TEST(AdapterTest, 委譲版が角速度をパルスに変換する)
+TEST(AdapterTest, DelegationConvertsAngularVelocityToPulses)
 {
   DelegatingMotorAdapter adapter{LegacyMotorDriver{}};
 
@@ -19,7 +21,7 @@ TEST(AdapterTest, 委譲版が角速度をパルスに変換する)
   EXPECT_EQ(adapter.raw().getPulse(), -250);
 }
 
-TEST(AdapterTest, 委譲版がドライバの上限で丸められる)
+TEST(AdapterTest, DelegationClampsAtDriverLimit)
 {
   DelegatingMotorAdapter adapter{LegacyMotorDriver{}};
 
@@ -27,7 +29,7 @@ TEST(AdapterTest, 委譲版がドライバの上限で丸められる)
   EXPECT_EQ(adapter.raw().getPulse(), LegacyMotorDriver::MAX_PULSE);
 }
 
-TEST(AdapterTest, 委譲版のstopがパルスをゼロにする)
+TEST(AdapterTest, DelegationStopZeroesPulses)
 {
   DelegatingMotorAdapter adapter{LegacyMotorDriver{}};
 
@@ -37,7 +39,7 @@ TEST(AdapterTest, 委譲版のstopがパルスをゼロにする)
   EXPECT_EQ(adapter.raw().getPulse(), 0);
 }
 
-TEST(AdapterTest, 委譲版がエンコーダ生値をradに変換する)
+TEST(AdapterTest, DelegationConvertsRawEncoderToRadians)
 {
   DelegatingMotorAdapter adapter{LegacyMotorDriver{}};
 
@@ -48,7 +50,7 @@ TEST(AdapterTest, 委譲版がエンコーダ生値をradに変換する)
   EXPECT_DOUBLE_EQ(adapter.position_rad(), -0.5);
 }
 
-TEST(AdapterTest, 継承版が委譲版とまったく同じ結果になる)
+TEST(AdapterTest, InheritanceMatchesDelegationResults)
 {
   DelegatingMotorAdapter delegating{LegacyMotorDriver{}};
   InheritingMotorAdapter inheriting{LegacyMotorDriver{}};
@@ -72,7 +74,7 @@ TEST(AdapterTest, 継承版が委譲版とまったく同じ結果になる)
   EXPECT_DOUBLE_EQ(delegating.position_rad(), inheriting.position_rad());
 }
 
-TEST(AdapterTest, 基底ポインタ越しに同じように扱える)
+TEST(AdapterTest, WorksThroughBasePointer)
 {
   LegacyMotorDriver driver;
   driver.injectEncoderRaw(400);

@@ -20,6 +20,8 @@
 #include <rclcpp/rclcpp.hpp>
 #include <rcutils/logging.h>
 
+#include "drill_i18n.hpp"
+
 namespace drill
 {
 
@@ -171,7 +173,7 @@ public:
   {
     std::lock_guard<std::mutex> lock(mutex());
     if (lines_.empty()) {
-      return "（ログ出力はありませんでした）";
+      return drill::localized("（ログ出力はありませんでした）", "(there was no log output)");
     }
     std::string out;
     for (const auto & line : lines_) {

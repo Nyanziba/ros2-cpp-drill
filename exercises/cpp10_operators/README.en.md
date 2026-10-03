@@ -36,11 +36,11 @@ Vec2 operator*(const Vec2 & v, double s) { ... }
 Vec2 operator*(double s, const Vec2 & v) { ... }
 ```
 
-If you write it as a member function, you cannot write the case where the left side is a `double`. The test `スカラー倍は左右どちらの順番でも書ける` (scalar multiplication can be written in either order) requires both.
+If you write it as a member function, you cannot write the case where the left side is a `double`. The test `ScalarMultiplicationWorksInEitherOrder` requires both.
 
 **`operator<` uses `<`, not `<=`**
 
-If you use `<=` in `operator<` to mean "less than or equal", `std::sort` gets undefined behavior in the test `大小比較は厳密弱順序である` (the comparison is a strict weak ordering). For the reason, see section 10.3 of [10. Operator overloading](../../docs-en/cpp/10_operator_overloading.md).
+If you use `<=` in `operator<` to mean "less than or equal", `std::sort` gets undefined behavior in the test `LessThanIsStrictWeakOrdering`. For the reason, see section 10.3 of [10. Operator overloading](../../docs-en/cpp/10_operator_overloading.md).
 
 ```cpp
 bool operator<(const Vec2 & a, const Vec2 & b) {
@@ -57,7 +57,7 @@ std::ostream & operator<<(std::ostream & os, const Vec2 & v) {
 }
 ```
 
-The test `ostream演算子は繋げられる` (the ostream operator can be chained) keeps writing `oss << "a=" << Vec2{1.0, 2.0} << " b=" << Vec2{3.0, 4.0}`, so each `<<` must return `std::ostream &`.
+The test `StreamOperatorCanBeChained` keeps writing `oss << "a=" << Vec2{1.0, 2.0} << " b=" << Vec2{3.0, 4.0}`, so each `<<` must return `std::ostream &`.
 
 **`operator+=` returns `Vec2 &`, and it returns `*this`, not a move**
 
@@ -69,7 +69,7 @@ Vec2 & Vec2::operator+=(const Vec2 & other) {
 }
 ```
 
-Return a reference, not a copy. The test `加算代入は自分自身への参照を返す` (the compound assignment returns a reference to itself) checks this by comparing the addresses with `EXPECT_EQ(&returned, &a)`.
+Return a reference, not a copy. The test `CompoundAdditionReturnsReferenceToSelf` checks this by comparing the addresses with `EXPECT_EQ(&returned, &a)`.
 
 **Write `operator!=` using `operator==`**
 
@@ -89,14 +89,14 @@ If `operator==` is implemented correctly, `!=` is automatically correct. Do not 
 
 | Test | What it checks |
 | --- | --- |
-| `足し算と引き算` (addition and subtraction) | the implementation of `operator+` and `operator-` |
-| `スカラー倍は左右どちらの順番でも書ける` (scalar multiplication can be written in either order) | whether `operator*` works on both sides (`v * 2.0` and `2.0 * v`) |
-| `加算代入は自分自身への参照を返す` (the compound assignment returns a reference to itself) | whether `operator+=` returns `Vec2 &` and returns the same address |
-| `等価比較と非等価比較` (equality and inequality comparison) | the implementation of `operator==` and `operator!=`, and whether a difference in either component is detected |
-| `大小比較は厳密弱順序である` (the comparison is a strict weak ordering) | whether `operator<` uses `<`, `a < a` is false, and both are false when the lengths are the same |
-| `std_sortで並べられる` (you can sort with std::sort) | whether `operator<` works correctly with `std::sort` |
-| `ostreamに流せる` (you can stream to an ostream) | whether `operator<<` prints in the form `(x, y)` |
-| `ostream演算子は繋げられる` (the ostream operator can be chained) | whether `operator<<` returns `std::ostream &` and `<<` can be chained |
+| `AdditionAndSubtraction` | the implementation of `operator+` and `operator-` |
+| `ScalarMultiplicationWorksInEitherOrder` | whether `operator*` works on both sides (`v * 2.0` and `2.0 * v`) |
+| `CompoundAdditionReturnsReferenceToSelf` | whether `operator+=` returns `Vec2 &` and returns the same address |
+| `EqualityAndInequality` | the implementation of `operator==` and `operator!=`, and whether a difference in either component is detected |
+| `LessThanIsStrictWeakOrdering` | whether `operator<` uses `<`, `a < a` is false, and both are false when the lengths are the same |
+| `CanBeSortedWithStdSort` | whether `operator<` works correctly with `std::sort` |
+| `CanBeStreamedToOstream` | whether `operator<<` prints in the form `(x, y)` |
+| `StreamOperatorCanBeChained` | whether `operator<<` returns `std::ostream &` and `<<` can be chained |
 
 ## References
 

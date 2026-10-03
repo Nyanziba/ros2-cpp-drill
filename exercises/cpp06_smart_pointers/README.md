@@ -33,7 +33,7 @@ weak_ptr を使い、外部で保持されている Item だけを fire() で処
 
 | テスト | 見ているところ |
 | --- | --- |
-| `生きているItemだけが出力される` | weak_ptr の expired() チェック |
+| `OnlyAliveItemsArePrinted` | weak_ptr の expired() チェック |
 
 ## 参考
 

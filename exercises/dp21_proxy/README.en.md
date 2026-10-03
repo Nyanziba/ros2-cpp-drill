@@ -44,9 +44,9 @@ The test checks the strings for an exact match.
 
 - `error: no viable overloaded '='` / `but method is not marked const`
   → `operator->` is `const`. Look at `mutable std::unique_ptr<...> real_;` in the header
-- "最初のアクセスまで本体は作られない" (the real object is not created until the first access) fails
+- `RealObjectIsNotCreatedUntilFirstAccess` fails
   → You are creating the real object in the constructor of `CalibrationProxy`
-- "二度目以降のアクセスで本体は作り直されない" (the real object is not recreated on the second and later accesses) fails
+- `RealObjectIsNotRecreatedOnLaterAccess` fails
   → You forgot the `if (!real_)` check and call `make_unique` every time
 - `proxy->write_raw(...)` does not work
   → `RegisterAccess::operator->()` returns `nullptr`.

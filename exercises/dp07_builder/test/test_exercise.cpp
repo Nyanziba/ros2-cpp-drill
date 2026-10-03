@@ -8,6 +8,8 @@
 
 #include "drill/motor_config.hpp"
 #include "drill/telemetry_builder.hpp"
+#include "drill_i18n.hpp"
+#include "drill_i18n.hpp"
 
 namespace
 {
@@ -48,25 +50,25 @@ static_assert(
   std::is_same_v<
     decltype(std::declval<MotorConfigBuilder &>().motor_id(std::uint8_t{0})),
     MotorConfigBuilder &>,
-  "セッタは MotorConfigBuilder & を返してください。値で返すとチェーンのたびにコピーされます");
+  "セッタは MotorConfigBuilder & を返してください。値で返すとチェーンのたびにコピーされます / Setters must return MotorConfigBuilder &. Returning by value copies at every step of the chain");
 
 static_assert(
   std::is_same_v<
     decltype(std::declval<MotorConfigBuilder &>().name(std::string{})),
     MotorConfigBuilder &>,
-  "セッタは MotorConfigBuilder & を返してください");
+  "セッタは MotorConfigBuilder & を返してください / Setters must return MotorConfigBuilder &");
 
 /// マイコン向けの constexpr Builder。組み立てがコンパイル時に終わることの証明。
 constexpr ControlLimits kDriveLimits =
   ControlLimitsBuilder{}.max_velocity(20.0F).max_accel(80.0F).build();
 
-static_assert(kDriveLimits.max_velocity_rad_per_sec == 20.0F, "constexpr で組み立てられていません");
-static_assert(kDriveLimits.max_accel_rad_per_sec2 == 80.0F, "constexpr で組み立てられていません");
-static_assert(kDriveLimits.max_current_ampere == 5.0F, "設定していない項目は既定値のはずです");
+static_assert(kDriveLimits.max_velocity_rad_per_sec == 20.0F, "constexpr で組み立てられていません / It is not built as a constexpr");
+static_assert(kDriveLimits.max_accel_rad_per_sec2 == 80.0F, "constexpr で組み立てられていません / It is not built as a constexpr");
+static_assert(kDriveLimits.max_current_ampere == 5.0F, "設定していない項目は既定値のはずです / Items you did not set must keep their default values");
 
 // --- 結城本の形（Director + Builder） --------------------------------------
 
-TEST(BuilderTest, 同じDirectorがCSVを組み立てる)
+TEST(BuilderTest, SameDirectorBuildsCsv)
 {
   CsvTelemetryBuilder builder;
   TelemetryDirector director{builder};
@@ -81,7 +83,7 @@ TEST(BuilderTest, 同じDirectorがCSVを組み立てる)
   EXPECT_EQ(builder.result(), expected);
 }
 
-TEST(BuilderTest, 同じDirectorがJSONを組み立てる)
+TEST(BuilderTest, SameDirectorBuildsJson)
 {
   JsonTelemetryBuilder builder;
   TelemetryDirector director{builder};
@@ -97,7 +99,7 @@ TEST(BuilderTest, 同じDirectorがJSONを組み立てる)
   EXPECT_EQ(builder.result(), expected);
 }
 
-TEST(BuilderTest, Directorが手順を持ちBuilderは呼ばれる順を知らない)
+TEST(BuilderTest, DirectorOwnsStepsAndBuilderDoesNotKnowOrder)
 {
   RecordingTelemetryBuilder builder;
   TelemetryDirector director{builder};
@@ -114,7 +116,7 @@ TEST(BuilderTest, Directorが手順を持ちBuilderは呼ばれる順を知ら�
 
 // --- 実務の形（メソッドチェーン） ------------------------------------------
 
-TEST(MotorConfigBuilderTest, チェーンで設定した値がすべて反映される)
+TEST(MotorConfigBuilderTest, ChainedValuesAreAllApplied)
 {
   const auto config = MotorConfigBuilder{}
                         .motor_id(3)
@@ -126,7 +128,7 @@ TEST(MotorConfigBuilderTest, チェーンで設定した値がすべて反映さ
                         .brake_on_stop(false)
                         .build();
 
-  ASSERT_TRUE(config.has_value()) << "必須項目を埋めたのに build() が失敗しています";
+  ASSERT_TRUE(config.has_value()) << drill::localized("必須項目を埋めたのに build() が失敗しています", "build() failed although all required fields were set");
   EXPECT_EQ(config->motor_id, 3);
   EXPECT_EQ(config->name, "drive_left");
   EXPECT_DOUBLE_EQ(config->max_duty, 0.8);
@@ -136,7 +138,7 @@ TEST(MotorConfigBuilderTest, チェーンで設定した値がすべて反映さ
   EXPECT_FALSE(config->brake_on_stop);
 }
 
-TEST(MotorConfigBuilderTest, 設定していない項目は既定値になる)
+TEST(MotorConfigBuilderTest, UnsetFieldsUseDefaults)
 {
   const auto config = MotorConfigBuilder{}.motor_id(1).build();
 
@@ -150,20 +152,20 @@ TEST(MotorConfigBuilderTest, 設定していない項目は既定値になる)
   EXPECT_TRUE(config->brake_on_stop);
 }
 
-TEST(MotorConfigBuilderTest, 必須項目が欠けたbuildはnulloptを返す)
+TEST(MotorConfigBuilderTest, BuildWithMissingRequiredFieldReturnsNullopt)
 {
   const auto missing = MotorConfigBuilder{}.name("drive_left").max_duty(0.5).build();
   EXPECT_FALSE(missing.has_value())
-    << "motor_id を設定していないので std::nullopt を返してください";
+    << drill::localized("motor_id を設定していないので std::nullopt を返してください", "motor_id is not set, so return std::nullopt");
 
   // 逆に、必須項目さえ埋まっていれば成功します。
   // 「いつも nullopt を返す」実装で通らないよう、対にして見ています。
   const auto filled = MotorConfigBuilder{}.name("drive_left").motor_id(9).build();
-  ASSERT_TRUE(filled.has_value()) << "motor_id を設定したのに std::nullopt が返っています";
+  ASSERT_TRUE(filled.has_value()) << drill::localized("motor_id を設定したのに std::nullopt が返っています", "std::nullopt was returned although motor_id was set");
   EXPECT_EQ(filled->motor_id, 9);
 }
 
-TEST(MotorConfigBuilderTest, チェーンは同じBuilderの参照を返す)
+TEST(MotorConfigBuilderTest, ChainReturnsReferenceToSameBuilder)
 {
   MotorConfigBuilder builder;
 
@@ -180,7 +182,7 @@ TEST(MotorConfigBuilderTest, チェーンは同じBuilderの参照を返す)
   EXPECT_DOUBLE_EQ(config->max_duty, 0.25);
 }
 
-TEST(MotorConfigBuilderTest, 右辺値からのbuildはムーブになる)
+TEST(MotorConfigBuilderTest, BuildFromRvalueMoves)
 {
   MotorConfigBuilder builder;
   builder.motor_id(2).name(kLongName);
@@ -191,10 +193,10 @@ TEST(MotorConfigBuilderTest, 右辺値からのbuildはムーブになる)
   ASSERT_TRUE(config.has_value());
   EXPECT_EQ(config->name, kLongName);
   EXPECT_EQ(config->name.data(), before)
-    << "build() && ではバッファを移してください（std::move）";
+    << drill::localized("build() && ではバッファを移してください（std::move）", "build() && must move the buffer (std::move)");
 }
 
-TEST(MotorConfigBuilderTest, 左辺値からのbuildはコピーになりBuilderは壊れない)
+TEST(MotorConfigBuilderTest, BuildFromLvalueCopiesAndKeepsBuilderIntact)
 {
   MotorConfigBuilder builder;
   builder.motor_id(2).name(kLongName);
@@ -205,7 +207,7 @@ TEST(MotorConfigBuilderTest, 左辺値からのbuildはコピーになりBuilder
   ASSERT_TRUE(first.has_value());
   EXPECT_EQ(first->name, kLongName);
   EXPECT_NE(first->name.data(), before)
-    << "build() const & で中身を奪っています。ここはコピーです";
+    << drill::localized("build() const & で中身を奪っています。ここはコピーです", "build() const & takes the contents. It must copy here");
 
   // Builder は壊れていないので、もう一度使えます。
   const auto second = builder.build();
