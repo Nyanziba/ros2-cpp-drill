@@ -61,6 +61,7 @@ VOLATILE_PATTERNS = (
     (re.compile(r"\(\d+ ms( total)?\)"), "(N ms\\1)"),                    # gtest の所要時間
     (re.compile(r"\[\d+\.\d+s\]"), "[N.NNs]"),                            # colcon の所要時間
     (re.compile(r"\[\d{10}\.\d+\]"), "[TIMESTAMP]"),                      # ROS のログの時刻
+    (re.compile(r" ?\((core dumped|コアダンプ)\)"), ""),                    # コアダンプの有無はシェルの設定で変わる
 )
 
 
