@@ -33,7 +33,7 @@ The overall picture is in [Overview of the material](../README.md).
 
 ## Map of the whole series
 
-There are 23 articles in total: 22 main articles and 1 supplement (`05b`). The numbers are the reading order.
+There are 24 articles in total: 22 main articles and 2 supplements (`05b` and `15b`). The numbers are the reading order.
 
 **Articles with a `b` are supplements.** You can skip them when you read through the main numbers in order. They help when you actually run into the trouble they cover.
 
@@ -52,7 +52,7 @@ In this part, you learn the basic ROS 2 concepts, such as nodes, topics, service
 8. [08_actions](08_actions.md)
 9. [09_launch_and_ros2_bag](09_launch_and_ros2_bag.md)
 
-### Part 2: Package development (8 articles)
+### Part 2: Package development (8 articles + 1 supplement)
 
 In this part, you learn to write your own ROS 2 packages. It covers both C++ and Python.
 
@@ -62,10 +62,11 @@ In this part, you learn to write your own ROS 2 packages. It covers both C++ and
 13. [13_custom_interfaces](13_custom_interfaces.md)
 14. [14_implementing_services](14_implementing_services.md)
 15. [15_parameters_and_launch_in_practice](15_parameters_and_launch_in_practice.md)
+15b. [15b_pluginlib](15b_pluginlib.md) (swapping plugins with YAML)
 16. [16_implementing_an_action_server](16_implementing_an_action_server.md)
 17. [17_testing_and_debugging](17_testing_and_debugging.md)
 
-### Part 3: Intermediate, running a robot (5 articles + 1 supplement)
+### Part 3: Intermediate, running a robot (5 articles)
 
 This part collects the knowledge you need to run a real robot: coordinate frames, URDF, ros2_control, sensor integration, and more.
 
@@ -83,7 +84,7 @@ Not everyone needs to read everything. We offer two courses, depending on your g
 
 This is for people who want to write and run their own nodes in ROS 2. The goal is that you can write one control package and take charge of one function of a real robot (such as a servo control node). Part 1 and Part 2 alone are enough.
 
-**Full course up to a real robot (Part 1 to Part 3, 23 articles)**
+**Full course up to a real robot (Part 1 to Part 3, 24 articles)**
 
 This is for people who want to work with real robots, including sensors, coordinate frames, and ros2_control.
 Part 3 covers TF2, URDF, ros2_control, sensor integration, and the ideas behind localization.

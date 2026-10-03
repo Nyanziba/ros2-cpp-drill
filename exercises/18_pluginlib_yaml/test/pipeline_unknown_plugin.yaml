@@ -1,0 +1,11 @@
+filter_host:
+  ros__parameters:
+    filters: ["deadband", "typo", "clamp"]
+    deadband:
+      plugin: "drill/DeadbandFilter"
+      linear_threshold: 0.05
+    typo:
+      plugin: "drill/NoSuchFilter"
+    clamp:
+      plugin: "drill/ClampFilter"
+      max_linear: 0.5

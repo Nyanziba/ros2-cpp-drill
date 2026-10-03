@@ -2685,6 +2685,188 @@
       ]
     },
     {
+      "id": "16_pluginlib_create",
+      "package": "drill_16_pluginlib_create",
+      "level": "上級",
+      "level_note": "資料の「別記事」にあたる領域。nav2 や ros2_control が部品を差し替える仕組み",
+      "title": "プラグインを作って書き出す（pluginlib）",
+      "kind": "gtest",
+      "sources": [
+        "src/filters.cpp",
+        "plugins.xml",
+        "cmake/export_plugins.cmake"
+      ],
+      "docs": [
+        {
+          "title": "Creating and using plugins (C++)",
+          "url": "https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Pluginlib.html"
+        }
+      ],
+      "hints": [
+        "pluginlib は、基底クラス（drill::VelocityFilter）を継承したクラスを「名前」で差し替える仕組みです。名前を引くための表が plugins.xml です。",
+        "ClampFilter::filter は std::clamp(値, -上限, +上限) で切れます。linear.x と angular.z の両方、負の向きも忘れずに。",
+        "",
+        "書き出しは 3 つの場所に必要です。1 つでも欠けるとクラスは作れません。",
+        "",
+        "  1. filters.cpp の末尾（include も要る）",
+        "       #include <pluginlib/class_list_macros.hpp>",
+        "       PLUGINLIB_EXPORT_CLASS(drill::ClampFilter, drill::VelocityFilter)",
+        "       （RateLimitFilter と DeadbandFilter も同じ形で 3 行）",
+        "",
+        "  2. plugins.xml の <library> の中",
+        "       <class name=\"drill/ClampFilter\" type=\"drill::ClampFilter\"",
+        "              base_class_type=\"drill::VelocityFilter\"/>",
+        "",
+        "  3. cmake/export_plugins.cmake（CMakeLists.txt から include される）",
+        "       pluginlib_export_plugin_description_file(${PROJECT_NAME} plugins.xml)"
+      ],
+      "lecture": [
+        {
+          "title": "ROS2講習15b: pluginlib",
+          "path": "docs/ros2/15b_pluginlib.md"
+        }
+      ],
+      "chapter": "15b章",
+      "level_en": "ROS 2 Advanced",
+      "level_note_en": "An area the lecture notes treat as a separate article: the mechanism nav2 and ros2_control use to swap parts",
+      "title_en": "Create a plugin and export it (pluginlib)",
+      "chapter_en": "ROS 2 ch.15b",
+      "hints_en": [
+        "pluginlib is a mechanism for swapping classes that inherit a base class (drill::VelocityFilter) by \"name\". plugins.xml is the table used to look those names up.",
+        "ClampFilter::filter can cut with std::clamp(value, -limit, +limit). Do both linear.x and angular.z, and the negative direction too.",
+        "",
+        "The export is needed in 3 places. If even one is missing, the class cannot be created.",
+        "",
+        "  1. At the end of filters.cpp (an include is needed too)",
+        "       #include <pluginlib/class_list_macros.hpp>",
+        "       PLUGINLIB_EXPORT_CLASS(drill::ClampFilter, drill::VelocityFilter)",
+        "       (3 lines in the same form, with RateLimitFilter and DeadbandFilter too)",
+        "",
+        "  2. Inside <library> of plugins.xml",
+        "       <class name=\"drill/ClampFilter\" type=\"drill::ClampFilter\"",
+        "              base_class_type=\"drill::VelocityFilter\"/>",
+        "",
+        "  3. cmake/export_plugins.cmake (included from CMakeLists.txt)",
+        "       pluginlib_export_plugin_description_file(${PROJECT_NAME} plugins.xml)"
+      ],
+      "lecture_en": [
+        {
+          "title": "ROS 2 Lecture 15b: pluginlib",
+          "path": "docs-en/ros2/15b_pluginlib.md"
+        }
+      ]
+    },
+    {
+      "id": "17_pluginlib_load",
+      "package": "drill_17_pluginlib_load",
+      "level": "上級",
+      "level_note": "資料の「別記事」にあたる領域。nav2 や ros2_control が部品を差し替える仕組み",
+      "title": "ClassLoader でプラグインを読み込む（pluginlib）",
+      "kind": "gtest",
+      "sources": [
+        "include/drill/filter_host.hpp",
+        "src/filter_host.cpp"
+      ],
+      "docs": [
+        {
+          "title": "Creating and using plugins (C++)",
+          "url": "https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Pluginlib.html"
+        }
+      ],
+      "hints": [
+        "ClassLoader は pluginlib::ClassLoader<drill::VelocityFilter>(パッケージ名, 基底クラス名) で作ります。コンストラクタの初期化子リストで作ると楽です。",
+        "プラグインは loader_.createSharedInstance(名前) で作り、すぐ initialize(shared_from_this(), \"filter\") を呼びます。コンストラクタの中では shared_from_this() が使えないので、configure() で行います。",
+        "名前が見つからないと PluginlibException が飛びます。try / catch で受けて、ログに名前を出し、フィルタを空のままにします。空なら apply は command をそのまま返します。",
+        "",
+        "メンバの宣言順に注意してください。メンバは宣言の逆順に壊れます。",
+        "",
+        "  pluginlib::ClassLoader<drill::VelocityFilter> loader_;   // 先に宣言（後に壊れる）",
+        "  std::shared_ptr<drill::VelocityFilter> filter_;          // 後に宣言（先に壊れる）",
+        "",
+        "ClassLoader が先に壊れると、フィルタが残っているのに ClassLoader が消え、class_loader が SEVERE WARNING を出します（未定義の動作になりえます）。"
+      ],
+      "lecture": [
+        {
+          "title": "ROS2講習15b: pluginlib",
+          "path": "docs/ros2/15b_pluginlib.md"
+        }
+      ],
+      "chapter": "15b章",
+      "level_en": "ROS 2 Advanced",
+      "level_note_en": "An area the lecture notes treat as a separate article: the mechanism nav2 and ros2_control use to swap parts",
+      "title_en": "Load a plugin with ClassLoader (pluginlib)",
+      "chapter_en": "ROS 2 ch.15b",
+      "hints_en": [
+        "Create the ClassLoader with pluginlib::ClassLoader<drill::VelocityFilter>(package name, base class name). The constructor's initializer list is the easy place.",
+        "Create the plugin with loader_.createSharedInstance(name) and call initialize(shared_from_this(), \"filter\") right away. shared_from_this() cannot be used inside a constructor, so do it in configure().",
+        "If the name is not found, a PluginlibException is thrown. Catch it with try / catch, put the name in the log, and leave the filter empty. When it is empty, apply returns command as it is.",
+        "",
+        "Watch the order of the member declarations. Members are destroyed in the reverse order of declaration.",
+        "",
+        "  pluginlib::ClassLoader<drill::VelocityFilter> loader_;   // declared first (destroyed last)",
+        "  std::shared_ptr<drill::VelocityFilter> filter_;          // declared after (destroyed first)",
+        "",
+        "If the ClassLoader is destroyed first, it goes away while the filter is still alive, and class_loader prints a SEVERE WARNING (the behavior can be undefined)."
+      ],
+      "lecture_en": [
+        {
+          "title": "ROS 2 Lecture 15b: pluginlib",
+          "path": "docs-en/ros2/15b_pluginlib.md"
+        }
+      ]
+    },
+    {
+      "id": "18_pluginlib_yaml",
+      "package": "drill_18_pluginlib_yaml",
+      "level": "上級",
+      "level_note": "資料の「別記事」にあたる領域。nav2 や ros2_control が部品を差し替える仕組み",
+      "title": "YAML のパラメータでプラグインの列を組む（pluginlib）",
+      "kind": "gtest",
+      "sources": [
+        "include/drill/filter_pipeline.hpp",
+        "src/filter_pipeline.cpp"
+      ],
+      "docs": [
+        {
+          "title": "Creating and using plugins (C++)",
+          "url": "https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Pluginlib.html"
+        }
+      ],
+      "hints": [
+        "YAML の filters（文字列の配列）が順番、各 <name>.plugin が pluginlib の名前です。パラメータは declare_parameter してから get します。",
+        "filters を宣言して読み、各 name について declare_parameter(name + \".plugin\", std::string(\"\")) で名前を取ります。作ったフィルタは std::vector<std::shared_ptr<drill::VelocityFilter>> に、読んだ順に push_back します。",
+        "1 つ作るごとに try / catch で包みます。PluginlibException を受けたら、段の名前・plugin の名前・e.what() を RCLCPP_ERROR に出して、その段だけ飛ばします（残りは動かし続ける）。",
+        "apply は、フィルタを並んだ順に filter(結果, dt_seconds) で通すだけです。購読者は cmd_vel_in を受けて apply し、cmd_vel_out に publish します。",
+        "",
+        "ClassLoader はフィルタの vector より先に宣言してください（逆順に壊れるので、ClassLoader が最後に壊れます）。"
+      ],
+      "lecture": [
+        {
+          "title": "ROS2講習15b: pluginlib",
+          "path": "docs/ros2/15b_pluginlib.md"
+        }
+      ],
+      "chapter": "15b章",
+      "level_en": "ROS 2 Advanced",
+      "level_note_en": "An area the lecture notes treat as a separate article: the mechanism nav2 and ros2_control use to swap parts",
+      "title_en": "Build a chain of plugins from YAML parameters (pluginlib)",
+      "chapter_en": "ROS 2 ch.15b",
+      "hints_en": [
+        "The filters key in YAML (an array of strings) is the order, and each <name>.plugin is a pluginlib name. Declare each parameter with declare_parameter before you get it.",
+        "Declare and read filters, then for each name get the plugin name with declare_parameter(name + \".plugin\", std::string(\"\")). Push each filter you create into a std::vector<std::shared_ptr<drill::VelocityFilter>> in the order you read them.",
+        "Wrap each creation in try / catch. When you catch a PluginlibException, put the stage name, the plugin name and e.what() in an RCLCPP_ERROR and skip only that stage (keep the rest running).",
+        "apply just passes the command through the filters in order with filter(result, dt_seconds). The subscriber receives cmd_vel_in, runs apply, and publishes to cmd_vel_out.",
+        "",
+        "Declare the ClassLoader before the vector of filters (members are destroyed in reverse order, so the ClassLoader is destroyed last)."
+      ],
+      "lecture_en": [
+        {
+          "title": "ROS 2 Lecture 15b: pluginlib",
+          "path": "docs-en/ros2/15b_pluginlib.md"
+        }
+      ]
+    },
+    {
       "id": "dp01_iterator",
       "package": "drill_dp01_iterator",
       "level": "デザインパターン編",

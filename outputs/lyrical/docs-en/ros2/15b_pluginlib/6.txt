@@ -1,0 +1,2 @@
+$ ls install/velocity_filter_demo/share/ament_index/resource_index | grep pluginlib
+velocity_filter_demo__pluginlib__plugin

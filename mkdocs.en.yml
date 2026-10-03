@@ -153,6 +153,7 @@ nav:
       - "ROS 2 Lecture 13: Custom interfaces": ros2/13_custom_interfaces.md
       - "ROS 2 Lecture 14: Implementing services": ros2/14_implementing_services.md
       - "ROS 2 Lecture 15: Parameters and launch in practice": ros2/15_parameters_and_launch_in_practice.md
+      - "ROS 2 Lecture 15b: pluginlib (swapping plugins with YAML)": ros2/15b_pluginlib.md
       - "ROS 2 Lecture 16: Implementing an action server": ros2/16_implementing_an_action_server.md
       - "ROS 2 Lecture 17: Testing and debugging": ros2/17_testing_and_debugging.md
       - "ROS 2 Lecture 18: TF2 and coordinate frames": ros2/18_tf2_and_coordinate_frames.md

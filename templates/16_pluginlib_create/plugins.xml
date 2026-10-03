@@ -1,0 +1,13 @@
+<!-- I AM NOT DONE -->
+<!--
+  TODO: この library の中に、3 つのクラスを <class> で宣言すること。
+  <class> の属性は次の 3 つ。
+    name            : 呼び出し側が ClassLoader に渡す名前
+                      "drill/ClampFilter" / "drill/RateLimitFilter" / "drill/DeadbandFilter"
+    type            : C++ のクラス名（名前空間つき）  例: drill::ClampFilter
+    base_class_type : 基底クラス                      drill::VelocityFilter
+  中に <description> を 1 行書くと、一覧に説明が出る（任意）。
+  library の path は、CMake の add_library で作ったライブラリ名（lib と .so を除いたもの）。
+-->
+<library path="drill_16_pluginlib_create_filters">
+</library>
