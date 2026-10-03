@@ -218,4 +218,5 @@ The PR template has the same items.
 - [ ] `mkdocs build --strict` passes (also the English `-f mkdocs.en.yml` if I changed the readings)
 - [ ] If I changed an exercise, I checked that it fails when unsolved and passes with the sample solution
 - [ ] I fixed the English version too (or wrote "English version not done" in the PR)
+- [ ] `python3 tools/check_docs.py` passes (it checks the JA/EN page structure, the exercise data, and the templates)
 - [ ] Only one topic in one PR

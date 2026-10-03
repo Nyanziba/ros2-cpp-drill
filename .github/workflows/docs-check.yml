@@ -1,0 +1,66 @@
+name: docs-check
+
+# 読み物と課題データの整合を検査する。
+# 日英のページ構造のずれ、英語版に残った日本語、課題データの欠落、
+# テンプレートが解答済みのままコミットされる事故などを、機械で拾う。
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'docs-en/**'
+      - 'exercises/**'
+      - 'templates/**'
+      - 'solutions/**'
+      - 'exercises.json'
+      - 'TRANSLATING.md'
+      - 'tools/check_docs.py'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'docs-en/**'
+      - 'exercises/**'
+      - 'templates/**'
+      - 'solutions/**'
+      - 'exercises.json'
+      - 'TRANSLATING.md'
+      - 'tools/check_docs.py'
+  # Compiler Explorer の検査は外部サービスに頼るので、PR では走らせず、
+  # 週 1 回の定期実行と手動実行だけにする（相手の不調で PR が落ちないように）。
+  schedule:
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check_docs:
+    # 定期実行では外部に頼らないこの検査は回さない（変更が無いので結果が変わらない）
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # 標準ライブラリだけで動くので、pip install は要らない。
+      - name: 読み物と課題データの整合を検査
+        run: python3 tools/check_docs.py
+
+  check_godbolt:
+    # 数百本のリンクを 2 秒おきに引くので 10 分以上かかる。PR では走らせない。
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Compiler Explorer のリンクがコードと一致するか検査
+        run: python3 tools/check_godbolt.py
