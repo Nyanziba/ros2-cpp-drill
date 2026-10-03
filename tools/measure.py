@@ -35,8 +35,10 @@
 """
 
 import argparse
+import os
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -66,6 +68,7 @@ VOLATILE_PATTERNS = (
     (re.compile(r"\(\d+ ms( total)?\)"), "(N ms\\1)"),                    # gtest の所要時間
     (re.compile(r"\[\d+\.\d+s\]"), "[N.NNs]"),                            # colcon の所要時間
     (re.compile(r"\[\d{10}\.\d+\]"), "[TIMESTAMP]"),                      # ROS のログの時刻
+    (re.compile(r" ?\((core dumped|コアダンプ)\)"), ""),                    # コアダンプの有無はシェルの設定で変わる
 )
 
 
@@ -173,6 +176,19 @@ def nearest_command(page, marker_line, preceding):
     return commands[-1].content
 
 
+def share_with_container(directory):
+    """書き出したファイルを、コンテナの中のユーザー（イメージの ubuntu）が読み書きできるようにする。
+
+    一時ディレクトリは作った本人しか読めない（0700）。Linux（CI のランナーなど）では手元のユーザーと
+    コンテナのユーザーの UID が違うので、そのままでは読めない。コンテナを手元と同じ UID で動かすと、
+    今度は ros2 pkg create などがユーザー一覧に無い UID で失敗する。そこで、コンテナは ubuntu のまま動かし、
+    ファイルの権限のほうを開ける。本文のコマンドには sed -i で書き換えるものもあるので、書き込みも許す。
+    """
+    os.chmod(directory, 0o777)
+    for path in Path(directory).rglob("*"):
+        os.chmod(path, 0o777 if path.is_dir() else 0o666)
+
+
 def docker_image(distro):
     return f"ros2-drill:{distro}-amd64"
 
@@ -194,11 +210,18 @@ def run(measurement, distro=DEFAULT_DISTRO):
     script = f"( {script} ) 2>&1"
     if measurement.options.get("filter"):
         script += f" | {measurement.options['filter']}"
-    with tempfile.TemporaryDirectory() as directory:
+    # コンテナが作ったファイルも、手元（ランナー）のユーザーが後片付けで消せるようにする。
+    script = f"umask 000; {script}"
+    # 後片付けは自分でする。コンテナが読み取り専用で作ったもの（install/ の中など）は Linux では
+    # 消せないことがあり、TemporaryDirectory の後片付けはそこで例外を投げて検査全体を止めてしまう。
+    # 消せないものは無視する（CI のランナーは使い捨て。手元の Mac では全部消える）。
+    directory = tempfile.mkdtemp()
+    try:
         for name, content in measurement.files.items():
             path = Path(directory) / name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(content + "\n", encoding="utf-8")
+        share_with_container(directory)
         if environment == "gcc":
             argv = ["docker", "run", "--rm", "--platform", DOCKER_PLATFORM,
                     "-v", f"{directory}:/w", "-w", "/w", docker_image(distro), "bash", "-c", script]
@@ -219,6 +242,8 @@ def run(measurement, distro=DEFAULT_DISTRO):
         if completed.returncode in (125, 126, 127) and not completed.stdout.strip():
             raise RuntimeError(f"{measurement.page}:{measurement.marker_line + 1}: 測る仕組みが動きませんでした:\n{completed.stderr}")
         output = completed.stdout
+    finally:
+        shutil.rmtree(directory, ignore_errors=True)
     return "\n".join(line.rstrip() for line in output.rstrip().split("\n"))
 
 
