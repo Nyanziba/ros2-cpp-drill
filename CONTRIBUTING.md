@@ -196,6 +196,8 @@ docker compose run --rm drill ./drill reset <id>   # 元に戻す
 
 `exercises/` には未解答の状態でコミットしてください（`// I AM NOT DONE` が残った状態）。
 
+全課題をまとめて確かめるには `docker compose run --rm drill python3 tools/verify_exercises.py` を使います（`--track cppb` や `--id cppb06` で絞れます）。課題ごとに「未解答で落ちる」「解答例で通る」を見て、終わると `templates/` の内容に戻します。CI（`.github/workflows/exercises.yml`）も同じスクリプトを回します。
+
 ## 英語版
 
 英語版の読み物は `docs-en/`、課題文は `exercises/<id>/README.en.md`、
