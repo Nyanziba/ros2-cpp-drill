@@ -29,6 +29,7 @@
 """
 
 import argparse
+import os
 import re
 import shlex
 import subprocess
@@ -166,6 +167,19 @@ def nearest_command(page, marker_line, preceding):
     return commands[-1].content
 
 
+def share_with_container(directory):
+    """書き出したファイルを、コンテナの中のユーザー（イメージの ubuntu）が読み書きできるようにする。
+
+    一時ディレクトリは作った本人しか読めない（0700）。Linux（CI のランナーなど）では手元のユーザーと
+    コンテナのユーザーの UID が違うので、そのままでは読めない。コンテナを手元と同じ UID で動かすと、
+    今度は ros2 pkg create などがユーザー一覧に無い UID で失敗する。そこで、コンテナは ubuntu のまま動かし、
+    ファイルの権限のほうを開ける。本文のコマンドには sed -i で書き換えるものもあるので、書き込みも許す。
+    """
+    os.chmod(directory, 0o777)
+    for path in Path(directory).rglob("*"):
+        os.chmod(path, 0o777 if path.is_dir() else 0o666)
+
+
 def run(measurement):
     """測った出力（末尾の空白を除く）を返す。測らない印なら None。"""
     environment = measurement.options.get("env", "gcc")
@@ -181,11 +195,15 @@ def run(measurement):
     script = f"( {script} ) 2>&1"
     if measurement.options.get("filter"):
         script += f" | {measurement.options['filter']}"
-    with tempfile.TemporaryDirectory() as directory:
+    # コンテナが作ったファイルも、手元（ランナー）のユーザーが後片付けで消せるようにする。
+    script = f"umask 000; {script}"
+    # コンテナが特別な権限でファイルを作っても検査全体が止まらないよう、後片付けの失敗は無視する。
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as directory:
         for name, content in measurement.files.items():
             path = Path(directory) / name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(content + "\n", encoding="utf-8")
+        share_with_container(directory)
         if environment == "gcc":
             argv = ["docker", "run", "--rm", "--platform", DOCKER_PLATFORM,
                     "-v", f"{directory}:/w", "-w", "/w", DOCKER_IMAGE, "bash", "-c", script]
