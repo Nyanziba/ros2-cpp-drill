@@ -197,6 +197,8 @@ docker compose run --rm drill ./drill reset <id>   # restore
 
 Commit `exercises/` in the unsolved state (with `// I AM NOT DONE` still in place).
 
+To check every exercise at once, run `docker compose run --rm drill python3 tools/verify_exercises.py` (narrow it with `--track cppb` or `--id cppb06`). For each exercise it checks "fails when unsolved" and "passes with the solution", then restores `templates/`. CI (`.github/workflows/exercises.yml`) runs the same script.
+
 ## English version
 
 The English readings are in `docs-en/`, the exercise text is in `exercises/<id>/README.en.md`,
