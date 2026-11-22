@@ -92,10 +92,11 @@ For how to publish the site on your own GitHub Pages, see
 ./drill watch
 ```
 
-Your exercise is tested again every time you save. The reading (`docs/`) has 49 chapters in total across 3 tracks,
-and the 35 exercises in `exercises/` **match the chapters that have an exercise, by chapter number**.
+Your exercise is tested again every time you save. The reading and the exercises **match by chapter number**.
+The vision, behavior-tree, and autonomy exercise text is in Japanese, English, and Simplified Chinese.
+The Chinese entrance is [README.zh.md](README.zh.md).
 
-## The 5 tracks
+## The 8 tracks
 
 **There is a C++ course before ROS 2. There is also a C course for microcontroller work,
 and a Design Patterns course for designing libraries.**
@@ -108,6 +109,9 @@ The reading (`docs/`) and the exercises (`exercises/`) **match one-to-one, down 
 | **C++** | [docs-en/cpp/](docs-en/cpp/README.md) | `cpp01` to `cpp12` | Preparation for reading rclcpp. 15 chapters |
 | **ROS 2** | [docs-en/ros2/](docs-en/ros2/01_start_here_course_hub.md) | `01` to `18` | 24 articles |
 | **Design Patterns** | [docs-en/patterns/](docs-en/patterns/README.md) | `dp01` to `dp23` | People who design their own libraries. Meant to be read alongside Hiroshi Yuki's *Learning Design Patterns in Java* (in Japanese). 23 chapters |
+| **Vision** | [docs-en/vision/](docs-en/vision/README.md) | `cv01` to `cv06` | Field color and shape, ONNX, speed, and gaze. 6 chapters |
+| **Behavior trees** | [docs-en/behavior-tree/](docs-en/behavior-tree/README.md) | `bt01` to `bt03` | Priority, actions, and avoidance. 3 chapters |
+| **Autonomy** | [docs-en/autonomy/](docs-en/autonomy/README.md) | `nav01` to `nav03` | Yaw, match state, and a route that fits the time left. 3 chapters |
 
 **Not everyone has to do everything.**
 
@@ -116,6 +120,7 @@ The reading (`docs/`) and the exercises (`exercises/`) **match one-to-one, down 
 | ROS 2 / autonomous navigation | `cppb01`... → `cpp01`... → `01`... (**you may skip the C track**) |
 | Microcontrollers / drive train / CAN | `c01` to `c12` only |
 | Designing libraries | `dp01` to `dp23` (while reading Hiroshi Yuki's *Learning Design Patterns in Java*) |
+| Vision, behavior, and autonomy for student Robocon | `cv01`..., `bt01`..., `nav01`... (after the C++ and ROS 2 basics) |
 
 **The Design Patterns track is independent of the other tracks.** There is no required order.
 

@@ -1,0 +1,4 @@
+# I AM NOT DONE
+# robot_localization の ekf_filter_node 用です。2D の差動二輪、odom と imu を融合します。
+ekf_filter_node:
+  ros__parameters: {}

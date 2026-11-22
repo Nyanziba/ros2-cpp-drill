@@ -187,6 +187,26 @@ nav:
       - "21. Proxy": patterns/21_Proxy.md
       - "22. Command": patterns/22_Command.md
       - "23. Interpreter": patterns/23_Interpreter.md
+  - Vision:
+      - "About this track": vision/README.md
+      - "1. OpenCV and cv_bridge": vision/01_opencv_and_cv_bridge.md
+      - "2. ONNX Runtime": vision/02_onnx_runtime.md
+      - "3. A YOLO dataset": vision/03_yolo_dataset.md
+      - "4. TensorRT and the frame budget": vision/04_tensorrt_and_frame_budget.md
+      - "5. The marker detector node": vision/05_marker_detector_node.md
+      - "6. Gaze control": vision/06_gaze_control.md
+  - "Behavior trees":
+      - "About this track": behavior-tree/README.md
+      - "1. Priority": behavior-tree/01_priority.md
+      - "2. Actions and the blackboard": behavior-tree/02_actions_and_blackboard.md
+      - "3. Avoidance": behavior-tree/03_avoidance.md
+  - Autonomy:
+      - "About this track": autonomy/README.md
+      - "1. Yaw fusion": autonomy/01_yaw_fusion.md
+      - "2. State machines and behavior trees": autonomy/02_state_machines_and_behavior_trees.md
+      - "3. Routes and recovery": autonomy/03_routes_and_recovery.md
+  - "Student Robocon":
+      - "Three series": robocon/README.md
   - References:
       - "The design philosophy of rclcpp": rclcpp_design_philosophy.md
       - "ROS 2 coding conventions and language versions (summary)": ros2_coding_conventions.md

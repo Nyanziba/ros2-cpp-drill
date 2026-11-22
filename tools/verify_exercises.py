@@ -32,7 +32,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parent.parent
 EXERCISES_DIRECTORY = REPOSITORY_ROOT / "exercises"
 SOLUTIONS_DIRECTORY = REPOSITORY_ROOT / "solutions"
 TEMPLATES_DIRECTORY = REPOSITORY_ROOT / "templates"
-TRACKS = ("c", "cppb", "cpp", "dp", "ros2")
+TRACKS = ("c", "cppb", "cpp", "dp", "ros2", "cv", "bt", "nav")
 FAILURE_TAIL_LINE_COUNT = 8
 
 

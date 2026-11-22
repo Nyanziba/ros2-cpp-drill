@@ -22,13 +22,16 @@ Lyrical 版の URL は <https://nyanziba.github.io/ros2-cpp-drill/lyrical/> で�
 
 章の末尾には「対応する課題」節があり、そこから逆向きに辿れます。
 
-## 3 つのトラック
+## トラック
 
 | トラック | 読み物 | 課題 | 対象 |
 | --- | --- | --- | --- |
 | **C++入門編** | [cpp-basics/](cpp-basics/README.md) | `cppb01`〜`cppb10` | `const` や `static` で手が止まる人。全10章 |
 | **C++編** | [cpp/](cpp/README.md) | `cpp01`〜`cpp12` | rclcpp を読む準備。全15章 |
 | **ROS 2編** | [ros2/](ros2/01_この記事からスタート_ROS2講習ハブ.md) | `01`〜`18` | 全24本 |
+| **画像処理編** | [vision/](vision/README.md) | `cv01`〜`cv06` | フィールドの色と形、視線。全6章 |
+| **ビヘイビアツリー編** | [behavior-tree/](behavior-tree/README.md) | `bt01`〜`bt03` | 優先順位、アクション、回避。全3章 |
+| **自律制御編** | [autonomy/](autonomy/README.md) | `nav01`〜`nav03` | ヨー、試合の状態、経路。全3章 |
 
 **C++入門編と C++編は ROS 2 を使いません。** `g++` と gtest だけで完結します。
 

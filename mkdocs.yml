@@ -209,6 +209,26 @@ nav:
       - "21. Proxy": patterns/21_Proxy.md
       - "22. Command": patterns/22_Command.md
       - "23. Interpreter": patterns/23_Interpreter.md
+  - 画像処理編:
+      - この講習について: vision/README.md
+      - "1. OpenCV と cv_bridge": vision/01_opencvとcv_bridge.md
+      - "2. ONNX Runtime": vision/02_onnx_runtime.md
+      - "3. YOLO のデータセット": vision/03_yoloデータセット.md
+      - "4. TensorRT とフレーム予算": vision/04_tensorrtとフレーム予算.md
+      - "5. マーカ検出ノード": vision/05_マーカ検出ノード.md
+      - "6. 視線制御": vision/06_視線制御.md
+  - ビヘイビアツリー編:
+      - この講習について: behavior-tree/README.md
+      - "1. 優先順位": behavior-tree/01_優先順位.md
+      - "2. アクションと黒板": behavior-tree/02_アクションと黒板.md
+      - "3. 回避": behavior-tree/03_回避.md
+  - 自律制御編:
+      - この講習について: autonomy/README.md
+      - "1. ヨー角の融合": autonomy/01_ヨー角の融合.md
+      - "2. 状態機械とビヘイビアツリー": autonomy/02_状態機械とビヘイビアツリー.md
+      - "3. 経路と復帰": autonomy/03_経路と復帰.md
+  - 学生ロボコン:
+      - 3つのシリーズ: robocon/README.md
   - 参考資料:
       - "rclcpp の設計思想": rclcpp-の設計思想.md
       - "ROS 2 のコーディング規約と言語バージョン（まとめ）": ros2-コーディング規約.md

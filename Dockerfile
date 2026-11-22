@@ -49,6 +49,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         ros-${ROS_DISTRO}-rclcpp-action \
         ros-${ROS_DISTRO}-rclcpp-components \
         ros-${ROS_DISTRO}-std-msgs \
+        ros-${ROS_DISTRO}-sensor-msgs \
+        ros-${ROS_DISTRO}-cv-bridge \
+        ros-${ROS_DISTRO}-behaviortree-cpp \
+        libopencv-dev \
+    && if apt-cache show ros-${ROS_DISTRO}-onnxruntime-vendor >/dev/null 2>&1; then \
+         apt-get install -y --no-install-recommends ros-${ROS_DISTRO}-onnxruntime-vendor; \
+       else \
+         apt-get install -y --no-install-recommends ca-certificates curl && \
+         curl -fsSL -o /tmp/ort.tgz \
+           https://github.com/microsoft/onnxruntime/releases/download/v1.20.1/onnxruntime-linux-x64-1.20.1.tgz && \
+         tar -xzf /tmp/ort.tgz -C /tmp && \
+         cp -a /tmp/onnxruntime-linux-x64-1.20.1/include/. /usr/local/include/ && \
+         cp -a /tmp/onnxruntime-linux-x64-1.20.1/lib/libonnxruntime.so* /usr/local/lib/ && \
+         echo /usr/local/lib > /etc/ld.so.conf.d/onnxruntime.conf && \
+         ldconfig && \
+         rm -rf /tmp/ort.tgz /tmp/onnxruntime-linux-x64-1.20.1; \
+       fi \
     && rm -rf /var/lib/apt/lists/*
 
 # GUI が要るとき（ROS 2編の turtlesim / rqt / RViz）だけ入れる。
