@@ -118,8 +118,53 @@
 | `docs/rclcpp-の設計思想.md` | `docs-en/rclcpp_design_philosophy.md` |
 | `docs/ros2-コーディング規約.md` | `docs-en/ros2_coding_conventions.md` |
 | `docs/発表資料.md` | `docs-en/slides.md` |
+| `docs/robocon/README.md` | `docs-en/robocon/README.md` |
+| `docs/vision/README.md` | `docs-en/vision/README.md` |
+| `docs/vision/01_opencvとcv_bridge.md` | `docs-en/vision/01_opencv_and_cv_bridge.md` |
+| `docs/vision/02_onnx_runtime.md` | `docs-en/vision/02_onnx_runtime.md` |
+| `docs/vision/03_yoloデータセット.md` | `docs-en/vision/03_yolo_dataset.md` |
+| `docs/vision/04_tensorrtとフレーム予算.md` | `docs-en/vision/04_tensorrt_and_frame_budget.md` |
+| `docs/vision/05_マーカ検出ノード.md` | `docs-en/vision/05_marker_detector_node.md` |
+| `docs/vision/06_視線制御.md` | `docs-en/vision/06_gaze_control.md` |
+| `docs/behavior-tree/README.md` | `docs-en/behavior-tree/README.md` |
+| `docs/behavior-tree/01_優先順位.md` | `docs-en/behavior-tree/01_priority.md` |
+| `docs/behavior-tree/02_アクションと黒板.md` | `docs-en/behavior-tree/02_actions_and_blackboard.md` |
+| `docs/behavior-tree/03_回避.md` | `docs-en/behavior-tree/03_avoidance.md` |
+| `docs/autonomy/README.md` | `docs-en/autonomy/README.md` |
+| `docs/autonomy/01_ヨー角の融合.md` | `docs-en/autonomy/01_yaw_fusion.md` |
+| `docs/autonomy/02_状態機械とビヘイビアツリー.md` | `docs-en/autonomy/02_state_machines_and_behavior_trees.md` |
+| `docs/autonomy/03_経路と復帰.md` | `docs-en/autonomy/03_routes_and_recovery.md` |
 
 新しい章を足したら、この表と `mkdocs.en.yml` の nav に足してください。
+画像処理・ビヘイビアツリー・自律制御は、下の簡体字の表と `mkdocs.zh.yml` にも足します。
+
+## 簡体字
+
+簡体字は画像処理、ビヘイビアツリー、自律制御の 3 シリーズだけです。
+既存の章には作りません。コード、テスト、テンプレート、解答は 3 言語で共通です。
+課題文は `exercises/<id>/README.zh.md`、課題データは `title_zh` / `hints_zh` / `lecture_zh` です。
+
+`DRILL_LANG=zh ./drill list` はそれらの項目を簡体字で出します。画面の説明文（「合格」「ヒント」など）は日本語のままです。
+中国語のサイトは `mkdocs.zh.yml` で `site/zh/` に出します。古い章の言語切替からはリンクしません。各章の先頭の絶対 URL から辿ります。
+
+| 日本語 | 簡体字 |
+| --- | --- |
+| `docs/robocon/README.md` | `docs-zh/README.md` |
+| `docs/vision/README.md` | `docs-zh/vision/README.md` |
+| `docs/vision/01_opencvとcv_bridge.md` | `docs-zh/vision/01_opencv_and_cv_bridge.md` |
+| `docs/vision/02_onnx_runtime.md` | `docs-zh/vision/02_onnx_runtime.md` |
+| `docs/vision/03_yoloデータセット.md` | `docs-zh/vision/03_yolo_dataset.md` |
+| `docs/vision/04_tensorrtとフレーム予算.md` | `docs-zh/vision/04_tensorrt_and_frame_budget.md` |
+| `docs/vision/05_マーカ検出ノード.md` | `docs-zh/vision/05_marker_detector_node.md` |
+| `docs/vision/06_視線制御.md` | `docs-zh/vision/06_gaze_control.md` |
+| `docs/behavior-tree/README.md` | `docs-zh/behavior-tree/README.md` |
+| `docs/behavior-tree/01_優先順位.md` | `docs-zh/behavior-tree/01_priority.md` |
+| `docs/behavior-tree/02_アクションと黒板.md` | `docs-zh/behavior-tree/02_actions_and_blackboard.md` |
+| `docs/behavior-tree/03_回避.md` | `docs-zh/behavior-tree/03_avoidance.md` |
+| `docs/autonomy/README.md` | `docs-zh/autonomy/README.md` |
+| `docs/autonomy/01_ヨー角の融合.md` | `docs-zh/autonomy/01_yaw_fusion.md` |
+| `docs/autonomy/02_状態機械とビヘイビアツリー.md` | `docs-zh/autonomy/02_state_machines_and_behavior_trees.md` |
+| `docs/autonomy/03_経路と復帰.md` | `docs-zh/autonomy/03_routes_and_recovery.md` |
 
 ## リンク
 

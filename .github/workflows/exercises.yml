@@ -47,7 +47,7 @@ jobs:
       # 1 つのトラックが落ちても、他のトラックの結果は見たい。
       fail-fast: false
       matrix:
-        track: [c, cppb, cpp, dp, ros2]
+        track: [c, cppb, cpp, dp, ros2, cv, bt, nav]
     steps:
       - uses: actions/checkout@v4
 

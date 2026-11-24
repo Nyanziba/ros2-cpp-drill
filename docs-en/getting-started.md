@@ -222,3 +222,14 @@ DRILL_COMPILE_JOBS=1 ./drill run 01
 **`colcon` finds the same package twice**
 Check that the `COLCON_IGNORE` files, which exclude `install/` and `log/` from the search,
 have not been deleted.
+
+## Vision, behavior trees, and autonomy
+
+```
+cv01 to cv06    bt01 to bt03    nav01 to nav03
+(vision)        (behavior trees) (autonomy)
+```
+
+Field color, gaze, priority, and match state for student Robocon start here.
+The exercise text is also in Simplified Chinese, in `README.zh.md` and with `DRILL_LANG=zh`.
+Code and tests stay shared.

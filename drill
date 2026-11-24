@@ -73,9 +73,12 @@ SOLUTIONS_DIR = ROOT / "solutions"
 TEMPLATES_DIR = ROOT / "templates"
 CONFIG = ROOT / "exercises.json"
 
-# DRILL_LANG=en で出力を英語にする。LANG は見ない（Docker の C.UTF-8 などで
-# 日本語の受講者が突然英語になるのを避けるため）。
-IS_ENGLISH = os.environ.get("DRILL_LANG", "").lower().startswith("en")
+# DRILL_LANG=en で出力を英語にする。DRILL_LANG=zh は新しいシリーズの
+# 読み物と課題文だけ簡体字にする（画面の説明文は日本語のまま）。
+# LANG は見ない（Docker の C.UTF-8 などで日本語の受講者が突然英語になるのを避けるため）。
+_DRILL_LANG = os.environ.get("DRILL_LANG", "").lower()
+IS_ENGLISH = _DRILL_LANG.startswith("en")
+IS_CHINESE = _DRILL_LANG.startswith("zh")
 
 MARKER = "I AM NOT DONE"
 GTEST_TARGET = "test_exercise"
@@ -129,7 +132,9 @@ def localized(japanese, english):
 
 
 def field(exercise, key, default=None):
-    """課題の項目を返す。英語モードでは <key>_en があればそちらを使う。"""
+    """課題の項目を返す。英語モードでは <key>_en、簡体字モードでは <key>_zh を使う。"""
+    if IS_CHINESE and f"{key}_zh" in exercise:
+        return exercise[f"{key}_zh"]
     if IS_ENGLISH and f"{key}_en" in exercise:
         return exercise[f"{key}_en"]
     return exercise.get(key, default)
@@ -426,8 +431,12 @@ def report(ex, passed, exercises):
     if not passed:
         print(red(localized(f"  ✗ 課題 {ex['id']} は未完了です",
                             f"  ✗ Exercise {ex['id']} is not finished")))
-        readme_name = "README.en.md" if IS_ENGLISH and (exercise_dir(ex) / "README.en.md").exists() \
-            else "README.md"
+        if IS_CHINESE and (exercise_dir(ex) / "README.zh.md").exists():
+            readme_name = "README.zh.md"
+        elif IS_ENGLISH and (exercise_dir(ex) / "README.en.md").exists():
+            readme_name = "README.en.md"
+        else:
+            readme_name = "README.md"
         print(dim(f"     {localized('課題文:  ', 'Task:    ')} {exercise_dir(ex) / readme_name}"))
         for src in sources(ex):
             print(dim(f"     {localized('編集する:', 'Edit:    ')} {src}"))
@@ -713,18 +722,20 @@ def _emit_candidates(candidates, cur):
 def site_page(path):
     """docs/ か docs-en/ の .md に対応する、サイト内の HTML 相対パス。外なら None。
 
-    docs/X.md -> X.html、docs-en/X.md -> en/X.html（README.md は index.html）。
-    ROS_DISTRO が lyrical なら、頭に lyrical/ が付く（Lyrical 版のサイト）。
+    docs/X.md -> X.html、docs-en/X.md -> en/X.html、docs-zh/X.md -> zh/X.html
+    （README.md は index.html）。
+    ROS_DISTRO が lyrical なら、日本語と英語の頭に lyrical/ が付く。
+    簡体字のサイトは新しいシリーズだけで、Lyrical 版は建てていない。
     """
     resolved = path.resolve()
-    for source_dir, site_prefix in (("docs", ""), ("docs-en", "en")):
+    for source_dir, site_prefix in (("docs", ""), ("docs-en", "en"), ("docs-zh", "zh")):
         try:
             rel = resolved.relative_to((ROOT / source_dir).resolve())
         except ValueError:
             continue
         html = rel.with_name("index.html") if rel.name == "README.md" \
             else rel.with_suffix(".html")
-        distro_prefix = "lyrical" if SITE_DISTRO == "lyrical" else ""
+        distro_prefix = "lyrical" if SITE_DISTRO == "lyrical" and site_prefix != "zh" else ""
         return Path(distro_prefix) / site_prefix / html
     return None
 
@@ -743,7 +754,7 @@ def page_url(path):
     page = site_page(path)
     if page is None:
         return None, localized(f"{path} は docs/ の外にあります",
-                               f"{path} is outside docs/ and docs-en/")
+                               f"{path} is outside docs/, docs-en/, and docs-zh/")
     html = page
     href = "/".join(html.parts)
 
@@ -769,6 +780,7 @@ def page_url(path):
 
 DOCS_VENV = ROOT / ".venv-docs"
 ENGLISH_MKDOCS_CONFIG = ROOT / "mkdocs.en.yml"
+CHINESE_MKDOCS_CONFIG = ROOT / "mkdocs.zh.yml"
 # Lyrical 版のサイト（site/lyrical/ と site/lyrical/en/）。ROS の公式イメージは中で ROS_DISTRO を
 # 設定するので、Lyrical のコンテナでは Lyrical 版のページを開く。手元（未設定）では Jazzy 版。
 SITE_DISTRO = os.environ.get("ROS_DISTRO", "jazzy")
@@ -829,6 +841,13 @@ def build_site():
         print(yellow(localized("  英語版（site/en/）のビルドに失敗しました。",
                                "  The English site build (site/en/) failed.")))
         if IS_ENGLISH:
+            return False
+    # 簡体字は新しいシリーズだけ（site/zh/）。日本語版のビルドが site/ を掃除するので後に建てる。
+    if CHINESE_MKDOCS_CONFIG.exists() and \
+            subprocess.call([mkdocs, "build", "-f", str(CHINESE_MKDOCS_CONFIG)], cwd=ROOT) != 0:
+        print(yellow(localized("  簡体字版（site/zh/）のビルドに失敗しました。",
+                               "  The Chinese site build (site/zh/) failed.")))
+        if IS_CHINESE:
             return False
     # Lyrical 版は Jazzy 版の後に建てる（Jazzy 版の日本語のビルドが site/ を作り直すため）。
     if SITE_DISTRO == "lyrical":

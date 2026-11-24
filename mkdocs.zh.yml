@@ -1,0 +1,111 @@
+# 簡体字サイト。新しい 3 シリーズだけを site/zh/ に出す。
+#
+#   mkdocs build                      # 日本語版 → site/
+#   mkdocs build -f mkdocs.en.yml     # 英語版   → site/en/
+#   mkdocs build -f mkdocs.zh.yml     # 簡体字   → site/zh/
+#
+# **必ず日本語版を先に建てる。** 日本語版のビルドは site/ を丸ごと掃除するため。
+# 既存の章の言語切替（mkdocs.yml の alternate）からはここへ飛ばない。
+# 各章の先頭にある絶対 URL から辿る。
+#
+# リストの設定は引き継がれないので、使うものは全部書き直している。
+INHERIT: mkdocs.yml
+
+site_name: ROS 2 练习册 — 图像、行为树与自主控制
+site_description: >-
+  面向学生机器人竞赛的三个系列。阅读和题目有简体中文，代码与测试三种语言共用。
+site_url: https://nyanziba.github.io/ros2-cpp-drill/zh/
+
+docs_dir: docs-zh
+site_dir: site/zh
+
+theme:
+  name: material
+  custom_dir: overrides
+  language: zh
+  font: false
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top
+    - navigation.indexes
+    - navigation.tracking
+    - toc.follow
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: 切换到深色
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: 切换到浅色
+
+plugins:
+  - search:
+      lang: en
+
+markdown_extensions:
+  - meta
+  - tables
+  - attr_list
+  - md_in_html
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.highlight:
+      anchor_linenums: true
+      pygments_lang_class: true
+  - toc:
+      permalink: true
+      permalink_title: 此标题的链接
+      slugify: !!python/object/apply:pymdownx.slugs.slugify {kwds: {case: lower}}
+
+extra:
+  drill_version_label: "ROS 2 版本:"
+  drill_versions:
+    - name: Jazzy
+      link: index.html
+      current: true
+  alternate:
+    - name: 中文
+      link: index.html
+      lang: zh
+    - name: 日本語
+      link: ../index.html
+      lang: ja
+    - name: English
+      link: ../en/index.html
+      lang: en
+
+nav:
+  - 总览: README.md
+  - 图像处理:
+      - 关于本讲: vision/README.md
+      - "1. OpenCV 与 cv_bridge": vision/01_opencv_and_cv_bridge.md
+      - "2. ONNX Runtime": vision/02_onnx_runtime.md
+      - "3. YOLO 数据集": vision/03_yolo_dataset.md
+      - "4. TensorRT 与帧预算": vision/04_tensorrt_and_frame_budget.md
+      - "5. 标记检测节点": vision/05_marker_detector_node.md
+      - "6. 视线控制": vision/06_gaze_control.md
+  - 行为树:
+      - 关于本讲: behavior-tree/README.md
+      - "1. 优先级": behavior-tree/01_priority.md
+      - "2. 动作与黑板": behavior-tree/02_actions_and_blackboard.md
+      - "3. 回避": behavior-tree/03_avoidance.md
+  - 自主控制:
+      - 关于本讲: autonomy/README.md
+      - "1. 航向角融合": autonomy/01_yaw_fusion.md
+      - "2. 状态机与行为树": autonomy/02_state_machines_and_behavior_trees.md
+      - "3. 路径与恢复": autonomy/03_routes_and_recovery.md

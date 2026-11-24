@@ -24,13 +24,16 @@ There are two ways to move between them.
 
 Each chapter ends with a "Matching exercise" section, so you can also go the other way.
 
-## Three tracks
+## Tracks
 
 | Track | Reading | Exercises | Who it is for |
 | --- | --- | --- | --- |
 | **C++ Basics** | [cpp-basics/](cpp-basics/README.md) | `cppb01` to `cppb10` | People who get stuck on `const` and `static`. 10 chapters |
 | **C++** | [cpp/](cpp/README.md) | `cpp01` to `cpp12` | Preparation for reading rclcpp. 15 chapters |
 | **ROS 2** | [ros2/](ros2/01_start_here_course_hub.md) | `01` to `18` | 24 articles in total |
+| **Vision** | [vision/](vision/README.md) | `cv01` to `cv06` | Field color, shape, and gaze. 6 chapters |
+| **Behavior trees** | [behavior-tree/](behavior-tree/README.md) | `bt01` to `bt03` | Priority, actions, and avoidance. 3 chapters |
+| **Autonomy** | [autonomy/](autonomy/README.md) | `nav01` to `nav03` | Yaw, match state, and routes. 3 chapters |
 
 **C++ Basics and C++ do not use ROS 2.** They need only `g++` and gtest.
 

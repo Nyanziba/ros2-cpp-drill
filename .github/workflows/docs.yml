@@ -11,8 +11,10 @@ on:
     paths:
       - 'docs/**'
       - 'docs-en/**'
+      - 'docs-zh/**'
       - 'mkdocs.yml'
       - 'mkdocs.en.yml'
+      - 'mkdocs.zh.yml'
       - 'mkdocs.lyrical.yml'
       - 'mkdocs.lyrical.en.yml'
       - 'hooks/**'
@@ -24,8 +26,10 @@ on:
     paths:
       - 'docs/**'
       - 'docs-en/**'
+      - 'docs-zh/**'
       - 'mkdocs.yml'
       - 'mkdocs.en.yml'
+      - 'mkdocs.zh.yml'
       - 'mkdocs.lyrical.yml'
       - 'mkdocs.lyrical.en.yml'
       - 'hooks/**'
@@ -66,6 +70,10 @@ jobs:
       - name: 英語版をビルド（警告をエラーにする）
         run: mkdocs build --strict -f mkdocs.en.yml
 
+      # 簡体字は新しいシリーズだけ。site/zh/ に出る。日本語版の掃除の後に建てる。
+      - name: 簡体字版をビルド（警告をエラーにする）
+        run: mkdocs build --strict -f mkdocs.zh.yml
+
       # Lyrical 版は site/lyrical/ と site/lyrical/en/ に出る。Jazzy 版の後に、日本語・英語の順で建てる。
       # 出力は outputs/lyrical/ のファイルを hooks/drill_version.py が差し込む（無ければここで落ちる）。
       - name: Lyrical 版をビルド（警告をエラーにする）
@@ -79,6 +87,7 @@ jobs:
           echo "生成された HTML: ${count} ページ"
           test "$count" -ge 50
           test -f site/en/index.html
+          test -f site/zh/index.html
           test -f site/lyrical/index.html
           test -f site/lyrical/en/index.html
 

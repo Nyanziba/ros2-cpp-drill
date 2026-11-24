@@ -23,6 +23,8 @@ JAPANESE_ALLOWED_LINE_MARKER = "nyanziba.github.io"
 INLINE_CODE_PATTERN = re.compile(r"`[^`]*`")
 
 MAPPING_ROW_PATTERN = re.compile(r"^\|\s*`(docs/[^`]+\.md)`\s*\|\s*`(docs-en/[^`]+\.md)`\s*\|")
+ZH_MAPPING_ROW_PATTERN = re.compile(r"^\|\s*`(docs/[^`]+\.md)`\s*\|\s*`(docs-zh/[^`]+\.md)`\s*\|")
+NEW_SERIES_PREFIXES = ("cv", "bt", "nav")
 HEADING_PATTERN = re.compile(r"^#{1,6} ")
 FENCE_PATTERN = re.compile(r"^\s*```")
 TABLE_ROW_PATTERN = re.compile(r"^\|")
@@ -40,9 +42,17 @@ def list_markdown_files(directory: Path) -> set[str]:
 
 
 def load_translation_pairs() -> list[tuple[str, str]]:
+    return load_pairs(MAPPING_ROW_PATTERN)
+
+
+def load_chinese_pairs() -> list[tuple[str, str]]:
+    return load_pairs(ZH_MAPPING_ROW_PATTERN)
+
+
+def load_pairs(pattern: re.Pattern[str]) -> list[tuple[str, str]]:
     pairs = []
     for line in read_lines(REPOSITORY_ROOT / "TRANSLATING.md"):
-        match = MAPPING_ROW_PATTERN.match(line)
+        match = pattern.match(line)
         if match:
             pairs.append((match.group(1), match.group(2)))
     return pairs
@@ -73,6 +83,25 @@ def count_page_structure(path: Path) -> dict[str, int]:
         "<details": sum(line.count("<details") for line in lines),
         "表の行": sum(1 for line in lines if TABLE_ROW_PATTERN.match(line)),
     }
+
+
+def check_chinese_table(pairs: list[tuple[str, str]]) -> list[str]:
+    """簡体字は新しい 3 シリーズだけ。表に載った組の構造を、docs-zh の漏れと一緒に見る。"""
+    failures = []
+    japanese_listed = [japanese for japanese, _ in pairs]
+    chinese_listed = [chinese for _, chinese in pairs]
+    for listed, label in ((japanese_listed, "日本語"), (chinese_listed, "簡体字")):
+        for duplicated in sorted({name for name in listed if listed.count(name) > 1}):
+            failures.append(f"[簡体字の対応表] {label}側に重複: {duplicated}")
+    for japanese, chinese in pairs:
+        for name in (japanese, chinese):
+            if not (REPOSITORY_ROOT / name).is_file():
+                failures.append(f"[簡体字の対応表] ファイルが無い: {name}")
+    chinese_dir = REPOSITORY_ROOT / "docs-zh"
+    if chinese_dir.is_dir():
+        for name in sorted(list_markdown_files(chinese_dir) - set(chinese_listed)):
+            failures.append(f"[簡体字の対応表] 表に載っていない: {name}")
+    return failures
 
 
 def check_page_structure(pairs: list[tuple[str, str]]) -> list[str]:
@@ -129,7 +158,14 @@ def check_exercise_entry(exercise: dict) -> list[str]:
             if not (REPOSITORY_ROOT / kind / exercise_id / source).is_file():
                 failures.append(f"[課題] {kind}/{exercise_id}/{source} が無い")
 
-    for key in ("lecture", "lecture_en"):
+    lecture_keys = ["lecture", "lecture_en"]
+    if exercise_id.startswith(NEW_SERIES_PREFIXES):
+        lecture_keys.append("lecture_zh")
+        if "title_zh" not in exercise:
+            failures.append(f"[課題] {exercise_id}: title_zh が無い")
+        if "hints_zh" not in exercise:
+            failures.append(f"[課題] {exercise_id}: hints_zh が無い")
+    for key in lecture_keys:
         for lecture in exercise.get(key, []):
             if not (REPOSITORY_ROOT / lecture["path"]).is_file():
                 failures.append(f"[課題] {exercise_id}: {key} の path が無い: {lecture['path']}")
@@ -142,10 +178,18 @@ def check_exercise_entry(exercise: dict) -> list[str]:
             f"[課題] {exercise_id}: hints_en の数が hints と違う"
             f"（{len(exercise.get('hints', []))} / {len(exercise.get('hints_en', []))}）"
         )
+    if exercise_id.startswith(NEW_SERIES_PREFIXES) and len(exercise.get("hints_zh", [])) != len(exercise.get("hints", [])):
+        failures.append(
+            f"[課題] {exercise_id}: hints_zh の数が hints と違う"
+            f"（{len(exercise.get('hints', []))} / {len(exercise.get('hints_zh', []))}）"
+        )
 
     if exercise_id in KNOWN_MISSING_README:
         return failures
-    for readme in ("README.md", "README.en.md"):
+    readmes = ["README.md", "README.en.md"]
+    if exercise_id.startswith(NEW_SERIES_PREFIXES):
+        readmes.append("README.zh.md")
+    for readme in readmes:
         if not (exercise_directory / readme).is_file():
             failures.append(f"[課題] exercises/{exercise_id}/{readme} が無い")
     return failures
@@ -181,9 +225,12 @@ def check_templates_match_exercises() -> list[str]:
 
 def main() -> int:
     pairs = load_translation_pairs()
+    chinese_pairs = load_chinese_pairs()
     failures = [
         *check_translation_table(pairs),
         *check_page_structure(pairs),
+        *check_chinese_table(chinese_pairs),
+        *check_page_structure(chinese_pairs),
         *check_no_japanese_in_english_docs(),
         *check_exercises_json(),
         *check_templates_match_exercises(),
@@ -193,7 +240,10 @@ def main() -> int:
         for failure in failures:
             print(f"  - {failure}")
         return 1
-    print(f"OK: 対応表 {len(pairs)} 組、課題の整合、テンプレートを検査しました。")
+    print(
+        f"OK: 対応表 {len(pairs)} 組、簡体字 {len(chinese_pairs)} 組、"
+        "課題の整合、テンプレートを検査しました。"
+    )
     return 0
 
 

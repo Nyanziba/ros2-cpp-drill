@@ -4102,6 +4102,871 @@
           "url": "https://www.hyuki.com/dp/"
         }
       ]
-    }
+    },
+      {
+        "id": "cv01_opencv_bridge",
+        "package": "drill_cv01_opencv_bridge",
+        "level": "画像処理編",
+        "level_note": "学生ロボコンの色マーカー。OpenCV と cv_bridge。ノードにはまだしません",
+        "title": "OpenCV と cv_bridge",
+        "kind": "gtest",
+        "sources": [
+          "src/marker_detect.cpp"
+        ],
+        "docs": [
+          {
+            "title": "OpenCV Mat",
+            "url": "https://docs.opencv.org/4.x/d3/d63/classcv_1_1Mat.html"
+          },
+          {
+            "title": "cv_bridge",
+            "url": "https://docs.ros.org/en/jazzy/p/cv_bridge/"
+          }
+        ],
+        "hints": [
+          "Vec3b は B, G, R です。赤は添字 2。",
+          "同数は赤。平均は切り捨て。",
+          "bgr8 以外と短い data は空の Mat。"
+        ],
+        "lecture": [
+          {
+            "title": "1. OpenCV と cv_bridge",
+            "path": "docs/vision/01_opencvとcv_bridge.md"
+          }
+        ],
+        "chapter": "画像処理 1章",
+        "level_en": "Vision",
+        "level_note_en": "Color markers for student Robocon. OpenCV and cv_bridge. Not a node yet",
+        "title_en": "OpenCV and cv_bridge",
+        "chapter_en": "Vision ch.1",
+        "hints_en": [
+          "Vec3b is B, G, R. Red is index 2.",
+          "A tie is red. Truncate the mean.",
+          "Other encodings and short data are an empty Mat."
+        ],
+        "lecture_en": [
+          {
+            "title": "1. OpenCV and cv_bridge",
+            "path": "docs-en/vision/01_opencv_and_cv_bridge.md"
+          }
+        ],
+        "docs_en": [
+          {
+            "title": "OpenCV Mat",
+            "url": "https://docs.opencv.org/4.x/d3/d63/classcv_1_1Mat.html"
+          },
+          {
+            "title": "cv_bridge",
+            "url": "https://docs.ros.org/en/jazzy/p/cv_bridge/"
+          }
+        ],
+        "level_zh": "图像处理",
+        "level_note_zh": "学生机器人竞赛的颜色标记。OpenCV 与 cv_bridge。还不是节点",
+        "title_zh": "OpenCV 与 cv_bridge",
+        "chapter_zh": "图像处理 第1章",
+        "hints_zh": [
+          "Vec3b 是 B、G、R。红色是下标 2。",
+          "数量相同算红。平均值截断。",
+          "其他编码和过短的 data 是空 Mat。"
+        ],
+        "lecture_zh": [
+          {
+            "title": "1. OpenCV 与 cv_bridge",
+            "path": "docs-zh/vision/01_opencv_and_cv_bridge.md"
+          }
+        ],
+        "docs_zh": [
+          {
+            "title": "OpenCV Mat",
+            "url": "https://docs.opencv.org/4.x/d3/d63/classcv_1_1Mat.html"
+          },
+          {
+            "title": "cv_bridge",
+            "url": "https://docs.ros.org/en/jazzy/p/cv_bridge/"
+          }
+        ]
+      },
+      {
+        "id": "cv02_onnx_runtime",
+        "package": "drill_cv02_onnx_runtime",
+        "level": "画像処理編",
+        "level_note": "同梱の小さな ONNX で色を分類します。学習はしません",
+        "title": "ONNX Runtime",
+        "kind": "gtest",
+        "sources": [
+          "src/color_session.cpp"
+        ],
+        "docs": [
+          {
+            "title": "ONNX Runtime C++ API",
+            "url": "https://onnxruntime.ai/docs/get-started/with-cpp.html"
+          }
+        ],
+        "hints": [
+          "入力名は mean_bgr、出力名は logits。",
+          "平均は 0..1 の B, G, R。",
+          "同点の argmax は小さい添字。空は -1。"
+        ],
+        "lecture": [
+          {
+            "title": "2. ONNX Runtime",
+            "path": "docs/vision/02_onnx_runtime.md"
+          }
+        ],
+        "chapter": "画像処理 2章",
+        "level_en": "Vision",
+        "level_note_en": "Classify color with the committed tiny ONNX model. No training",
+        "title_en": "ONNX Runtime",
+        "chapter_en": "Vision ch.2",
+        "hints_en": [
+          "The input name is mean_bgr and the output name is logits.",
+          "The mean is B, G, R in 0..1.",
+          "A tied argmax takes the smaller index. Empty returns -1."
+        ],
+        "lecture_en": [
+          {
+            "title": "2. ONNX Runtime",
+            "path": "docs-en/vision/02_onnx_runtime.md"
+          }
+        ],
+        "docs_en": [
+          {
+            "title": "ONNX Runtime C++ API",
+            "url": "https://onnxruntime.ai/docs/get-started/with-cpp.html"
+          }
+        ],
+        "level_zh": "图像处理",
+        "level_note_zh": "用仓库里的小型 ONNX 给颜色分类。不训练",
+        "title_zh": "ONNX Runtime",
+        "chapter_zh": "图像处理 第2章",
+        "hints_zh": [
+          "输入名是 mean_bgr，输出名是 logits。",
+          "平均值是 0 到 1 的 B、G、R。",
+          "并列的 argmax 取较小下标。空输入返回 -1。"
+        ],
+        "lecture_zh": [
+          {
+            "title": "2. ONNX Runtime",
+            "path": "docs-zh/vision/02_onnx_runtime.md"
+          }
+        ],
+        "docs_zh": [
+          {
+            "title": "ONNX Runtime C++ API",
+            "url": "https://onnxruntime.ai/docs/get-started/with-cpp.html"
+          }
+        ]
+      },
+      {
+        "id": "cv03_yolo_dataset",
+        "package": "drill_cv03_yolo_dataset",
+        "level": "画像処理編",
+        "level_note": "YOLO のラベル規約。GPU 学習は採点しません",
+        "title": "YOLO のデータセット",
+        "kind": "pytest",
+        "sources": [
+          "src/yolo_dataset.py"
+        ],
+        "docs": [
+          {
+            "title": "Ultralytics export",
+            "url": "https://docs.ultralytics.com/modes/export/"
+          }
+        ],
+        "hints": [
+          "1 行は class cx cy w h で、小数 6 桁。",
+          "右端が画像幅ちょうどなら中です。",
+          "クラス名は ball, goal_marker, opponent, start_pole。"
+        ],
+        "lecture": [
+          {
+            "title": "3. YOLO のデータセット",
+            "path": "docs/vision/03_yoloデータセット.md"
+          }
+        ],
+        "chapter": "画像処理 3章",
+        "level_en": "Vision",
+        "level_note_en": "The YOLO label contract. GPU training is not graded",
+        "title_en": "A YOLO dataset",
+        "chapter_en": "Vision ch.3",
+        "hints_en": [
+          "One line is class cx cy w h with six decimals.",
+          "A far edge exactly on the image width is inside.",
+          "The class names are ball, goal_marker, opponent, start_pole."
+        ],
+        "lecture_en": [
+          {
+            "title": "3. A YOLO dataset",
+            "path": "docs-en/vision/03_yolo_dataset.md"
+          }
+        ],
+        "docs_en": [
+          {
+            "title": "Ultralytics export",
+            "url": "https://docs.ultralytics.com/modes/export/"
+          }
+        ],
+        "level_zh": "图像处理",
+        "level_note_zh": "YOLO 的标签约定。GPU 训练不评分",
+        "title_zh": "YOLO 数据集",
+        "chapter_zh": "图像处理 第3章",
+        "hints_zh": [
+          "一行是 class cx cy w h，小数 6 位。",
+          "右缘正好等于图像宽度算在里面。",
+          "类名是 ball、goal_marker、opponent、start_pole。"
+        ],
+        "lecture_zh": [
+          {
+            "title": "3. YOLO 数据集",
+            "path": "docs-zh/vision/03_yolo_dataset.md"
+          }
+        ],
+        "docs_zh": [
+          {
+            "title": "Ultralytics export",
+            "url": "https://docs.ultralytics.com/modes/export/"
+          }
+        ]
+      },
+      {
+        "id": "cv04_tensorrt_budget",
+        "package": "drill_cv04_tensorrt_budget",
+        "level": "画像処理編",
+        "level_note": "Jetson 向けの精度とフレーム予算。エンジンビルドはスキップします",
+        "title": "TensorRT とフレーム予算",
+        "kind": "gtest",
+        "sources": [
+          "src/precision_budget.cpp"
+        ],
+        "docs": [
+          {
+            "title": "TensorRT",
+            "url": "https://docs.nvidia.com/deeplearning/tensorrt/latest/index.html"
+          }
+        ],
+        "hints": [
+          "INT8 は画像 32 枚以上かつ gpu_int8。",
+          "30 fps 余裕 0.30 の上限は約 23.33 ms。",
+          "校正集合は添字 0 から、L1 が最大、同点は小さい添字。"
+        ],
+        "lecture": [
+          {
+            "title": "4. TensorRT とフレーム予算",
+            "path": "docs/vision/04_tensorrtとフレーム予算.md"
+          }
+        ],
+        "chapter": "画像処理 4章",
+        "level_en": "Vision",
+        "level_note_en": "Precision and frame budget for a Jetson. The engine build is skipped",
+        "title_en": "TensorRT and the frame budget",
+        "chapter_en": "Vision ch.4",
+        "hints_en": [
+          "INT8 needs at least 32 images and gpu_int8.",
+          "30 fps with margin 0.30 limits you to about 23.33 ms.",
+          "The calibration set starts at index 0, takes the largest L1, and ties take the smaller index."
+        ],
+        "lecture_en": [
+          {
+            "title": "4. TensorRT and the frame budget",
+            "path": "docs-en/vision/04_tensorrt_and_frame_budget.md"
+          }
+        ],
+        "docs_en": [
+          {
+            "title": "TensorRT",
+            "url": "https://docs.nvidia.com/deeplearning/tensorrt/latest/index.html"
+          }
+        ],
+        "level_zh": "图像处理",
+        "level_note_zh": "面向 Jetson 的精度和帧预算。引擎构建会跳过",
+        "title_zh": "TensorRT 与帧预算",
+        "chapter_zh": "图像处理 第4章",
+        "hints_zh": [
+          "INT8 需要至少 32 张图像并且 gpu_int8。",
+          "30 fps、余量 0.30 的上限约 23.33 ms。",
+          "校准集从下标 0 开始，取最大 L1，并列取较小下标。"
+        ],
+        "lecture_zh": [
+          {
+            "title": "4. TensorRT 与帧预算",
+            "path": "docs-zh/vision/04_tensorrt_and_frame_budget.md"
+          }
+        ],
+        "docs_zh": [
+          {
+            "title": "TensorRT",
+            "url": "https://docs.nvidia.com/deeplearning/tensorrt/latest/index.html"
+          }
+        ]
+      },
+      {
+        "id": "cv05_marker_node",
+        "package": "drill_cv05_marker_node",
+        "level": "画像処理編",
+        "level_note": "検出結果を marker トピックへ出すノード",
+        "title": "マーカ検出ノード",
+        "kind": "gtest",
+        "sources": [
+          "src/marker_detector.cpp"
+        ],
+        "docs": [
+          {
+            "title": "sensor_msgs/Image",
+            "url": "https://docs.ros.org/en/jazzy/p/sensor_msgs/"
+          }
+        ],
+        "hints": [
+          "elapsed が budget を超えたときだけ stale。等しいときは色を出します。",
+          "QoS は reliable の 10。テストは 1 枚を落とません。",
+          "青の 3x3 の重心は blue 2 5 です。"
+        ],
+        "lecture": [
+          {
+            "title": "5. マーカ検出ノード",
+            "path": "docs/vision/05_マーカ検出ノード.md"
+          }
+        ],
+        "chapter": "画像処理 5章",
+        "level_en": "Vision",
+        "level_note_en": "A node that publishes the detection on the marker topic",
+        "title_en": "The marker detector node",
+        "chapter_en": "Vision ch.5",
+        "hints_en": [
+          "stale only when elapsed is greater than the budget. Equal still reports the color.",
+          "QoS is reliable 10. The test does not drop its one frame.",
+          "The centroid of the 3x3 blue block is blue 2 5."
+        ],
+        "lecture_en": [
+          {
+            "title": "5. The marker detector node",
+            "path": "docs-en/vision/05_marker_detector_node.md"
+          }
+        ],
+        "docs_en": [
+          {
+            "title": "sensor_msgs/Image",
+            "url": "https://docs.ros.org/en/jazzy/p/sensor_msgs/"
+          }
+        ],
+        "level_zh": "图像处理",
+        "level_note_zh": "把检测结果发布到 marker 话题的节点",
+        "title_zh": "标记检测节点",
+        "chapter_zh": "图像处理 第5章",
+        "hints_zh": [
+          "只有 elapsed 大于 budget 才是 stale。相等时仍报告颜色。",
+          "QoS 是 reliable、队列 10。测试不会丢掉那一帧。",
+          "3x3 蓝色块的中心是 blue 2 5。"
+        ],
+        "lecture_zh": [
+          {
+            "title": "5. 标记检测节点",
+            "path": "docs-zh/vision/05_marker_detector_node.md"
+          }
+        ],
+        "docs_zh": [
+          {
+            "title": "sensor_msgs/Image",
+            "url": "https://docs.ros.org/en/jazzy/p/sensor_msgs/"
+          }
+        ]
+      },
+      {
+        "id": "cv06_gaze",
+        "package": "drill_cv06_gaze",
+        "level": "画像処理編",
+        "level_note": "検出した対象へパンとチルトを向け、木でモードを切り替えます",
+        "title": "視線制御",
+        "kind": "gtest",
+        "sources": [
+          "src/gaze.cpp"
+        ],
+        "docs": [
+          {
+            "title": "BehaviorTree.CPP",
+            "url": "https://www.behaviortree.dev/docs/intro"
+          }
+        ],
+        "hints": [
+          "rank が小さい方が優先。同じ rank の高スコアには乗り換えません。",
+          "見失いは 5 回目で外します。4 回までは保持。",
+          "チルトは誤差 y の符号を反転します。"
+        ],
+        "lecture": [
+          {
+            "title": "6. 視線制御",
+            "path": "docs/vision/06_視線制御.md"
+          }
+        ],
+        "chapter": "画像処理 6章",
+        "level_en": "Vision",
+        "level_note_en": "Pan and tilt toward a detection, and let a tree pick the mode",
+        "title_en": "Gaze control",
+        "chapter_en": "Vision ch.6",
+        "hints_en": [
+          "A smaller rank wins. A higher score at the same rank does not switch.",
+          "Drop the lock on the 5th miss. Hold it through 4.",
+          "Tilt negates the y error."
+        ],
+        "lecture_en": [
+          {
+            "title": "6. Gaze control",
+            "path": "docs-en/vision/06_gaze_control.md"
+          }
+        ],
+        "docs_en": [
+          {
+            "title": "BehaviorTree.CPP",
+            "url": "https://www.behaviortree.dev/docs/intro"
+          }
+        ],
+        "level_zh": "图像处理",
+        "level_note_zh": "把平移和俯仰转向检测目标，并用树切换模式",
+        "title_zh": "视线控制",
+        "chapter_zh": "图像处理 第6章",
+        "hints_zh": [
+          "rank 更小的优先。同一 rank 分数更高也不会切换。",
+          "第 5 次丢失才放开。前 4 次保持。",
+          "俯仰要把 y 误差的符号反过来。"
+        ],
+        "lecture_zh": [
+          {
+            "title": "6. 视线控制",
+            "path": "docs-zh/vision/06_gaze_control.md"
+          }
+        ],
+        "docs_zh": [
+          {
+            "title": "BehaviorTree.CPP",
+            "url": "https://www.behaviortree.dev/docs/intro"
+          }
+        ]
+      },
+      {
+        "id": "bt01_priority",
+        "package": "drill_bt01_priority",
+        "level": "ビヘイビアツリー編",
+        "level_note": "非常停止、時間、回避、得点、探索の順を木で書きます",
+        "title": "優先順位",
+        "kind": "gtest",
+        "sources": [
+          "src/priority_tree.cpp"
+        ],
+        "docs": [
+          {
+            "title": "BehaviorTree.CPP v4",
+            "url": "https://www.behaviortree.dev/docs/intro"
+          }
+        ],
+        "hints": [
+          "estop は time_up より先です。",
+          "time_up は Inverter で包み、trace を空のまま FAILURE。",
+          "range_mm が 400 ちょうどは障害物ではありません。"
+        ],
+        "lecture": [
+          {
+            "title": "1. 優先順位",
+            "path": "docs/behavior-tree/01_優先順位.md"
+          }
+        ],
+        "chapter": "ビヘイビアツリー 1章",
+        "level_en": "Behavior trees",
+        "level_note_en": "Write emergency stop, time, avoidance, scoring, and search as a tree",
+        "title_en": "Priority",
+        "chapter_en": "Behavior trees ch.1",
+        "hints_en": [
+          "estop outranks time_up.",
+          "Wrap time_up in an Inverter so the trace stays empty and the tree returns FAILURE.",
+          "range_mm of exactly 400 is not an obstacle."
+        ],
+        "lecture_en": [
+          {
+            "title": "1. Priority",
+            "path": "docs-en/behavior-tree/01_priority.md"
+          }
+        ],
+        "docs_en": [
+          {
+            "title": "BehaviorTree.CPP v4",
+            "url": "https://www.behaviortree.dev/docs/intro"
+          }
+        ],
+        "level_zh": "行为树",
+        "level_note_zh": "用树写下急停、时间、回避、得分和搜索的顺序",
+        "title_zh": "优先级",
+        "chapter_zh": "行为树 第1章",
+        "hints_zh": [
+          "estop 优先于 time_up。",
+          "用 Inverter 包住 time_up，trace 保持为空并返回 FAILURE。",
+          "range_mm 正好为 400 不是障碍。"
+        ],
+        "lecture_zh": [
+          {
+            "title": "1. 优先级",
+            "path": "docs-zh/behavior-tree/01_priority.md"
+          }
+        ],
+        "docs_zh": [
+          {
+            "title": "BehaviorTree.CPP v4",
+            "url": "https://www.behaviortree.dev/docs/intro"
+          }
+        ]
+      },
+      {
+        "id": "bt02_ros_action",
+        "package": "drill_bt02_ros_action",
+        "level": "ビヘイビアツリー編",
+        "level_note": "ゾーン走行を StatefulActionNode として書きます。サーバは立てません",
+        "title": "アクションと黒板",
+        "kind": "gtest",
+        "sources": [
+          "src/drive_tree.cpp"
+        ],
+        "docs": [
+          {
+            "title": "rclcpp_action",
+            "url": "https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Writing-an-Action-Server-Client/Cpp.html"
+          }
+        ],
+        "hints": [
+          "残り 0.5 秒未満は abort で、send しません。",
+          "timeout は min(3.0, time_left)。",
+          "EXECUTING と CANCELING は RUNNING、SUCCEEDED は SUCCESS。"
+        ],
+        "lecture": [
+          {
+            "title": "2. アクションと黒板",
+            "path": "docs/behavior-tree/02_アクションと黒板.md"
+          }
+        ],
+        "chapter": "ビヘイビアツリー 2章",
+        "level_en": "Behavior trees",
+        "level_note_en": "Write the drive-to-zone action as a StatefulActionNode. No server",
+        "title_en": "Actions and the blackboard",
+        "chapter_en": "Behavior trees ch.2",
+        "hints_en": [
+          "Under 0.5 seconds left is abort, and you do not send.",
+          "The timeout is min(3.0, time_left).",
+          "EXECUTING and CANCELING are RUNNING. SUCCEEDED is SUCCESS."
+        ],
+        "lecture_en": [
+          {
+            "title": "2. Actions and the blackboard",
+            "path": "docs-en/behavior-tree/02_actions_and_blackboard.md"
+          }
+        ],
+        "docs_en": [
+          {
+            "title": "rclcpp_action",
+            "url": "https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Writing-an-Action-Server-Client/Cpp.html"
+          }
+        ],
+        "level_zh": "行为树",
+        "level_note_zh": "把开往区域写成 StatefulActionNode。不启动服务器",
+        "title_zh": "动作与黑板",
+        "chapter_zh": "行为树 第2章",
+        "hints_zh": [
+          "剩余不足 0.5 秒是 abort，并且不要 send。",
+          "timeout 是 min(3.0, time_left)。",
+          "EXECUTING 和 CANCELING 是 RUNNING，SUCCEEDED 是 SUCCESS。"
+        ],
+        "lecture_zh": [
+          {
+            "title": "2. 动作与黑板",
+            "path": "docs-zh/behavior-tree/02_actions_and_blackboard.md"
+          }
+        ],
+        "docs_zh": [
+          {
+            "title": "rclcpp_action",
+            "url": "https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Writing-an-Action-Server-Client/Cpp.html"
+          }
+        ]
+      },
+      {
+        "id": "bt03_avoidance",
+        "package": "drill_bt03_avoidance",
+        "level": "ビヘイビアツリー編",
+        "level_note": "接触する前に止まり、開いている側へ避けます",
+        "title": "回避",
+        "kind": "gtest",
+        "sources": [
+          "src/avoidance.cpp"
+        ],
+        "docs": [
+          {
+            "title": "BehaviorTree.CPP Fallback",
+            "url": "https://www.behaviortree.dev/docs/learn-the-basics/BT_basics"
+          }
+        ],
+        "hints": [
+          "150 mm 未満は Stop。避けるより先です。",
+          "400 mm 未満で左右が同じなら左。",
+          "木の command は stop, left, right, go, search。"
+        ],
+        "lecture": [
+          {
+            "title": "3. 回避",
+            "path": "docs/behavior-tree/03_回避.md"
+          }
+        ],
+        "chapter": "ビヘイビアツリー 3章",
+        "level_en": "Behavior trees",
+        "level_note_en": "Stop before contact, then dodge toward the open side",
+        "title_en": "Avoidance",
+        "chapter_en": "Behavior trees ch.3",
+        "hints_en": [
+          "Under 150 mm is Stop, before any dodge.",
+          "Under 400 mm with equal sides goes left.",
+          "The tree command is stop, left, right, go, or search."
+        ],
+        "lecture_en": [
+          {
+            "title": "3. Avoidance",
+            "path": "docs-en/behavior-tree/03_avoidance.md"
+          }
+        ],
+        "docs_en": [
+          {
+            "title": "BehaviorTree.CPP Fallback",
+            "url": "https://www.behaviortree.dev/docs/learn-the-basics/BT_basics"
+          }
+        ],
+        "level_zh": "行为树",
+        "level_note_zh": "接触之前先停，再朝开阔的一侧躲开",
+        "title_zh": "回避",
+        "chapter_zh": "行为树 第3章",
+        "hints_zh": [
+          "小于 150 mm 是 Stop，优先于躲开。",
+          "小于 400 mm 且左右相同时向左。",
+          "树的 command 是 stop、left、right、go、search。"
+        ],
+        "lecture_zh": [
+          {
+            "title": "3. 回避",
+            "path": "docs-zh/behavior-tree/03_avoidance.md"
+          }
+        ],
+        "docs_zh": [
+          {
+            "title": "BehaviorTree.CPP Fallback",
+            "url": "https://www.behaviortree.dev/docs/learn-the-basics/BT_basics"
+          }
+        ]
+      },
+      {
+        "id": "nav01_yaw_fusion",
+        "package": "drill_nav01_yaw_fusion",
+        "level": "自律制御編",
+        "level_note": "ジャイロを主にしたヨー融合と、2D の ekf.yaml",
+        "title": "ヨー角の融合",
+        "kind": "gtest",
+        "sources": [
+          "src/yaw_fusion.cpp",
+          "config/ekf.yaml"
+        ],
+        "docs": [
+          {
+            "title": "robot_localization",
+            "url": "https://docs.ros.org/en/jazzy/p/robot_localization/"
+          }
+        ],
+        "hints": [
+          "差を取る前に [-pi, pi] へ畳みます。",
+          "混ぜる係数は 0.02。ゲートの外は predicted のまま。",
+          "config の 15 個の真偽値は 1 行のままにしてください。"
+        ],
+        "lecture": [
+          {
+            "title": "1. ヨー角の融合",
+            "path": "docs/autonomy/01_ヨー角の融合.md"
+          }
+        ],
+        "chapter": "自律制御 1章",
+        "level_en": "Autonomy",
+        "level_note_en": "Gyro-first yaw fusion and a 2D ekf.yaml",
+        "title_en": "Yaw fusion",
+        "chapter_en": "Autonomy ch.1",
+        "hints_en": [
+          "Wrap into [-pi, pi] before subtracting.",
+          "The mix coefficient is 0.02. Outside the gate, keep predicted.",
+          "Leave the fifteen booleans of each config on one line."
+        ],
+        "lecture_en": [
+          {
+            "title": "1. Yaw fusion",
+            "path": "docs-en/autonomy/01_yaw_fusion.md"
+          }
+        ],
+        "docs_en": [
+          {
+            "title": "robot_localization",
+            "url": "https://docs.ros.org/en/jazzy/p/robot_localization/"
+          }
+        ],
+        "level_zh": "自主控制",
+        "level_note_zh": "以陀螺为主的航向融合，以及二维 ekf.yaml",
+        "title_zh": "航向角融合",
+        "chapter_zh": "自主控制 第1章",
+        "hints_zh": [
+          "相减之前先折进 [-pi, pi]。",
+          "混合系数是 0.02。门限之外保持 predicted。",
+          "每个 config 的 15 个布尔值保持在一行里。"
+        ],
+        "lecture_zh": [
+          {
+            "title": "1. 航向角融合",
+            "path": "docs-zh/autonomy/01_yaw_fusion.md"
+          }
+        ],
+        "docs_zh": [
+          {
+            "title": "robot_localization",
+            "url": "https://docs.ros.org/en/jazzy/p/robot_localization/"
+          }
+        ]
+      },
+      {
+        "id": "nav02_match_state",
+        "package": "drill_nav02_match_state",
+        "level": "自律制御編",
+        "level_note": "試合の流れは状態機械、回避は木、走行は状態から木を呼びます",
+        "title": "状態機械とビヘイビアツリー",
+        "kind": "gtest",
+        "sources": [
+          "src/match_state.cpp"
+        ],
+        "docs": [
+          {
+            "title": "Nav2 behavior trees",
+            "url": "https://docs.nav2.org/behavior_trees/index.html"
+          }
+        ],
+        "hints": [
+          "MarkerLost は Approach, Align, Place から Search へ戻します。",
+          "Finished の TimeUp は Finished のままです。",
+          "DriveToZone は StateMachineCallsBehaviorTree。"
+        ],
+        "lecture": [
+          {
+            "title": "2. 状態機械とビヘイビアツリー",
+            "path": "docs/autonomy/02_状態機械とビヘイビアツリー.md"
+          }
+        ],
+        "chapter": "自律制御 2章",
+        "level_en": "Autonomy",
+        "level_note_en": "The match flow is a state machine, avoidance is a tree, and driving calls a tree from a state",
+        "title_en": "State machines and behavior trees",
+        "chapter_en": "Autonomy ch.2",
+        "hints_en": [
+          "MarkerLost returns to Search from Approach, Align, and Place.",
+          "TimeUp on Finished stays Finished.",
+          "DriveToZone is StateMachineCallsBehaviorTree."
+        ],
+        "lecture_en": [
+          {
+            "title": "2. State machines and behavior trees",
+            "path": "docs-en/autonomy/02_state_machines_and_behavior_trees.md"
+          }
+        ],
+        "docs_en": [
+          {
+            "title": "Nav2 behavior trees",
+            "url": "https://docs.nav2.org/behavior_trees/index.html"
+          }
+        ],
+        "level_zh": "自主控制",
+        "level_note_zh": "比赛流程是状态机，回避是树，行驶是从状态里调用树",
+        "title_zh": "状态机与行为树",
+        "chapter_zh": "自主控制 第2章",
+        "hints_zh": [
+          "MarkerLost 从 Approach、Align、Place 回到 Search。",
+          "Finished 上的 TimeUp 仍是 Finished。",
+          "DriveToZone 是 StateMachineCallsBehaviorTree。"
+        ],
+        "lecture_zh": [
+          {
+            "title": "2. 状态机与行为树",
+            "path": "docs-zh/autonomy/02_state_machines_and_behavior_trees.md"
+          }
+        ],
+        "docs_zh": [
+          {
+            "title": "Nav2 behavior trees",
+            "url": "https://docs.nav2.org/behavior_trees/index.html"
+          }
+        ]
+      },
+      {
+        "id": "nav03_field_route",
+        "package": "drill_nav03_field_route",
+        "level": "自律制御編",
+        "level_note": "残り時間、TF の並び、SLAM のモード、復帰 XML",
+        "title": "経路と復帰",
+        "kind": "gtest",
+        "sources": [
+          "src/field_route.cpp"
+        ],
+        "docs": [
+          {
+            "title": "Nav2 recovery",
+            "url": "https://docs.nav2.org/configuration/packages/configuring-bt-xml.html"
+          }
+        ],
+        "hints": [
+          "負の区間があると feasible は false。名前と合計は埋めます。",
+          "map から base_link へ直行してはいけません。",
+          "Spin の行は with_spin のときだけ、文字列は完全一致。"
+        ],
+        "lecture": [
+          {
+            "title": "3. 経路と復帰",
+            "path": "docs/autonomy/03_経路と復帰.md"
+          }
+        ],
+        "chapter": "自律制御 3章",
+        "level_en": "Autonomy",
+        "level_note_en": "Time left, the TF chain, the SLAM mode, and the recovery XML",
+        "title_en": "Routes and recovery",
+        "chapter_en": "Autonomy ch.3",
+        "hints_en": [
+          "A negative leg makes feasible false. Still fill in the names and the total.",
+          "Do not connect map directly to base_link.",
+          "The Spin line exists only when with_spin is set, and the string must match exactly."
+        ],
+        "lecture_en": [
+          {
+            "title": "3. Routes and recovery",
+            "path": "docs-en/autonomy/03_routes_and_recovery.md"
+          }
+        ],
+        "docs_en": [
+          {
+            "title": "Nav2 recovery",
+            "url": "https://docs.nav2.org/configuration/packages/configuring-bt-xml.html"
+          }
+        ],
+        "level_zh": "自主控制",
+        "level_note_zh": "剩余时间、TF 的连接、SLAM 模式和恢复 XML",
+        "title_zh": "路径与恢复",
+        "chapter_zh": "自主控制 第3章",
+        "hints_zh": [
+          "有负的路段时 feasible 为 false。名字和总和仍然要填。",
+          "不要把 map 直接连到 base_link。",
+          "只有 with_spin 时才有 Spin 那一行，字符串必须完全一致。"
+        ],
+        "lecture_zh": [
+          {
+            "title": "3. 路径与恢复",
+            "path": "docs-zh/autonomy/03_routes_and_recovery.md"
+          }
+        ],
+        "docs_zh": [
+          {
+            "title": "Nav2 recovery",
+            "url": "https://docs.nav2.org/configuration/packages/configuring-bt-xml.html"
+          }
+        ]
+      }
   ]
 }
